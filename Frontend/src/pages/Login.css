@@ -96,6 +96,14 @@
     width: 100%;
     font-size: 14px;
   }
+  .inputContainer:focus-within {
+    border: 1px solid rgba(11, 181, 1, 1);
+  }
+
+  .inputContainer:focus-within .icon {
+    color:rgba(11, 181, 1, 1);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
   
   .loginButton {
     width: 300px;
@@ -107,6 +115,13 @@
     padding: 18px 26px;
     font-size: 16px;
     cursor: pointer;
+    transition: 0.3s;
+  }
+  .loginButton:hover {
+    font-size: 16.5px;
+  }
+  .loginButton:active {
+    transform: scale(0.98);
   }
   
   .forgotPassword {
@@ -119,6 +134,8 @@
     color: rgba(0, 0, 0, 1);
     cursor: pointer;
   }
+  
+  
 
 
   

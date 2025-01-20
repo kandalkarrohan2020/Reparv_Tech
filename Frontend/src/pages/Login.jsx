@@ -1,8 +1,8 @@
 import React from "react";
 import "./Login.css";
-import ReparvLogo from "../assets/ReparvLogo.png";
-import LoginLeftIMG from "../assets/LoginLeftIMG.png";
-import LoginLine from "../assets/LoginLine.png";
+import ReparvLogo from "../assets/login/ReparvLogo.png";
+import LoginLeftIMG from "../assets/login/LoginLeftIMG.png";
+import LoginLine from "../assets/login/LoginLine.png";
 import { FaEnvelope, FaLock } from "react-icons/fa";
 
 function Login() {

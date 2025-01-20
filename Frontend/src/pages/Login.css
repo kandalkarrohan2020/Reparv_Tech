@@ -82,11 +82,11 @@
     color: rgba(255, 255, 255, 1);
   }
   
-  .icon {
+  .inputContainer .icon {
     margin-right: 10px;
     color:rgba(0, 0, 0, 0.2);
   }
-  .icon {
+  .inputContainer .icon  {
     width: 20px;
     height: 20px;
   }

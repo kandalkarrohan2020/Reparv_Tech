@@ -1,5 +1,208 @@
 .overview {
-    width: 1168px;
-    height: 744px;
-    padding: 16px;
+  width: 1168px;
+  height: 744px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  flex-direction: column;
+  padding-top: 40px;
 }
+
+/* ------ Overview Heading.css ------- */
+.overviewHeading {
+  width: 1136px;
+  height: 36px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 19px;
+  color: rgba(0, 0, 0, 1);
+}
+.overviewHeading .leftHeading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.overviewHeading .rightHeading {
+  width: 310px;
+  height: 36px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rightHeading .citySelecter {
+  width: 107px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  gap: 16px;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(0, 0, 0, 1);
+}
+.rightHeading .dateSelecter {
+  width: 187px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(0, 0, 0, 1);
+}
+
+/* ------ Overview Heading.css ------- */
+
+.overviewCardContainer {
+  width: 1136px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 0px;
+}
+
+.overviewCardContainer .overviewCard {
+  width: 272px;
+  height: 132px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 24px;
+  padding: 24px;
+  background: linear-gradient(180deg, #0bb501 0%, #076300 100%);
+  background-blend-mode: multiply;
+}
+.overviewCard .upside {
+  width: 224px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+}
+.overviewCard .downside {
+  width: 224px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  font-size: 30px;
+  line-height: 40px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 1);
+}
+.overviewCard .downside p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.overviewCard .downside svg {
+  font-size: 30px;
+}
+
+/* ------ OverviewTable.css ------- */
+.overviewTable {
+  width: 1136px;
+  min-width: 400px;
+  height: 420px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 16px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 1);
+}
+.search-bar {
+  width: 289px;
+  height: 36px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.04);
+}
+.search-input {
+  width: 250px;
+  height: 36px;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  line-height: 20px;
+}
+.search-input::placeholder {
+  color: rgba(188, 188, 189, 1);
+}
+.overview-table {
+  width: 1088px;
+  height: 343px;
+  overflow: hidden;
+}
+.overview-table th {
+  text-align: left;
+  font-size: 12px;
+  line-height: 16px;
+  padding: 15px;
+  color: rgba(0, 0, 0, 0.4);
+}
+.overview-table td {
+  font-size: 14px;
+  line-height: 20px;
+  padding: 15px;
+  text-align: left;
+  color: rgba(0, 0, 0, 1);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* OverviewFooter.css */
+.overviewFooter {
+    width: 1136px;
+    min-width: 1000px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    margin: 10px;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 18px;
+    letter-spacing: 0.03em;
+    padding: 10px;
+  }
+  
+  .overviewFooter .leftButton,
+  .rightButton {
+    width: 24px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  

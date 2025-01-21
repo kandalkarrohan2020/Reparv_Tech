@@ -1,5 +1,4 @@
 import React from 'react'
-import "./Ticketing.css"
 
 function Ticketing() {
   return (

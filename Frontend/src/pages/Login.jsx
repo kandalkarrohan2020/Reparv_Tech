@@ -1,5 +1,5 @@
 import React from "react";
-import "./Login.css";
+
 import ReparvLogo from "../assets/login/ReparvLogo.png";
 import LoginLeftIMG from "../assets/login/LoginLeftIMG.png";
 import LoginLine from "../assets/login/LoginLine.png";

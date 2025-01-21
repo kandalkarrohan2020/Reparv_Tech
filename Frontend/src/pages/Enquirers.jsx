@@ -1,5 +1,5 @@
 import React from 'react'
-import "./Enquirers.css"
+
 
 function Enquirers() {
   return (

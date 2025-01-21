@@ -1,5 +1,4 @@
 import React from 'react'
-import "./RawMaterials.css"
 
 function Rawmaterials() {
   return (

@@ -1,16 +1,16 @@
 import React from "react";
 import "./App.css"
 import { BrowserRouter, Routes, Route} from "react-router-dom";
-import Layout from "./components/layout/Layout";
-import Overview from "./pages/Overview";
-import Enquirers from "./pages/Enquirers";
-import Map from "./pages/Map";
-import Calender from "./pages/Calender";
-import Customers from "./pages/Customers";
-import Partners from "./pages/Partners";
-import Ticketing from "./pages/Ticketing";
-import RawMaterials from "./pages/RawMaterials";
-import Marketing from "./pages/Marketing";
+import Layout from "./components/layout/Layout.jsx";
+import Overview from "./pages/Overview.jsx";
+import Enquirers from "./pages/Enquirers.jsx";
+import Map from "./pages/Map.jsx";
+import Calender from "./pages/Calender.jsx";
+import Customers from "./pages/Customers.jsx";
+import Partners from "./pages/Partners.jsx";
+import Ticketing from "./pages/Ticketing.jsx";
+import RawMaterials from "./pages/RawMaterials.jsx";
+import Marketing from "./pages/Marketing.jsx";
 
 const App = () => {
     return (

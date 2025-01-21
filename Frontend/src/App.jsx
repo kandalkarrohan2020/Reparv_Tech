@@ -9,7 +9,7 @@ import Calender from "./pages/Calender";
 import Customers from "./pages/Customers";
 import Partners from "./pages/Partners";
 import Ticketing from "./pages/Ticketing";
-import RawMaterials from "./pages/Rawmaterials";
+import RawMaterials from "./pages/RawMaterials";
 import Marketing from "./pages/Marketing";
 
 const App = () => {

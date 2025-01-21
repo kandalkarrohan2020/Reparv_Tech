@@ -1,5 +1,5 @@
 import React from 'react'
-import "./Customers.css"
+import "Customers.css"
 
 function Customers() {
   return (

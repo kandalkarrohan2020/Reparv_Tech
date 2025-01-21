@@ -60,12 +60,12 @@ function Overview() {
       <div className="overview-heading w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
         <div className="left-heading flex items-center text-[16px] leading-[19.36px] text-black">Overview</div>
         <div className="right-heading w-[310px] h-[36px] flex gap-4 items-center justify-between">
-          <div className="city-selector w-[107px] h-[36px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000]">
+          <div className="city-selector w-[107px] h-[36px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000] cursor-pointer">
             <img src={cityIcon} alt="" />
             <p>City</p>
             <img src={downArrow} alt="" />
           </div>
-          <div className="date-selector w-[187px] h-[36px] flex items-center justify-between border border-[#0000001A] rounded-[8px] py-2 px-3 text-sm text-[#00000066]">
+          <div className="date-selector w-[187px] h-[36px] flex items-center justify-between border border-[#0000001A] rounded-[8px] py-2 px-3 text-sm text-[#00000066] cursor-pointer">
             <p>Select Date Range</p>
             <img src={calender} alt="" />
           </div>

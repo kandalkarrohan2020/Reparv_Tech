@@ -33,8 +33,8 @@ function Layout() {
 
           {/* Navigation Links */}
           <NavLink
-            to="/"
-            className={`flex items-center justify-start w-[208px] h-[64px] p-[12px] rounded-[20px] gap-[12px] text-black transition-all duration-300 ${getNavLinkClass('/')}`}
+            to="/overview"
+            className={`flex items-center justify-start w-[208px] h-[64px] p-[12px] rounded-[20px] gap-[12px] text-black transition-all duration-300 ${getNavLinkClass('/overview')}`}
           >
             <div className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded-[12px] bg-white">
               <img src={overviewIcon} alt="Overview Icon" />

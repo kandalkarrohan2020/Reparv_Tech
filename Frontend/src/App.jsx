@@ -9,15 +9,16 @@ import Calender from "./pages/Calender.jsx";
 import Customers from "./pages/Customers.jsx";
 import Partners from "./pages/Partners.jsx";
 import Ticketing from "./pages/Ticketing.jsx";
-import RawMaterials from "./pages/RawMaterials.jsx";
+import RawMaterials from "./pages/Rawmaterials.jsx";
 import Marketing from "./pages/Marketing.jsx";
+import Login from "./pages/Login.jsx";
 
 const App = () => {
     return (
         <BrowserRouter>
             <Routes>
-              <Route path="" element={<Layout/>}>
-                <Route path="/" element={<Overview/>} />
+              <Route path="/" element={<Login/>} />
+              <Route path="/" element={<Layout/>}>
                 <Route path="/overview" element={<Overview/>} />
                 <Route path="/enquirers" element={<Enquirers/>} />
                 <Route path="/map" element={<Map/>} />

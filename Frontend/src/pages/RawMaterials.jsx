@@ -1,9 +1,9 @@
 import React from 'react'
 
-function Rawmaterials() {
+function RawMaterials() {
   return (
     <div>Rawmaterials</div>
   )
 }
 
-export default Rawmaterials
+export default RawMaterials

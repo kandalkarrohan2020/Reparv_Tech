@@ -1,9 +1,11 @@
 import React from 'react'
-import "Customers.css"
+
 
 function Customers() {
   return (
-    <div>Customers</div>
+   <div className="Customers">
+    Customers
+   </div>
   )
 }
 

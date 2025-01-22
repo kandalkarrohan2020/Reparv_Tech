@@ -8,6 +8,7 @@ import mapIcon from "../../assets/layout/mapIcon.png";
 import materialIcon from "../../assets/layout/materialIcon.png";
 import overviewIcon from "../../assets/layout/overviewIcon.png";
 import partnerIcon from "../../assets/layout/partnerIcon.png";
+import employeeIcon from "../../assets/layout/employeeIcon.png";
 import ticketingIcon from "../../assets/layout/ticketingIcon.png";
 import marketingIcon from "../../assets/layout/marketingIcon.png";
 import { Outlet } from 'react-router-dom';
@@ -24,7 +25,7 @@ function Layout() {
   return (
     <div className="w-full h-screen p-[16px] flex bg-[#F5F5F6]">
       {/* Sidebar */}
-      <div className="w-[240px] h-[744px] p-[16px] rounded-[16px]">
+      <div className="w-[240px] h-[816px] p-[16px] rounded-[16px]">
         <div className="flex flex-col gap-[8px] fixed">
           {/* Logo */}
           <div className="w-[208px] h-[56px] flex justify-center items-center">
@@ -90,6 +91,16 @@ function Layout() {
               <img src={partnerIcon} alt="Partners Icon" />
             </div>
             <p className="text-left text-[16px] leading-[24px]">Partners</p>
+          </NavLink>
+
+          <NavLink
+            to="employee"
+            className={`flex items-center justify-start w-[208px] h-[64px] p-[12px] rounded-[20px] gap-[12px] text-black transition-all duration-300 ${getNavLinkClass('/employee')}`}
+          >
+            <div className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded-[12px] bg-white">
+              <img src={employeeIcon} alt="Employee Icon" />
+            </div>
+            <p className="text-left text-[16px] leading-[24px]">Employee</p>
           </NavLink>
 
           <NavLink

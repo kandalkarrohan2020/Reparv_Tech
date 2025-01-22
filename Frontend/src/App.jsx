@@ -12,6 +12,7 @@ import Ticketing from "./pages/Ticketing.jsx";
 import RawMaterials from "./pages/Rawmaterials.jsx";
 import Marketing from "./pages/Marketing.jsx";
 import Login from "./pages/Login.jsx";
+import Employee from "./pages/Employee.jsx";
 
 const App = () => {
     return (
@@ -25,6 +26,7 @@ const App = () => {
                 <Route path="/calender" element={<Calender/>} />
                 <Route path="/customers" element={<Customers/>} />
                 <Route path="/partners" element={<Partners/>} />
+                <Route path="/employee" element={<Employee/>} />
                 <Route path="/ticketing" element={<Ticketing/>} />
                 <Route path="/raw-materials" element={<RawMaterials/>} />
                 <Route path="/marketing" element={<Marketing/>} />

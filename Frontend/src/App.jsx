@@ -9,7 +9,7 @@ import Calender from "./pages/Calender.jsx";
 import Customers from "./pages/Customers.jsx";
 import Partners from "./pages/Partners.jsx";
 import Ticketing from "./pages/Ticketing.jsx";
-import RawMaterials from "./pages/Rawmaterials.jsx";
+import RawMaterials from "./pages/RawMaterials.jsx";
 import Marketing from "./pages/Marketing.jsx";
 import Login from "./pages/Login.jsx";
 import Employee from "./pages/Employee.jsx";

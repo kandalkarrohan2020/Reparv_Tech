@@ -3,7 +3,9 @@ import ReparvLogo from "../assets/login/ReparvLogo.png";
 import LoginLeftIMG from "../assets/login/LoginLeftIMG.png";
 import LoginLine from "../assets/login/LoginLine.png";
 import { FaEnvelope, FaLock } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { IoEye } from "react-icons/io5";
+import { IoMdEyeOff } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
@@ -37,12 +39,13 @@ function Login() {
 
           {/* Password Input */}
           <div className="group w-[300px] h-[60px] flex items-center border border-black/20 rounded-full px-[26px] focus-within:border-[#0BB501]">
-            <FaLock className="text-black/20 w-[20px] h-[20px] mr-[10px] group-focus-within:text-[#0BB501]" />
+            <FaLock className="text-black/20 w-[20px] h-[20px] group-focus-within:text-[#0BB501]" />
             <input
               type="password"
               placeholder="Password"
-              className="w-full border-none outline-none text-[14px]"
+              className="w-[150px] border-none mx-[10px] outline-none text-[14px]"
             />
+            <IoEye className="text-black/20 text-[20px] ml-[36px]" />
           </div>
 
           {/* Login Button */}

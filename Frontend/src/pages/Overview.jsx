@@ -122,7 +122,7 @@ function Overview() {
           />
         </div>
 
-        <table className="overview-table w-[1088px] h-[343px] overflow-hidden">
+        <table className="overview-table w-[1088px] h-[343px] overflow-hidden rounded-[16px]">
           <thead>
             <tr>
               {[
@@ -145,19 +145,19 @@ function Overview() {
           <tbody>
             {data.map((row, index) => (
               <tr key={index}>
-                <td className="py-[15px] px-[10px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
                   {row.projectName}
                 </td>
-                <td className="py-[15px] px-[10px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
                   {row.builderName}
                 </td>
-                <td className="py-[15px] px-[10px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
                   {row.deals}
                 </td>
-                <td className="py-[15px] px-[10px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
                   {row.dealAmount}
                 </td>
-                <td className="py-[15px] px-[10px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
                   {row.reparvShare}
                 </td>
                 <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">

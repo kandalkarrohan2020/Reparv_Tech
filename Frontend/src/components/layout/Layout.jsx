@@ -25,8 +25,8 @@ function Layout() {
   return (
     <div className="w-full h-screen p-[16px] flex bg-[#F5F5F6]">
       {/* Sidebar */}
-      <div className="w-[240px] h-[816px] p-[16px] rounded-[16px]">
-        <div className="flex flex-col gap-[8px] fixed">
+      <div className="w-[240px] h-[816px] p-[16px] rounded-[16px] fixed bg-[#F5F5F6]">
+        <div className="flex flex-col gap-[8px]">
           {/* Logo */}
           <div className="w-[208px] h-[56px] flex justify-center items-center">
             <img src={reparvMainLogo} alt="Reparv Logo" className="w-[208px] h-[56px]" />
@@ -136,7 +136,10 @@ function Layout() {
       </div>
 
       {/* Outlet for rendering the routed components */}
-      <Outlet />
+      <div className="pageContainer w-[1168px] h-[744px] absolute left-[240px] flex items-center justify-center ">
+        <Outlet/>
+      </div>
+      
     </div>
   );
 }

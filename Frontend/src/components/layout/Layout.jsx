@@ -46,7 +46,7 @@ function Layout() {
       >
         <div className="flex flex-col items-center gap-2 p-4 md:gap-2">
           {/* Logo */}
-          <img src={reparvMainLogo} alt="Reparv Logo" className="h-11 w-auto m-3" />
+          <img src={reparvMainLogo} alt="Reparv Logo" className="" />
 
           {/* Navigation Links */}
           {[

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import ReparvLogo from "../assets/login/ReparvLogo.png";
-import LoginLeftIMG from "../assets/login/LoginLeftIMG.png";
+import ReparvLogo from "../assets/login/ReparvLogo.svg";
+import LoginLeftIMG from "../assets/login/LoginLeftIMG.svg";
 import LoginLine from "../assets/login/LoginLine.png";
 import { FaEnvelope, FaLock } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
@@ -25,7 +25,7 @@ function Login() {
     <div className="w-full h-screen bg-white flex flex-col md:flex-row items-center justify-center">
       {/* Left Section */}
       <div className="w-full md:w-1/2 h-full flex flex-col items-center justify-center md:px-8">
-        <div className="relative md:-right-[50px] top-[20px]">
+        <div className="relative md:-left-[40px] top-[20px] md:top-[30px]">
           <img src={ReparvLogo} alt="Reparv Logo" className="w-[180px]" />
         </div>
         <img src={LoginLeftIMG} alt="Login Left" className="mt-4 md:w-[400px]" />
@@ -81,7 +81,7 @@ function Login() {
           </button>
 
           {/* Forgot Password */}
-          <p className="w-full max-w-[300px] text-[14px] text-black/70 leading-[17px] cursor-pointer text-center">
+          <p className="w-full max-w-[300px] text-[14px] text-black/70 leading-[17px] cursor-pointer text-left">
             Forgot Password?
           </p>
         </div>

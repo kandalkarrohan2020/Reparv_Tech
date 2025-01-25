@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { useLocation, NavLink } from 'react-router-dom';
-import reparvMainLogo from "../../assets/layout/reparvMainLogo.png";
-import calenderIcon from "../../assets/layout/calenderIcon.png";
-import customersIcon from "../../assets/layout/customersIcon.png";
-import enquirersIcon from "../../assets/layout/enquirersIcon.png";
-import mapIcon from "../../assets/layout/mapIcon.png";
-import materialIcon from "../../assets/layout/materialIcon.png";
-import overviewIcon from "../../assets/layout/overviewIcon.png";
-import partnerIcon from "../../assets/layout/partnerIcon.png";
-import employeeIcon from "../../assets/layout/employeeIcon.png";
-import ticketingIcon from "../../assets/layout/ticketingIcon.png";
-import marketingIcon from "../../assets/layout/marketingIcon.png";
+import reparvMainLogo from "../../assets/layout/reparvMainLogo.svg";
+import calenderIcon from "../../assets/layout/calenderIcon.svg";
+import customersIcon from "../../assets/layout/customersIcon.svg";
+import enquirersIcon from "../../assets/layout/enquirersIcon.svg";
+import mapIcon from "../../assets/layout/mapIcon.svg";
+import materialIcon from "../../assets/layout/materialIcon.svg";
+import overviewIcon from "../../assets/layout/overviewIcon.svg";
+import partnerIcon from "../../assets/layout/partnerIcon.svg";
+import employeeIcon from "../../assets/layout/employeeIcon.svg";
+import ticketingIcon from "../../assets/layout/ticketingIcon.svg";
+import marketingIcon from "../../assets/layout/marketingIcon.svg";
 import { Outlet } from 'react-router-dom';
 import { IoMenu } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
@@ -46,7 +46,7 @@ function Layout() {
       >
         <div className="flex flex-col items-center gap-2 p-4 md:gap-2">
           {/* Logo */}
-          <img src={reparvMainLogo} alt="Reparv Logo" className="h-14 w-auto" />
+          <img src={reparvMainLogo} alt="Reparv Logo" className="h-11 w-auto m-3" />
 
           {/* Navigation Links */}
           {[

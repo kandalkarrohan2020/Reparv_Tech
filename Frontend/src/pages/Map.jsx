@@ -1,7 +1,7 @@
 import React from "react";
 import { FaUserCircle } from "react-icons/fa";
-import cityIcon from "../assets/overview/cityIcon.png";
-import downArrow from "../assets/overview/downArrow.png";
+import cityIcon from "../assets/overview/cityIcon.svg";
+import downArrow from "../assets/overview/downArrow.svg";
 import map from "../assets/map.png"
 
 const Map = () => {

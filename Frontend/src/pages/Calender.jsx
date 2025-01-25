@@ -1,13 +1,6 @@
 import React from "react";
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
-import { CiSearch } from "react-icons/ci";
-import calender from "../assets/overview/calender.png";
-import { HiMiniFunnel } from "react-icons/hi2";
-import { IoMdEye } from "react-icons/io";
-import { Link } from "react-router-dom";
+import calender from "../assets/overview/calender.svg";
 import { FaUserCircle } from "react-icons/fa";
-import { FaEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
 
 const Calender = () => {
   return (

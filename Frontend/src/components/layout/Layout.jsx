@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, NavLink } from 'react-router-dom';
 import reparvMainLogo from "../../assets/layout/reparvMainLogo.png";
 import calenderIcon from "../../assets/layout/calenderIcon.png";
@@ -12,9 +12,12 @@ import employeeIcon from "../../assets/layout/employeeIcon.png";
 import ticketingIcon from "../../assets/layout/ticketingIcon.png";
 import marketingIcon from "../../assets/layout/marketingIcon.png";
 import { Outlet } from 'react-router-dom';
+import { IoMenu } from "react-icons/io5";
+import { IoMdClose } from "react-icons/io";
 
 function Layout() {
   const location = useLocation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const getNavLinkClass = (path) => {
     return location.pathname === path
@@ -23,123 +26,65 @@ function Layout() {
   };
 
   return (
-    <div className="w-full h-screen p-[16px] flex bg-[#F5F5F6]">
+    <div className="flex flex-col md:flex-row w-full h-screen bg-[#F5F5F6]">
+      {/* Mobile Menu Toggle */}
+      <div className="md:hidden flex items-center justify-between px-5 py-3 bg-white shadow-sm">
+        <img src={reparvMainLogo} alt="Reparv Logo" className="h-10" />
+        <button
+          className="p-2 rounded-md bg-gray-100 text-black hover:text-[#076300] active:scale-95"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        >
+          {isSidebarOpen === false ?<IoMenu size={24} />:<IoMdClose size={24}/>}
+        </button>
+      </div>
+
       {/* Sidebar */}
-      <div className="w-[240px] h-[816px] p-[16px] rounded-[16px] fixed bg-[#F5F5F6]">
-        <div className="flex flex-col gap-[8px]">
+      <div
+        className={`fixed bg-white shadow-md md:shadow-none md:static top-0 left-0 z-20 w-64 md:w-60 h-full md:bg-[#F5F5F6] transition-transform duration-300 transform ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}
+      >
+        <div className="flex flex-col items-center gap-2 p-4 md:gap-2">
           {/* Logo */}
-          <div className="w-[208px] h-[56px] flex justify-center items-center">
-            <img src={reparvMainLogo} alt="Reparv Logo" className="w-[208px] h-[56px]" />
-          </div>
+          <img src={reparvMainLogo} alt="Reparv Logo" className="h-14 w-auto" />
 
           {/* Navigation Links */}
-          <NavLink
-            to="/overview"
-            className={`flex items-center justify-start w-[208px] h-[64px] p-[12px] rounded-[20px] gap-[12px] text-black transition-all duration-300 ${getNavLinkClass('/overview')}`}
-          >
-            <div className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded-[12px] bg-white">
-              <img src={overviewIcon} alt="Overview Icon" />
-            </div>
-            <p className="text-left text-[16px] leading-[24px]">Overview</p>
-          </NavLink>
-
-          <NavLink
-            to="enquirers"
-            className={`flex items-center justify-start w-[208px] h-[64px] p-[12px] rounded-[20px] gap-[12px] text-black transition-all duration-300 ${getNavLinkClass('/enquirers')}`}
-          >
-            <div className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded-[12px] bg-white">
-              <img src={enquirersIcon} alt="Enquirers Icon" />
-            </div>
-            <p className="text-left text-[16px] leading-[24px]">Enquirers</p>
-          </NavLink>
-
-          <NavLink
-            to="map"
-            className={`flex items-center justify-start w-[208px] h-[64px] p-[12px] rounded-[20px] gap-[12px] text-black transition-all duration-300 ${getNavLinkClass('/map')}`}
-          >
-            <div className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded-[12px] bg-white">
-              <img src={mapIcon} alt="Map Icon" />
-            </div>
-            <p className="text-left text-[16px] leading-[24px]">Map</p>
-          </NavLink>
-
-          <NavLink
-            to="calender"
-            className={`flex items-center justify-start w-[208px] h-[64px] p-[12px] rounded-[20px] gap-[12px] text-black transition-all duration-300 ${getNavLinkClass('/calender')}`}
-          >
-            <div className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded-[12px] bg-white">
-              <img src={calenderIcon} alt="Calendar Icon" />
-            </div>
-            <p className="text-left text-[16px] leading-[24px]">Calendar</p>
-          </NavLink>
-
-          <NavLink
-            to="customers"
-            className={`flex items-center justify-start w-[208px] h-[64px] p-[12px] rounded-[20px] gap-[12px] text-black transition-all duration-300 ${getNavLinkClass('/customers')}`}
-          >
-            <div className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded-[12px] bg-white">
-              <img src={customersIcon} alt="Customers Icon" />
-            </div>
-            <p className="text-left text-[16px] leading-[24px]">Customers</p>
-          </NavLink>
-
-          <NavLink
-            to="partners"
-            className={`flex items-center justify-start w-[208px] h-[64px] p-[12px] rounded-[20px] gap-[12px] text-black transition-all duration-300 ${getNavLinkClass('/partners')}`}
-          >
-            <div className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded-[12px] bg-white">
-              <img src={partnerIcon} alt="Partners Icon" />
-            </div>
-            <p className="text-left text-[16px] leading-[24px]">Partners</p>
-          </NavLink>
-
-          <NavLink
-            to="employee"
-            className={`flex items-center justify-start w-[208px] h-[64px] p-[12px] rounded-[20px] gap-[12px] text-black transition-all duration-300 ${getNavLinkClass('/employee')}`}
-          >
-            <div className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded-[12px] bg-white">
-              <img src={employeeIcon} alt="Employee Icon" />
-            </div>
-            <p className="text-left text-[16px] leading-[24px]">Employee</p>
-          </NavLink>
-
-          <NavLink
-            to="ticketing"
-            className={`flex items-center justify-start w-[208px] h-[64px] p-[12px] rounded-[20px] gap-[12px] text-black transition-all duration-300 ${getNavLinkClass('/ticketing')}`}
-          >
-            <div className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded-[12px] bg-white">
-              <img src={ticketingIcon} alt="Ticketing Icon" />
-            </div>
-            <p className="text-left text-[16px] leading-[24px]">Ticketing</p>
-          </NavLink>
-
-          <NavLink
-            to="raw-materials"
-            className={`flex items-center justify-start w-[208px] h-[64px] p-[12px] rounded-[20px] gap-[12px] text-black transition-all duration-300 ${getNavLinkClass('/raw-materials')}`}
-          >
-            <div className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded-[12px] bg-white">
-              <img src={materialIcon} alt="Raw Materials Icon" />
-            </div>
-            <p className="text-left text-[16px] leading-[24px]">Raw Materials</p>
-          </NavLink>
-
-          <NavLink
-            to="marketing"
-            className={`flex items-center justify-start w-[208px] h-[64px] p-[12px] rounded-[20px] gap-[12px] text-black transition-all duration-300 ${getNavLinkClass('/marketing')}`}
-          >
-            <div className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded-[12px] bg-white">
-              <img src={marketingIcon} alt="Marketing Icon" />
-            </div>
-            <p className="text-left text-[16px] leading-[24px]">Marketing Templates</p>
-          </NavLink>
+          {[
+            { to: '/overview', icon: overviewIcon, label: 'Overview' },
+            { to: '/enquirers', icon: enquirersIcon, label: 'Enquirers' },
+            { to: '/map', icon: mapIcon, label: 'Map' },
+            { to: '/calender', icon: calenderIcon, label: 'Calendar' },
+            { to: '/customers', icon: customersIcon, label: 'Customers' },
+            { to: '/partners', icon: partnerIcon, label: 'Partners' },
+            { to: '/employee', icon: employeeIcon, label: 'Employee' },
+            { to: '/ticketing', icon: ticketingIcon, label: 'Ticketing' },
+            { to: '/raw-materials', icon: materialIcon, label: 'Raw Materials' },
+            { to: '/marketing', icon: marketingIcon, label: 'Marketing Templates' },
+          ].map(({ to, icon, label }) => (
+            <NavLink
+              onClick={()=>{setIsSidebarOpen(false)}}
+              key={to}
+              to={to}
+              className={`flex items-center gap-3 w-full p-3 rounded-[20px] transition-all duration-300 text-black ${getNavLinkClass(
+                to
+              )}`}
+            >
+              <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-[12px] bg-white">
+                <img src={icon} alt={`${label} Icon`} className="md:h-6 md:w-6 w-5 h-5" />
+              </div>
+              <span className="text-sm md:text-base">{label}</span>
+            </NavLink>
+          ))}
         </div>
       </div>
 
-      {/* Outlet for rendering the routed components */}
-      <div className="pageContainer w-[1168px] h-[744px] absolute left-[240px] flex items-center justify-center ">
-        <Outlet/>
+      {/* Content Area */}
+      <div
+        className="flex-1 p-4 overflow-auto md:overflow-hidden"
+        onClick={() => isSidebarOpen && setIsSidebarOpen(false)}
+      >
+        <Outlet />
       </div>
-      
     </div>
   );
 }

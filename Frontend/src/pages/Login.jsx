@@ -13,13 +13,36 @@ function Login() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const userLogin = () => {
+  axios.defaults.withCredentials = true;
+  const userLogin = async (e) => {
+    e.preventDefault();
     const user = {
       email: email,
       password: password,
     };
-    navigate("/overview");
+
+    if (user.email == "" || user.password == "") {
+      toast.error("All Fields are Required");
+    } else {
+
+      let url = "http://localhost:3000/api/v1/users/login";
+      try {
+        await axios
+          .post(url, user)
+          .then((response) => {
+            if (response.data) {
+              navigate("/overview");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } catch (error) {
+        console.log("login ", error);
+      }
+    }
   };
+
 
   return (
     <div className="w-full h-screen bg-white flex flex-col md:flex-row items-center justify-center">

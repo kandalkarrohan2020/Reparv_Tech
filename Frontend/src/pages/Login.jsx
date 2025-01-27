@@ -6,6 +6,7 @@ import { FaEnvelope, FaLock } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { IoMdEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Login() {
   const [isPasswordShow, setIsPasswordShow] = useState(false);
@@ -22,7 +23,7 @@ function Login() {
     };
 
     if (user.email == "" || user.password == "") {
-      toast.error("All Fields are Required");
+     console.log("All Fields are Required");
     } else {
 
       let url = "http://localhost:3000/api/v1/users/login";
@@ -97,7 +98,7 @@ function Login() {
 
           {/* Login Button */}
           <button
-            onClick={userLogin}
+            onClick={()=>{navigate("/overview")}}
             className="w-full max-w-[300px] h-[53px] bg-[#0BB501] text-white rounded-full text-[16px] font-semibold transition hover:text-[#fffcfc] active:scale-95"
           >
             Login

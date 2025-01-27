@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { CiSearch } from "react-icons/ci";
 import calender from "../assets/overview/calender.svg";
@@ -9,8 +10,12 @@ import { FaPlus } from "react-icons/fa6";
 import { FaUserCircle } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import EmployeeDetailsForm from "../components/employee/employeeDetailsForm";
+import { useAuth } from "../store/auth";
 
 const Employee = () => {
+  const {showEplDetailsForm,setShowEplDetailsForm} = useAuth();
+  
   const data = [
     {
       name: "Name 1",
@@ -79,7 +84,9 @@ const Employee = () => {
   ];
 
   return (
-    <div className="enquirers w-[1168px] h-[744px] pt-10 px-4 flex flex-col items-start justify-start">
+    <div className={`employee w-[1168px] h-[744px] pt-10 px-4 flex flex-col items-start justify-start`}>
+      {!showEplDetailsForm?
+      <>
       <div className="overview-heading w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
         <div className="left-heading flex items-center text-[16px] leading-[19.36px] text-black">
           Employee
@@ -111,7 +118,7 @@ const Employee = () => {
                 <img src={calender} alt="" />
               </div>
             </div>
-            <div className="addEmployeeButton cursor-pointer w-[192px] h-[36px] flex items-center justify-center gap-3 border border-[#00000033] rounded-[8px] bg-[#0BB501] font-semibold text-4 leading-5 text-[#FFFFFF] active:scale-[0.98]">
+            <div onClick={()=>{setShowEplDetailsForm(true)}} className="addEmployeeButton cursor-pointer w-[192px] h-[36px] flex items-center justify-center gap-3 border border-[#00000033] rounded-[8px] bg-[#0BB501] font-semibold text-4 leading-5 text-[#FFFFFF] active:scale-[0.98]">
               <FaPlus className="text-[20px]" />
               <p>Add Employee</p>
             </div>
@@ -183,7 +190,12 @@ const Employee = () => {
           <FaAngleRight />
         </div>
       </div>
+      </>
+      :
+     <EmployeeDetailsForm/>
+     }
     </div>
+  
   );
 };
 

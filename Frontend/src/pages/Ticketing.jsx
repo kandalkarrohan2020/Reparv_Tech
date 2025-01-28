@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
+import CustomDateRangePicker from "../components/CustomDateRangePicker";
 
 const Enquirers = () => {
   const data = [
@@ -90,15 +91,12 @@ const Enquirers = () => {
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
             />
           </div>
-          <div className="rightTableHead w-[244px] h-[36px] flex justify-between items-center">
-            <div className="w-[244px] h-[36px] flex gap-6 items-center justify-between">
+          <div className="rightTableHead min-w-[244px] h-[36px] flex justify-between items-center">
+            <div className="min-w-[244px] h-[36px] flex gap-6 items-center justify-between">
               <div className="city-selector w-[40px] h-[32px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000] cursor-pointer">
                 <HiMiniFunnel />
               </div>
-              <div className="date-selector w-[187px] h-[36px] flex items-center justify-between border border-[#0000001A] rounded-[8px] py-2 px-3 text-sm text-[#00000066] cursor-pointer">
-                <p>Select Date Range</p>
-                <img src={calender} alt="" />
-              </div>
+              <CustomDateRangePicker/>
             </div>
           </div>
         </div>

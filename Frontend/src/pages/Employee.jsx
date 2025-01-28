@@ -10,6 +10,7 @@ import EmployeeDetailsForm from "../components/employee/EmployeeDetailsForm";
 import { useAuth } from "../store/auth";
 import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
+import CustomDateRangePicker from "../components/CustomDateRangePicker";
 
 
 const Employee = () => {
@@ -107,17 +108,14 @@ const Employee = () => {
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
             />
           </div>
-          <div className="rightTableHead w-[467px] h-[36px] flex justify-between items-center">
-            <div className="w-[251px] h-[36px] flex gap-6 items-center justify-between">
+          <div className="rightTableHead min-w-[467px] h-[36px] flex justify-between items-center">
+            <div className="min-w-[251px] h-[36px] flex gap-6 items-center justify-between">
               <div className="city-selector w-[40px] h-[32px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000] cursor-pointer">
                 <HiMiniFunnel />
               </div>
-              <div className="date-selector w-[187px] h-[36px] flex items-center justify-between border border-[#0000001A] rounded-[8px] py-2 px-3 text-sm text-[#00000066] cursor-pointer">
-                <p>Select Date Range</p>
-                <img src={calender} alt="" />
-              </div>
+              <CustomDateRangePicker/>
             </div>
-            <div onClick={()=>{setShowEplDetailsForm(true)}} className="addEmployeeButton cursor-pointer w-[192px] h-[36px] flex items-center justify-center gap-3 border border-[#00000033] rounded-[8px] bg-[#0BB501] font-semibold text-4 leading-5 text-[#FFFFFF] active:scale-[0.98]">
+            <div onClick={()=>{setShowEplDetailsForm(true)}} className="addEmployeeButton m-5 cursor-pointer w-[192px] h-[36px] flex items-center justify-center gap-3 border border-[#00000033] rounded-[8px] bg-[#0BB501] font-semibold text-4 leading-5 text-[#FFFFFF] active:scale-[0.98]">
               <FaPlus className="text-[20px]" />
               <p>Add Employee</p>
             </div>

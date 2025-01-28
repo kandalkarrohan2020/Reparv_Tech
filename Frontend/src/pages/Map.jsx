@@ -1,8 +1,7 @@
 import React from "react";
 import { FaUserCircle } from "react-icons/fa";
-import cityIcon from "../assets/overview/cityIcon.svg";
-import downArrow from "../assets/overview/downArrow.svg";
 import map from "../assets/map.png"
+import CitySelector from "../components/CitySelector";
 
 const Map = () => {
   return (
@@ -41,11 +40,7 @@ const Map = () => {
               <p>Search</p>
             </div>
 
-            <div className="city-selector w-[107px] h-[32px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000] cursor-pointer">
-              <img src={cityIcon} alt="" />
-              <p>City</p>
-              <img src={downArrow} alt="" />
-            </div>
+            <CitySelector></CitySelector>
           </div>
         </div>
         <div className="mapContainer w-[1088px] h-[547px] overflow-hidden rounded-[16px]">

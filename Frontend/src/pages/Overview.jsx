@@ -11,7 +11,8 @@ import card4 from "../assets/overview/card4.svg";
 import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Paging from "../components/Paging";
-
+import CitySelector from "../components/CitySelector";
+import CustomDateRangePicker from "../components/CustomDateRangePicker";
 
 function Overview() {
   const navigate = useNavigate();
@@ -123,17 +124,10 @@ function Overview() {
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
             />
           </div>
-          <div className="rightTableHead w-[310px] h-[36px] flex justify-between items-center">
-            <div className="w-[310px] h-[36px] flex gap-6 items-center justify-between">
-              <div className="city-selector w-[107px] h-[36px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000] cursor-pointer">
-                <img src={cityIcon} alt="" />
-                <p>City</p>
-                <img src={downArrow} alt="" />
-              </div>
-              <div className="date-selector w-[187px] h-[36px] flex items-center justify-between border border-[#0000001A] rounded-[8px] py-2 px-3 text-sm text-[#00000066] cursor-pointer">
-                <p>Select Date Range</p>
-                <img src={calender} alt="" />
-              </div>
+          <div className="rightTableHead min-w-[310px] h-[36px] flex justify-center items-center">
+            <div className="min-w-[310px] h-[36px] flex gap-6 items-center justify-between">
+              <CitySelector></CitySelector>
+              <CustomDateRangePicker/>
             </div>
           </div>
         </div>

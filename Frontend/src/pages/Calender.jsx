@@ -1,6 +1,7 @@
 import React from "react";
 import calender from "../assets/overview/calender.svg";
 import { FaUserCircle } from "react-icons/fa";
+import CustomDateRangePicker from "../components/CustomDateRangePicker";
 
 const Calender = () => {
   return (
@@ -19,10 +20,7 @@ const Calender = () => {
 
       <div className="calenderContainer w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px]">
         <div className="searchBarContainer w-[1088px] h-[36px] flex align-center justify-end">
-          <div className="date-selector w-[187px] h-[36px] flex items-center justify-between border border-[#0000001A] rounded-[8px] py-2 px-3 text-sm text-[#00000066] cursor-pointer">
-            <p>Select Date Range</p>
-            <img src={calender} alt="" />
-          </div>
+        <CustomDateRangePicker/>
         </div>
         <div className="calender w-[1136px] h-[506px] flex gap-[26px] overflow-hidden">
           <div className="visitCalender w-[314px] h-[327px] bg-white">

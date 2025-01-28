@@ -4,17 +4,24 @@ import { useAuth } from "../../store/auth";
 
 const ActionSelect = () => {
   const [selectedAction, setSelectedAction] = useState("");
-  const {setShowEplDetailsForm} = useAuth();
+  const {setShowEplDetailsForm, setAction} = useAuth();
   const handleAction = (action) => {
     switch (action) {
       case "view":
         setShowEplDetailsForm(true);
+        setAction("Save Details");
+        
         break;
       case "update":
         setShowEplDetailsForm(true);
+        setAction("Edit Details");
+        
+        
         break;
       case "delete":
         setShowEplDetailsForm(true);
+        setAction("Delete");
+        
         break;
       default:
         setShowEplDetailsForm(true);

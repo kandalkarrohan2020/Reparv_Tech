@@ -7,6 +7,7 @@ export const AuthProvider = ({children}) => {
 //const [loader, setLoader] = useState(false);
 //const [accessToken,setAccessToken] = useState(Cookies.get("token"));
 const [showEplDetailsForm, setShowEplDetailsForm ] = useState(false);
+const [action, setAction ] = useState("Save Details");
 //let isLoggedIn = !!accessToken;
 /*
 const storeTokenInCookie = (token) => {
@@ -23,7 +24,9 @@ return <AuthContext.Provider
  value={
     {  
         showEplDetailsForm,
-        setShowEplDetailsForm
+        setShowEplDetailsForm,
+        action,
+        setAction
     }
 }>
     {children}

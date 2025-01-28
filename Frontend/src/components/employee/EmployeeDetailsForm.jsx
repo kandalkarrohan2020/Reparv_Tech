@@ -1,13 +1,15 @@
 import React from 'react';
 import { useAuth } from '../../store/auth';
+import CurrentDate from '../CurrentDate';
 
-const EmployeeDetailsForm = () => {
+const EmployeeDetailsForm = ({label, handleMethod}) => {
   const {setShowEplDetailsForm} = useAuth();
   return (
     <div className="enquirers w-[1088px] h-[600px] fixed top-[120px] l-[60px]">
       <div className="w-[1088px] h-[600px] bg-white p-6 border border-[#cfcfcf33] rounded-lg">
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold">Employee Details</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-[16px] font-semibold">Employee Details</h2>
+          <CurrentDate/>
         </div>
         <form className="grid gap-4 grid-cols-3">
           <div className='w-full m-2 md:w-[325px] h-[76px]'>
@@ -96,9 +98,10 @@ const EmployeeDetailsForm = () => {
             Cancel
           </button>
           <button
+            onClick={handleMethod}
             className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
           >
-            Save Details
+            {label}
           </button>
         </div>
       </div>

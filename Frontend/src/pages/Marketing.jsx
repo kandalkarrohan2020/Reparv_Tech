@@ -1,8 +1,11 @@
 import React from 'react'
 
+
 function Marketing() {
   return (
-    <div>Marketing</div>
+    <div>
+    
+    </div>
   )
 }
 

@@ -1,8 +1,8 @@
 import React from 'react'
-
+import CustomDateRangePicker from '../components/CustomDateRangePicker'
 function RawMaterials() {
   return (
-    <div>Rawmaterials</div>
+    <CustomDateRangePicker/>
   )
 }
 

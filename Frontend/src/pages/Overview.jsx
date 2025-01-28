@@ -1,7 +1,5 @@
 import React from "react";
 import { FaRupeeSign } from "react-icons/fa";
-import { FaAngleLeft } from "react-icons/fa6";
-import { FaAngleRight } from "react-icons/fa6";
 import { CiSearch } from "react-icons/ci";
 import cityIcon from "../assets/overview/cityIcon.svg";
 import downArrow from "../assets/overview/downArrow.svg";
@@ -12,6 +10,8 @@ import card3 from "../assets/overview/card3.svg";
 import card4 from "../assets/overview/card4.svg";
 import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import Paging from "../components/Paging";
+
 
 function Overview() {
   const navigate = useNavigate();
@@ -185,15 +185,7 @@ function Overview() {
         </table>
       </div>
 
-      <div className="overview-footer w-[1136px] h-[52px] flex items-center justify-end gap-2 my-[10px] p-[10px] text-xs font-medium">
-        <div className="left-button w-[24px] h-[20px] flex items-center justify-center border border-[#0000001A] rounded-[6px] cursor-pointer">
-          <FaAngleLeft />
-        </div>
-        <p>1/10</p>
-        <div className="right-button w-[24px] h-[20px] flex items-center justify-center border border-[#0000001A] rounded-[6px] cursor-pointer">
-          <FaAngleRight />
-        </div>
-      </div>
+      <Paging totalPages={10} />
     </div>
   );
 }

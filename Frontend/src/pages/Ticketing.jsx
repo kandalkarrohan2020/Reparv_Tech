@@ -1,12 +1,11 @@
 import React from "react";
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { CiSearch } from "react-icons/ci";
 import calender from "../assets/overview/calender.svg";
 import { HiMiniFunnel } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import ActionSelect from "../components/employee/ActionSelect";
-
+import Paging from "../components/Paging";
 
 const Enquirers = () => {
   const data = [
@@ -146,15 +145,7 @@ const Enquirers = () => {
         </table>
       </div>
 
-      <div className="enquirers-footer w-[1136px] h-[52px] flex items-center justify-end gap-2 my-[10px] p-[10px] text-xs font-medium">
-        <div className="left-button w-[24px] h-[20px] flex items-center justify-center border border-[#0000001A] rounded-[6px] cursor-pointer">
-          <FaAngleLeft />
-        </div>
-        <p>1/10</p>
-        <div className="right-button w-[24px] h-[20px] flex items-center justify-center border border-[#0000001A] rounded-[6px] cursor-pointer">
-          <FaAngleRight />
-        </div>
-      </div>
+      <Paging totalPages={10} />
     </div>
   );
 };

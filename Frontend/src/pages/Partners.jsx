@@ -1,8 +1,9 @@
 import React from 'react'
+import CustomDateRangePicker from '../components/CustomDateRangePicker'
 
 function Partners() {
   return (
-    <div>Partners</div>
+    <div></div>
   )
 }
 

@@ -3,11 +3,9 @@ import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { CiSearch } from "react-icons/ci";
 import calender from "../assets/overview/calender.svg";
 import { HiMiniFunnel } from "react-icons/hi2";
-import { IoMdEye } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
-import { FaEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+import ActionSelect from "../components/employee/ActionSelect";
 
 const Customers = () => {
   const data = [
@@ -139,7 +137,6 @@ const Customers = () => {
                 "Assigned Person",
                 "Decision Time",
                 "Status",
-                "View Details",
                 "Actions",
               ].map((header, index) => (
                 <th
@@ -175,18 +172,8 @@ const Customers = () => {
                 <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
                   {row.status}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
-                  <Link to={row.viewDetails}>
-                    <IoMdEye className="text-[24px] text-[#007AFF] " />
-                  </Link>
-                </td>
-                <td className="p-[15px] text-sm flex flex-row items-center justify-start gap-4 font-normal text-black bg-[#0000000A]">
-                  <p className="w-6 h-6 p-1 flex items-center justify-center rounded-md bg-white">
-                    <FaEdit className="w-4 h-4 text-[#ff9b29]" />
-                  </p>
-                  <p className="w-6 h-6 p-1 flex items-center justify-center rounded-md bg-white">
-                    <MdDelete className="w-4 h-4 text-[#FF4646]" />
-                  </p>
+                <td className="p-[8px] text-sm font-normal text-black bg-[#0000000A]">
+                  <ActionSelect/>
                 </td>
               </tr>
             ))}

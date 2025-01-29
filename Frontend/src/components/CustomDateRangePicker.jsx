@@ -35,8 +35,8 @@ const formatDate = (date) => {
 const CustomDateRangePicker = () => {
   const [range, setRange] = useState([
     {
-      startDate: new Date(),
-      endDate: new Date(),
+      startDate: null,
+      endDate: null,
       key: "selection",
     },
   ]);
@@ -59,14 +59,16 @@ const CustomDateRangePicker = () => {
           className="date-selector min-w-[187px] h-[36px] flex items-center justify-between gap-2 border border-[#0000001A] rounded-[8px] py-2 px-3 text-sm text-black font-semibold cursor-pointer"
         >
           <p>
-            {formatDate(range[0].startDate)} - {formatDate(range[0].endDate)}
+            {range[0].startDate && range[0].endDate
+              ? `${formatDate(range[0].startDate)} - ${formatDate(range[0].endDate)}`
+              : "Select Date Range"}
           </p>
           <img src={calender} alt="" />
         </button>
 
         {/* Dropdown Calendar */}
         {isOpen && (
-          <div className="absolute top-[50px] left-[-549px] bg-white shadow-[#00000040] border-[2px] border-white rounded-lg overflow-hidden w-[800px] z-10">
+          <div className="absolute top-[51px] right-[-25px] bg-white shadow-[#00000040] border-[2px] border-white rounded-lg overflow-hidden w-[800px] z-10">
             {/* Body */}
             <div className="flex">
               {/* Shortcuts Menu */}
@@ -114,7 +116,7 @@ const CustomDateRangePicker = () => {
             <div className="flex items-center justify-end gap-6 p-3 border-t bg-white">
               <button
                 className="px-3 py-1 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100"
-                onClick={() => setIsOpen(false)}
+                onClick={() => {setIsOpen(false),range[0].startDate=null,range[0].endDate=null}}
               >
                 Cancel
               </button>

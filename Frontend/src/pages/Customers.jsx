@@ -8,8 +8,10 @@ import { FaUserCircle } from "react-icons/fa";
 import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
+import { useAuth } from "../store/auth";
 
 const Customers = () => {
+  const { setShowProfile } = useAuth();
   const data = [
     {
       name: "Name 1",
@@ -168,8 +170,26 @@ const Customers = () => {
                 <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
                   {row.decisionTime}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
-                  {row.status}
+                <td
+                  className={`p-[15px] text-sm font-normal text-black bg-[#0000000A] `}
+                >
+                  <p
+                    className={`text-center rounded-3xl p-1 ${
+                      row.status === "Received"
+                        ? "bg-[#EAFBF1] text-[#0BB501]"
+                        : row.status === "Visit Scheduled"
+                        ? "bg-[#E9F2FF] text-[#0068FF]"
+                        : row.status === "Token"
+                        ? "bg-[#FFF8DD] text-[#FFCA00]"
+                        : row.status === "Cancelled"
+                        ? "bg-[#FFEAEA] text-[#ff2323]"
+                        : row.status === "Ongoing"
+                        ? "bg-[#F4F0FB] text-[#5D00FF]"
+                        : "bg-[#E8E9EA] text-[#7E7E7E]"
+                    }`}
+                  >
+                    {row.status}
+                  </p>
                 </td>
                 <td className="p-[8px] text-sm font-normal text-black bg-[#0000000A]">
                   <ActionSelect/>

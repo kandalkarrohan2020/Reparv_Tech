@@ -8,6 +8,7 @@ import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import { useAuth } from "../store/auth";
+import FilterData from "../components/FilterData";
 
 const Enquirers = () => {
   const { setShowProfile } = useAuth();
@@ -72,7 +73,7 @@ const Enquirers = () => {
       budget: "₹75,000",
       city: "City 7",
       decisionTime: "3 Weeks",
-      status: "Visit Scheduled",
+      status: "Visit Rescheduled",
       viewDetails: "",
     },
     {
@@ -93,7 +94,12 @@ const Enquirers = () => {
           Enquirers
         </div>
         <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">
-          <FaUserCircle onClick={()=>{setShowProfile("true")}} className="w-8 h-8 text-[#076300]" />
+          <FaUserCircle
+            onClick={() => {
+              setShowProfile("true");
+            }}
+            className="w-8 h-8 text-[#076300]"
+          />
           <div className="logoutBtn w-[79px] h-[28px] flex gap-6 items-center justify-center border-[1px] border-[#FF4646] rounded-[8px] text-[#FF4646] text-[16px]">
             <p>Logout</p>
           </div>
@@ -111,10 +117,8 @@ const Enquirers = () => {
           </div>
           <div className="rightTableHead min-w-[244px] h-[36px] flex justify-between items-center">
             <div className="min-w-[244px] h-[36px] flex gap-6 items-center justify-between">
-              <div className="city-selector w-[40px] h-[32px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000] cursor-pointer">
-                <HiMiniFunnel />
-              </div>
-              <CustomDateRangePicker/>          
+              <FilterData />
+              <CustomDateRangePicker />
             </div>
           </div>
         </div>
@@ -157,13 +161,30 @@ const Enquirers = () => {
                 <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
                   {row.decisionTime}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
-                  {row.status}
+                <td
+                  className={`p-[15px] text-sm font-normal text-black bg-[#0000000A] `}
+                >
+                  <p
+                    className={`text-center rounded-3xl p-1 ${
+                      row.status === "Received"
+                        ? "bg-[#EAFBF1] text-[#0BB501]"
+                        : row.status === "Visit Scheduled"
+                        ? "bg-[#E9F2FF] text-[#0068FF]"
+                        : row.status === "Token"
+                        ? "bg-[#FFF8DD] text-[#FFCA00]"
+                        : row.status === "Cancelled"
+                        ? "bg-[#FFEAEA] text-[#ff2323]"
+                        : row.status === "Ongoing"
+                        ? "bg-[#F4F0FB] text-[#5D00FF]"
+                        : "bg-[#E8E9EA] text-[#7E7E7E]"
+                    }`}
+                  >
+                    {row.status}
+                  </p>
                 </td>
                 <td className="p-[8px] text-sm font-normal text-black bg-[#0000000A]">
-                  <ActionSelect/>
+                  <ActionSelect />
                 </td>
-                
               </tr>
             ))}
           </tbody>

@@ -17,7 +17,7 @@ const shortcutsItems = [
   },
   {
     label: "This year",
-    getValue: () => [new Date(new Date().getFullYear(), 0, 1), new Date()],
+    getValue: () => [new Date(new Date().getFullYear(), 0, 1), new Date(new Date().getFullYear(), 11, 31, 23, 59, 59)],
   },
   {
     label: "Set up",

@@ -2,8 +2,11 @@ import React from "react";
 import { FaUserCircle } from "react-icons/fa";
 import map from "../assets/map.png"
 import CitySelector from "../components/CitySelector";
+import { useAuth } from "../store/auth";
 
 const Map = () => {
+  const { setShowProfile } = useAuth();
+  
   return (
     <div className="map w-[1168px] h-[744px] pt-10 px-4 flex flex-col items-start justify-start bg-white ">
       <div className="map-heading w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
@@ -11,7 +14,7 @@ const Map = () => {
           Map
         </div>
         <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">
-          <FaUserCircle className="w-8 h-8 text-[#076300]" />
+          <FaUserCircle onClick={()=>{setShowProfile("true")}} className="w-8 h-8 text-[#076300]" />
           <div className="logoutBtn w-[79px] h-[28px] flex gap-6 items-center justify-center border-[1px] border-[#FF4646] rounded-[8px] text-[#FF4646] text-[16px]">
             <p>Logout</p>
           </div>

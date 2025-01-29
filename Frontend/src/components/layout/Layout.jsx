@@ -14,10 +14,13 @@ import marketingIcon from "../../assets/layout/marketingIcon.svg";
 import { Outlet } from 'react-router-dom';
 import { IoMenu } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
+import Profile from '../Profile';
+import { useAuth } from '../../store/auth';
 
 function Layout() {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const {showProfile, setShowProfile} = useAuth();
 
   const getNavLinkClass = (path) => {
     return location.pathname === path
@@ -85,6 +88,7 @@ function Layout() {
       >
         <Outlet />
       </div>
+      {showProfile&&<Profile/>}
     </div>
   );
 }

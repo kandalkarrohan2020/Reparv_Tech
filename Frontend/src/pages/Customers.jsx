@@ -100,7 +100,7 @@ const Customers = () => {
           Enquirers
         </div>
         <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">
-          <FaUserCircle className="w-8 h-8 text-[#076300]" />
+          <FaUserCircle onClick={()=>{setShowProfile("true")}} className="w-8 h-8 text-[#076300]" />
           <div className="logoutBtn w-[79px] h-[28px] flex gap-6 items-center justify-center border-[1px] border-[#FF4646] rounded-[8px] text-[#FF4646] text-[16px]">
             <p>Logout</p>
           </div>

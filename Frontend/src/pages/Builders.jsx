@@ -6,15 +6,17 @@ import { HiMiniFunnel } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa6";
 import { FaUserCircle } from "react-icons/fa";
-import EmployeeDetailsForm from "../components/employee/EmployeeDetailsForm";
+import BuilderForm from "../components/partners/BuilderForm";
 import { useAuth } from "../store/auth";
 import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 
 const Builders = () => {
-  const {showEplDetailsForm,setShowEplDetailsForm, action,setShowProfile} = useAuth();
-  
+  const {showBuilderForm,setShowBuilderForm, action} = useAuth();
+  const func = () => {
+    console.log("add");
+  }
   const data = [
     {
       name: "Name 1",
@@ -84,7 +86,7 @@ const Builders = () => {
 
   return (
     <div className={`builders`}>
-      {!showEplDetailsForm?
+      {!showBuilderForm?
       <>
       <div className="builder-table w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
         <div className="searchBarContainer w-[1088px] h-[36px] flex align-center justify-between">
@@ -103,7 +105,7 @@ const Builders = () => {
               </div>
               <CustomDateRangePicker/>
             </div>
-            <div onClick={()=>{setShowEplDetailsForm(true)}} className="addEmployeeButton m-5 cursor-pointer w-[192px] h-[36px] flex items-center justify-center gap-3 border border-[#00000033] rounded-[8px] bg-[#0BB501] font-semibold text-4 leading-5 text-[#FFFFFF] active:scale-[0.98]">
+            <div onClick={()=>{setShowBuilderForm(true)}} className="addEmployeeButton m-5 cursor-pointer w-[192px] h-[36px] flex items-center justify-center gap-3 border border-[#00000033] rounded-[8px] bg-[#0BB501] font-semibold text-4 leading-5 text-[#FFFFFF] active:scale-[0.98]">
               <FaPlus className="text-[20px]" />
               <p>Add Employee</p>
             </div>
@@ -148,7 +150,7 @@ const Builders = () => {
                   {row.city}
                 </td>
                 <td className="p-[8px] text-sm flex flex-row items-center justify-start gap-4 font-normal text-black bg-[#0000000A]">
-                 <ActionSelect/>
+                 <ActionSelect func={setShowBuilderForm}/>
                 </td>
               </tr>
             ))}
@@ -159,7 +161,7 @@ const Builders = () => {
       <Paging totalPages={10} />
       </>
       :
-     <EmployeeDetailsForm label={action} handleMethod={""}/>
+     <BuilderForm label={action} handleMethod={func}/>
      }
     </div>
   

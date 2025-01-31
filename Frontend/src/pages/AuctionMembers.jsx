@@ -6,15 +6,17 @@ import { HiMiniFunnel } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa6";
 import { FaUserCircle } from "react-icons/fa";
-import EmployeeDetailsForm from "../components/employee/EmployeeDetailsForm";
+import AuctionForm from "../components/partners/AuctionForm";
 import { useAuth } from "../store/auth";
 import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 
 const AuctionMembers = () => {
-  const {showEplDetailsForm,setShowEplDetailsForm, action,setShowProfile} = useAuth();
-  
+  const {showAuctionForm,setShowAuctionForm, action,} = useAuth();
+  const func = () => {
+    console.log("add");
+  }
   const data = [
     {
       name: "Name 1",
@@ -84,7 +86,7 @@ const AuctionMembers = () => {
 
   return (
     <div className={`auction`}>
-      {!showEplDetailsForm?
+      {!showAuctionForm?
       <>
       <div className="auction-table w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
         <div className="searchBarContainer w-[1088px] h-[36px] flex align-center justify-between">
@@ -103,7 +105,7 @@ const AuctionMembers = () => {
               </div>
               <CustomDateRangePicker/>
             </div>
-            <div onClick={()=>{setShowEplDetailsForm(true)}} className="addEmployeeButton m-5 cursor-pointer w-[192px] h-[36px] flex items-center justify-center gap-3 border border-[#00000033] rounded-[8px] bg-[#0BB501] font-semibold text-4 leading-5 text-[#FFFFFF] active:scale-[0.98]">
+            <div onClick={()=>{setShowAuctionForm(true)}} className="addEmployeeButton m-5 cursor-pointer w-[192px] h-[36px] flex items-center justify-center gap-3 border border-[#00000033] rounded-[8px] bg-[#0BB501] font-semibold text-4 leading-5 text-[#FFFFFF] active:scale-[0.98]">
               <FaPlus className="text-[20px]" />
               <p>Add Employee</p>
             </div>
@@ -148,7 +150,7 @@ const AuctionMembers = () => {
                   {row.city}
                 </td>
                 <td className="p-[8px] text-sm flex flex-row items-center justify-start gap-4 font-normal text-black bg-[#0000000A]">
-                 <ActionSelect/>
+                 <ActionSelect func={setShowAuctionForm}/>
                 </td>
               </tr>
             ))}
@@ -159,7 +161,7 @@ const AuctionMembers = () => {
       <Paging totalPages={10} />
       </>
       :
-     <EmployeeDetailsForm label={action} handleMethod={""}/>
+     <AuctionForm label={action} handleMethod={func}/>
      }
     </div>
   

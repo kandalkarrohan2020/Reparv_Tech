@@ -159,7 +159,7 @@ const Employee = () => {
                   {row.position}
                 </td>
                 <td className="p-[8px] text-sm flex flex-row items-center justify-start gap-4 font-normal text-black bg-[#0000000A]">
-                 <ActionSelect/>
+                 <ActionSelect func={setShowEplDetailsForm}/>
                 </td>
               </tr>
             ))}

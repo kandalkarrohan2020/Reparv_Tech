@@ -16,12 +16,12 @@ import SalesPerson from "./SalesPerson";
 import AuctionMembers from "./AuctionMembers";
 
 const Partners = () => {
-  const {showEplDetailsForm,setShowEplDetailsForm, action,setShowProfile} = useAuth();
+  const {showEplDetailsForm,setShowEplDetailsForm, action,setShowProfile, showBuilderForm, showSalesForm,showAuctionForm} = useAuth();
   const [ isActive, setIsActive ] = useState("Builders");
 
   return (
     <div className={`partners w-[1168px] h-[744px] pt-10 px-4 flex flex-col items-start justify-start`}>
-      <div className="partner-heading w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
+      <div className={`partner-heading w-[1136px] h-[36px] flex justify-between text-lg font-semibold ${showBuilderForm === true || showSalesForm === true || showAuctionForm === true ? "hidden":"block"}`}>
         <div className="left-heading flex items-center text-[16px] leading-[19.36px] text-black">
           <div className="swipeButton h-[28px] flex items-center justify-center text-black text-sm cursor-pointer">
             <div onClick={()=>{setIsActive("Builders")}} className={`builderBtn px-3 py-1 border-[1.5px] rounded-tl-lg rounded-bl-lg border-[#4faa48] ${isActive === "Builders"?"text-[#076300] bg-[#E3FFDF] ":"bg-white"}`} >

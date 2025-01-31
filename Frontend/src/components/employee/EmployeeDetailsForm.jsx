@@ -5,7 +5,7 @@ import CurrentDate from '../CurrentDate';
 const EmployeeDetailsForm = ({label, handleMethod}) => {
   const {setShowEplDetailsForm} = useAuth();
   return (
-    <div className="enquirers w-[1088px] h-[600px] fixed top-[120px] l-[60px]">
+    <div className="employee w-[1088px] h-[600px] fixed ">
       <div className="w-[1088px] h-[600px] bg-white p-6 border border-[#cfcfcf33] rounded-lg">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-[16px] font-semibold">Employee Details</h2>

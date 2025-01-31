@@ -2,29 +2,29 @@ import React, { useState } from "react";
 import { FiMoreVertical } from "react-icons/fi";
 import { useAuth } from "../../store/auth";
 
-const ActionSelect = () => {
+const ActionSelect = ({func}) => {
   const [selectedAction, setSelectedAction] = useState("");
   const {setShowEplDetailsForm, setAction} = useAuth();
   const handleAction = (action) => {
     switch (action) {
       case "view":
-        setShowEplDetailsForm(true);
+        func(true);
         setAction("Save Details");
         
         break;
       case "update":
-        setShowEplDetailsForm(true);
+        func(true);
         setAction("Edit Details");
         
         
         break;
       case "delete":
-        setShowEplDetailsForm(true);
+        func(true);
         setAction("Delete");
         
         break;
       default:
-        setShowEplDetailsForm(true);
+        func(true);
     }
   };
 

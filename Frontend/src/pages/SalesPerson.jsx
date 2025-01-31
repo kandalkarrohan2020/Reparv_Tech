@@ -6,18 +6,20 @@ import { HiMiniFunnel } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa6";
 import { FaUserCircle } from "react-icons/fa";
-import EmployeeDetailsForm from "../components/employee/EmployeeDetailsForm";
 import { useAuth } from "../store/auth";
 import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
+import SalesForm from "../components/partners/SalesForm";
 
 const SalesPerson = () => {
-  const {showEplDetailsForm,setShowEplDetailsForm, action,setShowProfile} = useAuth();
-  
+  const {showSalesForm,setShowSalesForm, action} = useAuth();
+  const func = () => {
+    console.log("add");
+  }
   const data = [
     {
-      name: "Sales 1",
+      name: "Name 1",
       employeeId: "A:MO28",
       contactNumber: "1234567890",
       mail: "abc@gmail.com",
@@ -83,8 +85,8 @@ const SalesPerson = () => {
   ];
 
   return (
-    <div className={`sales`}>
-      {!showEplDetailsForm?
+    <div className={`builders`}>
+      {!showSalesForm?
       <>
       <div className="sales-table w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
         <div className="searchBarContainer w-[1088px] h-[36px] flex align-center justify-between">
@@ -92,18 +94,18 @@ const SalesPerson = () => {
             <CiSearch />
             <input
               type="text"
-              placeholder="Search Sales Person"
+              placeholder="Search Builder"
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
             />
           </div>
           <div className="rightTableHead min-w-[467px] h-[36px] flex justify-between items-center">
             <div className="min-w-[251px] h-[36px] flex gap-6 items-center justify-between">
-              <div className="filter-selector w-[40px] h-[32px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000] cursor-pointer">
+              <div className="city-selector w-[40px] h-[32px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000] cursor-pointer">
                 <HiMiniFunnel />
               </div>
               <CustomDateRangePicker/>
             </div>
-            <div onClick={()=>{setShowEplDetailsForm(true)}} className="addEmployeeButton m-5 cursor-pointer w-[192px] h-[36px] flex items-center justify-center gap-3 border border-[#00000033] rounded-[8px] bg-[#0BB501] font-semibold text-4 leading-5 text-[#FFFFFF] active:scale-[0.98]">
+            <div onClick={()=>{setShowSalesForm(true)}} className="addEmployeeButton m-5 cursor-pointer w-[192px] h-[36px] flex items-center justify-center gap-3 border border-[#00000033] rounded-[8px] bg-[#0BB501] font-semibold text-4 leading-5 text-[#FFFFFF] active:scale-[0.98]">
               <FaPlus className="text-[20px]" />
               <p>Add Employee</p>
             </div>
@@ -148,7 +150,7 @@ const SalesPerson = () => {
                   {row.city}
                 </td>
                 <td className="p-[8px] text-sm flex flex-row items-center justify-start gap-4 font-normal text-black bg-[#0000000A]">
-                 <ActionSelect/>
+                 <ActionSelect func={setShowSalesForm}/>
                 </td>
               </tr>
             ))}
@@ -159,7 +161,7 @@ const SalesPerson = () => {
       <Paging totalPages={10} />
       </>
       :
-     <EmployeeDetailsForm label={action} handleMethod={""}/>
+     <SalesForm label={action} handleMethod={func}/>
      }
     </div>
   

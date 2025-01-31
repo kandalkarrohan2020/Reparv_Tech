@@ -94,7 +94,7 @@ const SalesPerson = () => {
             <CiSearch />
             <input
               type="text"
-              placeholder="Search Builder"
+              placeholder="Search Sales Person"
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
             />
           </div>

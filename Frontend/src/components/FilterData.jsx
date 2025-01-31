@@ -3,11 +3,11 @@ import { HiMiniFunnel } from "react-icons/hi2";
 
 const filterOptions = [
   { label: "Received", color: "text-[#0BB501] bg-green-100" },
-  { label: "Visit Schedule", color: "text-[#0068FF] bg-blue-100" },
+  { label: "Visit Scheduled", color: "text-[#0068FF] bg-blue-100" },
   { label: "Token", color: "text-[#FFCA00] bg-yellow-100" },
   { label: "Ongoing", color: "text-[#5D00FF] bg-purple-100" },
   { label: "Cancelled", color: "text-[#FF4646] bg-red-100 " },
-  { label: "Visit Reschedule", color: "text-[#7E7E7E] bg-[#E8E9EA]" },
+  { label: "Visit Rescheduled", color: "text-[#7E7E7E] bg-[#E8E9EA]" },
 ];
 
 const FilterData = () => {
@@ -28,10 +28,23 @@ const FilterData = () => {
     <div className="relative">
       {/* Filter Button */}
       <div
-        className="city-selector w-[40px] h-[32px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000] cursor-pointer"
+        className={`min-w-[40px] h-[32px] ${selectedFilter&&"h-[36px]"} items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm cursor-pointer ${
+          selectedFilter === "Received"
+            ? "bg-[#EAFBF1] text-[#0BB501]"
+            : selectedFilter === "Visit Scheduled"
+            ? "bg-[#E9F2FF] text-[#0068FF]"
+            : selectedFilter === "Token"
+            ? "bg-[#FFF8DD] text-[#FFCA00]"
+            : selectedFilter === "Cancelled"
+            ? "bg-[#FFEAEA] text-[#ff2323]"
+            : selectedFilter === "Ongoing"
+            ? "bg-[#F4F0FB] text-[#5D00FF]"
+            : selectedFilter === "Visit Rescheduled"
+            ? "bg-[#E8E9EA] text-[#7E7E7E]"
+            : "text-[#000000]"}`}
         onClick={toggleDropdown}
       >
-        <HiMiniFunnel />
+        {selectedFilter?<div className={`flex gap-2 items-center justify-center leading-[20px] text-sm font-semibold `}><HiMiniFunnel className="text-black"/> {selectedFilter}</div>:<HiMiniFunnel />}
       </div>
 
       {/* Dropdown */}

@@ -9,6 +9,7 @@ import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import { useAuth } from "../store/auth";
+import FilterData from "../components/FilterData";
 
 const Customers = () => {
   const { setShowProfile } = useAuth();
@@ -120,9 +121,7 @@ const Customers = () => {
           </div>
           <div className="rightTableHead min-w-[244px] h-[36px] flex justify-between items-center">
             <div className="min-w-[244px] h-[36px] flex gap-6 items-center justify-between">
-              <div className="city-selector w-[40px] h-[32px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000] cursor-pointer">
-                <HiMiniFunnel />
-              </div>
+              <FilterData/>
               <CustomDateRangePicker/>
             </div>
           </div>

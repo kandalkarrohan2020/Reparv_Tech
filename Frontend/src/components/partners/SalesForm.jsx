@@ -5,13 +5,13 @@ import { useAuth } from "../../store/auth";
 const SalesForm = ({ label, handleMethod }) => {
     const { setShowSalesForm } = useAuth();
   return ( 
-    <div className="sales-form w-[1088px] h-[600px] fixed">
-      <div className="w-[1088px] h-[600px] bg-white p-6 border border-[#cfcfcf33] rounded-lg">
+    <div className="sales-form w-[360px] h-[700px] overflow-auto md:w-[900px] md:h-[650px] fixed">
+      <div className=" w-[360px] h-[1200px] md:w-[900px] md:h-[630px] bg-white p-6 border border-[#cfcfcf33] rounded-lg">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-[16px] font-semibold">Sales Person</h2>
-          <CurrentDate />
+          <div className="hidden md:block"><CurrentDate className="hidden"/></div>
         </div>
-        <form className="grid gap-4 grid-cols-3">
+        <form className="grid gap-6 md:gap-4 grid-cols-1 md:grid-cols-2">
           <div className="w-full ">
             <label className="block text-sm leading-4 text-[#00000066] font-medium">
               Full Name
@@ -130,7 +130,7 @@ const SalesForm = ({ label, handleMethod }) => {
             </div>
           </div>
         </form>
-        <div className="flex flex-col mt-4 space-y-4 md:space-y-0 md:space-x-4 md:flex-row md:justify-end">
+        <div className="flex flex-col mt-6 space-y-4 md:space-y-0 md:space-x-4 md:flex-row md:justify-end">
           <button
             onClick={() => {
               setShowSalesForm(false);

@@ -5,13 +5,13 @@ import { useAuth } from "../../store/auth";
 const BuilderForm = ({ label, handleMethod }) => {
     const { setShowBuilderForm } = useAuth();
   return ( 
-    <div className="builder-form w-[1088px] h-[600px] fixed">
-      <div className="w-[1088px] h-[600px] bg-white p-6 border border-[#cfcfcf33] rounded-lg">
+    <div className="builder-form w-[360px] h-[700px] overflow-auto md:w-[900px] md:h-[650px] fixed">
+      <div className="w-[360px] h-[700px] overflow-auto md:w-[900px] md:h-[650px] bg-white p-6 border border-[#cfcfcf33] rounded-lg">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-[16px] font-semibold">Builders</h2>
-          <CurrentDate />
+          <div className="md:block hidden"><CurrentDate /></div>
         </div>
-        <form className="grid gap-4 grid-cols-3">
+        <form className="grid gap-4 grid-cols-1 md:grid-cols-2">
           <div className="w-full ">
             <label className="block text-sm leading-4 text-[#00000066] font-medium">
               Project Name

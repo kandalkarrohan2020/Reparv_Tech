@@ -11,6 +11,7 @@ import { useAuth } from "../store/auth";
 import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
+import AddButton from "../components/AddButton";
 
 const AuctionMembers = () => {
   const {showAuctionForm,setShowAuctionForm, action,} = useAuth();
@@ -105,10 +106,7 @@ const AuctionMembers = () => {
               </div>
               <CustomDateRangePicker/>
             </div>
-            <div onClick={()=>{setShowAuctionForm(true)}} className="addEmployeeButton m-5 cursor-pointer w-[192px] h-[36px] flex items-center justify-center gap-3 border border-[#00000033] rounded-[8px] bg-[#0BB501] font-semibold text-4 leading-5 text-[#FFFFFF] active:scale-[0.98]">
-              <FaPlus className="text-[20px]" />
-              <p>Add Employee</p>
-            </div>
+            <AddButton label={"Add Auction Member"} func={setShowAuctionForm}/>
           </div>
         </div>
         <div className="overflow-scroll">

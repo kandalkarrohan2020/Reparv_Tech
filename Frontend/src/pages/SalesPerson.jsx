@@ -11,6 +11,7 @@ import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import SalesForm from "../components/partners/SalesForm";
+import AddButton from "../components/AddButton";
 
 const SalesPerson = () => {
   const {showSalesForm,setShowSalesForm, action} = useAuth();
@@ -105,10 +106,7 @@ const SalesPerson = () => {
               </div>
               <CustomDateRangePicker/>
             </div>
-            <div onClick={()=>{setShowSalesForm(true)}} className="addEmployeeButton m-5 cursor-pointer w-[192px] h-[36px] flex items-center justify-center gap-3 border border-[#00000033] rounded-[8px] bg-[#0BB501] font-semibold text-4 leading-5 text-[#FFFFFF] active:scale-[0.98]">
-              <FaPlus className="text-[20px]" />
-              <p>Add Employee</p>
-            </div>
+            <AddButton label={"Add Sales Person"} func={setShowSalesForm}/>
           </div>
         </div>
         <table className="sales-table w-[1088px] h-[343px] overflow-hidden rounded-[16px]">

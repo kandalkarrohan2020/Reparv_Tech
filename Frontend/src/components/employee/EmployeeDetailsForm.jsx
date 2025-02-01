@@ -5,14 +5,14 @@ import CurrentDate from '../CurrentDate';
 const EmployeeDetailsForm = ({label, handleMethod}) => {
   const {setShowEplDetailsForm} = useAuth();
   return (
-    <div className="employee w-[1088px] h-[600px] fixed ">
-      <div className="w-[1088px] h-[600px] bg-white p-6 border border-[#cfcfcf33] rounded-lg">
+    <div className="employee w-[360px] h-[700px] overflow-auto md:w-[900px] md:h-[650px] fixed">
+      <div className=" w-[360px] h-[700px] md:w-[900px] md:h-[650px] bg-white p-6 border border-[#cfcfcf33] rounded-lg">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-[16px] font-semibold">Employee Details</h2>
-          <CurrentDate/>
+          <div className='hidden md:block'><CurrentDate/></div>
         </div>
-        <form className="grid gap-4 grid-cols-3">
-          <div className='w-full m-2 md:w-[325px] h-[76px]'>
+        <form className="grid gap-4 grid-cols-1 md:grid-cols-2">
+          <div className='w-full'>
             <label className="block text-sm leading-4 text-[#00000066] font-medium">First Name</label>
             <input
               type="text"
@@ -20,7 +20,7 @@ const EmployeeDetailsForm = ({label, handleMethod}) => {
               className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className='w-full m-2 md:w-[325px] h-[76px]'>
+          <div className='w-full'>
             <label className="block text-sm leading-4 text-[#00000066] font-medium">Last Name</label>
             <input
               type="text"
@@ -28,7 +28,7 @@ const EmployeeDetailsForm = ({label, handleMethod}) => {
               className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className='w-full m-2 md:w-[325px] h-[76px]'>
+          <div className='w-full '>
             <label className="block text-sm leading-4 text-[#00000066] font-medium">Contact Number</label>
             <input
               type="text"
@@ -36,7 +36,7 @@ const EmployeeDetailsForm = ({label, handleMethod}) => {
               className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className='w-full m-2 md:w-[325px] h-[76px]'>
+          <div className='w-full'>
             <label className="block text-sm leading-4 text-[#00000066] font-medium">Mail</label>
             <input
               type="email"
@@ -44,7 +44,7 @@ const EmployeeDetailsForm = ({label, handleMethod}) => {
               className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className='w-full m-2 md:w-[325px] h-[76px] md:col-span-2'>
+          <div className='w-full'>
             <label className="block text-sm leading-4 text-[#00000066] font-medium">Address</label>
             <input
               type="text"
@@ -52,14 +52,14 @@ const EmployeeDetailsForm = ({label, handleMethod}) => {
               className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className='w-full m-2  md:w-[325px] h-[76px]'>
+          <div className='w-full '>
             <label className="block text-sm leading-4 text-[#00000066] font-medium">Date of Birth</label>
             <input
               type="date"
               className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className='w-full m-2 md:w-[325px] h-[76px]'>
+          <div className='w-full '>
             <label className="block text-sm leading-4 text-[#00000066] font-medium">Department</label>
             <input
               type="text"
@@ -67,7 +67,7 @@ const EmployeeDetailsForm = ({label, handleMethod}) => {
               className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className='w-full m-2 md:w-[325px] h-[76px]'>
+          <div className='w-full'>
             <label className="block text-sm leading-4 text-[#00000066] font-medium">Position</label>
             <input
               type="text"
@@ -75,7 +75,7 @@ const EmployeeDetailsForm = ({label, handleMethod}) => {
               className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className='w-full m-2 md:w-[325px] h-[76px]'>
+          <div className='w-full '>
             <label className="block text-sm leading-4 text-[#00000066] font-medium">Salary</label>
             <input
               type="text"
@@ -83,7 +83,7 @@ const EmployeeDetailsForm = ({label, handleMethod}) => {
               className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className='w-full m-2 md:w-[325px] h-[76px]'>
+          <div className='w-full '>
             <label className="block text-sm leading-4 text-[#00000066] font-medium">Date of Joining</label>
             <input
               type="date"

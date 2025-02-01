@@ -102,7 +102,7 @@ const Ticketing = () => {
             </div>
           </div>
         </div>
-        <table className="ticketing-table w-[1088px] h-[343px] overflow-hidden rounded-[16px]">
+        <table className="ticketing-table w-[1088px] h-[343px] rounded-[16px] overflow-hidden">
           <thead>
             <tr>
               {[
@@ -124,19 +124,19 @@ const Ticketing = () => {
           <tbody>
             {data.map((row, index) => (
               <tr key={index}>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.ticketNo}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.dateAndTime}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.issue}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.status}
                 </td>
-                <td className="p-[8px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[8px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   <ActionSelect/>
                 </td>
               </tr>

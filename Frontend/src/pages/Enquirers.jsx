@@ -122,7 +122,7 @@ const Enquirers = () => {
             </div>
           </div>
         </div>
-        <table className="overview-table w-[1088px] h-[343px] overflow-hidden rounded-[16px]">
+        <table className="overview-table w-[1088px] h-[343px] rounded-[16px] overflow-hidden scrollbar-hidden">
           <thead>
             <tr>
               {[
@@ -143,26 +143,26 @@ const Enquirers = () => {
               ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody >
             {data.map((row, index) => (
               <tr key={index}>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.name}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.contactNumber}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.budget}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.city}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.decisionTime}
                 </td>
                 <td
-                  className={`p-[15px] text-sm font-normal text-black bg-[#0000000A] `}
+                  className={`p-[12px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}
                 >
                   <p
                     className={`text-center rounded-3xl p-1 ${
@@ -182,7 +182,7 @@ const Enquirers = () => {
                     {row.status}
                   </p>
                 </td>
-                <td className="p-[8px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[8px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   <ActionSelect />
                 </td>
               </tr>

@@ -143,22 +143,22 @@ const Employee = () => {
           <tbody>
             {data.map((row, index) => (
               <tr key={index}>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.name}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.employeeId}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.contactNumber}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.mail}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.position}
                 </td>
-                <td className="p-[8px] text-sm flex flex-row items-center justify-start gap-4 font-normal text-black bg-[#0000000A]">
+                <td className={`p-[8px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                  <ActionSelect func={setShowEplDetailsForm}/>
                 </td>
               </tr>

@@ -133,8 +133,7 @@ function Overview() {
             </div>
           </div>
         </div>
-
-        <table className="overview-table w-[1088px] h-[343px] overflow-hidden rounded-[16px]">
+        <table className="overview-table overflow-hidden w-[1088px] h-[343px] rounded-[16px]">
           <thead>
             <tr>
               {[
@@ -157,22 +156,22 @@ function Overview() {
           <tbody>
             {data.map((row, index) => (
               <tr key={index}>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.projectName}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.builderName}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.deals}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.dealAmount}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.reparvShare}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.dealSqFt}
                 </td>
               </tr>

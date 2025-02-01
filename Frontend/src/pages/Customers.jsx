@@ -100,7 +100,7 @@ const Customers = () => {
     <div className="customers w-[1168px] h-[744px] pt-10 px-4 flex flex-col items-start justify-start">
       <div className="customers-heading w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
         <div className="left-heading flex items-center text-[16px] leading-[19.36px] text-black">
-          Enquirers
+          Customers
         </div>
         <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">
           <FaUserCircle onClick={()=>{setShowProfile("true")}} className="w-8 h-8 text-[#076300]" />
@@ -151,26 +151,26 @@ const Customers = () => {
           <tbody>
             {data.map((row, index) => (
               <tr key={index}>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.name}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.contactNumber}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.city}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.enquiryDate}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.assignedPerson}
                 </td>
-                <td className="p-[15px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   {row.decisionTime}
                 </td>
                 <td
-                  className={`p-[15px] text-sm font-normal text-black bg-[#0000000A] `}
+                  className={`p-[12px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}
                 >
                   <p
                     className={`text-center rounded-3xl p-1 ${
@@ -190,7 +190,7 @@ const Customers = () => {
                     {row.status}
                   </p>
                 </td>
-                <td className="p-[8px] text-sm font-normal text-black bg-[#0000000A]">
+                <td className={`p-[8px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
                   <ActionSelect/>
                 </td>
               </tr>

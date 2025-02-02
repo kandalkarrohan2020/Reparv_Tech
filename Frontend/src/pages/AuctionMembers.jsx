@@ -83,6 +83,30 @@ const AuctionMembers = () => {
         city: "Nagpur",
         viewDetails: "",
       },
+      {
+        name: "Name 1",
+        employeeId: "A:MO28",
+        contactNumber: "1234567890",
+        mail: "abc@gmail.com",
+        city: "Nagpur",
+        viewDetails: "",
+      },
+      {
+        name: "Name 1",
+        employeeId: "A:MO28",
+        contactNumber: "1234567890",
+        mail: "abc@gmail.com",
+        city: "Nagpur",
+        viewDetails: "",
+      },
+      {
+        name: "Name 1",
+        employeeId: "A:MO28",
+        contactNumber: "1234567890",
+        mail: "abc@gmail.com",
+        city: "Nagpur",
+        viewDetails: "",
+      },
   ];
 
   return (
@@ -109,7 +133,7 @@ const AuctionMembers = () => {
             <AddButton label={"Add Auction Member"} func={setShowAuctionForm}/>
           </div>
         </div>
-        <div className="overflow-scroll">
+        <div className="overflow-y-scroll scrollbar-x-hidden scrollbar-y-custom scrollbar-y-visible">
         <table className="auction-table w-[1088px] h-[343px] rounded-[16px]">
           <thead>
             <tr>

@@ -3,13 +3,15 @@ import CurrentDate from "../CurrentDate";
 import { useAuth } from "../../store/auth";
 
 const AuctionForm = ({ label, handleMethod }) => {
-    const { setShowAuctionForm } = useAuth();
-  return ( 
+  const { setShowAuctionForm } = useAuth();
+  return (
     <div className="auction-form w-[360px] h-[700px] overflow-auto md:w-[900px] md:h-[650px] fixed">
       <div className="w-[360px] h-[700px] overflow-auto md:w-[900px] md:h-[650px] bg-white p-6 border border-[#cfcfcf33] rounded-lg">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-[16px] font-semibold">Auction Member</h2>
-          <div className="hidden md:block"><CurrentDate /></div>
+          <div className="hidden md:block">
+            <CurrentDate />
+          </div>
         </div>
         <form className="grid gap-4 grid-cols-1 md:grid-cols-2">
           <div className="w-full ">
@@ -151,18 +153,18 @@ const AuctionForm = ({ label, handleMethod }) => {
             />
           </div>
         </form>
-        <div className="flex flex-col mt-6 space-y-4 md:space-y-0 md:space-x-4 md:flex-row md:justify-end">
+        <div className="flex mt-8 md:mt-6 justify-end gap-6">
           <button
             onClick={() => {
               setShowAuctionForm(false);
             }}
-            className="px-4 py-2 leading-4 text-[#00000066] bg-gray-200 rounded hover:bg-gray-300"
+            className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
           >
             Cancel
           </button>
           <button
             onClick={handleMethod}
-            className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+            className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
           >
             {label}
           </button>

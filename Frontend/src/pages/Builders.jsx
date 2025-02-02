@@ -83,6 +83,14 @@ const Builders = () => {
         city: "Nagpur",
         viewDetails: "",
       },
+      {
+        name: "Name 1",
+        employeeId: "A:MO28",
+        contactNumber: "1234567890",
+        mail: "abc@gmail.com",
+        city: "Nagpur",
+        viewDetails: "",
+      },
   ];
 
   return (
@@ -109,6 +117,7 @@ const Builders = () => {
             <AddButton label={"Add Builder"} func={setShowBuilderForm}/>
           </div>
         </div>
+        <div className="overflow-y-scroll scrollbar-x-hidden scrollbar-y-custom scrollbar-y-visible">
         <table className="overview-table w-[1088px] h-[343px] overflow-hidden rounded-[16px]">
           <thead>
             <tr>
@@ -154,6 +163,7 @@ const Builders = () => {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <Paging totalPages={10} />

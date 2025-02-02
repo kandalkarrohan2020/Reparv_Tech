@@ -126,6 +126,7 @@ const Customers = () => {
             </div>
           </div>
         </div>
+        <div className="overflow-y-scroll scrollbar-x-hidden scrollbar-y-custom scrollbar-y-visible">
         <table className="overview-table w-[1088px] h-[343px] overflow-hidden rounded-[16px]">
           <thead>
             <tr>
@@ -197,6 +198,7 @@ const Customers = () => {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <Paging totalPages={10} />

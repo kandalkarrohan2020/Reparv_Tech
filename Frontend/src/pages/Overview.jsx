@@ -75,7 +75,7 @@ function Overview() {
         </div>
       </div>
 
-      <div className="overview-card-container w-[1136px] h-[150px] flex items-center justify-between my-[10px]">
+      <div className="overview-card-container gap-5 w-[1136px] h-[150px] flex flex-row items-center justify-between my-[10px]">
         {[
           {
             label: "Total Deal Amount",
@@ -133,6 +133,7 @@ function Overview() {
             </div>
           </div>
         </div>
+        <div className="overflow-y-scroll scrollbar-x-hidden scrollbar-y-custom scrollbar-y-visible">
         <table className="overview-table overflow-hidden w-[1088px] h-[343px] rounded-[16px]">
           <thead>
             <tr>
@@ -178,6 +179,7 @@ function Overview() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <Paging totalPages={10} />

@@ -5,8 +5,8 @@ import CurrentDate from '../CurrentDate';
 const EmployeeDetailsForm = ({label, handleMethod}) => {
   const {setShowEplDetailsForm} = useAuth();
   return (
-    <div className="employee w-[360px] h-[700px] overflow-auto md:w-[900px] md:h-[650px] fixed">
-      <div className=" w-[360px] h-[700px] md:w-[900px] md:h-[650px] bg-white p-6 border border-[#cfcfcf33] rounded-lg">
+    <div className="employee overflow-auto w-[360px] h-[700px] md:w-[900px] md:h-[650px] fixed">
+      <div className="w-[360px] h-[700px] overflow-auto md:w-[900px] md:h-[650px] bg-white p-6 border border-[#cfcfcf33] rounded-lg">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-[16px] font-semibold">Employee Details</h2>
           <div className='hidden md:block'><CurrentDate/></div>
@@ -91,19 +91,23 @@ const EmployeeDetailsForm = ({label, handleMethod}) => {
             />
           </div>
         </form>
-        <div className="flex flex-col mt-4 space-y-4 md:space-y-0 md:space-x-4 md:flex-row md:justify-end">
+        <div className="flex mt-8 md:mt-6 justify-end gap-6">
+          
           <button
-            onClick={()=>{setShowEplDetailsForm(false)}} className="px-4 py-2 text-gray-600 bg-gray-200 rounded hover:bg-gray-300"
+            onClick={() => {
+              setShowEplDetailsForm(false);
+            }}
+            className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
           >
             Cancel
           </button>
           <button
             onClick={handleMethod}
-            className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+            className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
           >
             {label}
           </button>
-        </div>
+          </div>
       </div>
     </div>
   );

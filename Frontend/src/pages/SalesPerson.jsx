@@ -109,6 +109,7 @@ const SalesPerson = () => {
             <AddButton label={"Add Sales Person"} func={setShowSalesForm}/>
           </div>
         </div>
+        <div className="overflow-y-scroll scrollbar-x-hidden scrollbar-y-custom scrollbar-y-visible">
         <table className="sales-table w-[1088px] h-[343px] overflow-hidden rounded-[16px]">
           <thead>
             <tr>
@@ -154,6 +155,7 @@ const SalesPerson = () => {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <Paging totalPages={10} />

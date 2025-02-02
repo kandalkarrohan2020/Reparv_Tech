@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import calender from "../assets/overview/calender.svg";
 import { HiMiniFunnel } from "react-icons/hi2";
@@ -8,6 +9,7 @@ import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import { useAuth } from "../store/auth";
+import CurrentDate from "../components/CurrentDate";
 
 const Ticketing = () => {
   const { setShowProfile } = useAuth();
@@ -70,6 +72,19 @@ const Ticketing = () => {
     },
   ];
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Calculate total pages
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  // Get data for the current page
+  const currentData = data.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  const emptyRows = itemsPerPage - currentData.length;
+
   return (
     <div className="ticketing w-[1168px] h-[744px] pt-10 px-4 flex flex-col items-start justify-start">
       <div className="ticketing-heading w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
@@ -77,7 +92,12 @@ const Ticketing = () => {
           Ticketing
         </div>
         <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">
-          <FaUserCircle onClick={()=>{setShowProfile("true")}} className="w-8 h-8 text-[#076300]" />
+          <FaUserCircle
+            onClick={() => {
+              setShowProfile("true");
+            }}
+            className="w-8 h-8 text-[#076300]"
+          />
           <div className="logoutBtn w-[79px] h-[28px] flex gap-6 items-center justify-center border-[1px] border-[#FF4646] rounded-[8px] text-[#FF4646] text-[16px]">
             <p>Logout</p>
           </div>
@@ -98,56 +118,86 @@ const Ticketing = () => {
               <div className="city-selector w-[40px] h-[32px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000] cursor-pointer">
                 <HiMiniFunnel />
               </div>
-              <CustomDateRangePicker/>
+              <CustomDateRangePicker />
             </div>
           </div>
         </div>
         <div className="overflow-y-scroll scrollbar-x-hidden scrollbar-y-custom scrollbar-y-visible">
-        <table className="ticketing-table w-[1088px] h-[343px] rounded-[16px] overflow-hidden">
-          <thead>
-            <tr>
-              {[
-                "Ticket No",
-                "Date / Time",
-                "Issues",
-                "Status",
-                "Actions",
-              ].map((header, index) => (
-                <th
-                  key={index}
-                  className="py-[15px] px-[10px] text-left text-xs font-normal text-[#00000066]"
-                >
-                  {header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row, index) => (
-              <tr key={index}>
-                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
-                  {row.ticketNo}
-                </td>
-                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
-                  {row.dateAndTime}
-                </td>
-                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
-                  {row.issue}
-                </td>
-                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
-                  {row.status}
-                </td>
-                <td className={`p-[8px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
-                  <ActionSelect/>
-                </td>
+          <table className="ticketing-table w-[1088px] h-[343px] rounded-[16px] overflow-hidden">
+            <thead>
+              <tr>
+                {[
+                  "Ticket No",
+                  "Date / Time",
+                  "Issues",
+                  "Status",
+                  "Actions",
+                ].map((header, index) => (
+                  <th
+                    key={index}
+                    className="py-[15px] px-[10px] text-left text-xs font-normal text-[#00000066]"
+                  >
+                    {header}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {currentData.map((row, index) => (
+                <tr key={index}>
+                  <td
+                    style={{ width: "155px", height: "52px" }}
+                    className={`p-[15px] text-sm font-normal text-black ${
+                      index % 2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
+                    } `}
+                  >
+                    {row.ticketNo}
+                  </td>
+                  <td
+                    className={`p-[15px] text-sm font-normal text-black ${
+                      index % 2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
+                    } `}
+                  >
+                    {row.dateAndTime}
+                  </td>
+                  <td
+                    className={`p-[15px] text-sm font-normal text-black ${
+                      index % 2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
+                    } `}
+                  >
+                    {row.issue}
+                  </td>
+                  <td
+                    className={`p-[15px] text-sm font-normal text-black ${
+                      index % 2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
+                    } `}
+                  >
+                    {row.status}
+                  </td>
+                  <td
+                    className={`p-[8px] text-sm font-normal text-black ${
+                      index % 2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
+                    } `}
+                  >
+                    <ActionSelect />
+                  </td>
+                </tr>
+              ))}
+              {Array.from({ length: emptyRows }).map((_, index) => (
+                <tr key={`empty-${index}`}>
+                  <td colSpan={7} className="h-13"></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <Paging totalPages={10} />
+      <Paging
+        totalPages={totalPages}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
     </div>
   );
 };

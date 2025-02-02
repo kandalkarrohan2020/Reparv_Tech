@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import calender from "../assets/overview/calender.svg";
 import { HiMiniFunnel } from "react-icons/hi2";
@@ -12,6 +12,8 @@ import FilterData from "../components/FilterData";
 
 const Enquirers = () => {
   const { setShowProfile } = useAuth();
+
+  // Data and Paging State
   const data = [
     {
       name: "Name 1",
@@ -85,7 +87,65 @@ const Enquirers = () => {
       status: "Token",
       viewDetails: "",
     },
+    {
+      name: "Name 6",
+      contactNumber: "4455667788",
+      budget: "₹40,000",
+      city: "City 6",
+      decisionTime: "2 Days",
+      status: "Received",
+      viewDetails: "",
+    },
+    {
+      name: "Name 7",
+      contactNumber: "5566778899",
+      budget: "₹75,000",
+      city: "City 7",
+      decisionTime: "3 Weeks",
+      status: "Visit Rescheduled",
+      viewDetails: "",
+    },
+    {
+      name: "Name 8",
+      contactNumber: "6677889900",
+      budget: "₹85,000",
+      city: "City 8",
+      decisionTime: "5 Days",
+      status: "Token",
+      viewDetails: "",
+    },
+    {
+      name: "Name 9",
+      contactNumber: "6677889900",
+      budget: "₹85,000",
+      city: "City 9",
+      decisionTime: "5 Days",
+      status: "Token",
+      viewDetails: "",
+    },
+    {
+      name: "Name 10",
+      contactNumber: "6677889900",
+      budget: "₹85,000",
+      city: "City 10",
+      decisionTime: "5 Days",
+      status: "Token",
+      viewDetails: "",
+    },
   ];
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Calculate total pages
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  // Get data for the current page
+  const currentData = data.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  const emptyRows = itemsPerPage - currentData.length;
 
   return (
     <div className="enquirers w-[1168px] h-[744px] pt-10 px-4 flex flex-col items-start justify-start">
@@ -123,77 +183,114 @@ const Enquirers = () => {
           </div>
         </div>
         <div className="overflow-y-scroll scrollbar-x-hidden scrollbar-y-custom scrollbar-y-visible">
-        <table className="overview-table w-[1088px] h-[343px] rounded-[16px] overflow-hidden scrollbar-hidden">
-          <thead>
-            <tr>
-              {[
-                "Name",
-                "Contact Number",
-                "Budget",
-                "City",
-                "Decision Time",
-                "Status",
-                "Actions",
-              ].map((header, index) => (
-                <th
-                  key={index}
-                  className="py-[15px] px-[10px] text-left text-xs font-normal text-[#00000066]"
-                >
-                  {header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody >
-            {data.map((row, index) => (
-              <tr key={index}>
-                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
-                  {row.name}
-                </td>
-                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
-                  {row.contactNumber}
-                </td>
-                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
-                  {row.budget}
-                </td>
-                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
-                  {row.city}
-                </td>
-                <td className={`p-[15px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
-                  {row.decisionTime}
-                </td>
-                <td
-                  className={`p-[12px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}
-                >
-                  <p
-                    className={`text-center rounded-3xl p-1 ${
-                      row.status === "Received"
-                        ? "bg-[#EAFBF1] text-[#0BB501]"
-                        : row.status === "Visit Scheduled"
-                        ? "bg-[#E9F2FF] text-[#0068FF]"
-                        : row.status === "Token"
-                        ? "bg-[#FFF8DD] text-[#FFCA00]"
-                        : row.status === "Cancelled"
-                        ? "bg-[#FFEAEA] text-[#ff2323]"
-                        : row.status === "Ongoing"
-                        ? "bg-[#F4F0FB] text-[#5D00FF]"
-                        : "bg-[#E8E9EA] text-[#7E7E7E]"
+          <table className="overview-table w-[1088px] rounded-[16px] overflow-hidden scrollbar-hidden">
+            <thead>
+              <tr>
+                {[
+                  "Name",
+                  "Contact Number",
+                  "Budget",
+                  "City",
+                  "Decision Time",
+                  "Status",
+                  "Actions",
+                ].map((header, index) => (
+                  <th
+                    key={index}
+                    className="py-[15px] px-[10px] text-left text-xs font-normal text-[#00000066]"
+                  >
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {currentData.map((row, index) => (
+                <tr key={index}>
+                  <td
+                    style={{width:"155px", height:"52px"}}
+                    className={`w-[155px] h-13 p-[15px] text-sm font-normal text-black ${
+                      index % 2 === 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
                     }`}
                   >
-                    {row.status}
-                  </p>
-                </td>
-                <td className={`p-[8px] text-sm font-normal text-black ${index%2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"} `}>
-                  <ActionSelect />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                    {row.name}
+                  </td>
+                  <td
+                    className={`w-[155px] h-13 p-[15px] text-sm font-normal text-black ${
+                      index % 2 === 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
+                    }`}
+                  >
+                    {row.contactNumber}
+                  </td>
+                  <td
+                    className={`w-[155px] h-13 p-[15px] text-sm font-normal text-black ${
+                      index % 2 === 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
+                    }`}
+                  >
+                    {row.budget}
+                  </td>
+                  <td
+                    className={`w-[155px] h-13 p-[15px] text-sm font-normal text-black ${
+                      index % 2 === 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
+                    }`}
+                  >
+                    {row.city}
+                  </td>
+                  <td
+                    className={`w-[155px] h-13 p-[15px] text-sm font-normal text-black ${
+                      index % 2 === 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
+                    }`}
+                  >
+                    {row.decisionTime}
+                  </td>
+                  <td
+                    className={`w-[155px] h-13 p-[12px] text-sm font-normal text-black ${
+                      index % 2 === 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
+                    }`}
+                  >
+                    <p
+                      className={`text-center rounded-3xl p-1 ${
+                        row.status === "Received"
+                          ? "bg-[#EAFBF1] text-[#0BB501]"
+                          : row.status === "Visit Scheduled"
+                          ? "bg-[#E9F2FF] text-[#0068FF]"
+                          : row.status === "Token"
+                          ? "bg-[#FFF8DD] text-[#FFCA00]"
+                          : row.status === "Cancelled"
+                          ? "bg-[#FFEAEA] text-[#ff2323]"
+                          : row.status === "Ongoing"
+                          ? "bg-[#F4F0FB] text-[#5D00FF]"
+                          : "bg-[#E8E9EA] text-[#7E7E7E]"
+                      }`}
+                    >
+                      {row.status}
+                    </p>
+                  </td>
+                  <td
+                    className={`w-[155px] h-13 p-[8px] text-sm font-normal text-black ${
+                      index % 2 === 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
+                    }`}
+                  >
+                    <ActionSelect />
+                  </td>
+                </tr>
+              ))}
+              {Array.from({ length: emptyRows }).map((_, index) => (
+                <tr key={`empty-${index}`}>
+                  <td colSpan={7} className="h-13"></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <Paging totalPages={10} />
+      {/* Paging Component */}
+      <Paging
+        totalPages={totalPages}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
     </div>
   );
 };

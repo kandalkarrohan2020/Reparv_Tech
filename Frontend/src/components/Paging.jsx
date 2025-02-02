@@ -1,18 +1,16 @@
 import React, { useState } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 
-const Paging = ({ totalPages }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-
+const Paging = ({ totalPages, currentPage, setCurrentPage }) => {
   const handlePrevClick = () => {
     if (currentPage > 1) {
-      setCurrentPage((prevPage) => prevPage - 1);
+      setCurrentPage(currentPage - 1);
     }
   };
 
   const handleNextClick = () => {
     if (currentPage < totalPages) {
-      setCurrentPage((prevPage) => prevPage + 1);
+      setCurrentPage(currentPage + 1);
     }
   };
 
@@ -29,7 +27,9 @@ const Paging = ({ totalPages }) => {
       </div>
 
       {/* Page Indicator */}
-      <p>{currentPage}/{totalPages}</p>
+      <p>
+        {currentPage}/{totalPages}
+      </p>
 
       {/* Right Button */}
       <div

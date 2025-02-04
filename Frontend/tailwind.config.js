@@ -12,9 +12,21 @@ module.exports = {
         ".scrollbar-x-hidden": {
           "overflow-x": "hidden", /* Hides horizontal scrollbar */
         },
+        ".scrollbar-y-hidden": {
+          "overflow-y": "hidden", /* Hides horizontal scrollbar */
+        },
+        ".scrollbar-x-hide::-webkit-scrollbar": {
+          display: "None",
+        },
+        ".scrollbar-y-hide::-webkit-scrollbar": {
+          display: "None",
+        },
         ".scrollbar-y-visible": {
           "overflow-y": "scroll", /* Ensures vertical scrollbar is visible */
           "scrollbar-width": "thin", /* Thin scrollbar for Firefox */
+        },
+        ".scrollbar-hide::-webkit-scrollbar": {
+          display: "None",
         },
         ".scrollbar-y-visible::-webkit-scrollbar": {
           width: "6px", /* Y-axis scrollbar width */

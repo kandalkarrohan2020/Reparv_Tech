@@ -171,7 +171,7 @@ const Customers = () => {
   const emptyRows = itemsPerPage - currentData.length;
 
   return (
-    <div className="customers overflow-scroll max-w-[1168px] w-full h-screen py-10 px-4 flex flex-col items-start justify-start">
+    <div className="customers overflow-scroll max-w-[1168px] w-full h-screen py-10sm:px-4 px-0 flex flex-col items-start justify-start">
       <div className="customers-heading w-full max-w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
         <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
           Customers

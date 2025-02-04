@@ -8,9 +8,9 @@ const Map = () => {
   const { setShowProfile } = useAuth();
   
   return (
-    <div className="map w-[1168px] h-[744px] pt-10 px-4 flex flex-col items-start justify-start bg-white ">
-      <div className="map-heading w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
-        <div className="left-heading flex items-center text-[16px] leading-[19.36px] text-black">
+    <div className="map overflow-scroll max-w-[1168px] w-full h-screen py-10 px-0 sm:px-4 flex flex-col items-start justify-start">
+      <div className="map-heading w-full max-w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
+        <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
           Map
         </div>
         <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">
@@ -20,9 +20,9 @@ const Map = () => {
           </div>
         </div>
       </div>
-      <div className="map w-[1136px] h-[631px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
-        <div className="w-[1088px] h-[36px] flex align-center justify-end">
-          <div className="w-full h-[36px] flex gap-6 items-center justify-end">
+      <div className="map w-full max-w-[1136px] h-[578px] flex flex-col p-4 sm:p-6 gap-4 my-[10px] bg-white rounded-[24px]">
+        <div className="w-full max-w-[1088px] flex align-center justify-end">
+          <div className="w-full flex flex-wrap gap-2 lg:gap-6 items-center justify-end">
             <div className="search-bar w-[259px] h-[36px] flex border border-[#00000033] rounded-[8px] items-center justify-center ">
               <input
                 type="text"
@@ -46,8 +46,8 @@ const Map = () => {
             <CitySelector></CitySelector>
           </div>
         </div>
-        <div className="mapContainer w-[1088px] h-[547px] overflow-hidden rounded-[16px]">
-          <img src={map} alt="" className="w-[1088px] h-[547px]"/>
+        <div style={{ backgroundImage: `url(${map})` }} className={`mapContainer w-full max-w-[1088px] h-[547px] bg-cover overflow-scroll rounded-[16px]`}>
+          
         </div>
       </div>
     </div>

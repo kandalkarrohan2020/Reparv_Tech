@@ -56,7 +56,7 @@ const CustomDateRangePicker = () => {
         {/* Date Range Selector Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="date-selector min-w-[187px] h-[36px] flex items-center justify-between  border border-[#0000001A] rounded-[8px] py-2 px-3 text-sm text-black font-semibold cursor-pointer"
+          className="date-selector min-w-[187px] h-[36px] flex items-center justify-between gap-2  border border-[#0000001A] rounded-[8px] py-2 px-3 text-sm text-black font-semibold cursor-pointer"
         >
           <p>
             {range[0].startDate && range[0].endDate

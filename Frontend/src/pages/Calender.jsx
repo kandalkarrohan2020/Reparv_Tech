@@ -7,9 +7,9 @@ import { useAuth } from "../store/auth";
 const Calender = () => {
   const { setShowProfile } = useAuth();
   return (
-    <div className="calender w-[1168px] h-[744px] pt-10 px-4 flex flex-col items-start justify-start">
-      <div className="calender-heading w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
-        <div className="left-heading flex items-center text-[16px] leading-[19.36px] text-black">
+    <div className="calender overflow-scroll max-w-[1168px] w-full h-screen py-10 px-4 flex flex-col items-start justify-start">
+      <div className="calender-heading w-full max-w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
+        <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
           Calender
         </div>
         <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">

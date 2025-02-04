@@ -12,6 +12,7 @@ import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import AddButton from "../components/AddButton";
+import FilterData from "../components/FilterData";
 
 const Builders = () => {
   const { showBuilderForm, setShowBuilderForm, action } = useAuth();
@@ -125,9 +126,9 @@ const Builders = () => {
     <div className={`builders`}>
       {!showBuilderForm ? (
         <>
-          <div className="builder-table w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
-            <div className="searchBarContainer w-[1088px] h-[36px] flex align-center justify-between">
-              <div className="search-bar w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-between bg-[#0000000A]">
+          <div className="builder-table w-full max-w-[1136px] h-[550px] sm:h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
+            <div className="searchBarContainer w-full max-w-[1088px] flex flex-col lg:flex-row items-center justify-between gap-3">
+              <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
                 <CiSearch />
                 <input
                   type="text"
@@ -135,18 +136,16 @@ const Builders = () => {
                   className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
                 />
               </div>
-              <div className="rightTableHead min-w-[467px] h-[36px] flex justify-between items-center">
-                <div className="min-w-[251px] h-[36px] flex gap-6 items-center justify-between">
-                  <div className="city-selector w-[40px] h-[32px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000] cursor-pointer">
-                    <HiMiniFunnel />
-                  </div>
+              <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
+                <div className="flex flex-wrap items-center justify-end gap-3 px-2">
+                  <FilterData/>
                   <CustomDateRangePicker />
                 </div>
                 <AddButton label={"Add Builder"} func={setShowBuilderForm} />
               </div>
             </div>
-            <div className="overflow-y-scroll scrollbar-x-hidden scrollbar-y-custom scrollbar-y-visible">
-              <table className="overview-table w-[1088px] overflow-hidden rounded-[16px]">
+            <div className="overflow-scroll scrollbar-hide">
+              <table className="overview-table w-[1088px] h-[343px] rounded-[16px]">
                 <thead>
                   <tr>
                     {[

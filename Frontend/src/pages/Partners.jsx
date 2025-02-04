@@ -20,9 +20,9 @@ const Partners = () => {
   const [ isActive, setIsActive ] = useState("Builders");
 
   return (
-    <div className={`partners w-[1168px] h-[744px] pt-10 px-4 flex flex-col items-start justify-start`}>
-      <div className={`partner-heading w-[1136px] h-[36px] flex justify-between text-lg font-semibold ${showBuilderForm === true || showSalesForm === true || showAuctionForm === true ? "hidden":"block"}`}>
-        <div className="left-heading flex items-center text-[16px] leading-[19.36px] text-black">
+    <div className={`partners overflow-scroll max-w-[1168px] w-full h-screen py-5 sm:py-10 px-0 sm:px-4 flex flex-col items-start justify-start`}>
+      <div className={`partner-heading w-full max-w-[1136px] flex flex-col-reverse sm:flex-row justify-between gap-4 text-lg font-semibold ${showBuilderForm === true || showSalesForm === true || showAuctionForm === true ? "hidden":"block"}`}>
+        <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
           <div className="swipeButton h-[28px] flex items-center justify-center text-black text-sm cursor-pointer">
             <div onClick={()=>{setIsActive("Builders")}} className={`builderBtn px-3 py-1 border-[1.5px] rounded-tl-lg rounded-bl-lg border-[#4faa48] ${isActive === "Builders"?"text-[#076300] bg-[#E3FFDF] ":"bg-white"}`} >
               Builders
@@ -35,14 +35,17 @@ const Partners = () => {
             </div>
           </div>
         </div>
-        <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">
+        <div className="right-heading w-full gap-5 sm:w-[135px] h-[32px] flex items-center justify-end sm:justify-between mr-5">
           <FaUserCircle onClick={()=>{setShowProfile("true")}} className="w-8 h-8 text-[#076300]" />
           <div className="logoutBtn w-[79px] h-[28px] flex gap-6 items-center justify-center border-[1px] border-[#FF4646] rounded-[8px] text-[#FF4646] text-[16px]">
             <p>Logout</p>
           </div>
         </div>
       </div>
+      <div className="w-full">
       {isActive === "Builders"? <Builders/> : isActive === "Sales"? <SalesPerson/> : <AuctionMembers/>}
+      </div>
+      
     </div>
     
   );

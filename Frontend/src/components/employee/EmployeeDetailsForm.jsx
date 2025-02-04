@@ -5,13 +5,13 @@ import CurrentDate from '../CurrentDate';
 const EmployeeDetailsForm = ({label, handleMethod}) => {
   const {setShowEplDetailsForm} = useAuth();
   return (
-    <div className="employee overflow-auto w-[360px] h-[700px] md:w-[900px] md:h-[650px] fixed">
-      <div className="w-[360px] h-[700px] overflow-auto md:w-[900px] md:h-[650px] bg-white p-6 border border-[#cfcfcf33] rounded-lg">
+    <div className="employee overflow-scroll scrollbar-hide w-[400px] h-[600px] md:w-[700px] md:h-[650px] flex fixed">
+      <div className="w-[330px] sm:w-[600px] sm:h-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[650px] bg-white py-8 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-[16px] font-semibold">Employee Details</h2>
           <div className='hidden md:block'><CurrentDate/></div>
         </div>
-        <form className="grid gap-4 grid-cols-1 md:grid-cols-2">
+        <form className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
           <div className='w-full'>
             <label className="block text-sm leading-4 text-[#00000066] font-medium">First Name</label>
             <input

@@ -49,7 +49,7 @@ const FilterData = () => {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-[40px] right-0 w-[200px] bg-white shadow-md border rounded-bl-[10px] overflow-hidden rounded-br-[10px] z-10">
+        <div className="absolute top-[40px] left-0 w-[200px] bg-white shadow-md border rounded-bl-[10px] overflow-hidden rounded-br-[10px] z-10">
           {filterOptions.map((option, index) => (
             <div
               key={index}

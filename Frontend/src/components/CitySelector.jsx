@@ -82,7 +82,7 @@ export default function CitySelector() {
   );
 
   return (
-    <div className="w-[136px] h-[36px]">
+    <div className="">
       <FormControl style={{maxWidth:"150px"}}>
         <CustomSelect style={{minWidth:"107px", height: "36px"}}
           labelId="city-selector"

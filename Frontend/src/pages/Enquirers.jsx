@@ -148,9 +148,9 @@ const Enquirers = () => {
   const emptyRows = itemsPerPage - currentData.length;
 
   return (
-    <div className="enquirers w-[1168px] h-[744px] pt-10 px-4 flex flex-col items-start justify-start">
-      <div className="overview-heading w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
-        <div className="left-heading flex items-center text-[16px] leading-[19.36px] text-black">
+    <div className="enquirers overflow-scroll max-w-[1168px] w-full h-screen py-10 px-4 flex flex-col items-start justify-start">
+      <div className="overview-heading w-full max-w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
+        <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
           Enquirers
         </div>
         <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">
@@ -165,9 +165,10 @@ const Enquirers = () => {
           </div>
         </div>
       </div>
-      <div className="enquirers-table w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
-        <div className="searchBarContainer w-[1088px] h-[36px] flex align-center justify-between">
-          <div className="search-bar min-w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-between bg-[#0000000A]">
+
+      <div className="enquirers-table w-full max-w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
+        <div className="searchBarContainer w-full max-w-[1088px] h-[36px] flex align-center justify-between">
+          <div className="search-bar w-full sm:w-1/2 min-w-[150px] max:w-[289px] md:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start md:justify-between bg-[#0000000A]">
             <CiSearch />
             <input
               type="text"
@@ -175,14 +176,15 @@ const Enquirers = () => {
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
             />
           </div>
-          <div className="rightTableHead min-w-[244px] h-[36px] flex justify-between items-center">
-            <div className="min-w-[244px] h-[36px] flex gap-6 items-center justify-between">
+          <div className="rightTableHead w-full sm:w-1/2 min-w-[307px] sm:h-[36px] flex justify-end items-center">
+            <div className="flex flex-wrap-reverse sm:flex-nowrap gap-2 px-2">
               <FilterData />
               <CustomDateRangePicker />
             </div>
           </div>
         </div>
-        <div className="overflow-y-scroll scrollbar-x-hidden scrollbar-y-custom scrollbar-y-visible">
+
+        <div className="overflow-scroll scrollbar-hide">
           <table className="overview-table w-[1088px] rounded-[16px] overflow-hidden scrollbar-hidden">
             <thead>
               <tr>

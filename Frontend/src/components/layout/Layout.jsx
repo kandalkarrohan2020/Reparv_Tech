@@ -43,7 +43,7 @@ function Layout() {
 
       {/* Sidebar */}
       <div
-        className={`fixed bg-white shadow-md md:shadow-none md:static top-0 left-0 z-20 w-64 md:w-60 h-full md:bg-[#F5F5F6] transition-transform duration-300 transform ${
+        className={`fixed overflow-y-scroll scrollbar-hide bg-white shadow-md md:shadow-none md:static top-0 left-0 z-20 w-64 md:w-60 h-full md:bg-[#F5F5F6] transition-transform duration-300 transform ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >

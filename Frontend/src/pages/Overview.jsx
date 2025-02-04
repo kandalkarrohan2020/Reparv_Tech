@@ -123,13 +123,14 @@ function Overview() {
     currentPage * itemsPerPage
   );
   const emptyRows = itemsPerPage - currentData.length;
+  
   return (
-    <div className="overview w-[1168px] h-[744px] pt-10 px-4 flex flex-col items-start justify-start">
-      <div className="overview-heading w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
-        <div className="left-heading flex items-center text-[16px] leading-[19.36px] text-black">
+    <div className="overview overflow-scroll max-w-[1168px] w-full h-screen py-10 px-4 flex flex-col items-start justify-start">
+      <div className="overview-heading w-full max-w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
+        <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
           Overview
         </div>
-        <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">
+        <div className="right-heading w-[135px] h-[32px] flex items-center justify-between">
           <FaUserCircle
             onClick={() => {
               setShowProfile("true");
@@ -147,7 +148,7 @@ function Overview() {
         </div>
       </div>
 
-      <div className="overview-card-container gap-5 w-[1136px] h-[150px] flex flex-row items-center justify-between my-[10px]">
+      <div className="overview-card-container gap-5 w-full max-w-[1136px] grid place-items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 my-5">
         {[
           {
             label: "Total Deal Amount",
@@ -172,9 +173,9 @@ function Overview() {
         ].map((card, index) => (
           <div
             key={index}
-            className="overview-card w-[272px] h-[132px] flex flex-col items-center justify-center gap-2 rounded-[24px] p-6 bg-gradient-to-b from-[#0BB501] to-[#076300] bg-blend-multiply"
+            className="overview-card w-full max-w-[272px] h-[132px] flex flex-col items-center justify-center gap-2 rounded-[24px] p-6 bg-gradient-to-b from-[#0BB501] to-[#076300] bg-blend-multiply"
           >
-            <div className="upside w-[224px] h-[40px] flex items-center justify-between text-base font-medium text-white">
+            <div className="upside w-full max-w-[224px] h-[40px] flex items-center justify-between gap-3 text-base font-medium text-white">
               <p>{card.label}</p>
               <img src={card.icon} alt="" />
             </div>
@@ -188,9 +189,9 @@ function Overview() {
         ))}
       </div>
 
-      <div className="overview-table w-[1136px] h-[420px] flex flex-col p-6 gap-4 bg-white rounded-[24px]">
-        <div className="searchBarContainer w-[1088px] h-[36px] flex align-center justify-between">
-          <div className="search-bar w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-between bg-[#0000000A]">
+      <div className="overview-table w-full max-w-[1136px] h-[500px] sm:h-[420px] flex flex-col p-6 gap-4 bg-white rounded-[24px]">
+        <div className="searchBarContainer w-full max-w-[1088px] flex sm:flex-row flex-col items-center justify-between gap-3">
+          <div className="search-bar w-full sm:w-1/2 min-w-[150px] max:w-[289px] md:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start md:justify-between bg-[#0000000A]">
             <CiSearch />
             <input
               type="text"
@@ -198,14 +199,14 @@ function Overview() {
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
             />
           </div>
-          <div className="rightTableHead min-w-[310px] h-[36px] flex justify-center items-center">
-            <div className="min-w-[310px] h-[36px] flex gap-6 items-center justify-between">
+          <div className="rightTableHead w-full sm:w-1/2 min-w-[307px] sm:h-[36px] flex justify-end items-center">
+            <div className="flex flex-wrap-reverse sm:flex-nowrap gap-2 px-2">
               <CitySelector></CitySelector>
               <CustomDateRangePicker />
             </div>
           </div>
         </div>
-        <div className="overflow-y-scroll scrollbar-x-hidden scrollbar-y-custom scrollbar-y-visible">
+        <div className="overflow-scroll scrollbar-hide">
           <table className="overview-table w-[1088px] h-[320px] rounded-[16px]">
             <thead>
               <tr>

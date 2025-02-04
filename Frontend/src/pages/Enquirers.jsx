@@ -167,17 +167,17 @@ const Enquirers = () => {
       </div>
 
       <div className="enquirers-table w-full max-w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
-        <div className="searchBarContainer w-full max-w-[1088px] h-[36px] flex align-center justify-between">
+        <div className="searchBarContainer w-full max-w-[1088px] flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full sm:w-1/2 min-w-[150px] max:w-[289px] md:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start md:justify-between bg-[#0000000A]">
             <CiSearch />
             <input
               type="text"
               placeholder="Search Builder"
-              className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
+              className="search-input md:w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
             />
           </div>
           <div className="rightTableHead w-full sm:w-1/2 min-w-[307px] sm:h-[36px] flex justify-end items-center">
-            <div className="flex flex-wrap-reverse sm:flex-nowrap gap-2 px-2">
+            <div className="flex flex-wrap items-center justify-end gap-3 px-2">
               <FilterData />
               <CustomDateRangePicker />
             </div>
@@ -185,7 +185,7 @@ const Enquirers = () => {
         </div>
 
         <div className="overflow-scroll scrollbar-hide">
-          <table className="overview-table w-[1088px] rounded-[16px] overflow-hidden scrollbar-hidden">
+          <table className="overview-table w-[1088px] rounded-[16px]">
             <thead>
               <tr>
                 {[

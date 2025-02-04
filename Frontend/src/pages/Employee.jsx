@@ -12,6 +12,7 @@ import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import AddButton from "../components/AddButton";
+import FilterData from "../components/FilterData";
 
 const Employee = () => {
   const { showEplDetailsForm, setShowEplDetailsForm, action, setShowProfile } =
@@ -99,12 +100,12 @@ const Employee = () => {
 
   return (
     <div
-      className={`employee w-[1168px] h-[744px] pt-10 px-4 flex flex-col items-start justify-start`}
+      className={`employee overflow-scroll max-w-[1168px] w-full h-screen py-10 md:px-4 px-0 flex flex-col items-start justify-start`}
     >
       {!showEplDetailsForm ? (
         <>
-          <div className="overview-heading w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
-            <div className="left-heading flex items-center text-[16px] leading-[19.36px] text-black">
+          <div className="overview-heading w-full max-w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
+            <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
               Employee
             </div>
             <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">
@@ -119,9 +120,10 @@ const Employee = () => {
               </div>
             </div>
           </div>
-          <div className="enquirers-table w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
-            <div className="searchBarContainer w-[1088px] h-[36px] flex align-center justify-between">
-              <div className="search-bar w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-between bg-[#0000000A]">
+
+          <div className="employee-table w-full max-w-[1136px] h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
+            <div className="searchBarContainer w-full max-w-[1088px] flex flex-col lg:flex-row items-center justify-between gap-3">
+              <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
                 <CiSearch />
                 <input
                   type="text"
@@ -129,11 +131,9 @@ const Employee = () => {
                   className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
                 />
               </div>
-              <div className="rightTableHead min-w-[467px] h-[36px] flex justify-between items-center">
-                <div className="min-w-[251px] h-[36px] flex gap-6 items-center justify-between">
-                  <div className="city-selector w-[40px] h-[32px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000] cursor-pointer">
-                    <HiMiniFunnel />
-                  </div>
+              <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
+                <div className="flex flex-wrap items-center justify-end gap-3 px-2">
+                  <FilterData/>
                   <CustomDateRangePicker />
                 </div>
                 <AddButton
@@ -142,7 +142,7 @@ const Employee = () => {
                 />
               </div>
             </div>
-            <div className="overflow-y-scroll scrollbar-x-hidden scrollbar-y-custom scrollbar-y-visible">
+            <div className="overflow-scroll scrollbar-hide">
               <table className="overview-table w-[1088px] h-[343px] overflow-hidden rounded-[16px]">
                 <thead>
                   <tr>

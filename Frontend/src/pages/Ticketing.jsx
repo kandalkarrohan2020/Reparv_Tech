@@ -10,6 +10,7 @@ import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import { useAuth } from "../store/auth";
 import CurrentDate from "../components/CurrentDate";
+import FilterData from "../components/FilterData";
 
 const Ticketing = () => {
   const { setShowProfile } = useAuth();
@@ -86,9 +87,9 @@ const Ticketing = () => {
   const emptyRows = itemsPerPage - currentData.length;
 
   return (
-    <div className="ticketing w-[1168px] h-[744px] pt-10 px-4 flex flex-col items-start justify-start">
-      <div className="ticketing-heading w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
-        <div className="left-heading flex items-center text-[16px] leading-[19.36px] text-black">
+    <div className="ticketing overflow-scroll max-w-[1168px] w-full h-screen py-10 px-4 flex flex-col items-start justify-start">
+      <div className="ticketing-heading w-full max-w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
+        <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
           Ticketing
         </div>
         <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">
@@ -103,9 +104,9 @@ const Ticketing = () => {
           </div>
         </div>
       </div>
-      <div className="ticketing-table w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
-        <div className="searchBarContainer w-[1088px] h-[36px] flex align-center justify-between">
-          <div className="search-bar w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-between bg-[#0000000A]">
+      <div className="ticketing-table w-full max-w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
+        <div className="searchBarContainer w-full max-w-[1088px] flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="search-bar w-full sm:w-1/2 min-w-[150px] max:w-[289px] md:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start md:justify-between bg-[#0000000A]">
             <CiSearch />
             <input
               type="text"
@@ -113,16 +114,15 @@ const Ticketing = () => {
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
             />
           </div>
-          <div className="rightTableHead min-w-[244px] h-[36px] flex justify-between items-center">
-            <div className="min-w-[244px] h-[36px] flex gap-6 items-center justify-between">
-              <div className="city-selector w-[40px] h-[32px] flex items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm text-[#000000] cursor-pointer">
-                <HiMiniFunnel />
-              </div>
+          <div className="rightTableHead w-full sm:w-1/2 min-w-[307px] sm:h-[36px] flex justify-end items-center">
+            <div className="flex flex-wrap items-center justify-end gap-3 px-2">
+              <FilterData/>
               <CustomDateRangePicker />
             </div>
           </div>
         </div>
-        <div className="overflow-y-scroll scrollbar-x-hidden scrollbar-y-custom scrollbar-y-visible">
+
+        <div className="overflow-scroll scrollbar-hide">
           <table className="ticketing-table w-[1088px] h-[343px] rounded-[16px] overflow-hidden">
             <thead>
               <tr>

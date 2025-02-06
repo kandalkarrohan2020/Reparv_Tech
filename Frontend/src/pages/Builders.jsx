@@ -145,7 +145,9 @@ const Builders = () => {
                 <AddButton label={"Add Builder"} func={setShowBuilderForm} />
               </div>
             </div>
+
             <SwipeButton/>
+            
             <div className="overflow-scroll scrollbar-hide">
               <table className="overview-table w-[1088px] h-[343px] rounded-[16px]">
                 <thead>

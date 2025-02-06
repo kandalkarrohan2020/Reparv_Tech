@@ -2,14 +2,15 @@ import React, { useState } from "react";
 import { FiMoreVertical } from "react-icons/fi";
 import { useAuth } from "../../store/auth";
 
-const ActionSelect = ({func}) => {
+const ActionSelect = ({func, label}) => {
   const [selectedAction, setSelectedAction] = useState("");
   const {setShowEplDetailsForm, setAction} = useAuth();
+
   const handleAction = (action) => {
     switch (action) {
       case "view":
         func(true);
-        setAction("Save Details");
+        setAction(label || "Save Details");
         
         break;
       case "update":

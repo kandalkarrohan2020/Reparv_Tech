@@ -11,6 +11,7 @@ const [showBuilderForm, setShowBuilderForm ] = useState(false);
 const [showSalesForm, setShowSalesForm ] = useState(false);
 const [showAuctionForm, setShowAuctionForm ] = useState(false);
 const [showProfile, setShowProfile ] = useState(false);
+const [showTicketInfo, setShowTicketInfo ] = useState(false);
 const [action, setAction ] = useState("Save Details");
 //let isLoggedIn = !!accessToken;
 /*
@@ -32,8 +33,8 @@ return <AuthContext.Provider
         showProfile,setShowProfile,
         showBuilderForm, setShowBuilderForm ,
         showSalesForm, setShowSalesForm,
-        showAuctionForm, setShowAuctionForm 
-
+        showAuctionForm, setShowAuctionForm,
+        showTicketInfo, setShowTicketInfo
     }
 }>
     {children}

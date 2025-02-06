@@ -13,6 +13,7 @@ import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import SalesForm from "../components/partners/SalesForm";
 import AddButton from "../components/AddButton";
 import FilterData from "../components/FilterData";
+import SwipeButton from "../components/partners/SwipeButton";
 
 const SalesPerson = () => {
   const { showSalesForm, setShowSalesForm, action } = useAuth();
@@ -121,6 +122,9 @@ const SalesPerson = () => {
                 <AddButton label={"Add Sales Person"} func={setShowSalesForm} />
               </div>
             </div>
+
+            <SwipeButton/>
+            
             <div className="overflow-y-scroll scrollbar-x-hidden scrollbar-y-custom scrollbar-y-visible">
               <table className="sales-table w-[1088px] h-[343px] rounded-[16px]">
                 <thead>

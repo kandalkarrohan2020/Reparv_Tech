@@ -13,6 +13,8 @@ const [showAuctionForm, setShowAuctionForm ] = useState(false);
 const [showProfile, setShowProfile ] = useState(false);
 const [showTicketInfo, setShowTicketInfo ] = useState(false);
 const [action, setAction ] = useState("Save Details");
+const [isActive, setIsActive] = useState("Builders");
+
 //let isLoggedIn = !!accessToken;
 /*
 const storeTokenInCookie = (token) => {
@@ -34,7 +36,8 @@ return <AuthContext.Provider
         showBuilderForm, setShowBuilderForm ,
         showSalesForm, setShowSalesForm,
         showAuctionForm, setShowAuctionForm,
-        showTicketInfo, setShowTicketInfo
+        showTicketInfo, setShowTicketInfo,
+        isActive, setIsActive,
     }
 }>
     {children}

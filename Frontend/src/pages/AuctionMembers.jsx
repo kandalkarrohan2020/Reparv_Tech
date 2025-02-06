@@ -13,6 +13,7 @@ import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import AddButton from "../components/AddButton";
 import FilterData from "../components/FilterData";
+import SwipeButton from "../components/partners/SwipeButton";
 
 const AuctionMembers = () => {
   const { showAuctionForm, setShowAuctionForm, action } = useAuth();
@@ -164,6 +165,9 @@ const AuctionMembers = () => {
                 />
               </div>
             </div>
+
+            <SwipeButton/>
+
             <div className="overflow-scroll scrollbar-hide">
               <table className="auction-table w-[1088px] h-[343px] rounded-[16px]">
                 <thead>

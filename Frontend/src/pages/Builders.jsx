@@ -13,6 +13,7 @@ import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import AddButton from "../components/AddButton";
 import FilterData from "../components/FilterData";
+import SwipeButton from "../components/partners/SwipeButton";
 
 const Builders = () => {
   const { showBuilderForm, setShowBuilderForm, action } = useAuth();
@@ -144,6 +145,7 @@ const Builders = () => {
                 <AddButton label={"Add Builder"} func={setShowBuilderForm} />
               </div>
             </div>
+            <SwipeButton/>
             <div className="overflow-scroll scrollbar-hide">
               <table className="overview-table w-[1088px] h-[343px] rounded-[16px]">
                 <thead>

@@ -15,6 +15,7 @@ import Paging from "../components/Paging";
 import CitySelector from "../components/CitySelector";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import { useAuth } from "../store/auth";
+import LogoutButton from "../components/LogoutButton";
 
 function Overview() {
   const { setShowProfile } = useAuth();
@@ -125,26 +126,19 @@ function Overview() {
   const emptyRows = itemsPerPage - currentData.length;
   
   return (
-    <div className="overview overflow-scroll max-w-[1168px] w-full h-screen py-10 sm:px-4 px-0 flex flex-col items-start justify-start">
+    <div className="overview overflow-scroll scrollbar-hide max-w-[1168px] w-full h-screen py-10 sm:px-4 px-0 flex flex-col items-start justify-start">
       <div className="overview-heading w-full max-w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
         <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
           Overview
         </div>
-        <div className="right-heading w-[135px] h-[32px] flex items-center justify-between">
+        <div className="right-heading w-[135px] h-[32px] flex items-center justify-between cursor-pointer">
           <FaUserCircle
             onClick={() => {
               setShowProfile("true");
             }}
             className="w-8 h-8 text-[#076300]"
           />
-          <div
-            onClick={() => {
-              navigate("/");
-            }}
-            className="logoutBtn w-[79px] h-[28px] flex gap-6 items-center justify-center border-[1px] border-[#FF4646] rounded-[8px] text-[#FF4646] text-[16px] cursor-pointer"
-          >
-            <p>Logout</p>
-          </div>
+          <LogoutButton/>
         </div>
       </div>
 

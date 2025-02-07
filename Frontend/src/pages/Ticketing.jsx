@@ -13,6 +13,7 @@ import CurrentDate from "../components/CurrentDate";
 import FilterData from "../components/FilterData";
 import TicketingFilter from "../components/ticketing/TicketingFilter";
 import TicketingInfo from "../components/ticketing/TicketingInfo";
+import LogoutButton from "../components/LogoutButton";
 
 const Ticketing = () => {
   const { setShowProfile, showTicketInfo, setShowTicketInfo, action } = useAuth();
@@ -101,9 +102,7 @@ const Ticketing = () => {
             }}
             className="w-8 h-8 text-[#076300]"
           />
-          <div className="logoutBtn w-[79px] h-[28px] flex gap-6 items-center justify-center border-[1px] border-[#FF4646] rounded-[8px] text-[#FF4646] text-[16px]">
-            <p>Logout</p>
-          </div>
+          <LogoutButton/>
         </div>
       </div>
       {!showTicketInfo ? (

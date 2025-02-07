@@ -125,7 +125,7 @@ const SalesPerson = () => {
 
             <SwipeButton/>
             
-            <div className="overflow-y-scroll scrollbar-x-hidden scrollbar-y-custom scrollbar-y-visible">
+            <div className="overflow-scroll scrollbar-hide">
               <table className="sales-table w-[1088px] h-[343px] rounded-[16px]">
                 <thead>
                   <tr>

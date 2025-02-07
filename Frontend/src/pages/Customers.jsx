@@ -11,6 +11,7 @@ import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import { useAuth } from "../store/auth";
 import FilterData from "../components/FilterData";
+import LogoutButton from "../components/LogoutButton";
 
 const Customers = () => {
   const { setShowProfile } = useAuth();
@@ -171,7 +172,7 @@ const Customers = () => {
   const emptyRows = itemsPerPage - currentData.length;
 
   return (
-    <div className="customers overflow-scroll max-w-[1168px] w-full h-screen py-10sm:px-4 px-0 flex flex-col items-start justify-start">
+    <div className="customers overflow-scroll scrollbar-hide max-w-[1168px] w-full h-screen py-10 sm:px-4 px-0 flex flex-col items-start justify-start">
       <div className="customers-heading w-full max-w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
         <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
           Customers
@@ -183,13 +184,11 @@ const Customers = () => {
             }}
             className="w-8 h-8 text-[#076300]"
           />
-          <div className="logoutBtn w-[79px] h-[28px] flex gap-6 items-center justify-center border-[1px] border-[#FF4646] rounded-[8px] text-[#FF4646] text-[16px]">
-            <p>Logout</p>
-          </div>
+          <LogoutButton/>
         </div>
       </div>
 
-      <div className="customers-table w-full max-w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
+      <div className="customers-table w-full max-w-[1136px] h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
         <div className="searchBarContainer w-full max-w-[1088px] flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full sm:w-1/2 min-w-[150px] max:w-[289px] md:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start md:justify-between bg-[#0000000A]">
             <CiSearch />

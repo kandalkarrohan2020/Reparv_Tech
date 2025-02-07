@@ -14,6 +14,7 @@ import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import Builders from "./Builders";
 import SalesPerson from "./SalesPerson";
 import AuctionMembers from "./AuctionMembers";
+import LogoutButton from "../components/LogoutButton";
 
 const Partners = () => {
   const {
@@ -30,10 +31,10 @@ const Partners = () => {
 
   return (
     <div
-      className={`partners overflow-scroll max-w-[1168px] w-full h-screen py-5 sm:py-10 px-0 sm:px-4 flex flex-col items-start justify-start`}
+      className={`partners overflow-scroll scrollbar-hide max-w-[1168px] w-full h-screen py-5 sm:py-10 px-0 sm:px-4 flex flex-col items-start justify-start`}
     >
       <div
-        className={`partner-heading w-full max-w-[1136px] flex flex-col-reverse sm:flex-row justify-between gap-4 text-lg font-semibold ${
+        className={`partner-heading w-full max-w-[1136px] flex justify-between gap-4 text-lg font-semibold ${
           showBuilderForm === true ||
           showSalesForm === true ||
           showAuctionForm === true
@@ -41,7 +42,7 @@ const Partners = () => {
             : "block"
         }`}
       >
-        <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
+        <div className="left-heading flex items-center text-[16px] leading-[19.36px] text-black">
           <span>{isActive}</span>
         </div>
         <div className="right-heading w-full gap-5 sm:w-[135px] h-[32px] flex items-center justify-end sm:justify-between mr-5">
@@ -51,9 +52,7 @@ const Partners = () => {
             }}
             className="w-8 h-8 text-[#076300]"
           />
-          <div className="logoutBtn w-[79px] h-[28px] flex gap-6 items-center justify-center border-[1px] border-[#FF4646] rounded-[8px] text-[#FF4646] text-[16px]">
-            <p>Logout</p>
-          </div>
+          <LogoutButton/>
         </div>
       </div>
       

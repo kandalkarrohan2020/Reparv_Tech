@@ -9,6 +9,7 @@ import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import AddButton from "../components/AddButton";
 import FilterData from "../components/FilterData";
+import LogoutButton from "../components/LogoutButton";
 
 const Employee = () => {
   const { showEplDetailsForm, setShowEplDetailsForm, action, setShowProfile } =
@@ -96,7 +97,7 @@ const Employee = () => {
 
   return (
     <div
-      className={`employee overflow-scroll max-w-[1168px] w-full h-screen py-10 md:px-4 px-0 flex flex-col items-start justify-start`}
+      className={`employee overflow-scroll scrollbar-hide max-w-[1168px] w-full h-screen py-10 md:px-4 px-0 flex flex-col items-start justify-start`}
     >
       {!showEplDetailsForm ? (
         <>
@@ -111,9 +112,7 @@ const Employee = () => {
                 }}
                 className="w-8 h-8 text-[#076300]"
               />
-              <div className="logoutBtn w-[79px] h-[28px] flex gap-6 items-center justify-center border-[1px] border-[#FF4646] rounded-[8px] text-[#FF4646] text-[16px]">
-                <p>Logout</p>
-              </div>
+              <LogoutButton/>
             </div>
           </div>
 

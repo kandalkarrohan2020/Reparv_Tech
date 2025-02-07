@@ -1,10 +1,6 @@
 import React from "react";
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import calender from "../assets/overview/calender.svg";
-import { HiMiniFunnel } from "react-icons/hi2";
-import { Link } from "react-router-dom";
-import { FaPlus } from "react-icons/fa6";
 import { FaUserCircle } from "react-icons/fa";
 import EmployeeDetailsForm from "../components/employee/EmployeeDetailsForm";
 import { useAuth } from "../store/auth";

@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
+import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import calender from "../assets/overview/calender.svg";
-import { HiMiniFunnel } from "react-icons/hi2";
-import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";

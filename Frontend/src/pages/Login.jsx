@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ReparvLogo from "../assets/login/ReparvLogo.svg";
+import ReparvMainLogo from "../assets/layout/reparvMainLogo.svg";
 import LoginLeftIMG from "../assets/login/LoginLeftIMG.svg";
 import LoginLine from "../assets/login/LoginLine.png";
 import { FaEnvelope, FaLock } from "react-icons/fa";
@@ -50,7 +50,7 @@ function Login() {
       {/* Left Section */}
       <div className="w-full md:w-1/2 h-full flex flex-col items-center justify-center md:px-8">
         <div className="relative md:-left-[40px] top-[20px] md:top-[30px]">
-          <img src={ReparvLogo} alt="Reparv Logo" className="w-[180px]" />
+          <img src={ReparvMainLogo} alt="Reparv Logo" className="w-[180px]" />
         </div>
         <img src={LoginLeftIMG} alt="Login Left" className="mt-4 md:w-[400px]" />
       </div>

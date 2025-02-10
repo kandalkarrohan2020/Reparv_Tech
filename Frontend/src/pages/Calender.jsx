@@ -8,17 +8,8 @@ import LogoutButton from "../components/LogoutButton";
 const Calender = () => {
   const { setShowProfile } = useAuth();
   return (
-    <div className="calender overflow-scroll max-w-[1168px] w-full h-screen py-10 px-4 flex flex-col items-start justify-start">
-      <div className="calender-heading w-full max-w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
-        <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
-          Calender
-        </div>
-        <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">
-          <FaUserCircle onClick={()=>{setShowProfile("true")}} className="w-8 h-8 text-[#076300]" />
-          <LogoutButton/>
-        </div>
-      </div>
-
+    <div className="calender overflow-scroll w-full h-screen flex flex-col items-start justify-start">
+      
       <div className="calenderContainer w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px]">
         <div className="searchBarContainer w-[1088px] h-[36px] flex align-center justify-end">
         <CustomDateRangePicker/>

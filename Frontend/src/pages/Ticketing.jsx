@@ -90,25 +90,12 @@ const Ticketing = () => {
   const emptyRows = itemsPerPage - currentData.length;
 
   return (
-    <div className="ticketing overflow-scroll max-w-[1168px] w-full h-screen py-10 sm:px-4 px-0 flex flex-col items-start justify-start">
-      <div className="ticketing-heading w-full max-w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
-        <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
-          Ticketing
-        </div>
-        <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">
-          <FaUserCircle
-            onClick={() => {
-              setShowProfile("true");
-            }}
-            className="w-8 h-8 text-[#076300]"
-          />
-          <LogoutButton/>
-        </div>
-      </div>
+    <div className="ticketing overflow-scroll w-full h-screen flex flex-col items-start justify-start">
+    
       {!showTicketInfo ? (
         <>
-          <div className="ticketing-table w-full max-w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
-            <div className="searchBarContainer w-full max-w-[1088px] flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="ticketing-table w-full h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
+            <div className="searchBarContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="search-bar w-full sm:w-1/2 min-w-[150px] max:w-[289px] md:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start md:justify-between bg-[#0000000A]">
                 <CiSearch />
                 <input
@@ -126,7 +113,7 @@ const Ticketing = () => {
             </div>
 
             <div className="overflow-scroll scrollbar-hide">
-              <table className="ticketing-table w-[1088px] h-[343px] rounded-[16px] overflow-hidden">
+              <table className="ticketing-table w-[1188px] 2xl:w-full h-[343px] rounded-[16px] overflow-hidden">
                 <thead>
                   <tr>
                     {[

@@ -144,8 +144,8 @@ const AuctionMembers = () => {
     <>
       {!showAuctionForm ? (
         <>
-          <div className="employee-table w-full max-w-[1136px] h-[550px] sm:h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
-            <div className="searchBarContainer w-full max-w-[1088px] flex flex-col lg:flex-row items-center justify-between gap-3">
+          <div className="employee-table w-full h-[550px] sm:h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
+            <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
               <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
                 <CiSearch />
                 <input
@@ -166,10 +166,8 @@ const AuctionMembers = () => {
               </div>
             </div>
 
-            <SwipeButton/>
-
             <div className="overflow-scroll scrollbar-hide">
-              <table className="auction-table w-[1088px] h-[343px] rounded-[16px]">
+              <table className="auction-table w-[1188px] 2xl:w-full h-[343px] rounded-[16px]">
                 <thead>
                   <tr>
                     {[

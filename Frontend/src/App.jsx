@@ -14,6 +14,8 @@ import Marketing from "./pages/Marketing.jsx";
 import Login from "./pages/Login.jsx";
 import Employee from "./pages/Employee.jsx";
 import Builders from "./pages/Builders.jsx";
+import SalesPerson from "./pages/SalesPerson.jsx";
+import AuctionMembers from "./pages/AuctionMembers.jsx";
 
 const App = () => {
   return (
@@ -26,10 +28,9 @@ const App = () => {
           <Route path="/map" element={<Map />} />
           <Route path="/calender" element={<Calender />} />
           <Route path="/customers" element={<Customers />} />
-          <Route path="/partners" element={<Partners />} />
           <Route path="/builders" element={<Builders />} />
-          <Route path="/sales-person" element={<Builders />} />
-          <Route path="/auction-members" element={<Builders />} />
+          <Route path="/sales" element={<SalesPerson />} />
+          <Route path="/auction" element={<AuctionMembers />} />
           <Route path="/employee" element={<Employee />} />
           <Route path="/ticketing" element={<Ticketing />} />
           <Route path="/raw-materials" element={<RawMaterials />} />

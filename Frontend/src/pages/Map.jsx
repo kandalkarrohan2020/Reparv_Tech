@@ -9,18 +9,10 @@ const Map = () => {
   const { setShowProfile } = useAuth();
   
   return (
-    <div className="map overflow-scroll scrollbar-hide max-w-[1168px] w-full h-screen py-10 px-0 sm:px-4 flex flex-col items-start justify-start">
-      <div className="map-heading w-full max-w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
-        <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
-          Map
-        </div>
-        <div className="right-heading w-[135px] h-[32px] flex items-center justify-between mr-5">
-          <FaUserCircle onClick={()=>{setShowProfile("true")}} className="w-8 h-8 text-[#076300]" />
-          <LogoutButton/>
-        </div>
-      </div>
-      <div className="map w-full max-w-[1136px] h-[578px] flex flex-col p-4 sm:p-6 gap-4 my-[10px] bg-white rounded-[24px]">
-        <div className="w-full max-w-[1088px] flex align-center justify-end">
+    <div className="map overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
+      
+      <div className="map w-full  h-[578px] flex flex-col p-4 sm:p-6 gap-4 my-[10px] bg-white rounded-[24px]">
+        <div className="w-full  flex align-center justify-end">
           <div className="w-full flex flex-wrap gap-2 lg:gap-6 items-center justify-end">
             <div className="search-bar w-[259px] h-[36px] flex border border-[#00000033] rounded-[8px] items-center justify-center ">
               <input

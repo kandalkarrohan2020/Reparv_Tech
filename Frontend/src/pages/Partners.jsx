@@ -31,10 +31,10 @@ const Partners = () => {
 
   return (
     <div
-      className={`partners overflow-scroll scrollbar-hide max-w-[1168px] w-full h-screen py-5 sm:py-10 px-0 sm:px-4 flex flex-col items-start justify-start`}
+      className={`partners overflow-scroll scrollbar-hide w-full h-screen py-5 sm:py-10 px-0 sm:px-4 flex flex-col items-start justify-start`}
     >
       <div
-        className={`partner-heading w-full max-w-[1136px] flex justify-between gap-4 text-lg font-semibold ${
+        className={`partner-heading w-full flex justify-between gap-4 text-lg font-semibold ${
           showBuilderForm === true ||
           showSalesForm === true ||
           showAuctionForm === true

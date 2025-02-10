@@ -126,23 +126,9 @@ function Overview() {
   const emptyRows = itemsPerPage - currentData.length;
   
   return (
-    <div className="overview overflow-scroll scrollbar-hide max-w-[1168px] w-full h-screen py-10 sm:px-4 px-0 flex flex-col items-start justify-start">
-      <div className="overview-heading w-full max-w-[1136px] h-[36px] flex justify-between text-lg font-semibold">
-        <div className="left-heading flex items-center text-[20px] sm:text-[16px] leading-[19.36px] text-black">
-          Overview
-        </div>
-        <div className="right-heading w-[135px] h-[32px] flex items-center justify-between cursor-pointer">
-          <FaUserCircle
-            onClick={() => {
-              setShowProfile("true");
-            }}
-            className="w-8 h-8 text-[#076300]"
-          />
-          <LogoutButton/>
-        </div>
-      </div>
-
-      <div className="overview-card-container gap-5 w-full max-w-[1136px] grid place-items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 my-5">
+    <div className="overview overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
+  
+      <div className="overview-card-container gap-5 w-full grid place-items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 my-5">
         {[
           {
             label: "Total Deal Amount",
@@ -183,8 +169,8 @@ function Overview() {
         ))}
       </div>
 
-      <div className="overview-table w-full max-w-[1136px] h-[500px] sm:h-[420px] flex flex-col p-6 gap-4 bg-white rounded-[24px]">
-        <div className="searchBarContainer w-full max-w-[1088px] flex sm:flex-row flex-col items-center justify-between gap-3">
+      <div className="overview-table w-full h-[500px] sm:h-[420px] flex flex-col p-6 gap-4 bg-white rounded-[24px]">
+        <div className="searchBarContainer w-full flex sm:flex-row flex-col items-center justify-between gap-3">
           <div className="search-bar w-full sm:w-1/2 min-w-[150px] max:w-[289px] md:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start md:justify-between bg-[#0000000A]">
             <CiSearch />
             <input
@@ -202,7 +188,7 @@ function Overview() {
         </div>
         
         <div className="overflow-scroll scrollbar-hide">
-          <table className="overview-table w-[1088px] h-[320px] rounded-[16px]">
+          <table className="overview-table w-[1188px] 2xl:w-full h-[320px] rounded-[16px]">
             <thead>
               <tr>
                 {[

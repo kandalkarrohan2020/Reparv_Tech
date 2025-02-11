@@ -1,11 +1,6 @@
 import React from "react";
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import calender from "../assets/overview/calender.svg";
-import { HiMiniFunnel } from "react-icons/hi2";
-import { Link } from "react-router-dom";
-import { FaPlus } from "react-icons/fa6";
-import { FaUserCircle } from "react-icons/fa";
 import { useAuth } from "../store/auth";
 import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
@@ -13,7 +8,6 @@ import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import SalesForm from "../components/partners/SalesForm";
 import AddButton from "../components/AddButton";
 import FilterData from "../components/FilterData";
-import SwipeButton from "../components/partners/SwipeButton";
 
 const SalesPerson = () => {
   const { showSalesForm, setShowSalesForm, action } = useAuth();
@@ -21,6 +15,38 @@ const SalesPerson = () => {
     console.log("add");
   };
   const data = [
+    {
+      name: "Name 1",
+      employeeId: "A:MO28",
+      contactNumber: "1234567890",
+      mail: "abc@gmail.com",
+      city: "Nagpur",
+      viewDetails: "",
+    },
+    {
+      name: "Name 1",
+      employeeId: "A:MO28",
+      contactNumber: "1234567890",
+      mail: "abc@gmail.com",
+      city: "Nagpur",
+      viewDetails: "",
+    },
+    {
+      name: "Name 1",
+      employeeId: "A:MO28",
+      contactNumber: "1234567890",
+      mail: "abc@gmail.com",
+      city: "Nagpur",
+      viewDetails: "",
+    },
+    {
+      name: "Name 1",
+      employeeId: "A:MO28",
+      contactNumber: "1234567890",
+      mail: "abc@gmail.com",
+      city: "Nagpur",
+      viewDetails: "",
+    },
     {
       name: "Name 1",
       employeeId: "A:MO28",

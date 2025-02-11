@@ -1,6 +1,6 @@
 import React from "react";
-import CurrentDate from "../CurrentDate";
 import { useAuth } from "../../store/auth";
+import { IoMdClose } from "react-icons/io";
 
 const BuilderForm = ({ label, handleMethod }) => {
   const { setShowBuilderForm } = useAuth();
@@ -9,9 +9,12 @@ const BuilderForm = ({ label, handleMethod }) => {
       <div className="w-[330px] sm:w-[600px] sm:h-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[650px] bg-white py-8 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-[16px] font-semibold">Builders</h2>
-          <div className="md:block hidden">
-            <CurrentDate />
-          </div>
+          <IoMdClose
+            onClick={() => {
+              setShowBuilderForm(false);
+            }}
+            className="w-6 h-6 cursor-pointer"
+          />
         </div>
         <form className="grid gap-4 grid-cols-1 lg:grid-cols-2">
           <div className="w-full ">

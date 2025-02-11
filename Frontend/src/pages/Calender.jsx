@@ -1,12 +1,8 @@
 import React from "react";
-import calender from "../assets/overview/calender.svg";
-import { FaUserCircle } from "react-icons/fa";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
-import { useAuth } from "../store/auth";
-import LogoutButton from "../components/LogoutButton";
 
 const Calender = () => {
-  const { setShowProfile } = useAuth();
+
   return (
     <div className="calender overflow-scroll w-full h-screen flex flex-col items-start justify-start">
       

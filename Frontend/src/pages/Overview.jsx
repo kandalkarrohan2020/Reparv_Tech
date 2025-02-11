@@ -2,23 +2,16 @@ import React from "react";
 import { useState } from "react";
 import { FaRupeeSign } from "react-icons/fa";
 import { CiSearch } from "react-icons/ci";
-import cityIcon from "../assets/overview/cityIcon.svg";
-import downArrow from "../assets/overview/downArrow.svg";
-import calender from "../assets/overview/calender.svg";
 import card1 from "../assets/overview/card1.svg";
 import card2 from "../assets/overview/card2.svg";
 import card3 from "../assets/overview/card3.svg";
 import card4 from "../assets/overview/card4.svg";
-import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Paging from "../components/Paging";
 import CitySelector from "../components/CitySelector";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
-import { useAuth } from "../store/auth";
-import LogoutButton from "../components/LogoutButton";
 
 function Overview() {
-  const { setShowProfile } = useAuth();
   const navigate = useNavigate();
 
   const data = [
@@ -37,6 +30,54 @@ function Overview() {
       dealAmount: "₹881.00",
       reparvShare: "₹881.00",
       dealSqFt: "881 Sq. Ft.",
+    },
+    {
+      projectName: "Project Name",
+      builderName: "Builder Name 3",
+      deals: 3,
+      dealAmount: "₹409.00",
+      reparvShare: "₹409.00",
+      dealSqFt: "409 Sq. Ft.",
+    },
+    {
+      projectName: "Project Name",
+      builderName: "Builder Name 4",
+      deals: 4,
+      dealAmount: "₹953.00",
+      reparvShare: "₹953.00",
+      dealSqFt: "953 Sq. Ft.",
+    },
+    {
+      projectName: "Project Name",
+      builderName: "Builder Name 5",
+      deals: 5,
+      dealAmount: "₹907.00",
+      reparvShare: "₹907.00",
+      dealSqFt: "907 Sq. Ft.",
+    },
+    {
+      projectName: "Project Name",
+      builderName: "Builder Name 3",
+      deals: 3,
+      dealAmount: "₹409.00",
+      reparvShare: "₹409.00",
+      dealSqFt: "409 Sq. Ft.",
+    },
+    {
+      projectName: "Project Name",
+      builderName: "Builder Name 4",
+      deals: 4,
+      dealAmount: "₹953.00",
+      reparvShare: "₹953.00",
+      dealSqFt: "953 Sq. Ft.",
+    },
+    {
+      projectName: "Project Name",
+      builderName: "Builder Name 5",
+      deals: 5,
+      dealAmount: "₹907.00",
+      reparvShare: "₹907.00",
+      dealSqFt: "907 Sq. Ft.",
     },
     {
       projectName: "Project Name",

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import reparvMainLogo from "../../assets/layout/reparvMainLogo.svg";
 import calenderIcon from "../../assets/layout/calenderIcon.svg";
@@ -24,18 +24,18 @@ function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isShortBar, setIsShortbar] = useState(false);
   const [heading, setHeading ] = useState("Overview");
-  const { showProfile, setShowProfile } = useAuth();
+  const { showProfile, setShowProfile, } = useAuth();
   let head;
   const getNavLinkClass = (path) => {
     return location.pathname === path
       ? "font-semibold bg-[#E3FFDF] shadow-[0px_1px_0px_0px_rgba(0,_0,_0,_0.1)]"
       : "";
   };
-
+ 
   const getHeading = (label) => {
     setHeading(label);
-  };
-
+  }
+  
   return (
     <div className="flex flex-col w-full h-screen bg-[#F5F5F6]">
       {/* Mobile Menu Toggle */}

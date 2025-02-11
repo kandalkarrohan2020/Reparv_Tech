@@ -8,6 +8,7 @@ import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import AddButton from "../components/AddButton";
 import FilterData from "../components/FilterData";
 import { IoMdClose } from "react-icons/io";
+import EmployeeFilter from "../components/employee/EmployeeFilter";
 
 const Employee = () => {
   const { showEplDetailsForm, setShowEplDetailsForm, action, setShowProfile } = useAuth();
@@ -112,7 +113,7 @@ const Employee = () => {
               </div>
               <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
                 <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-                  <FilterData />
+                  <EmployeeFilter/>
                   <CustomDateRangePicker />
                 </div>
                 <AddButton
@@ -221,21 +222,21 @@ const Employee = () => {
             <form className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  First Name
+                  Full Name
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter First Name"
+                  placeholder="Enter Full Name"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Last Name
+                  Enter Role
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter Last Name"
+                  placeholder="Enter Role"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>

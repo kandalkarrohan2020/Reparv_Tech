@@ -41,13 +41,14 @@ function Layout() {
       {/* Mobile Menu Toggle */}
       <div className="md:hidden flex items-center justify-between px-5 py-3 bg-white shadow-sm">
         <img src={reparvMainLogo} alt="Reparv Logo" className="h-10" />
-        <div className="ButtonContainer flex gap-5 items-center justify-center">
+        <div className="ButtonContainer flex gap-4 items-center justify-center">
         <FaUserCircle
               onClick={() => {
                 setShowProfile("true");
               }}
               className="w-8 h-8 text-[#076300]"
-            />
+        />
+        <LogoutButton/>
         <button
           className="p-2 rounded-md bg-gray-100 text-black hover:text-[#076300] active:scale-95"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}

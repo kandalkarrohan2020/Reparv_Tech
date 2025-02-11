@@ -11,10 +11,11 @@ import { IoMdClose } from "react-icons/io";
 import EmployeeFilter from "../components/employee/EmployeeFilter";
 
 const Employee = () => {
-  const { showEplDetailsForm, setShowEplDetailsForm, action, setShowProfile } = useAuth();
+  const { showEplDetailsForm, setShowEplDetailsForm, action, setShowProfile } =
+    useAuth();
   const handleMethod = () => {
     console.log("handle Click");
-  }
+  };
   const data = [
     {
       name: "Name 1",
@@ -102,7 +103,7 @@ const Employee = () => {
       {!showEplDetailsForm ? (
         <>
           <div className="employee-table w-full h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
-          <p className="block md:hidden text-lg font-semibold">Employee</p>
+            <p className="block md:hidden text-lg font-semibold">Employee</p>
             <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
               <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
                 <CiSearch />
@@ -114,7 +115,7 @@ const Employee = () => {
               </div>
               <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
                 <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-                  <EmployeeFilter/>
+                  <EmployeeFilter />
                   <CustomDateRangePicker />
                 </div>
                 <AddButton
@@ -294,11 +295,15 @@ const Employee = () => {
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
                   Position
                 </label>
-                <input
-                  type="text"
-                  placeholder="Enter Position"
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <select
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                > 
+                  <option value="user1">Select Position</option>
+                  <option value="user1">User 1</option>
+                  <option value="user2">User 2</option>
+                  <option value="user3">User 3</option>
+                </select>
               </div>
               <div className="w-full ">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">

@@ -11,7 +11,6 @@ function Profile() {
       <div className="Profile w-full md:w-[384px] h-screen bg-[#F5F5F6] flex flex-col items-center justify-start gap-4 px-8 py-14 ">
         <div className="arrow w-[320px] h-[30px] px-3 flex justify-between">
           <FaArrowLeft onClick={()=>{setShowProfile(false)}} className="w-6 h-6 cursor-pointer active:scale-95" />
-          <LogoutButton/>
         </div>
         <div className="profileImgContainer w-[320px] h-[325px] bg-[#FFFFFF] flex flex-col items-center justify-center p-5 gap-3 rounded-[20px] shadow-[#0000001A] ">
           <img src="https://i.pinimg.com/736x/30/0d/27/300d270e6ed684dba484a8444a79b07f.jpg" alt="" className="w-[200px] h-[200px] rounded-[50%]" />

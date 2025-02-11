@@ -16,6 +16,8 @@ import Employee from "./pages/Employee.jsx";
 import Builders from "./pages/Builders.jsx";
 import SalesPerson from "./pages/SalesPerson.jsx";
 import AuctionMembers from "./pages/AuctionMembers.jsx";
+import Properties from "./pages/Properties.jsx";
+import Role from "./pages/Role.jsx";
 
 const App = () => {
   return (
@@ -25,6 +27,7 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route path="/overview" element={<Overview />} />
           <Route path="/enquirers" element={<Enquirers />} />
+          <Route path="/properties" element={<Properties />} />
           <Route path="/map" element={<Map />} />
           <Route path="/calender" element={<Calender />} />
           <Route path="/customers" element={<Customers />} />
@@ -32,6 +35,7 @@ const App = () => {
           <Route path="/sales" element={<SalesPerson />} />
           <Route path="/auction" element={<AuctionMembers />} />
           <Route path="/employee" element={<Employee />} />
+          <Route path="/role" element={<Role />} />
           <Route path="/ticketing" element={<Ticketing />} />
           <Route path="/raw-materials" element={<RawMaterials />} />
           <Route path="/marketing" element={<Marketing />} />

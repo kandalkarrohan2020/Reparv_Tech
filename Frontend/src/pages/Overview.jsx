@@ -211,6 +211,7 @@ function Overview() {
       </div>
 
       <div className="overview-table w-full h-[500px] sm:h-[420px] flex flex-col p-6 gap-4 bg-white rounded-[24px]">
+        <p className="block md:hidden text-lg font-semibold">Overview</p>
         <div className="searchBarContainer w-full flex sm:flex-row flex-col items-center justify-between gap-3">
           <div className="search-bar w-full sm:w-1/2 min-w-[150px] max:w-[289px] md:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start md:justify-between bg-[#0000000A]">
             <CiSearch />

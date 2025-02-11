@@ -4,28 +4,16 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
 
-//const [loader, setLoader] = useState(false);
-//const [accessToken,setAccessToken] = useState(Cookies.get("token"));
 const [showEplDetailsForm, setShowEplDetailsForm ] = useState(false);
 const [showBuilderForm, setShowBuilderForm ] = useState(false);
 const [showSalesForm, setShowSalesForm ] = useState(false);
 const [showAuctionForm, setShowAuctionForm ] = useState(false);
+const [showPropertyForm, setShowPropertyForm ] = useState(false);
+const [showRoleForm, setShowRoleForm ] = useState(false);
 const [showProfile, setShowProfile ] = useState(false);
 const [showTicketInfo, setShowTicketInfo ] = useState(false);
 const [action, setAction ] = useState("Save Details");
 const [isActive, setIsActive] = useState("Builders");
-
-//let isLoggedIn = !!accessToken;
-/*
-const storeTokenInCookie = (token) => {
-    Cookies.set("token", token);
-    setAccessToken(Cookies.get("token"));
-}
-const delTokenInCookie = () => {
-    setAccessToken();
-    Cookies.remove("token");
-}
-*/
 
 return <AuthContext.Provider
  value={
@@ -38,6 +26,8 @@ return <AuthContext.Provider
         showAuctionForm, setShowAuctionForm,
         showTicketInfo, setShowTicketInfo,
         isActive, setIsActive,
+        showPropertyForm, setShowPropertyForm,
+        showRoleForm, setShowRoleForm 
     }
 }>
     {children}

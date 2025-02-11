@@ -1,19 +1,22 @@
 import React from "react";
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import AuctionForm from "../components/partners/AuctionForm";
 import { useAuth } from "../store/auth";
 import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import AddButton from "../components/AddButton";
 import FilterData from "../components/FilterData";
+import { IoMdClose } from "react-icons/io";
 
 const AuctionMembers = () => {
   const { showAuctionForm, setShowAuctionForm, action } = useAuth();
-  const func = () => {
-    console.log("add");
+
+  const handleMethod = () => {
+    console.log("handle Click");
   };
+  
+  
   const data = [
     {
       name: "Name 1",
@@ -136,7 +139,7 @@ const AuctionMembers = () => {
 
   return (
     <>
-      {!showAuctionForm ? (
+      {!showAuctionForm ? 
         <>
           <div className="employee-table w-full h-[550px] sm:h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
             <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
@@ -150,7 +153,7 @@ const AuctionMembers = () => {
               </div>
               <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
                 <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-                  <FilterData/>
+                  <FilterData />
                   <CustomDateRangePicker />
                 </div>
                 <AddButton
@@ -245,9 +248,177 @@ const AuctionMembers = () => {
             setCurrentPage={setCurrentPage}
           />
         </>
-      ) : (
-        <AuctionForm label={action} handleMethod={func} />
-      )}
+        : 
+        <div className="auction-form overflow-scroll scrollbar-hide w-[400px] h-[600px] md:w-[700px] md:h-[650px] flex fixed">
+          <div className="w-[330px] sm:w-[600px] sm:h-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[650px] bg-white py-8 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[16px] font-semibold">Auction Member</h2>
+              <IoMdClose
+                onClick={() => {
+                  setShowAuctionForm(false);
+                }}
+                className="w-6 h-6 cursor-pointer"
+              />
+            </div>
+            <form className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+              <div className="w-full ">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter Full Name"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Contact Number
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter Contact Number"
+                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Address
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter Address"
+                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Experience
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter Experience"
+                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Occupation
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter Occupation"
+                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Adhar Card Number
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter Adhar Number"
+                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Adhar Card
+                </label>
+                <div className="w-full mt-2">
+                  <input type="file" className="hidden" id="rera-documents" />
+                  <label
+                    htmlFor="rera-documents"
+                    className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
+                  >
+                    <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
+                      Upload Document
+                    </span>
+                    <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                      Browse
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Pan Card Number
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter Pan Number"
+                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Pan Card
+                </label>
+                <div className="w-full mt-2">
+                  <input type="file" className="hidden" id="rera-documents" />
+                  <label
+                    htmlFor="rera-documents"
+                    className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
+                  >
+                    <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
+                      Upload Document
+                    </span>
+                    <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                      Browse
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Extra
+                </label>
+                <input
+                  type="text"
+                  placeholder="Extra"
+                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Extra
+                </label>
+                <input
+                  type="text"
+                  placeholder="Extra"
+                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Extra
+                </label>
+                <input
+                  type="text"
+                  placeholder="Extra"
+                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </form>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                onClick={() => {
+                  setShowAuctionForm(false);
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleMethod}
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                {action}
+              </button>
+            </div>
+          </div>
+        </div>
+      }
     </>
   );
 };

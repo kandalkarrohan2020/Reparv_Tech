@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../store/auth';
-import CurrentDate from '../CurrentDate';
+import { IoMdClose } from "react-icons/io";
 
 const EmployeeDetailsForm = ({label, handleMethod}) => {
   const {setShowEplDetailsForm} = useAuth();
@@ -9,7 +9,9 @@ const EmployeeDetailsForm = ({label, handleMethod}) => {
       <div className="w-[330px] sm:w-[600px] sm:h-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[650px] bg-white py-8 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-[16px] font-semibold">Employee Details</h2>
-          <div className='hidden md:block'><CurrentDate/></div>
+          <IoMdClose onClick={() => {
+              setShowEplDetailsForm(false);
+            }} className='w-6 h-6 cursor-pointer'/>
         </div>
         <form className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
           <div className='w-full'>

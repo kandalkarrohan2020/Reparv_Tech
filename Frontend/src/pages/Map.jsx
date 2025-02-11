@@ -1,12 +1,8 @@
 import React from "react";
-import { FaUserCircle } from "react-icons/fa";
 import map from "../assets/map.png"
 import CitySelector from "../components/CitySelector";
-import { useAuth } from "../store/auth";
-import LogoutButton from "../components/LogoutButton";
 
 const Map = () => {
-  const { setShowProfile } = useAuth();
   
   return (
     <div className="map overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">

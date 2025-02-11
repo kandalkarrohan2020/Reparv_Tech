@@ -1,11 +1,6 @@
 import React from "react";
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import calender from "../assets/overview/calender.svg";
-import { HiMiniFunnel } from "react-icons/hi2";
-import { Link } from "react-router-dom";
-import { FaPlus } from "react-icons/fa6";
-import { FaUserCircle } from "react-icons/fa";
 import AuctionForm from "../components/partners/AuctionForm";
 import { useAuth } from "../store/auth";
 import ActionSelect from "../components/employee/ActionSelect";
@@ -13,7 +8,6 @@ import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import AddButton from "../components/AddButton";
 import FilterData from "../components/FilterData";
-import SwipeButton from "../components/partners/SwipeButton";
 
 const AuctionMembers = () => {
   const { showAuctionForm, setShowAuctionForm, action } = useAuth();

@@ -1,20 +1,12 @@
 import React from "react";
 import { useState } from "react";
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { CiSearch } from "react-icons/ci";
-import calender from "../assets/overview/calender.svg";
-import { HiMiniFunnel } from "react-icons/hi2";
-import { Link } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa";
 import ActionSelect from "../components/employee/ActionSelect";
 import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
-import { useAuth } from "../store/auth";
 import FilterData from "../components/FilterData";
-import LogoutButton from "../components/LogoutButton";
 
 const Customers = () => {
-  const { setShowProfile } = useAuth();
   const data = [
     {
       name: "Name 1",

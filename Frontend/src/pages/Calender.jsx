@@ -5,7 +5,7 @@ const Calender = () => {
 
   return (
     <div className="calender overflow-scroll w-full h-screen flex flex-col items-start justify-start">
-      
+      <p className="block md:hidden text-lg font-semibold">Calender</p>
       <div className="calenderContainer w-[1136px] h-[578px] flex flex-col p-6 gap-4 my-[10px]">
         <div className="searchBarContainer w-[1088px] h-[36px] flex align-center justify-end">
         <CustomDateRangePicker/>

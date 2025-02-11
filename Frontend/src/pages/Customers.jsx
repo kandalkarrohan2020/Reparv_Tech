@@ -165,8 +165,8 @@ const Customers = () => {
 
   return (
     <div className="customers overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
-    
       <div className="customers-table w-full h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
+      <p className="block md:hidden text-lg font-semibold">Customers</p>
         <div className="searchBarContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full sm:w-1/2 min-w-[150px] max:w-[289px] md:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start md:justify-between bg-[#0000000A]">
             <CiSearch />

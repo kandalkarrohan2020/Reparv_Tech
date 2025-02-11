@@ -41,6 +41,13 @@ function Layout() {
       {/* Mobile Menu Toggle */}
       <div className="md:hidden flex items-center justify-between px-5 py-3 bg-white shadow-sm">
         <img src={reparvMainLogo} alt="Reparv Logo" className="h-10" />
+        <div className="ButtonContainer flex gap-5 items-center justify-center">
+        <FaUserCircle
+              onClick={() => {
+                setShowProfile("true");
+              }}
+              className="w-8 h-8 text-[#076300]"
+            />
         <button
           className="p-2 rounded-md bg-gray-100 text-black hover:text-[#076300] active:scale-95"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -51,6 +58,8 @@ function Layout() {
             <IoMdClose size={24} />
           )}
         </button>
+        </div>
+        
       </div>
 
       {/* Navbar */}
@@ -91,14 +100,16 @@ function Layout() {
             {[
               { to: "/overview", icon: overviewIcon, label: "Overview" },
               { to: "/enquirers", icon: enquirersIcon, label: "Enquirers" },
-              { to: "/map", icon: mapIcon, label: "Map" },
-              { to: "/calender", icon: calenderIcon, label: "Calendar" },
               { to: "/customers", icon: customersIcon, label: "Customers" },
+              { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/builders", icon: partnerIcon, label: "Builders" },
               { to: "/sales", icon: partnerIcon, label: "Sales" },
               { to: "/auction", icon: partnerIcon, label: "Auction" },
               { to: "/employee", icon: employeeIcon, label: "Employee" },
+              { to: "/role", icon: employeeIcon, label: "Role" },
               { to: "/ticketing", icon: ticketingIcon, label: "Ticketing" },
+              { to: "/map", icon: mapIcon, label: "Map" },
+              { to: "/calender", icon: calenderIcon, label: "Calendar" },
               {
                 to: "/raw-materials",
                 icon: materialIcon,
@@ -128,7 +139,7 @@ function Layout() {
                     className="md:h-6 md:w-6 w-5 h-5"
                   />
                 </div>
-                <span className={`text-sm md:text-base ${isShortBar?"hidden":"block"}`}>{label}</span>
+                <span className={`text-sm md:text-base ${isShortBar?"md:hidden":"block"}`}>{label}</span>
               </NavLink>
             ))}
           </div>

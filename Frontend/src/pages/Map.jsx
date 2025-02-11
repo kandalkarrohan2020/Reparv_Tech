@@ -6,7 +6,7 @@ const Map = () => {
   
   return (
     <div className="map overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
-      
+      <p className="block md:hidden text-lg font-semibold">Map</p>
       <div className="map w-full  h-[578px] flex flex-col p-4 sm:p-6 gap-4 my-[10px] bg-white rounded-[24px]">
         <div className="w-full  flex align-center justify-end">
           <div className="w-full flex flex-wrap gap-2 lg:gap-6 items-center justify-end">

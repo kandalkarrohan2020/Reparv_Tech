@@ -7,7 +7,6 @@ import Enquirers from "./pages/Enquirers.jsx";
 import Map from "./pages/Map.jsx";
 import Calender from "./pages/Calender.jsx";
 import Customers from "./pages/Customers.jsx";
-import Partners from "./pages/Partners.jsx";
 import Ticketing from "./pages/Ticketing.jsx";
 import RawMaterials from "./pages/RawMaterials.jsx";
 import Marketing from "./pages/Marketing.jsx";

@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import ActionSelect from "../components/employee/ActionSelect";
+import ActionSelect from "../components/ActionSelect";
 import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import { useAuth } from "../store/auth";

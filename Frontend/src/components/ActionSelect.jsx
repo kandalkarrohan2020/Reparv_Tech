@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FiMoreVertical } from "react-icons/fi";
-import { useAuth } from "../../store/auth";
+import { useAuth } from "../store/auth";
 
 const ActionSelect = ({func, label}) => {
   const [selectedAction, setSelectedAction] = useState("");

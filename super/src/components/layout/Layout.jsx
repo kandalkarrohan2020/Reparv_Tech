@@ -36,6 +36,7 @@ function Layout() {
     showPropertyTypeForm,
     showRoleForm,
     showDepartmentForm,
+    isLoggedIn
   } = useAuth();
   let head;
   const getNavLinkClass = (path) => {
@@ -164,7 +165,7 @@ function Layout() {
                   getHeading(label);
                 }}
                 key={to}
-                to={to}
+                to={isLoggedIn === true ? to : "/"}
                 className={`flex items-center gap-3 w-full p-3 rounded-[20px] transition-all duration-300 text-black ${getNavLinkClass(
                   to
                 )}`}

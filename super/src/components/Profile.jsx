@@ -26,10 +26,10 @@ const Profile = () => {
         <div className="profileImgContainer w-[320px] h-[325px] bg-[#FFFFFF] flex flex-col items-center justify-center p-5 gap-3 rounded-[20px] shadow-[#0000001A] ">
           <img src="https://i.pinimg.com/736x/30/0d/27/300d270e6ed684dba484a8444a79b07f.jpg" alt="" className="w-[200px] h-[200px] rounded-[50%]" />
           <h2 className="text-[18px] leading-5 font-semibold text-[#076300]">
-           {user.name}
+           {user?.name}
           </h2>
           <h3 className="text-sm leading-4 font-medium text-[#000000]">
-            {user.role}
+            {user?.role}
           </h3>
         </div>
 
@@ -41,14 +41,14 @@ const Profile = () => {
             Name:{" "}
             <b className="text-[16px] text-[#000000] leading-5 font-semibold ">
               {" "}
-             {user.name}
+             {user?.name}
             </b>
           </h3>
           <h3 className="text-[16px] text-[#000000] leading-5 ">
             Email:{" "}
             <b className="text-[16px] text-[#000000] leading-5 font-semibold ">
               {" "}
-              {user.email}
+              {user?.email}
             </b>
           </h3>
           <h3 className="text-[16px] text-[#000000] leading-5 ">
@@ -62,7 +62,7 @@ const Profile = () => {
             Role:{" "}
             <b className="text-[16px] text-[#000000] leading-5 font-semibold ">
               {" "}
-              {user.role}
+              {user?.role}
             </b>
           </h3>
         </div>

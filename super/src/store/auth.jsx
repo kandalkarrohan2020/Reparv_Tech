@@ -4,7 +4,18 @@ import Cookies from "js-cookie";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
-const [token, setToken] = useState(Cookies.get("token"));
+const [accessToken, setAccessToken] = useState(Cookies.get("accessToken"));
+
+let isLoggedIn = !!accessToken;
+
+const storeTokenInCookie = (token) => {
+    Cookies.set("accessToken", token);
+    setAccessToken(Cookies.get("accessToken"));
+}
+const delTokenInCookie = () => {
+    setAccessToken();
+    Cookies.remove("accessToken");
+}
 
 const [showEplDetailsForm, setShowEplDetailsForm ] = useState(false);
 const [showBuilderForm, setShowBuilderForm ] = useState(false);
@@ -19,11 +30,12 @@ const [showTicketInfo, setShowTicketInfo ] = useState(false);
 const [action, setAction ] = useState("Save Details");
 const [isActive, setIsActive] = useState("Builders");
 const [giveAccess, setGiveAccess] = useState(false);
-const [user, setUser] = useState({});
+const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 return <AuthContext.Provider
  value={
     {   
-        token, setToken,
+        isLoggedIn, storeTokenInCookie, delTokenInCookie,
+        accessToken, setAccessToken,
         showEplDetailsForm,setShowEplDetailsForm,
         action,setAction,
         showProfile,setShowProfile,
@@ -37,7 +49,7 @@ return <AuthContext.Provider
         showRoleForm, setShowRoleForm,
         showDepartmentForm, setShowDepartmentForm,
         giveAccess, setGiveAccess,
-        user, setUser
+        user, setUser,
     }
 }>
     {children}

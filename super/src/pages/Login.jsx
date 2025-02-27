@@ -8,9 +8,10 @@ import { IoMdEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../store/auth";
+import Cookies from "js-cookie";
 
 function Login() {
-  const {user, setUser} = useAuth();
+  const {user, setUser, accessToken, storeTokenInCookie, isLoggedIn} = useAuth();
   const [isPasswordShow, setIsPasswordShow] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,8 +45,8 @@ function Login() {
 
       if (response.data.token) {
         console.log("Login Successful", response.data);
-        setUser(response.data.user);
-        console.log(user);
+        localStorage.setItem("user",JSON.stringify(response.data.user));
+        storeTokenInCookie(response.data.token);
         navigate("/overview"); // Redirect after successful login
       } else {
         setErrorMessage("Invalid login credentials.");

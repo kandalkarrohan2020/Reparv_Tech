@@ -63,6 +63,7 @@ const Builders = () => {
         `http://localhost:3000/builders/${endpoint}`,
         {
           method: action === "Add" ? "POST" : "PUT",
+          credentials: "include", 
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newBuilder),
         }

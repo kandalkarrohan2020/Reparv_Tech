@@ -61,7 +61,12 @@ const Employee = () => {
   //Fetch roles data
   const fetchRoleData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/roles");
+      const response = await fetch("http://localhost:3000/admin/roles", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        }});
       if (!response.ok) throw new Error("Failed to fetch roles.");
       const data = await response.json();
       setRoleData(data); // Store the fetched data
@@ -73,7 +78,12 @@ const Employee = () => {
   //Fetch department data
   const fetchDepartmentData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/departments");
+      const response = await fetch("http://localhost:3000/admin/departments", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        }});
       if (!response.ok) throw new Error("Failed to fetch departments.");
       const data = await response.json();
       setDepartmentData(data); // Store the fetched data
@@ -92,6 +102,7 @@ const Employee = () => {
         `http://localhost:3000/admin/employees/${endpoint}`,
         {
           method: action === "Add" ? "POST" : "PUT",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newEmployee),
         }
@@ -130,7 +141,12 @@ const Employee = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3000/admin/employees/${id}`);
+      const response = await fetch(`http://localhost:3000/admin/employees/${id}`, {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        }});
       if (!response.ok) throw new Error("Failed to fetch employee.");
       const data = await response.json();
       setEmployeeData(data);
@@ -149,6 +165,7 @@ const Employee = () => {
         `http://localhost:3000/admin/employees/delete/${id}`,
         {
           method: "DELETE",
+          credentials: "include",
         }
       );
 
@@ -177,6 +194,7 @@ const Employee = () => {
         `http://localhost:3000/admin/employees/status/${id}`,
         {
           method: "PUT",
+          credentials: "include",
         }
       );
       const data = await response.json();
@@ -205,6 +223,7 @@ const Employee = () => {
         `http://localhost:3000/admin/employees/assignlogin/${selectedEmployeeId}`,
         {
           method: "PUT",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },

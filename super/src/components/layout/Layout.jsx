@@ -23,7 +23,7 @@ function Layout() {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isShortBar, setIsShortbar] = useState(false);
-  const [heading, setHeading] = useState("");
+  const [heading, setHeading] = useState(localStorage.getItem("head"));
   const {
     showProfile,
     setShowProfile,
@@ -38,7 +38,7 @@ function Layout() {
     showDepartmentForm,
     isLoggedIn
   } = useAuth();
-  let head;
+  
   const getNavLinkClass = (path) => {
     return location.pathname === path
       ? "font-semibold bg-[#E3FFDF] shadow-[0px_1px_0px_0px_rgba(0,_0,_0,_0.1)]"
@@ -47,6 +47,7 @@ function Layout() {
 
   const getHeading = (label) => {
     setHeading(label);
+    localStorage.setItem("head",label);
   };
 
   return (

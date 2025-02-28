@@ -9,7 +9,7 @@ function LogoutButton() {
   const userLogout = async () => {
     try {
       await axios.post(
-        "http://localhost:3000/admin/user/logout",
+        "http://localhost:3000/admin/logout",
         {},
         { withCredentials: true }
       );

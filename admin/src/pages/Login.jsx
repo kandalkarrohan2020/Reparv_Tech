@@ -31,7 +31,7 @@ function Login() {
       return;
     }
 
-    const url = "http://localhost:3000/admin/user/login"; // Ensure correct API URL
+    const url = "http://localhost:3000/admin/login"; // Ensure correct API URL
 
     try {
       const response = await axios.post(

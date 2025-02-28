@@ -39,7 +39,7 @@ app.use(
 
 app.use(express.json());
 
-const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
+const allowedOrigins = ["http://localhost:5173", "http://localhost:5174","https://reparv-tech.onrender.com"];
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -57,7 +57,7 @@ app.use(
 app.use(cookieParser());
 
 const verifyToken = (req, res, next) => {
-    const publicRoutes = ["/admin/user/login","/employee/login"];
+    const publicRoutes = ["/admin/login","/employee/login"];
   
     // ✅ Allow public routes to pass through
     if (publicRoutes.some(route => req.path.startsWith(route))) {
@@ -87,7 +87,7 @@ app.get("/get-cookie", (req, res) => {
 
 // ✅ Use Login & Auth Routes
 app.use(verifyToken);
-app.use("/admin/user", loginRoutes);
+app.use("/admin", loginRoutes);
 app.use("/admin/employees", employeeRoutes);
 app.use("/admin/properties", propertyRoutes);
 app.use("/admin/builders", builderRoutes);

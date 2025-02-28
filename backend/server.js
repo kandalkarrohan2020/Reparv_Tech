@@ -22,7 +22,7 @@ import auctionmembersRoutes from "./routes/admin/auctionmemberRoutes.js";
 //import calenderRoutes from "./routes/admin/calenderRoutes.js";
 //import marketingRoutes from "./routes/admin/marketingRoutes.js";
 //import rawmaterialRoutes from "./routes/admin/rawmaterialRoutes.js";
-//import employeeloginRoutes from "./routes/admin/employeeloginRoutes.js";
+import employeeloginRoutes from "./routes/admin/employeeloginRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -38,21 +38,26 @@ app.use(
 );
 
 app.use(express.json());
-//app.options('*', cors());
+
+const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
   })
 );
-// app.use(cors({ origin: "http://localhost:5174", methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',credentials: true }));
-// app.use(cors({ origin: "http://localhost:5175", credentials: true }));
-// app.use(cors({ origin: "http://localhost:5176", credentials: true }));
+
 app.use(cookieParser());
 
 const verifyToken = (req, res, next) => {
-    const publicRoutes = ["/admin/user/login"];
+    const publicRoutes = ["/admin/user/login","/employee/login"];
   
     // ✅ Allow public routes to pass through
     if (publicRoutes.some(route => req.path.startsWith(route))) {
@@ -60,7 +65,7 @@ const verifyToken = (req, res, next) => {
     }
   
     const token = req.cookies?.token; // Ensure token exists
-    console.log("Token received:", token); // Debugging line
+    //console.log("Token received:", token); // Debugging line
   
     if (!token) {
       return res.status(401).json({ message: "Unauthorized. Please log in." });
@@ -95,10 +100,14 @@ app.use("/admin/salespersons", salespersonRoutes);
 app.use("/admin/propertytypes", propertytypeRoutes);
 app.use("/admin/enquirers", enquirerRoutes);
 app.use("/admin/auctionmembers", auctionmembersRoutes);
-//app.use("/tickets", ticketRoutes);
-// app.use("/calenders", calenderRoutes);
-// app.use("/marketing", marketingRoutes);
-// app.use("/rawmaterials", rawmaterialRoutes);
+//app.use("/admin/tickets", ticketRoutes);
+// app.use("/admin/calenders", calenderRoutes);
+// app.use("/admin/marketing", marketingRoutes);
+// app.use("/admin/rawmaterials", rawmaterialRoutes);
+
+
+//Employee Routes
+app.use("/employee", employeeloginRoutes);
 
 // ✅ Start Server
 app.listen(PORT, () => {

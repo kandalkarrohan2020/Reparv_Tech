@@ -15,6 +15,7 @@ const Builders = () => {
     action,
     giveAccess,
     setGiveAccess,
+    URI,
   } = useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -35,7 +36,7 @@ const Builders = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/builders", {
+      const response = await fetch(URI + "/admin/builders", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -59,15 +60,12 @@ const Builders = () => {
       ? `edit/${newBuilder.builderid}`
       : "add";
     try {
-      const response = await fetch(
-        `http://localhost:3000/builders/${endpoint}`,
-        {
-          method: action === "Add" ? "POST" : "PUT",
-          credentials: "include", 
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newBuilder),
-        }
-      );
+      const response = await fetch(URI + `/admin/builders/${endpoint}`, {
+        method: action === "Add" ? "POST" : "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newBuilder),
+      });
 
       if (!response.ok) throw new Error("Failed to save builders.");
 
@@ -100,9 +98,12 @@ const Builders = () => {
   //fetch data on form
   const edit = async (builderid) => {
     try {
-      const response = await fetch(
-        `http://localhost:3000/builders/${builderid}`
-      );
+      const response = await fetch(URI + `/admin/builders/${builderid}`, {
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (!response.ok) throw new Error("Failed to fetch builders.");
       const data = await response.json();
       setBuilderData(data);
@@ -119,9 +120,13 @@ const Builders = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/builders/delete/${builderid}`,
+        URI + `/admin/builders/delete/${builderid}`,
         {
           method: "DELETE",
+          credentials: "include", // ✅ Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -145,9 +150,13 @@ const Builders = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/builders/status/${builderid}`,
+        URI + `/admin/builders/status/${builderid}`,
         {
           method: "PUT",
+          credentials: "include", // ✅ Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
       const data = await response.json();
@@ -173,12 +182,13 @@ const Builders = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/builders/assignlogin/${selectedBuilderId}`,
+        URI + `/admin/builders/assignlogin/${selectedBuilderId}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include", // ✅ Ensures cookies are sent
           body: JSON.stringify({ selectedBuilderId, username, password }),
         }
       );
@@ -333,7 +343,9 @@ const Builders = () => {
   };
 
   return (
-    <div className={`builders overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}>
+    <div
+      className={`builders overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
+    >
       {!showBuilderForm ? (
         <>
           <div className="builder-table w-full h-[550px] sm:h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
@@ -362,7 +374,6 @@ const Builders = () => {
               <DataTable columns={columns} data={filteredData} pagination />
             </div>
           </div>
-          
         </>
       ) : (
         <div className="z-[61] builder-form overflow-scroll scrollbar-hide w-[400px] h-[600px] md:w-[700px] md:h-[650px] flex fixed">
@@ -623,9 +634,8 @@ const Builders = () => {
               </button>
             </div>
           </form>
-        
+        </div>
       </div>
-    </div>
     </div>
   );
 };

@@ -10,7 +10,7 @@ import EmployeeFilter from "../components/employee/EmployeeFilter";
 import DataTable  from "react-data-table-component";
 
 const Department = () => {
-  const { showDepartmentForm, setShowDepartmentForm, action, } = useAuth();
+  const { showDepartmentForm, setShowDepartmentForm, action, URI} = useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [newDepartment, setNewDepartment] = useState({ departmentid:"",department: "" });
@@ -18,7 +18,7 @@ const Department = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/departments", {
+      const response = await fetch(URI+"/admin/departments", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -40,7 +40,7 @@ const Department = () => {
     const endpoint = newDepartment.departmentid ? `edit/${newDepartment.departmentid}` : "add";
     
     try {
-      const response = await fetch(`http://localhost:3000/departments/${endpoint}`, {
+      const response = await fetch(URI+`/admin/departments/${endpoint}`, {
         method: action === "Add" ? "POST" : "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -69,7 +69,7 @@ const Department = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3000/departments/${id}`);
+      const response = await fetch(URI+`/admin/departments/${id}`);
       if (!response.ok) throw new Error("Failed to fetch departments.");
       const data = await response.json();
       setNewDepartment(data);
@@ -84,7 +84,7 @@ const Department = () => {
     if (!window.confirm("Are you sure you want to delete this department?")) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/departments/delete/${id}`, {
+      const response = await fetch(URI+`/admin/departments/delete/${id}`, {
         method: "DELETE",
         credentials: "include"
       });
@@ -107,7 +107,7 @@ const Department = () => {
     if (!window.confirm("Are you sure you want to change this department status?")) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/departments/status/${id}`, {
+      const response = await fetch(URI+`/admin/departments/status/${id}`, {
         method: "PUT",
         credentials: "include"
       });

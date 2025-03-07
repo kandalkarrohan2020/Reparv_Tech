@@ -5,11 +5,11 @@ import { useAuth } from "../store/auth";
 
 function LogoutButton() {
   const navigate = useNavigate();
-  const { delTokenInCookie } = useAuth();
+  const { delTokenInCookie, URI } = useAuth();
   const userLogout = async () => {
     try {
       await axios.post(
-        "http://localhost:3000/admin/logout",
+        URI+"/admin/logout",
         {},
         { withCredentials: true }
       );

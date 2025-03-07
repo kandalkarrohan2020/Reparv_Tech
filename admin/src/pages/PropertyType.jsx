@@ -10,7 +10,7 @@ import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 
 const PropertyType = () => {
-  const { setShowPropertyTypeForm, showPropertyTypeForm, action } = useAuth();
+  const { setShowPropertyTypeForm, showPropertyTypeForm, action, URI } = useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -20,7 +20,7 @@ const PropertyType = () => {
 
   const fetchDatas = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/propertytypes", {
+      const response = await fetch(URI+"/admin/propertytypes", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {

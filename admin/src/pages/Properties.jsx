@@ -11,7 +11,7 @@ import DataTable from "react-data-table-component";
 
 
 const Properties = () => {
-  const { setShowPropertyForm, showPropertyForm, action } = useAuth();
+  const { setShowPropertyForm, showPropertyForm, action, URI } = useAuth();
   const [datas, setDatas] = useState([]);
   const [propertyTypeData, setPropertyTypeData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,7 +31,7 @@ const Properties = () => {
   //Fetch Property type
   const fetchPropertyType = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/propertytypes", {
+      const response = await fetch(URI+"/admin/propertytypes", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -49,7 +49,7 @@ const Properties = () => {
   //Fetch Data
   const fetchDatas = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/properties", {
+      const response = await fetch(URI+"/admin/properties", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -70,7 +70,7 @@ const Properties = () => {
     
     const endpoint = newProperty.propertyid ? `edit/${newProperty.propertyid}` : "add";
     try {
-        const response = await fetch(`http://localhost:3000/admin/properties/${endpoint}`, {
+        const response = await fetch(URI+`/admin/properties/${endpoint}`, {
         method: action === "add" ? "POST" : "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -106,7 +106,7 @@ const Properties = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3000/admin/properties/${id}`, {
+      const response = await fetch(URI+`/admin/properties/${id}`, {
         method: "put",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -127,7 +127,7 @@ const Properties = () => {
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this property?")) return;
     try {
-      const response = await fetch(`http://localhost:3000/admin/properties/delete/${id}`, {
+      const response = await fetch(URI+`/admin/properties/delete/${id}`, {
         method: "DELETE",
       });
       
@@ -149,7 +149,7 @@ const Properties = () => {
     if (!window.confirm("Are you sure you want to change this property status?")) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/admin/properties/status/${id}`, {
+      const response = await fetch(URI+`/admin/properties/status/${id}`, {
         method: "PUT",
       });
       const data = await response.json();
@@ -170,7 +170,7 @@ const Properties = () => {
     if (!window.confirm("Are you sure you want to approve this property?")) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/admin/properties/approve/${id}`, {
+      const response = await fetch(URI+`/admin/properties/approve/${id}`, {
         method: "PUT",
       });
       const data = await response.json();

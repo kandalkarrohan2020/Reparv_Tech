@@ -11,7 +11,7 @@ import { useAuth } from "../store/auth";
 import Cookies from "js-cookie";
 
 function Login() {
-  const {user, setUser, accessToken, storeTokenInCookie, isLoggedIn} = useAuth();
+  const {user, setUser, accessToken, storeTokenInCookie, isLoggedIn, URI} = useAuth();
   const [isPasswordShow, setIsPasswordShow] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +31,7 @@ function Login() {
       return;
     }
 
-    const url = "http://localhost:3000/admin/login"; // Ensure correct API URL
+    const url = URI+"/admin/login"; // Ensure correct API URL
 
     try {
       const response = await axios.post(

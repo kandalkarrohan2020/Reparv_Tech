@@ -346,7 +346,7 @@ const Employee = () => {
                 Assign Login
               </button>
               <button
-                className="block w-full px-2 py-2 text-sm text-left text-gray-700 hover:bg-gray-100 text-red-600"
+                className="block w-full px-2 py-2 text-sm text-left hover:bg-gray-100 text-red-600"
                 onClick={() => handleAction("delete")}
               >
                 Delete

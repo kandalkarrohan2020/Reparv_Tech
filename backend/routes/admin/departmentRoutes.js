@@ -1,5 +1,5 @@
 import express from "express";
-import {getAll, getById, add, status, del} from "../../controllers/admin/departmentController.js";
+import {getAll, getById, add, update, status, del} from "../../controllers/admin/departmentController.js";
 
 const router = express.Router();
 

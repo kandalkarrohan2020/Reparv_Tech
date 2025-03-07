@@ -23,7 +23,7 @@ const ActionSelect = ({ viewRoute, statusAction, editAction, deleteAction, appro
           break;
 
       case "update":
-        setAction("Update"); // Optional: Set global state for action
+        setAction("update"); // Optional: Set global state for action
         editAction();
         break;
       

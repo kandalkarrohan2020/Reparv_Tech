@@ -40,13 +40,12 @@ const Role = () => {
     const endpoint = newRole.roleid ? `edit/${newRole.roleid}` : "add";
     try {
       const response = await fetch(URI+`/admin/roles/${endpoint}`, {
-        method: action === "Add" ? "POST" : "PUT",
+        method: action === "update" ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newRole),
       });
 
-      
       if (!response.ok) throw new Error("Failed to save role.");
       
       if(newRole.roleid){

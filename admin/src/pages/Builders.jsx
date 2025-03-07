@@ -53,7 +53,7 @@ const Builders = () => {
   };
 
   //Add or update record
-  const add = async (e) => {
+  const add2 = async (e) => {
     e.preventDefault();
 
     const endpoint = newBuilder.builderid
@@ -95,10 +95,54 @@ const Builders = () => {
     }
   };
 
+  const add = async (e) => {
+    e.preventDefault();
+  
+    const endpoint = newBuilder.builderid ? `edit/${newBuilder.builderid}` : "add";
+  
+    try {
+      const response = await fetch(`${URI}/admin/builders/${endpoint}`, {
+        method: newBuilder.builderid ? "PUT" : "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newBuilder),
+      });
+  
+      if (response.status === 409) {
+        alert("Builder already exists!");
+      } else if (!response.ok) {
+        throw new Error(`Failed to save builder. Status: ${response.status}`);
+      } else {
+        alert(newBuilder.builderid ? "Builder updated successfully!" : "Builder added successfully!");
+      }
+  
+      // Clear form only after successful fetch
+      setBuilderData({
+        company_name: "",
+        contact_person: "",
+        contact: "",
+        email: "",
+        office_address: "",
+        registration_no: "",
+        dor: "",
+        website: "",
+        notes: "",
+      });
+  
+      setShowBuilderForm(false);
+  
+      await fetchData(); // Ensure latest data is fetched
+  
+    } catch (err) {
+      console.error("Error saving builder:", err);
+    }
+  };
+
   //fetch data on form
   const edit = async (builderid) => {
     try {
       const response = await fetch(URI + `/admin/builders/${builderid}`, {
+        method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
@@ -310,7 +354,7 @@ const Builders = () => {
                 Assign Login
               </button>
               <button
-                className="block w-full px-2 py-2 text-sm text-left text-gray-700 hover:bg-gray-100 text-red-600"
+                className="block w-full px-2 py-2 text-sm text-left hover:bg-gray-100 text-red-600"
                 onClick={() => handleAction("delete")}
               >
                 Delete

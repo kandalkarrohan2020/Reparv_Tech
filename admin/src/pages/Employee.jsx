@@ -93,15 +93,15 @@ const Employee = () => {
   };
 
   //Add or update record
-  const add = async (e) => {
+  const add2 = async (e) => {
     e.preventDefault();
 
     const endpoint = newEmployee.id ? `edit/${newEmployee.id}` : "add";
     try {
       const response = await fetch(
-        URI+`/admin/employees/${endpoint}`,
+        URI+ `/admin/employees/${endpoint}`,
         {
-          method: action === "Add" ? "POST" : "PUT",
+          method: action === "update" ? "PUT" : "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newEmployee),
@@ -137,7 +137,51 @@ const Employee = () => {
       console.error("Error saving :", err);
     }
   };
-
+  
+  const add = async (e) => {
+    e.preventDefault();
+  
+    const endpoint = newEmployee.id ? `edit/${newEmployee.id}` : "add";
+  
+    try {
+      const response = await fetch(`${URI}/admin/employees/${endpoint}`, {
+        method: newEmployee.id ? "PUT" : "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newEmployee),
+      });
+  
+      if (response.status === 409) {
+        alert("Employee already exists!");
+      } else if (!response.ok) {
+        throw new Error(`Failed to save employee. Status: ${response.status}`);
+      } else {
+        alert(newEmployee.id ? "Employee updated successfully!" : "Employee added successfully!");
+      }
+  
+      // Clear form only after successful fetch
+      setEmployeeData({
+        name: "",
+        uid: "",
+        contact: "",
+        email: "",
+        address: "",
+        dob: "",
+        departmentid: "",
+        roleid: "",
+        salary: "",
+        doj: "",
+        status: "",
+      });
+  
+      setShowEplDetailsForm(false);
+  
+      await fetchData(); // Ensure latest data is fetched
+  
+    } catch (err) {
+      console.error("Error saving employee:", err);
+    }
+  };
   //fetch data on form
   const edit = async (id) => {
     try {
@@ -146,7 +190,8 @@ const Employee = () => {
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
-        }});
+        },
+      });
       if (!response.ok) throw new Error("Failed to fetch employee.");
       const data = await response.json();
       setEmployeeData(data);

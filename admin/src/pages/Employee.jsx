@@ -15,7 +15,7 @@ const Employee = () => {
     action,
     giveAccess,
     setGiveAccess,
-    token,
+    token, URI
   } = useAuth();
   const [datas, setDatas] = useState([]);
   const [roleData, setRoleData] = useState([]);
@@ -41,7 +41,7 @@ const Employee = () => {
   // *Fetch Data from API*
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/employees", {
+      const response = await fetch(URI+"/admin/employees", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -61,7 +61,7 @@ const Employee = () => {
   //Fetch roles data
   const fetchRoleData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/roles", {
+      const response = await fetch(URI+"/admin/roles", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -78,7 +78,7 @@ const Employee = () => {
   //Fetch department data
   const fetchDepartmentData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/departments", {
+      const response = await fetch(URI+"/admin/departments", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -99,7 +99,7 @@ const Employee = () => {
     const endpoint = newEmployee.id ? `edit/${newEmployee.id}` : "add";
     try {
       const response = await fetch(
-        `http://localhost:3000/admin/employees/${endpoint}`,
+        URI+`/admin/employees/${endpoint}`,
         {
           method: action === "Add" ? "POST" : "PUT",
           credentials: "include",
@@ -141,7 +141,7 @@ const Employee = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3000/admin/employees/${id}`, {
+      const response = await fetch(URI+`/admin/employees/${id}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -162,7 +162,7 @@ const Employee = () => {
       return;
     try {
       const response = await fetch(
-        `http://localhost:3000/admin/employees/delete/${id}`,
+        URI+`/admin/employees/delete/${id}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -191,7 +191,7 @@ const Employee = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/admin/employees/status/${id}`,
+        URI+`/admin/employees/status/${id}`,
         {
           method: "PUT",
           credentials: "include",
@@ -220,7 +220,7 @@ const Employee = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/admin/employees/assignlogin/${selectedEmployeeId}`,
+        URI+`/admin/employees/assignlogin/${selectedEmployeeId}`,
         {
           method: "PUT",
           credentials: "include",

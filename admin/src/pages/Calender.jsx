@@ -77,7 +77,7 @@ const CalendarScheduler = () => {
 
   return (
     <div className="calender overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start ">
-      <div className=" calender w-full h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
+      <div className="calender w-full h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
         <div className="w-full flex items-end justify-end px-2">
           <CustomDateRangePicker />
         </div>

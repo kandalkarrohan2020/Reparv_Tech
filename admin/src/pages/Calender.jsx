@@ -2,85 +2,155 @@ import React, { useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { format } from "date-fns";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-const visitData = [
-  { date: "2025-01-21", project: "Siddhivinayak", client: "Pawan", phone: "9876543210", salesPerson: "Reparv", status: "visited" },
-  { date: "2025-02-21", project: "Siddhivinayak", client: "Pawan", phone: "9876543210", salesPerson: "Reparv", status: "cancelled" },
-  { date: "2025-01-28", project: "Siddhivinayak", client: "Pawan", phone: "9876543210", salesPerson: "Reparv", status: "scheduled" },
-];
-
-const statusColors = {
-  visited: "bg-green-500 text-white",
-  cancelled: "bg-red-500 text-white",
-  scheduled: "bg-yellow-500 text-white",
+const statusClasses = {
+  scheduled: "bg-blue-100 text-blue-600",
+  canceled: "bg-red-100 text-red-600",
+  completed: "bg-green-100 text-green-600",
+  reschedule: "bg-gray-200 text-gray-500",
 };
 
 const CalendarScheduler = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const today = format(new Date(), "yyyy-MM-dd");
+  const [meetings, setMeetings] = useState([
+    {
+      date: "2025-03-06",
+      project: "Siddhivinayak",
+      client: "Pawan",
+      phone: "9876543210",
+      salesPerson: "Reparv",
+      status: "scheduled",
+    },
+    {
+      date: "2025-03-23",
+      project: "Siddhivinayak",
+      client: "Pawan",
+      phone: "9876543210",
+      salesPerson: "Reparv",
+      status: "canceled",
+    },
+    {
+      date: "2025-03-21",
+      project: "Siddhivinayak",
+      client: "Pawan",
+      phone: "9876543210",
+      salesPerson: "Reparv",
+      status: "completed",
+    },
+    {
+      date: "2025-02-21",
+      project: "Siddhivinayak",
+      client: "Pawan",
+      phone: "9876543210",
+      salesPerson: "Reparv",
+      status: "reschedule",
+    },
+  ]);
 
+  // Add meeting status dots
   const tileContent = ({ date, view }) => {
     if (view === "month") {
       const dateString = format(date, "yyyy-MM-dd");
-      const visit = visitData.find((v) => v.date === dateString);
-      if (dateString === today) {
-        return <div className="w-6 h-6 flex items-center justify-center rounded-full bg-green-500 text-white">{date.getDate()}</div>;
-      }
-      if (visit) {
-        return <div className={`w-2 h-2 rounded-full mx-auto ${statusColors[visit.status]}`}></div>;
+      const meeting = meetings.find((meeting) => meeting.date === dateString);
+
+      if (meeting) {
+        return (
+          <div
+            className={`w-2 h-2 rounded-full mx-auto ${
+              meeting.status === "scheduled"
+                ? "bg-blue-500"
+                : meeting.status === "canceled"
+                ? "bg-red-500"
+                : meeting.status === "reschedule"
+                ? "bg-gray-500"
+                : meeting.status === "completed"
+                ? "bg-green-500"
+                : ""
+            }`}
+          ></div>
+        );
       }
     }
     return null;
   };
 
   return (
-    <div className="flex gap-6 p-6">
+    <div className="flex gap-6 p-6 h-screen">
       {/* Calendar Section */}
-      <div className="w-1/3 p-4 bg-white rounded-2xl shadow-md">
-        <div className="flex justify-between items-center mb-4">
-          <button
-            onClick={() => setSelectedDate(new Date(selectedDate.setMonth(selectedDate.getMonth() - 1)))}
-            className="p-2 rounded-full hover:bg-gray-200"
-          >
-            <FaChevronLeft size={20} />
-          </button>
-          <h2 className="text-lg font-semibold">{format(selectedDate, "yyyy MMM")}</h2>
-          <button
-            onClick={() => setSelectedDate(new Date(selectedDate.setMonth(selectedDate.getMonth() + 1)))}
-            className="p-2 rounded-full hover:bg-gray-200"
-          >
-            <FaChevronRight size={20} />
-          </button>
-        </div>
+      <div>
         <Calendar
           onChange={setSelectedDate}
           value={selectedDate}
+          locale="en-US"
           tileContent={tileContent}
-          className="border-none w-full"
+          showNeighboringMonth={false} // 🔥 Hides previous & next month dates
+          formatShortWeekday={(locale, date) => format(date, "E").charAt(0)}
+          className="min-w-[300px] rounded-lg border border-gray-300 p-4 w-full shadow-md"
+          tileClassName={({ date, view }) => {
+            if (view === "month") {
+              const today = new Date();
+              const isToday =
+                format(date, "yyyy-MM-dd") === format(today, "yyyy-MM-dd");
+
+              if (isToday) {
+                return "border-2 border-green-500 bg-transparent font-bold text-black";
+              }
+            }
+            return "";
+          }}
         />
       </div>
 
-      {/* Visit Schedule Section */}
-      <div className="w-2/3 bg-white p-4 rounded-2xl shadow-md overflow-y-auto">
-        {visitData.map((visit, index) => (
-          <div key={index} className="flex justify-between items-center p-3 border-b">
-            <div>
-              <p className="text-lg font-semibold">{format(new Date(visit.date), "MMM dd")}</p>
-              <p className="text-sm text-gray-600">{visit.project}</p>
-            </div>
-            <div>
-              <p className="font-semibold">{visit.client}</p>
-              <p className="text-blue-500 cursor-pointer">{visit.phone}</p>
-            </div>
-            <p className="font-semibold">{visit.salesPerson}</p>
-            <button
-              className={`px-3 py-1 rounded-full text-sm ${statusColors[visit.status]} opacity-90`}
+      {/* Meetings List Section */}
+      <div className="w-3/4 bg-white p-4 rounded-xl shadow-md overflow-y-auto">
+        {meetings
+          .filter(
+            (meeting) => meeting.date === format(selectedDate, "yyyy-MM-dd")
+          )
+          .map((meeting, index) => (
+            <div
+              key={index}
+              className="flex justify-between items-start p-4 border-b"
             >
-              {visit.status === "visited" ? "Visited" : visit.status === "cancelled" ? "Visit Cancelled" : "Visit Scheduled"}
-            </button>
-          </div>
-        ))}
+              <div className="flex flex-col items-center justify-center gap-2">
+                <span className="text-xs text-gray-500">Project Visit</span>
+                <p className="text-xl font-semibold">
+                  {format(new Date(meeting.date), "MMM dd")}
+                </p>
+              </div>
+              <div className="flex flex-col items-center justify-center gap-2">
+                <span className="text-xs text-gray-500">Project Name</span>
+                <p className="font-semibold">{meeting.project}</p>
+              </div>
+              <div className="flex flex-col items-center justify-center">
+                <span className="text-xs text-gray-500 mb-2">Client Name</span>
+                <p className="font-semibold">{meeting.client}</p>
+                <p className="text-blue-500 cursor-pointer">{meeting.phone}</p>
+              </div>
+              <div className="flex flex-col items-center justify-center gap-2">
+                <span className="text-xs text-gray-500">Sales Person Name</span>
+                <p className="font-semibold">{meeting.salesPerson}</p>
+              </div>
+              <div className="flex flex-col items-center justify-center gap-2">
+                <span className="text-xs text-gray-500">Remark</span>
+                <button
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    statusClasses[meeting.status]
+                  } font-semibold`}
+                >
+                  {meeting.status === "scheduled"
+                    ? "Visit Schedule"
+                    : meeting.status === "canceled"
+                    ? "Visit Cancelled"
+                    : meeting.status === "reschedule"
+                    ? "Visit Reschedule"
+                    : meeting.status === "completed"
+                    ? "Visited"
+                    : ""}
+                </button>
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );

@@ -41,7 +41,7 @@ const Department = () => {
     
     try {
       const response = await fetch(URI+`/admin/departments/${endpoint}`, {
-        method: action === "Add" ? "POST" : "PUT",
+        method: action === "update" ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newDepartment),
@@ -65,11 +65,15 @@ const Department = () => {
       console.error("Error saving :", err);
     }
   };
-
+  
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI+`/admin/departments/${id}`);
+      const response = await fetch(URI+`/admin/departments/${id}`,{
+        method: "GET",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
       if (!response.ok) throw new Error("Failed to fetch departments.");
       const data = await response.json();
       setNewDepartment(data);

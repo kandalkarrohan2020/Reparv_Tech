@@ -65,13 +65,13 @@ const Properties = () => {
   };
 
   //Add or update record
-  const add = async (e) => {
+  const add2 = async (e) => {
     e.preventDefault();
     
     const endpoint = newProperty.propertyid ? `edit/${newProperty.propertyid}` : "add";
     try {
         const response = await fetch(URI+`/admin/properties/${endpoint}`, {
-        method: action === "add" ? "POST" : "PUT",
+        method: action === "update" ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newProperty),
@@ -102,12 +102,50 @@ const Properties = () => {
     }
   };
   
-
+  const add = async (e) => {
+    e.preventDefault();
+  
+    const endpoint = newProperty.propertyid ? `edit/${newProperty.propertyid}` : "add";
+  
+    try {
+      const response = await fetch(`${URI}/admin/properties/${endpoint}`, {
+        method: newProperty.propertyid ? "PUT" : "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newProperty),
+      });
+  
+      if (response.status === 409) {
+        alert("Property already exists!");
+      } else if (!response.ok) {
+        throw new Error(`Failed to save property. Status: ${response.status}`);
+      } else {
+        alert(newProperty.propertyid ? "Property updated successfully!" : "Property added successfully!");
+      }
+  
+      // Clear form only after a successful response
+      setPropertyData({
+        propertytype: "",
+        propertyname: "",
+        location: "",
+        price: "",
+        description: "",
+        status: "",
+      });
+  
+      setShowPropertyForm(false);
+      
+      await fetchDatas(); // Ensure latest data is fetched
+  
+    } catch (err) {
+      console.error("Error saving property:", err);
+    }
+  };
   //fetch data on form
   const edit = async (id) => {
     try {
       const response = await fetch(URI+`/admin/properties/${id}`, {
-        method: "put",
+        method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
@@ -288,7 +326,7 @@ const Properties = () => {
                 className="w-6 h-6 cursor-pointer"
               />
             </div>
-            <form onSubmit={addOrUpdate} className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
+            <form onSubmit={add} className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
               <input 
                 type="hidden"
                 value={newProperty.propertyid || ""}

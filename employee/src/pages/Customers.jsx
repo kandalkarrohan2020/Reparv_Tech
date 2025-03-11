@@ -6,17 +6,17 @@ import Paging from "../components/Paging";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import FilterData from "../components/FilterData";
 import DataTable from "react-data-table-component";
-
+import { useAuth } from "../store/auth";
 const Customers = () => {
  
-
+  const {URI} = useAuth();
   const [currentPage, setCurrentPage] = useState(1);
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   const fetchDatas = async () => {
       try {
-        const response = await fetch("http://localhost:3000/admin/customers", {
+        const response = await fetch(URI+"/admin/customers", {
           method: "GET",
           credentials: "include", // ✅ Ensures cookies are sent
           headers: {

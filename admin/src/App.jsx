@@ -18,6 +18,7 @@ import Properties from "./pages/Properties.jsx";
 import Role from "./pages/Role.jsx";
 import Department from "./pages/Department.jsx";
 import PropertyType from "./pages/PropertyType.jsx";
+import ErrorPage from "./pages/ErrorPage.jsx";
 
 const App = () => {
   return (
@@ -41,6 +42,7 @@ const App = () => {
           <Route path="/tickets" element={<Ticketing />} />
           <Route path="/raw-materials" element={<RawMaterials />} />
           <Route path="/marketing" element={<Marketing />} />
+          <Route path="*" element={<ErrorPage />}></Route>
         </Route>
       </Routes>
     </BrowserRouter>

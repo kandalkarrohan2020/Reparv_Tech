@@ -31,7 +31,7 @@ const Properties = () => {
   //Fetch Property type
   const fetchPropertyType = async () => {
     try {
-      const response = await fetch(URI+"/admin/propertytypes", {
+      const response = await fetch(URI+"/propertytypes", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -49,7 +49,7 @@ const Properties = () => {
   //Fetch Data
   const fetchDatas = async () => {
     try {
-      const response = await fetch(URI+"/admin/properties", {
+      const response = await fetch(URI+"/properties", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -70,7 +70,7 @@ const Properties = () => {
     
     const endpoint = newProperty.propertyid ? `edit/${newProperty.propertyid}` : "add";
     try {
-        const response = await fetch(URI+`/admin/properties/${endpoint}`, {
+        const response = await fetch(URI+`/properties/${endpoint}`, {
         method: action === "update" ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -108,7 +108,7 @@ const Properties = () => {
     const endpoint = newProperty.propertyid ? `edit/${newProperty.propertyid}` : "add";
   
     try {
-      const response = await fetch(`${URI}/admin/properties/${endpoint}`, {
+      const response = await fetch(`${URI}/properties/${endpoint}`, {
         method: newProperty.propertyid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -144,7 +144,7 @@ const Properties = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI+`/admin/properties/${id}`, {
+      const response = await fetch(URI+`/properties/${id}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -165,7 +165,7 @@ const Properties = () => {
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this property?")) return;
     try {
-      const response = await fetch(URI+`/admin/properties/delete/${id}`, {
+      const response = await fetch(URI+`/properties/delete/${id}`, {
         method: "DELETE",
       });
       
@@ -187,7 +187,7 @@ const Properties = () => {
     if (!window.confirm("Are you sure you want to change this property status?")) return;
     
     try {
-      const response = await fetch(URI+`/admin/properties/status/${id}`, {
+      const response = await fetch(URI+`/properties/status/${id}`, {
         method: "PUT",
       });
       const data = await response.json();
@@ -208,7 +208,7 @@ const Properties = () => {
     if (!window.confirm("Are you sure you want to approve this property?")) return;
     
     try {
-      const response = await fetch(URI+`/admin/properties/approve/${id}`, {
+      const response = await fetch(URI+`/properties/approve/${id}`, {
         method: "PUT",
       });
       const data = await response.json();
@@ -315,8 +315,8 @@ const Properties = () => {
           </div>
         </>
       ) : (
-        <div className="z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[600px] md:w-[700px] md:h-[650px] flex fixed">
-          <div className="w-[330px] sm:w-[600px] sm:h-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[650px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] flex fixed">
+          <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[16px] font-semibold">Property Details</h2>
               <IoMdClose

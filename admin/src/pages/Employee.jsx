@@ -41,7 +41,7 @@ const Employee = () => {
   // *Fetch Data from API*
   const fetchData = async () => {
     try {
-      const response = await fetch(URI+"/admin/employees", {
+      const response = await fetch(URI+"/employees", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -61,7 +61,7 @@ const Employee = () => {
   //Fetch roles data
   const fetchRoleData = async () => {
     try {
-      const response = await fetch(URI+"/admin/roles", {
+      const response = await fetch(URI+"/roles", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -78,7 +78,7 @@ const Employee = () => {
   //Fetch department data
   const fetchDepartmentData = async () => {
     try {
-      const response = await fetch(URI+"/admin/departments", {
+      const response = await fetch(URI+"/departments", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -99,7 +99,7 @@ const Employee = () => {
     const endpoint = newEmployee.id ? `edit/${newEmployee.id}` : "add";
     try {
       const response = await fetch(
-        URI+ `/admin/employees/${endpoint}`,
+        URI+ `/employees/${endpoint}`,
         {
           method: action === "update" ? "PUT" : "POST",
           credentials: "include",
@@ -144,7 +144,7 @@ const Employee = () => {
     const endpoint = newEmployee.id ? `edit/${newEmployee.id}` : "add";
   
     try {
-      const response = await fetch(`${URI}/admin/employees/${endpoint}`, {
+      const response = await fetch(`${URI}/employees/${endpoint}`, {
         method: newEmployee.id ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -185,7 +185,7 @@ const Employee = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI+`/admin/employees/${id}`, {
+      const response = await fetch(URI+`/employees/${id}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -207,7 +207,7 @@ const Employee = () => {
       return;
     try {
       const response = await fetch(
-        URI+`/admin/employees/delete/${id}`,
+        URI+`/employees/delete/${id}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -236,7 +236,7 @@ const Employee = () => {
 
     try {
       const response = await fetch(
-        URI+`/admin/employees/status/${id}`,
+        URI+`/employees/status/${id}`,
         {
           method: "PUT",
           credentials: "include",
@@ -265,7 +265,7 @@ const Employee = () => {
 
     try {
       const response = await fetch(
-        URI+`/admin/employees/assignlogin/${selectedEmployeeId}`,
+        URI+`/employees/assignlogin/${selectedEmployeeId}`,
         {
           method: "PUT",
           credentials: "include",
@@ -369,7 +369,7 @@ const Employee = () => {
           <FiMoreVertical className="text-gray-500" />
         </div>
         {isOpen && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+          <div className="absolute w-full z-50 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
             <div className="py-1">
               <button
                 className="block w-full px-2 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
@@ -456,8 +456,8 @@ const Employee = () => {
           </div>
         </>
       ) : (
-        <div className="z-[61] employeeForm overflow-scroll scrollbar-hide w-[400px] h-[600px] md:w-[700px] md:h-[650px] flex fixed">
-          <div className="w-[330px] sm:w-[600px] sm:h-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[650px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="z-[61] employeeForm overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] flex fixed">
+          <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[16px] font-semibold">Employee Details</h2>
               <IoMdClose

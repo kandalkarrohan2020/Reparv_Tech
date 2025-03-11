@@ -369,7 +369,7 @@ const Employee = () => {
           <FiMoreVertical className="text-gray-500" />
         </div>
         {isOpen && (
-          <div className="absolute w-full z-50 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+          <div className="absolute w-25 z-50 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
             <div className="py-1">
               <button
                 className="block w-full px-2 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"

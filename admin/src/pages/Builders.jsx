@@ -36,7 +36,7 @@ const Builders = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/admin/builders", {
+      const response = await fetch(URI + "/builders", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -60,7 +60,7 @@ const Builders = () => {
       ? `edit/${newBuilder.builderid}`
       : "add";
     try {
-      const response = await fetch(URI + `/admin/builders/${endpoint}`, {
+      const response = await fetch(URI + `/builders/${endpoint}`, {
         method: action === "Add" ? "POST" : "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -101,7 +101,7 @@ const Builders = () => {
     const endpoint = newBuilder.builderid ? `edit/${newBuilder.builderid}` : "add";
   
     try {
-      const response = await fetch(`${URI}/admin/builders/${endpoint}`, {
+      const response = await fetch(`${URI}/builders/${endpoint}`, {
         method: newBuilder.builderid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -141,7 +141,7 @@ const Builders = () => {
   //fetch data on form
   const edit = async (builderid) => {
     try {
-      const response = await fetch(URI + `/admin/builders/${builderid}`, {
+      const response = await fetch(URI + `/builders/${builderid}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -164,7 +164,7 @@ const Builders = () => {
 
     try {
       const response = await fetch(
-        URI + `/admin/builders/delete/${builderid}`,
+        URI + `/builders/delete/${builderid}`,
         {
           method: "DELETE",
           credentials: "include", // ✅ Ensures cookies are sent
@@ -194,7 +194,7 @@ const Builders = () => {
 
     try {
       const response = await fetch(
-        URI + `/admin/builders/status/${builderid}`,
+        URI + `/builders/status/${builderid}`,
         {
           method: "PUT",
           credentials: "include", // ✅ Ensures cookies are sent
@@ -226,7 +226,7 @@ const Builders = () => {
 
     try {
       const response = await fetch(
-        URI + `/admin/builders/assignlogin/${selectedBuilderId}`,
+        URI + `/builders/assignlogin/${selectedBuilderId}`,
         {
           method: "PUT",
           headers: {
@@ -332,7 +332,7 @@ const Builders = () => {
           <FiMoreVertical className="text-gray-500" />
         </div>
         {isOpen && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+          <div className="fixed w-25 z-50 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
             <div className="py-1">
               <button
                 className="block w-full px-2 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
@@ -420,8 +420,8 @@ const Builders = () => {
           </div>
         </>
       ) : (
-        <div className="z-[61] builder-form overflow-scroll scrollbar-hide w-[400px] h-[600px] md:w-[700px] md:h-[650px] flex fixed">
-          <div className="w-[330px] sm:w-[600px] sm:h-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[650px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="z-[61] builder-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] flex fixed">
+          <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[16px] font-semibold">Builders</h2>
               <IoMdClose

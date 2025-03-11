@@ -5,7 +5,11 @@ import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import FilterData from "../components/FilterData";
 import ActionSelect from "../components/ActionSelect";
 import DataTable from "react-data-table-component";
+import { useAuth } from "../store/auth";
+
 const Enquirers = () => {
+  const {URI} = useAuth();
+
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [startDate, setStartDate] = useState(null);
@@ -14,7 +18,7 @@ const Enquirers = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/enquirers", {
+      const response = await fetch(URI+"/admin/enquirers", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {

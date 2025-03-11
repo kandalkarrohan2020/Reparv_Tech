@@ -21,7 +21,7 @@ const SalesPerson = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI+"/admin/salespersons", {
+      const response = await fetch(URI+"/salespersons", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -111,8 +111,8 @@ const SalesPerson = () => {
          
         </>
       ) : (
-        <div className="z-[61] sales-form overflow-scroll scrollbar-hide w-[400px] h-[600px] md:w-[700px] md:h-[650px] flex fixed">
-              <div className="w-[330px] sm:w-[600px] sm:h-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[650px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="z-[61] sales-form overflow-scroll scrollbar-hide w-[400px] md:w-[700px] h-[70vh] flex fixed">
+              <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-[16px] font-semibold">Sales Person</h2>
                   <IoMdClose

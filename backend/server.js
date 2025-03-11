@@ -22,7 +22,8 @@ import auctionmembersRoutes from "./routes/admin/auctionmemberRoutes.js";
 //import calenderRoutes from "./routes/admin/calenderRoutes.js";
 //import marketingRoutes from "./routes/admin/marketingRoutes.js";
 //import rawmaterialRoutes from "./routes/admin/rawmaterialRoutes.js";
-import employeeloginRoutes from "./routes/admin/employeeloginRoutes.js";
+
+import employeeloginRoutes from "./routes/employee/employeeloginRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -39,7 +40,7 @@ app.use(
 
 app.use(express.json());
 
-const allowedOrigins = ["http://localhost:5173", "http://localhost:5174","https://reparv-tech.onrender.com","https://admin.reparv.in","https://reparv.in",];
+const allowedOrigins = ["http://localhost:5173", "http://localhost:5174","https://reparv-tech.onrender.com","https://admin.reparv.in","https://reparv.in","https://employee.reparv.in"];
 app.use(
   cors({
     origin: function (origin, callback) {

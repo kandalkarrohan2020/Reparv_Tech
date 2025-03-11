@@ -15,7 +15,7 @@ const Employee = () => {
     action,
     giveAccess,
     setGiveAccess,
-    token,
+    token, URI
   } = useAuth();
   const [datas, setDatas] = useState([]);
   const [roleData, setRoleData] = useState([]);
@@ -41,7 +41,7 @@ const Employee = () => {
   // *Fetch Data from API*
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/employees", {
+      const response = await fetch(URI+"/admin/employees", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -61,7 +61,7 @@ const Employee = () => {
   //Fetch roles data
   const fetchRoleData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/roles", {
+      const response = await fetch(URI+"/admin/roles", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -78,7 +78,7 @@ const Employee = () => {
   //Fetch department data
   const fetchDepartmentData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/departments", {
+      const response = await fetch(URI+"/admin/departments", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -93,15 +93,15 @@ const Employee = () => {
   };
 
   //Add or update record
-  const add = async (e) => {
+  const add2 = async (e) => {
     e.preventDefault();
 
     const endpoint = newEmployee.id ? `edit/${newEmployee.id}` : "add";
     try {
       const response = await fetch(
-        `http://localhost:3000/admin/employees/${endpoint}`,
+        URI+ `/admin/employees/${endpoint}`,
         {
-          method: action === "Add" ? "POST" : "PUT",
+          method: action === "update" ? "PUT" : "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newEmployee),
@@ -137,16 +137,61 @@ const Employee = () => {
       console.error("Error saving :", err);
     }
   };
-
+  
+  const add = async (e) => {
+    e.preventDefault();
+  
+    const endpoint = newEmployee.id ? `edit/${newEmployee.id}` : "add";
+  
+    try {
+      const response = await fetch(`${URI}/admin/employees/${endpoint}`, {
+        method: newEmployee.id ? "PUT" : "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newEmployee),
+      });
+  
+      if (response.status === 409) {
+        alert("Employee already exists!");
+      } else if (!response.ok) {
+        throw new Error(`Failed to save employee. Status: ${response.status}`);
+      } else {
+        alert(newEmployee.id ? "Employee updated successfully!" : "Employee added successfully!");
+      }
+  
+      // Clear form only after successful fetch
+      setEmployeeData({
+        name: "",
+        uid: "",
+        contact: "",
+        email: "",
+        address: "",
+        dob: "",
+        departmentid: "",
+        roleid: "",
+        salary: "",
+        doj: "",
+        status: "",
+      });
+  
+      setShowEplDetailsForm(false);
+  
+      await fetchData(); // Ensure latest data is fetched
+  
+    } catch (err) {
+      console.error("Error saving employee:", err);
+    }
+  };
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3000/admin/employees/${id}`, {
+      const response = await fetch(URI+`/admin/employees/${id}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
-        }});
+        },
+      });
       if (!response.ok) throw new Error("Failed to fetch employee.");
       const data = await response.json();
       setEmployeeData(data);
@@ -162,7 +207,7 @@ const Employee = () => {
       return;
     try {
       const response = await fetch(
-        `http://localhost:3000/admin/employees/delete/${id}`,
+        URI+`/admin/employees/delete/${id}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -191,7 +236,7 @@ const Employee = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/admin/employees/status/${id}`,
+        URI+`/admin/employees/status/${id}`,
         {
           method: "PUT",
           credentials: "include",
@@ -220,7 +265,7 @@ const Employee = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/admin/employees/assignlogin/${selectedEmployeeId}`,
+        URI+`/admin/employees/assignlogin/${selectedEmployeeId}`,
         {
           method: "PUT",
           credentials: "include",
@@ -346,7 +391,7 @@ const Employee = () => {
                 Assign Login
               </button>
               <button
-                className="block w-full px-2 py-2 text-sm text-left text-gray-700 hover:bg-gray-100 text-red-600"
+                className="block w-full px-2 py-2 text-sm text-left hover:bg-gray-100 text-red-600"
                 onClick={() => handleAction("delete")}
               >
                 Delete
@@ -454,7 +499,7 @@ const Employee = () => {
                 </label>
                 <input
                   type="number"
-                  placeholder="Enter Role"
+                  placeholder="Enter UID No"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newEmployee.uid}
                   onChange={(e) => {

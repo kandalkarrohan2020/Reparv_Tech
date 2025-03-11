@@ -10,7 +10,7 @@ import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 
 const SalesPerson = () => {
-  const { showSalesForm, setShowSalesForm, action } = useAuth();
+  const { showSalesForm, setShowSalesForm, action, URI } = useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -21,7 +21,7 @@ const SalesPerson = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/salespersons", {
+      const response = await fetch(URI+"/admin/salespersons", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {

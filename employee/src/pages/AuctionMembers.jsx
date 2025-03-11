@@ -10,14 +10,14 @@ import DataTable  from "react-data-table-component";
 
 
 const AuctionMembers = () => {
-  const { showAuctionForm, setShowAuctionForm, action } = useAuth();
+  const { showAuctionForm, setShowAuctionForm, action, URI } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [datas, setDatas] = useState([]);
 
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/auctionmember",{
+      const response = await fetch(URI+"/admin/auctionmember",{
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {

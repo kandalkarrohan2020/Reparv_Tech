@@ -18,7 +18,7 @@ const Role = () => {
   // **Fetch Data from API**
     const fetchData = async () => {
     try {
-      const response = await fetch(URI+"/admin/roles", {
+      const response = await fetch(URI+"/roles", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -39,7 +39,7 @@ const Role = () => {
       
     const endpoint = newRole.roleid ? `edit/${newRole.roleid}` : "add";
     try {
-      const response = await fetch(URI+`/admin/roles/${endpoint}`, {
+      const response = await fetch(URI+`/roles/${endpoint}`, {
         method: action === "update" ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -69,7 +69,7 @@ const Role = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI+`/admin/roles/${id}`, {
+      const response = await fetch(URI+`/roles/${id}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -89,7 +89,7 @@ const Role = () => {
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this role?")) return;
     try {
-      const response = await fetch(URI+`/admin/roles/delete/${id}`, {
+      const response = await fetch(URI+`/roles/delete/${id}`, {
         method: "DELETE",
         credentials: "include"
       });
@@ -112,7 +112,7 @@ const Role = () => {
     if (!window.confirm("Are you sure you want to change this role status?")) return;
     
     try {
-      const response = await fetch(URI+`/admin/roles/status/${id}`, {
+      const response = await fetch(URI+`/roles/status/${id}`, {
         method: "PUT",
         credentials: "include"
       });
@@ -201,8 +201,8 @@ const Role = () => {
           
         </>
       ) : (
-        <div className=" z-[61] roleForm overflow-scroll scrollbar-hide w-[400px] h-[600px] md:w-[700px] md:h-[650px] flex fixed">
-          <div className="w-[330px] sm:w-[600px] sm:h-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[650px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className=" z-[61] roleForm overflow-scroll scrollbar-hide w-[400px] h-[300px] sm:h-[250px] md:w-[700px] flex fixed">
+          <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[16px] font-semibold">Role</h2>
               <IoMdClose

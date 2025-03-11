@@ -10,7 +10,7 @@ import EmployeeFilter from "../components/employee/EmployeeFilter";
 import DataTable  from "react-data-table-component";
 
 const Role = () => {
-  const { showRoleForm, setShowRoleForm, action } = useAuth();
+  const { showRoleForm, setShowRoleForm, action, URI } = useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [newRole, setNewRole] = useState({ roleid: "",role: "" });
@@ -18,7 +18,7 @@ const Role = () => {
   // **Fetch Data from API**
     const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/admin/roles", {
+      const response = await fetch(URI+"/admin/roles", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -39,14 +39,13 @@ const Role = () => {
       
     const endpoint = newRole.roleid ? `edit/${newRole.roleid}` : "add";
     try {
-      const response = await fetch(`http://localhost:3000/roles/${endpoint}`, {
-        method: action === "Add" ? "POST" : "PUT",
+      const response = await fetch(URI+`/admin/roles/${endpoint}`, {
+        method: action === "update" ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newRole),
       });
 
-      
       if (!response.ok) throw new Error("Failed to save role.");
       
       if(newRole.roleid){
@@ -70,7 +69,7 @@ const Role = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3000/roles/${id}`, {
+      const response = await fetch(URI+`/admin/roles/${id}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -90,7 +89,7 @@ const Role = () => {
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this role?")) return;
     try {
-      const response = await fetch(`http://localhost:3000/roles/delete/${id}`, {
+      const response = await fetch(URI+`/admin/roles/delete/${id}`, {
         method: "DELETE",
         credentials: "include"
       });
@@ -113,7 +112,7 @@ const Role = () => {
     if (!window.confirm("Are you sure you want to change this role status?")) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/roles/status/${id}`, {
+      const response = await fetch(URI+`/admin/roles/status/${id}`, {
         method: "PUT",
         credentials: "include"
       });

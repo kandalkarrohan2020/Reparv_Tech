@@ -28,17 +28,38 @@ function Layout() {
     showProfile,
     setShowProfile,
     giveAccess,
+    setGiveAccess,
     showSalesForm,
+    setShowSalesForm,
     showEplDetailsForm,
+    setShowEplDetailsForm,
     showBuilderForm,
+    setShowBuilderForm,
     showAuctionForm,
+    setShowAuctionForm,
     showPropertyForm,
+    setShowPropertyForm,
     showPropertyTypeForm,
+    setShowPropertyTypeForm,
     showRoleForm,
+    setShowRoleForm,
     showDepartmentForm,
-    isLoggedIn
+    setShowDepartmentForm,
+    isLoggedIn,
   } = useAuth();
-  
+
+  const overlays = [
+    { state: giveAccess, setter: setGiveAccess },
+    { state: showSalesForm, setter: setShowSalesForm },
+    { state: showEplDetailsForm, setter: setShowEplDetailsForm },
+    { state: showAuctionForm, setter: setShowAuctionForm },
+    { state: showBuilderForm, setter: setShowBuilderForm },
+    { state: showDepartmentForm, setter: setShowDepartmentForm },
+    { state: showPropertyForm, setter: setShowPropertyForm },
+    { state: showPropertyTypeForm, setter: setShowPropertyTypeForm },
+    { state: showRoleForm, setter: setShowRoleForm },
+  ];
+
   const getNavLinkClass = (path) => {
     return location.pathname === path
       ? "font-semibold bg-[#E3FFDF] shadow-[0px_1px_0px_0px_rgba(0,_0,_0,_0.1)]"
@@ -47,7 +68,7 @@ function Layout() {
 
   const getHeading = (label) => {
     setHeading(label);
-    localStorage.setItem("head",label);
+    localStorage.setItem("head", label);
   };
 
   return (
@@ -199,16 +220,15 @@ function Layout() {
         </div>
       </div>
       {showProfile && <Profile />}
-      {(giveAccess ||
-        showSalesForm ||
-        showEplDetailsForm ||
-        showBuilderForm ||
-        showAuctionForm ||
-        showPropertyForm ||
-        showPropertyTypeForm ||
-        showRoleForm ||
-        showDepartmentForm) && (
-        <div className="w-full h-screen z-[60] fixed bg-[#767676a0] "></div>
+      
+      {overlays.map(({ state, setter }, index) =>
+        state ? (
+          <div
+            key={index}
+            className="w-full h-screen z-[60] fixed bg-[#767676a0]"
+            onClick={() => setter(false)}
+          ></div>
+        ) : null
       )}
     </div>
   );

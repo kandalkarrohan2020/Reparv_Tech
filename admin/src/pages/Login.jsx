@@ -31,7 +31,7 @@ function Login() {
       return;
     }
 
-    const url = URI+"/admin/login"; // Ensure correct API URL
+    const url = URI+"/login"; // Ensure correct API URL
 
     try {
       const response = await axios.post(

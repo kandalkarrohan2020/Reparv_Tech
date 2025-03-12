@@ -82,6 +82,14 @@ const properties = [
 
 export default function Flat() {
   const navigate = useNavigate();
+  //filter
+  const [location, setLocation] = useState("");
+  const [budget, setBudget] = useState("");
+
+  const handleSearch = () => {
+    onSearch({ location, budget });
+  };
+
   return (
     <div className="properties w-full max-w-[1400px] flex flex-col p-4 sm:py-6 sm:px-0 mx-auto">
       <div className="propertiesHeading w-full h-30 hidden sm:flex flex-col items-center justify-center gap-5 mb-4">
@@ -93,7 +101,7 @@ export default function Flat() {
         </p>
       </div>
       {/* Search Bar */}
-      <div className="w-full flex sm:px-5">
+      <div className="w-full flex flex-wrap gap-2 justify-between sm:px-5">
         <div className="w-full sm:w-[350px] h-10 sm:h-15 flex gap-3 items-center justify-start border border-[#00000033] rounded-lg px-4 sm:p-4 focus:outline-none">
           <FiSearch className=" sm:w-6 sm:h-6 text-[#076300] " />
           <input
@@ -101,6 +109,40 @@ export default function Flat() {
             placeholder="Search..."
             className=" focus:outline-none text-sm sm:text-base"
           />
+        </div>
+        <div className="flex flex-wrap gap-2 sm:gap-5 bg-white">
+          <div className="flex">
+            <select
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="w-full h-10 px-2 border border-[#00000033] rounded-md"
+            >
+              <option value="">Select Location</option>
+              <option value="Nagpur">Nagpur</option>
+              <option value="Amaravati">Amaravati</option>
+              <option value="Chandrapur">Chandrapur</option>
+            </select>
+          </div>
+
+          <div className="flex">
+            <select
+              value={budget}
+              onChange={(e) => setBudget(e.target.value)}
+              className="w-full h-10 px-2 border border-[#00000033] rounded-md"
+            >
+              <option value="">Select Budget</option>
+              <option value="1000">Up to 1,000</option>
+              <option value="5000">Up to 5,000</option>
+              <option value="10000">Up to 10,000</option>
+            </select>
+          </div>
+
+          <button
+            onClick={handleSearch}
+            className="w-[100px] h-10 bg-[#076300] text-white rounded-lg active:scale-95"
+          >
+            Search
+          </button>
         </div>
       </div>
 
@@ -173,8 +215,7 @@ export default function Flat() {
       </div>
 
       {/* Customer Review */}
-      <VideoReviewSection/>
-
+      <VideoReviewSection />
     </div>
   );
 }

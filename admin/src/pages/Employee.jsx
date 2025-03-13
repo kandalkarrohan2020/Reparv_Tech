@@ -41,7 +41,7 @@ const Employee = () => {
   // *Fetch Data from API*
   const fetchData = async () => {
     try {
-      const response = await fetch(URI+"/employees", {
+      const response = await fetch(URI+"/admin/employees", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -61,7 +61,7 @@ const Employee = () => {
   //Fetch roles data
   const fetchRoleData = async () => {
     try {
-      const response = await fetch(URI+"/roles", {
+      const response = await fetch(URI+"/admin/roles", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -78,7 +78,7 @@ const Employee = () => {
   //Fetch department data
   const fetchDepartmentData = async () => {
     try {
-      const response = await fetch(URI+"/departments", {
+      const response = await fetch(URI+"/admin/departments", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -99,7 +99,7 @@ const Employee = () => {
     const endpoint = newEmployee.id ? `edit/${newEmployee.id}` : "add";
     try {
       const response = await fetch(
-        URI+ `/employees/${endpoint}`,
+        URI+ `/admin/employees/${endpoint}`,
         {
           method: action === "update" ? "PUT" : "POST",
           credentials: "include",
@@ -144,7 +144,7 @@ const Employee = () => {
     const endpoint = newEmployee.id ? `edit/${newEmployee.id}` : "add";
   
     try {
-      const response = await fetch(`${URI}/employees/${endpoint}`, {
+      const response = await fetch(`${URI}/admin/employees/${endpoint}`, {
         method: newEmployee.id ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -185,7 +185,7 @@ const Employee = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI+`/employees/${id}`, {
+      const response = await fetch(URI+`/admin/employees/${id}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -207,7 +207,7 @@ const Employee = () => {
       return;
     try {
       const response = await fetch(
-        URI+`/employees/delete/${id}`,
+        URI+`/admin/employees/delete/${id}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -236,7 +236,7 @@ const Employee = () => {
 
     try {
       const response = await fetch(
-        URI+`/employees/status/${id}`,
+        URI+`/admin/employees/status/${id}`,
         {
           method: "PUT",
           credentials: "include",
@@ -265,7 +265,7 @@ const Employee = () => {
 
     try {
       const response = await fetch(
-        URI+`/employees/assignlogin/${selectedEmployeeId}`,
+        URI+`/admin/employees/assignlogin/${selectedEmployeeId}`,
         {
           method: "PUT",
           credentials: "include",

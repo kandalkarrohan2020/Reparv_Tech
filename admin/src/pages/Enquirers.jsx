@@ -18,7 +18,7 @@ const Enquirers = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI+"/enquirers", {
+      const response = await fetch(URI+"/admin/enquirers", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {

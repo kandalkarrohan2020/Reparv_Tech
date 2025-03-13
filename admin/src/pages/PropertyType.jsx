@@ -20,7 +20,7 @@ const PropertyType = () => {
 
   const fetchDatas = async () => {
     try {
-      const response = await fetch(URI+"/propertytypes", {
+      const response = await fetch(URI+"/admin/propertytypes", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {

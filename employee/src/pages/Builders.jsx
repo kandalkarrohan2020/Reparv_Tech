@@ -22,13 +22,14 @@ const Builders = () => {
   const [selectedBuilderId, setSelectedBuilderId] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [newBuilder, setBuilderData] = useState({
+  const [newBuilder, setNewBuilder] = useState({
     builderid: "",
     company_name: "",
     contact_person: "",
     contact: "",
     email: "",
     office_address: "",
+    registration_no: "",
     dor: "",
     website: "",
     notes: "",
@@ -36,7 +37,7 @@ const Builders = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/admin/builders", {
+      const response = await fetch(URI + "/employee/builders", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -60,7 +61,7 @@ const Builders = () => {
       ? `edit/${newBuilder.builderid}`
       : "add";
     try {
-      const response = await fetch(URI + `/admin/builders/${endpoint}`, {
+      const response = await fetch(URI + `/employee/builders/${endpoint}`, {
         method: action === "Add" ? "POST" : "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -77,7 +78,7 @@ const Builders = () => {
         alert("Builder added successfully!");
       }
 
-      setBuilderData({
+      setNewBuilder({
         company_name: "",
         contact_person: "",
         contact: "",
@@ -101,7 +102,7 @@ const Builders = () => {
     const endpoint = newBuilder.builderid ? `edit/${newBuilder.builderid}` : "add";
   
     try {
-      const response = await fetch(`${URI}/admin/builders/${endpoint}`, {
+      const response = await fetch(`${URI}/employee/builders/${endpoint}`, {
         method: newBuilder.builderid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -117,7 +118,7 @@ const Builders = () => {
       }
   
       // Clear form only after successful fetch
-      setBuilderData({
+      setNewBuilder({
         company_name: "",
         contact_person: "",
         contact: "",
@@ -141,7 +142,7 @@ const Builders = () => {
   //fetch data on form
   const edit = async (builderid) => {
     try {
-      const response = await fetch(URI + `/admin/builders/${builderid}`, {
+      const response = await fetch(URI + `/employee/builders/${builderid}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -150,7 +151,7 @@ const Builders = () => {
       });
       if (!response.ok) throw new Error("Failed to fetch builders.");
       const data = await response.json();
-      setBuilderData(data);
+      setNewBuilder(data);
       setShowBuilderForm(true);
     } catch (err) {
       console.error("Error fetching:", err);
@@ -164,7 +165,7 @@ const Builders = () => {
 
     try {
       const response = await fetch(
-        URI + `/admin/builders/delete/${builderid}`,
+        URI + `/employee/builders/delete/${builderid}`,
         {
           method: "DELETE",
           credentials: "include", // ✅ Ensures cookies are sent
@@ -194,7 +195,7 @@ const Builders = () => {
 
     try {
       const response = await fetch(
-        URI + `/admin/builders/status/${builderid}`,
+        URI + `/employee/builders/status/${builderid}`,
         {
           method: "PUT",
           credentials: "include", // ✅ Ensures cookies are sent
@@ -226,7 +227,7 @@ const Builders = () => {
 
     try {
       const response = await fetch(
-        URI + `/admin/builders/assignlogin/${selectedBuilderId}`,
+        URI + `/employee/builders/assignlogin/${selectedBuilderId}`,
         {
           method: "PUT",
           headers: {
@@ -439,7 +440,7 @@ const Builders = () => {
                 type="hidden"
                 value={newBuilder.builderid || ""}
                 onChange={(e) =>
-                  setBuilderData({ ...newBuilder, builderid: e.target.value })
+                  setNewBuilder({ ...newBuilder, builderid: e.target.value })
                 }
               />
               <div className="w-full ">
@@ -448,11 +449,11 @@ const Builders = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter Project Name"
+                  placeholder="Enter Company Name"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.company_name}
                   onChange={(e) =>
-                    setBuilderData({
+                    setNewBuilder({
                       ...newBuilder,
                       company_name: e.target.value,
                     })
@@ -465,11 +466,11 @@ const Builders = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter Owner Name"
+                  placeholder="Enter Contact"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.contact_person}
                   onChange={(e) =>
-                    setBuilderData({
+                    setNewBuilder({
                       ...newBuilder,
                       contact_person: e.target.value,
                     })
@@ -482,14 +483,14 @@ const Builders = () => {
                 </label>
                 <input
                   type="number"
-                  placeholder="Enter Address"
+                  placeholder="Enter Contact Number"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.contact}
                   onChange={(e) => {
                     const input = e.target.value;
                     if (/^\d{0,10}$/.test(input)) {
                       // Allows only up to 12 digits
-                      setBuilderData({ ...newBuilder, contact: input });
+                      setNewBuilder({ ...newBuilder, contact: input });
                     }
                   }}
                 />
@@ -504,7 +505,7 @@ const Builders = () => {
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.email}
                   onChange={(e) =>
-                    setBuilderData({ ...newBuilder, email: e.target.value })
+                    setNewBuilder({ ...newBuilder, email: e.target.value })
                   }
                 />
               </div>
@@ -518,7 +519,7 @@ const Builders = () => {
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.office_address}
                   onChange={(e) =>
-                    setBuilderData({
+                    setNewBuilder({
                       ...newBuilder,
                       office_address: e.target.value,
                     })
@@ -536,7 +537,7 @@ const Builders = () => {
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.registration_no}
                   onChange={(e) =>
-                    setBuilderData({
+                    setNewBuilder({
                       ...newBuilder,
                       registration_no: e.target.value,
                     })
@@ -555,7 +556,7 @@ const Builders = () => {
                   onChange={(e) => {
                     const selectedDate = e.target.value; // Get full date
                     const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
-                    setBuilderData({ ...newBuilder, dor: formattedDate });
+                    setNewBuilder({ ...newBuilder, dor: formattedDate });
                   }}
                 />
               </div>
@@ -569,7 +570,7 @@ const Builders = () => {
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.website}
                   onChange={(e) =>
-                    setBuilderData({ ...newBuilder, website: e.target.value })
+                    setNewBuilder({ ...newBuilder, website: e.target.value })
                   }
                 />
               </div>
@@ -583,7 +584,7 @@ const Builders = () => {
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.notes}
                   onChange={(e) =>
-                    setBuilderData({ ...newBuilder, notes: e.target.value })
+                    setNewBuilder({ ...newBuilder, notes: e.target.value })
                   }
                 />
               </div>

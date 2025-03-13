@@ -18,7 +18,7 @@ const Department = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI+"/departments", {
+      const response = await fetch(URI+"/admin/departments", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -40,7 +40,7 @@ const Department = () => {
     const endpoint = newDepartment.departmentid ? `edit/${newDepartment.departmentid}` : "add";
     
     try {
-      const response = await fetch(URI+`/departments/${endpoint}`, {
+      const response = await fetch(URI+`/admin/departments/${endpoint}`, {
         method: action === "update" ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -69,7 +69,7 @@ const Department = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI+`/departments/${id}`,{
+      const response = await fetch(URI+`/admin/departments/${id}`,{
         method: "GET",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -88,7 +88,7 @@ const Department = () => {
     if (!window.confirm("Are you sure you want to delete this department?")) return;
     
     try {
-      const response = await fetch(URI+`/departments/delete/${id}`, {
+      const response = await fetch(URI+`/admin/departments/delete/${id}`, {
         method: "DELETE",
         credentials: "include"
       });
@@ -111,7 +111,7 @@ const Department = () => {
     if (!window.confirm("Are you sure you want to change this department status?")) return;
     
     try {
-      const response = await fetch(URI+`/departments/status/${id}`, {
+      const response = await fetch(URI+`/admin/departments/status/${id}`, {
         method: "PUT",
         credentials: "include"
       });

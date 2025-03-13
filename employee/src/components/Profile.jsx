@@ -1,10 +1,8 @@
-
 import { FaArrowLeft } from "react-icons/fa6";
 import { useAuth } from "../store/auth";
 import Cookies from "js-cookie";
 import { useState, useEffect } from "react";
 
-// const [user, setUser] = useState([]);
 
 //   useEffect(() => {
 //     const user = Cookies.get("user"); // ✅ Get token cookie
@@ -12,11 +10,9 @@ import { useState, useEffect } from "react";
 //     setUser(user || "No Token Found");
 //   }, []);
 
-
-
 const Profile = () => {
   const {showProfile, setShowProfile, user} = useAuth();
- 
+  
   return (
     <div className={`ProfileContainer fixed z-30 w-full h-screen bg-[#4242428b] flex items-center justify-end `}>
       <div className="Profile w-full md:w-[384px] h-screen bg-[#F5F5F6] flex flex-col items-center justify-start gap-4 px-8 py-14 ">
@@ -55,7 +51,7 @@ const Profile = () => {
             Phone:{" "}
             <b className="text-[16px] text-[#000000] leading-5 font-semibold ">
               {" "}
-              +91 9322432323
+              {user?.contact}
             </b>
           </h3>
           <h3 className="text-[16px] text-[#000000] leading-5 ">

@@ -18,7 +18,7 @@ const Role = () => {
   // **Fetch Data from API**
     const fetchData = async () => {
     try {
-      const response = await fetch(URI+"/roles", {
+      const response = await fetch(URI+"/admin/roles", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -39,7 +39,7 @@ const Role = () => {
       
     const endpoint = newRole.roleid ? `edit/${newRole.roleid}` : "add";
     try {
-      const response = await fetch(URI+`/roles/${endpoint}`, {
+      const response = await fetch(URI+`/admin/roles/${endpoint}`, {
         method: action === "update" ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -69,7 +69,7 @@ const Role = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI+`/roles/${id}`, {
+      const response = await fetch(URI+`/admin/roles/${id}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -89,7 +89,7 @@ const Role = () => {
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this role?")) return;
     try {
-      const response = await fetch(URI+`/roles/delete/${id}`, {
+      const response = await fetch(URI+`/admin/roles/delete/${id}`, {
         method: "DELETE",
         credentials: "include"
       });
@@ -112,7 +112,7 @@ const Role = () => {
     if (!window.confirm("Are you sure you want to change this role status?")) return;
     
     try {
-      const response = await fetch(URI+`/roles/status/${id}`, {
+      const response = await fetch(URI+`/admin/roles/status/${id}`, {
         method: "PUT",
         credentials: "include"
       });

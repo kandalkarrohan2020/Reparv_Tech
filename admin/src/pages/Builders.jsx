@@ -22,13 +22,14 @@ const Builders = () => {
   const [selectedBuilderId, setSelectedBuilderId] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [newBuilder, setBuilderData] = useState({
+  const [newBuilder, setNewBuilder] = useState({
     builderid: "",
     company_name: "",
     contact_person: "",
     contact: "",
     email: "",
     office_address: "",
+    registration_no: "",
     dor: "",
     website: "",
     notes: "",
@@ -36,7 +37,7 @@ const Builders = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/builders", {
+      const response = await fetch(URI + "/admin/builders", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -60,7 +61,7 @@ const Builders = () => {
       ? `edit/${newBuilder.builderid}`
       : "add";
     try {
-      const response = await fetch(URI + `/builders/${endpoint}`, {
+      const response = await fetch(URI + `/admin/builders/${endpoint}`, {
         method: action === "Add" ? "POST" : "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -77,7 +78,7 @@ const Builders = () => {
         alert("Builder added successfully!");
       }
 
-      setBuilderData({
+      setNewBuilder({
         company_name: "",
         contact_person: "",
         contact: "",
@@ -97,33 +98,27 @@ const Builders = () => {
 
   const add = async (e) => {
     e.preventDefault();
-
-    const endpoint = newBuilder.builderid
-      ? `edit/${newBuilder.builderid}`
-      : "add";
-
+  
+    const endpoint = newBuilder.builderid ? `edit/${newBuilder.builderid}` : "add";
+  
     try {
-      const response = await fetch(`${URI}/builders/${endpoint}`, {
+      const response = await fetch(`${URI}/admin/builders/${endpoint}`, {
         method: newBuilder.builderid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newBuilder),
       });
-
+  
       if (response.status === 409) {
         alert("Builder already exists!");
       } else if (!response.ok) {
         throw new Error(`Failed to save builder. Status: ${response.status}`);
       } else {
-        alert(
-          newBuilder.builderid
-            ? "Builder updated successfully!"
-            : "Builder added successfully!"
-        );
+        alert(newBuilder.builderid ? "Builder updated successfully!" : "Builder added successfully!");
       }
-
+  
       // Clear form only after successful fetch
-      setBuilderData({
+      setNewBuilder({
         company_name: "",
         contact_person: "",
         contact: "",
@@ -134,10 +129,11 @@ const Builders = () => {
         website: "",
         notes: "",
       });
-
+  
       setShowBuilderForm(false);
-
+  
       await fetchData(); // Ensure latest data is fetched
+  
     } catch (err) {
       console.error("Error saving builder:", err);
     }
@@ -146,7 +142,7 @@ const Builders = () => {
   //fetch data on form
   const edit = async (builderid) => {
     try {
-      const response = await fetch(URI + `/builders/${builderid}`, {
+      const response = await fetch(URI + `/admin/builders/${builderid}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -155,7 +151,7 @@ const Builders = () => {
       });
       if (!response.ok) throw new Error("Failed to fetch builders.");
       const data = await response.json();
-      setBuilderData(data);
+      setNewBuilder(data);
       setShowBuilderForm(true);
     } catch (err) {
       console.error("Error fetching:", err);
@@ -168,13 +164,16 @@ const Builders = () => {
       return;
 
     try {
-      const response = await fetch(URI + `/builders/delete/${builderid}`, {
-        method: "DELETE",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + `/admin/builders/delete/${builderid}`,
+        {
+          method: "DELETE",
+          credentials: "include", // ✅ Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const data = await response.json();
       if (response.ok) {
@@ -195,13 +194,16 @@ const Builders = () => {
       return;
 
     try {
-      const response = await fetch(URI + `/builders/status/${builderid}`, {
-        method: "PUT",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + `/admin/builders/status/${builderid}`,
+        {
+          method: "PUT",
+          credentials: "include", // ✅ Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const data = await response.json();
       console.log(response);
       if (response.ok) {
@@ -225,7 +227,7 @@ const Builders = () => {
 
     try {
       const response = await fetch(
-        URI + `/builders/assignlogin/${selectedBuilderId}`,
+        URI + `/admin/builders/assignlogin/${selectedBuilderId}`,
         {
           method: "PUT",
           headers: {
@@ -309,57 +311,80 @@ const Builders = () => {
     },
     {
       name: "",
-      cell: (row) => <ActionDropdown row={row} />,
+      cell: (row) => <ActionDropdown row={row} onAction={handleActionSelect} />,
     },
   ];
 
   const ActionDropdown = ({ row, onAction }) => {
-    const [selectedAction, setSelectedAction] = useState("");
+    const [isOpen, setIsOpen] = useState(false);
 
-    const handleActionSelect = (action, builderid) => {
-      switch (action) {
-        case "status":
-          status(builderid);
-          break;
-        case "update":
-          edit(builderid);
-          break;
-        case "delete":
-          del(builderid);
-          break;
-        case "assignlogin":
-          setSelectedBuilderId(builderid);
-          setGiveAccess(true);
-          break;
-        default:
-          console.log("Invalid action");
-      }
+    const handleAction = (action) => {
+      setIsOpen(false);
+      onAction(action, row.builderid);
     };
 
     return (
       <div className="relative inline-block w-[120px]">
-        <div className="flex items-center justify-between p-2 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <span className=" text-[12px]">{selectedAction || "Action"}</span>
+        <div
+          className="flex items-center justify-between p-2 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <span className="text-[12px]">Action</span>
           <FiMoreVertical className="text-gray-500" />
         </div>
-        <select
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          value={selectedAction}
-          onChange={(e) => {
-            const action = e.target.value;
-            handleActionSelect(action, row.builderid);
-          }}
-        >
-          <option value="" disabled>
-            Select Action
-          </option>
-          <option value="status">Status</option>
-          <option value="update">Update</option>
-          <option value="assignlogin">Assign Login</option>
-          <option value="delete">Delete</option>
-        </select>
+        {isOpen && (
+          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+            <div className="py-1">
+              <button
+                className="block w-full px-2 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
+                onClick={() => handleAction("status")}
+              >
+                Status
+              </button>
+
+              <button
+                className="block w-full px-2 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
+                onClick={() => handleAction("update")}
+              >
+                Update
+              </button>
+              <button
+                className="block w-full px-2 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
+                onClick={() => handleAction("assignlogin")}
+              >
+                Assign Login
+              </button>
+              <button
+                className="block w-full px-2 py-2 text-sm text-left hover:bg-gray-100 text-red-600"
+                onClick={() => handleAction("delete")}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
+  };
+
+  const handleActionSelect = (action, builderid) => {
+    switch (action) {
+      case "status":
+        status(builderid);
+        break;
+      case "update":
+        edit(builderid);
+        break;
+      case "delete":
+        del(builderid);
+        break;
+      case "assignlogin":
+        setSelectedBuilderId(builderid);
+        setGiveAccess(true);
+        break;
+      default:
+        console.log("Invalid action");
+    }
   };
 
   return (
@@ -368,7 +393,7 @@ const Builders = () => {
     >
       {!showBuilderForm ? (
         <>
-          <div className="builder-table w-full h-[550px] sm:h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
+          <div className="builder-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
             <p className="block md:hidden text-lg font-semibold">Builders</p>
             <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
               <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
@@ -415,7 +440,7 @@ const Builders = () => {
                 type="hidden"
                 value={newBuilder.builderid || ""}
                 onChange={(e) =>
-                  setBuilderData({ ...newBuilder, builderid: e.target.value })
+                  setNewBuilder({ ...newBuilder, builderid: e.target.value })
                 }
               />
               <div className="w-full ">
@@ -424,11 +449,11 @@ const Builders = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter Project Name"
+                  placeholder="Enter Company Name"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.company_name}
                   onChange={(e) =>
-                    setBuilderData({
+                    setNewBuilder({
                       ...newBuilder,
                       company_name: e.target.value,
                     })
@@ -441,11 +466,11 @@ const Builders = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter Owner Name"
+                  placeholder="Enter Contact"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.contact_person}
                   onChange={(e) =>
-                    setBuilderData({
+                    setNewBuilder({
                       ...newBuilder,
                       contact_person: e.target.value,
                     })
@@ -458,14 +483,14 @@ const Builders = () => {
                 </label>
                 <input
                   type="number"
-                  placeholder="Enter Address"
+                  placeholder="Enter Contact Number"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.contact}
                   onChange={(e) => {
                     const input = e.target.value;
                     if (/^\d{0,10}$/.test(input)) {
                       // Allows only up to 12 digits
-                      setBuilderData({ ...newBuilder, contact: input });
+                      setNewBuilder({ ...newBuilder, contact: input });
                     }
                   }}
                 />
@@ -480,7 +505,7 @@ const Builders = () => {
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.email}
                   onChange={(e) =>
-                    setBuilderData({ ...newBuilder, email: e.target.value })
+                    setNewBuilder({ ...newBuilder, email: e.target.value })
                   }
                 />
               </div>
@@ -494,7 +519,7 @@ const Builders = () => {
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.office_address}
                   onChange={(e) =>
-                    setBuilderData({
+                    setNewBuilder({
                       ...newBuilder,
                       office_address: e.target.value,
                     })
@@ -512,7 +537,7 @@ const Builders = () => {
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.registration_no}
                   onChange={(e) =>
-                    setBuilderData({
+                    setNewBuilder({
                       ...newBuilder,
                       registration_no: e.target.value,
                     })
@@ -531,7 +556,7 @@ const Builders = () => {
                   onChange={(e) => {
                     const selectedDate = e.target.value; // Get full date
                     const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
-                    setBuilderData({ ...newBuilder, dor: formattedDate });
+                    setNewBuilder({ ...newBuilder, dor: formattedDate });
                   }}
                 />
               </div>
@@ -545,7 +570,7 @@ const Builders = () => {
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.website}
                   onChange={(e) =>
-                    setBuilderData({ ...newBuilder, website: e.target.value })
+                    setNewBuilder({ ...newBuilder, website: e.target.value })
                   }
                 />
               </div>
@@ -559,7 +584,7 @@ const Builders = () => {
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.notes}
                   onChange={(e) =>
-                    setBuilderData({ ...newBuilder, notes: e.target.value })
+                    setNewBuilder({ ...newBuilder, notes: e.target.value })
                   }
                 />
               </div>

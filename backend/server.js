@@ -3,6 +3,7 @@ import cors from "cors";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import session from "express-session";
+import path from "path";
 import "dotenv/config";
 
 import loginRoutes from "./routes/admin/loginRoutes.js";
@@ -22,8 +23,8 @@ import auctionmembersRoutes from "./routes/admin/auctionmemberRoutes.js";
 //import calenderRoutes from "./routes/admin/calenderRoutes.js";
 //import marketingRoutes from "./routes/admin/marketingRoutes.js";
 //import rawmaterialRoutes from "./routes/admin/rawmaterialRoutes.js";
-
-import employeeloginRoutes from "./routes/employee/employeeloginRoutes.js";
+//import employeeloginRoutes from "./routes/admin/employeeloginRoutes.js";
+import employeeLoginRoutes from "./routes/employee/loginRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -39,8 +40,11 @@ app.use(
 );
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+// Serve static files from 'uploads' directory
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-const allowedOrigins = ["http://localhost:5173", "http://localhost:5174","https://reparv-tech.onrender.com","https://admin.reparv.in","https://reparv.in","https://employee.reparv.in"];
+const allowedOrigins = ["http://localhost:5173", "http://localhost:5174","https://reparv-tech.onrender.com","https://admin.reparv.in","https://reparv.in",];
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -104,11 +108,11 @@ app.use("/admin/auctionmembers", auctionmembersRoutes);
 //app.use("/admin/tickets", ticketRoutes);
 // app.use("/admin/calenders", calenderRoutes);
 // app.use("/admin/marketing", marketingRoutes);
-// app.use("/admin/rawmaterials", rawmaterialRoutes);
+app.use("/employee/login", loginRoutes);
 
 
 //Employee Routes
-app.use("/employee", employeeloginRoutes);
+app.use("/employee", loginRoutes);
 
 // ✅ Start Server
 app.listen(PORT, () => {

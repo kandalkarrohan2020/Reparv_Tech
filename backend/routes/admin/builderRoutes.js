@@ -1,9 +1,11 @@
 import express from "express";
-import {getAll, getById, add, update, status, assignLogin, deleteBuilder} from "../../controllers/admin/builderController.js";
+import {getAll, getAllActive, getById, add, update, status, assignLogin, deleteBuilder} from "../../controllers/admin/builderController.js";
 
 const router = express.Router();
+// router.use(cookieParser());
 
 router.get("/", getAll);
+router.get("/active", getAllActive);
 router.get("/:id", getById);
 router.post("/add", add);
 router.put("/edit/:id", update);

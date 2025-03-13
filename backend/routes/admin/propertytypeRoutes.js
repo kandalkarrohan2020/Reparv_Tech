@@ -1,9 +1,10 @@
 import express from "express";
-import {getAll, getById, del} from "../../controllers/admin/propertytypeController.js";
+import {getAll, getById, del, getAllActive} from "../../controllers/admin/propertytypeController.js";
 
 const router = express.Router();
 
 router.get("/", getAll);
+router.get("/active", getAllActive);
 router.get("/:id", getById);
 // router.post("/add", propertytypeController.add);
 // router.put("/edit/:id", propertytypeController.update);

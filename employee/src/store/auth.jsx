@@ -16,7 +16,7 @@ const delTokenInCookie = () => {
     setAccessToken();
     Cookies.remove("accessToken");
 }
-const URI = "https://api.reparv.in";
+const URI = "http://localhost:3000";
 const [showEplDetailsForm, setShowEplDetailsForm ] = useState(false);
 const [showBuilderForm, setShowBuilderForm ] = useState(false);
 const [showSalesForm, setShowSalesForm ] = useState(false);

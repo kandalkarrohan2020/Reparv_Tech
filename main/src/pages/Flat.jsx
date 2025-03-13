@@ -83,6 +83,7 @@ const properties = [
 export default function Flat() {
   const navigate = useNavigate();
   //filter
+  const [city, setCity] = useState("");
   const [location, setLocation] = useState("");
   const [budget, setBudget] = useState("");
 
@@ -111,6 +112,18 @@ export default function Flat() {
           />
         </div>
         <div className="flex flex-wrap gap-2 sm:gap-5 bg-white">
+          <div className="flex">
+            <select
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              className="w-full h-10 px-2 border border-[#00000033] rounded-md"
+            >
+              <option value="">Select City</option>
+              <option value="Nagpur">Anand nagar</option>
+              <option value="Amaravati">Samant Nagar</option>
+              <option value="Chandrapur">Ram Nagar</option>
+            </select>
+          </div>
           <div className="flex">
             <select
               value={location}

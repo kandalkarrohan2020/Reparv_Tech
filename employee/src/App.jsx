@@ -18,6 +18,7 @@ import Properties from "./pages/Properties.jsx";
 import Role from "./pages/Role.jsx";
 import Department from "./pages/Department.jsx";
 import PropertyType from "./pages/PropertyType.jsx";
+import ErrorPage from "../../admin/src/pages/ErrorPage.jsx";
 
 const App = () => {
   return (
@@ -27,12 +28,14 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route path="/overview" element={<Overview />} />
           <Route path="/enquirers" element={<Enquirers />} />
-          <Route path="/propertytypes" element={<PropertyType />} />
           <Route path="/properties" element={<Properties />} />
+          <Route path="/builders" element={<Builders />} />
+          <Route path="/propertytypes" element={<PropertyType />} />
+          
           <Route path="/map" element={<Map />} />
           <Route path="/calender" element={<Calender />} />
           <Route path="/customers" element={<Customers />} />
-          <Route path="/builders" element={<Builders />} />
+          
           <Route path="/salespersons" element={<SalesPerson />} />
           <Route path="/auctionmembers" element={<AuctionMembers />} />
           <Route path="/employees" element={<Employee />} />

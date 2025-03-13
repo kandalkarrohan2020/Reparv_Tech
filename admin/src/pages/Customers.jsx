@@ -16,7 +16,7 @@ const Customers = () => {
 
   const fetchDatas = async () => {
       try {
-        const response = await fetch(URI+"/customers", {
+        const response = await fetch(URI+"/admin/customers", {
           method: "GET",
           credentials: "include", // ✅ Ensures cookies are sent
           headers: {

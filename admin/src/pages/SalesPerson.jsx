@@ -21,7 +21,7 @@ const SalesPerson = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI+"/salespersons", {
+      const response = await fetch(URI+"/admin/salespersons", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -78,7 +78,7 @@ const SalesPerson = () => {
   
 
   return (
-    <div className={`builders`}>
+    <div className={`sales Persons overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}>
       {!showSalesForm ? (
         <>
           <div className="sales-table w-full h-[550px] sm:h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">

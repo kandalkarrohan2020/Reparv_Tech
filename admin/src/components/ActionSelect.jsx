@@ -3,9 +3,15 @@ import { FiMoreVertical } from "react-icons/fi";
 import { useAuth } from "../store/auth";
 import { useNavigate } from "react-router-dom";
 
-const ActionSelect = ({ viewRoute, statusAction, editAction, deleteAction, approveAction }) => {
+const ActionSelect = ({
+  viewRoute,
+  statusAction,
+  editAction,
+  deleteAction,
+  approveAction,
+}) => {
   const [selectedAction, setSelectedAction] = useState("");
-  const {setShowEplDetailsForm, setAction} = useAuth();
+  const { setShowEplDetailsForm, setAction, setShowUploadImagesForm} = useAuth();
   const navigate = useNavigate();
 
   const handleAction = (action) => {
@@ -13,23 +19,27 @@ const ActionSelect = ({ viewRoute, statusAction, editAction, deleteAction, appro
       case "view":
         navigate(viewRoute);
         break;
-      
+
       case "status":
         statusAction();
         break;
-      
+
       case "approve":
-          approveAction();
-          break;
+        approveAction();
+        break;
+
+      case "upload":
+        setAction("upload"); // Optional: Set global state for action
+        setShowUploadImagesForm(true);
+        break;
 
       case "update":
         setAction("update"); // Optional: Set global state for action
         editAction();
         break;
-      
+
       case "delete":
         deleteAction(); // Call the function passed from Employee table
-        
     }
   };
 
@@ -47,7 +57,9 @@ const ActionSelect = ({ viewRoute, statusAction, editAction, deleteAction, appro
           handleAction(action);
         }}
       >
-        <option value="" disabled>Select Action</option>
+        <option value="" disabled>
+          Select Action
+        </option>
         <option value="status">Status</option>
         <option value="approve">Approve</option>
         <option value="upload">Upload Image</option>

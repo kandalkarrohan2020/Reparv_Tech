@@ -17,7 +17,7 @@ const AuctionMembers = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI+"/auctionmember",{
+      const response = await fetch(URI+"/admin/auctionmember",{
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -80,7 +80,7 @@ const AuctionMembers = () => {
 
 
   return (
-    <>
+    <div className={`Auction overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}>
       {!showAuctionForm ? 
         <>
           <div className="employee-table w-full h-[550px] sm:h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
@@ -286,7 +286,7 @@ const AuctionMembers = () => {
           </div>
         </div>
       }
-    </>
+    </div>
   );
 };
 

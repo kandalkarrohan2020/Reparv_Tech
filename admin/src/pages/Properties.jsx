@@ -326,7 +326,7 @@ const Properties = () => {
       <div
         className={`h-12 overflow-hidden`}
       >
-       <img src={`URI${row.image}`} alt="Image" className="h-full"/>
+       <img src={`${URI}${row.image}`} alt="Image" className="h-full"/>
       </div>
     ), },
     { name: "Builder", selector: (row) => row.company_name, sortable: true },

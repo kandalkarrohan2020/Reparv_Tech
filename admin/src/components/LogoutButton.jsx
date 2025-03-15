@@ -13,13 +13,9 @@ function LogoutButton() {
         {},
         { withCredentials: true }
       );
-
-      // ✅ Clear authentication state (optional: if using context or local storage)
-      document.cookie =
-        "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       delTokenInCookie();
       localStorage.removeItem("user");
-      navigate("/"); // ✅ Redirect user to login page after logout
+      navigate("/");
     } catch (error) {
       console.log("Logout failed:", error);
     }

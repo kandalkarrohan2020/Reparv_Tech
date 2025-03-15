@@ -23,9 +23,11 @@ import auctionmembersRoutes from "./routes/admin/auctionmemberRoutes.js";
 //import calenderRoutes from "./routes/admin/calenderRoutes.js";
 //import marketingRoutes from "./routes/admin/marketingRoutes.js";
 //import rawmaterialRoutes from "./routes/admin/rawmaterialRoutes.js";
-//import employeeloginRoutes from "./routes/admin/employeeloginRoutes.js";
-import employeeLoginRoutes from "./routes/employee/loginRoutes.js";
 
+import employeeLoginRoutes from "./routes/employee/employeeLoginRoutes.js";
+import employeeBuildersRoutes from "./routes/employee/employeeBuildersRoutes.js";
+import employeeTicketRoutes from "./routes/employee/employeeTicketRoutes.js";
+import employeeEnquirersRoutes from "./routes/employee/employeeEnquirersRoutes.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -35,7 +37,7 @@ app.use(
     secret: process.env.SESSION_SECRET || "your_secret_key",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true }, // Use `secure: true` in production with HTTPS
+    cookie: { secure: true, httpOnly: true },
   })
 );
 
@@ -44,7 +46,14 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files from 'uploads' directory
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-const allowedOrigins = ["http://localhost:5173", "http://localhost:5174","https://reparv-tech.onrender.com","https://admin.reparv.in","https://reparv.in",];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://reparv-tech.onrender.com",
+  "https://admin.reparv.in",
+  "https://reparv.in"
+];
+
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -54,7 +63,8 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
@@ -62,7 +72,7 @@ app.use(
 app.use(cookieParser());
 
 const verifyToken = (req, res, next) => {
-    const publicRoutes = ["/admin/login","/employee/login"];
+    const publicRoutes = ["/admin/login","/employee/login","/get-cookie"];
   
     // ✅ Allow public routes to pass through
     if (publicRoutes.some(route => req.path.startsWith(route))) {
@@ -108,11 +118,12 @@ app.use("/admin/auctionmembers", auctionmembersRoutes);
 //app.use("/admin/tickets", ticketRoutes);
 // app.use("/admin/calenders", calenderRoutes);
 // app.use("/admin/marketing", marketingRoutes);
-app.use("/employee/login", loginRoutes);
-
 
 //Employee Routes
-app.use("/employee", loginRoutes);
+app.use("/employee", employeeLoginRoutes);
+app.use("/employee/builders", employeeBuildersRoutes);
+app.use("employee/enquirers",employeeEnquirersRoutes);
+app.use("employee/tickets",employeeTicketRoutes);
 
 // ✅ Start Server
 app.listen(PORT, () => {

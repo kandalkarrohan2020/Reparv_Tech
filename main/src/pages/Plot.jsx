@@ -83,6 +83,7 @@ const properties = [
 export default function Plot() {
   const navigate = useNavigate();
   //filter
+  const [city, setCity] = useState("");
   const [location, setLocation] = useState("");
   const [budget, setBudget] = useState("");
 
@@ -112,14 +113,26 @@ export default function Plot() {
         <div className="flex flex-wrap gap-2 sm:gap-5 bg-white">
           <div className="flex">
             <select
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              className="w-full h-10 px-2 border border-[#00000033] rounded-md"
+            >
+              <option value="">Select City</option>
+              <option value="Nagpur">Nagpur</option>
+              <option value="Amaravati">Amaravati</option>
+              <option value="Chandrapur">Chandrapur</option>
+            </select>
+          </div>
+          <div className="flex">
+            <select
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               className="w-full h-10 px-2 border border-[#00000033] rounded-md"
             >
               <option value="">Select Location</option>
-              <option value="Nagpur">Nagpur</option>
-              <option value="Amaravati">Amaravati</option>
-              <option value="Chandrapur">Chandrapur</option>
+              <option value="Ram Nagar">Ram Nagar</option>
+              <option value="Sharda Nagar">Sharda Nagar</option>
+              <option value="Rk Nagar">RK Nagar</option>
             </select>
           </div>
 

@@ -13,6 +13,8 @@ import FarmVilla from './pages/FarmVilla'
 import Farm from './pages/Farm'
 import Lease from './pages/Lease'
 import ScrollToTop from './components/ScrollToTop'
+import RowHouse from './pages/RowHouse'
+import Duplex from './pages/Duplex'
 
 function App() {
   
@@ -29,6 +31,8 @@ function App() {
           <Route path="/farmvilla" element={<FarmVilla/>} />
           <Route path="/farm" element={<Farm />} />
           <Route path="/lease" element={<Lease/>} />
+          <Route path="/row-house" element={<RowHouse/>} />
+          <Route path="/duplex" element={<Duplex/>} />
           <Route path="/property" element={<PropertyInfo />} />
           <Route path="/about-us" element={<AboutUs/>} />
           <Route path="/join-our-team" element={<JoinOurTeam />} />

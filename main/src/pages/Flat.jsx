@@ -119,9 +119,9 @@ export default function Flat() {
               className="w-full h-10 px-2 border border-[#00000033] rounded-md"
             >
               <option value="">Select City</option>
-              <option value="Nagpur">Anand nagar</option>
-              <option value="Amaravati">Samant Nagar</option>
-              <option value="Chandrapur">Ram Nagar</option>
+              <option value="Nagpur">Nagpur</option>
+              <option value="Amaravati">Amaravati</option>
+              <option value="Chandrapur">Chandrapur</option>
             </select>
           </div>
           <div className="flex">
@@ -131,9 +131,9 @@ export default function Flat() {
               className="w-full h-10 px-2 border border-[#00000033] rounded-md"
             >
               <option value="">Select Location</option>
-              <option value="Nagpur">Nagpur</option>
-              <option value="Amaravati">Amaravati</option>
-              <option value="Chandrapur">Chandrapur</option>
+              <option value="Ram Nagar">Ram Nagar</option>
+              <option value="Sharda Nagar">Sharda Nagar</option>
+              <option value="Rk Nagar">RK Nagar</option>
             </select>
           </div>
 

@@ -2,10 +2,8 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import db from "../../config/dbconnect.js";
-import cookieParser from "cookie-parser";
 
 const router = express.Router();
-router.use(cookieParser()); // ✅ Ensure cookies can be parsed
 
 // ✅ User Login Route
 router.post("/login", async (req, res) => {
@@ -33,7 +31,7 @@ router.post("/login", async (req, res) => {
 
     // ✅ Generate JWT Token
     const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "10d",
     });
 
     // ✅ Store session data properly
@@ -47,8 +45,9 @@ router.post("/login", async (req, res) => {
     // ✅ Set secure cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "none",
+      maxAge: 10 * 24 * 60 * 60 * 1000,
     });
 
     // ✅ Send successful response
@@ -78,8 +77,8 @@ router.get("/session-data", (req, res) => {
 router.post("/logout", (req, res) => {
   res.clearCookie("token", { 
     httpOnly: true, 
-    secure: true, 
-    sameSite: "strict" 
+    secure: false, 
+    sameSite: "none" 
   });
   console.log("Logout SuccessFully");
   return res.json({ message: "Logout successful." });

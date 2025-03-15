@@ -68,7 +68,7 @@ export const add = (req, res) => {
 
 
 // **Update Property**
-export const update = (req, res) => {
+export const updateOld = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const Id = req.params.id ? parseInt(req.params.id) : null;
 
@@ -152,6 +152,71 @@ export const update = (req, res) => {
       }
     );
   });
+};
+
+export const update = (req, res) => {
+  try {
+    const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+    const Id = req.params.id ? parseInt(req.params.id) : null;
+
+    if (!Id) {
+      return res.status(400).json({ message: "Invalid property ID" });
+    }
+
+    const { builderid, propertytypeid, property_name, address, city, location, rerano, area, sqft_price, extra } = req.body;
+
+    // Validate required fields
+    if (!builderid || !propertytypeid || !property_name || !address || !city || !location || !rerano || !area || !sqft_price) {
+      return res.status(400).json({ message: "All required fields must be filled" });
+    }
+
+    // Handle image upload (if a new file is uploaded)
+    const newImagePath = req.file ? `/uploads/${req.file.filename}` : null;
+
+    // Retrieve existing property
+    db.query("SELECT * FROM properties WHERE propertyid = ?", [Id], (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+
+      const existingImage = result[0].image;
+      const finalImagePath = newImagePath || existingImage;
+
+      // Delete old image if a new one is uploaded
+      if (newImagePath && existingImage) {
+        const oldImagePath = path.join("uploads", path.basename(existingImage));
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+          console.log("Old image deleted:", oldImagePath);
+        }
+      }
+
+      // Update property details in the database
+      const updateSQL = `
+        UPDATE properties 
+        SET builderid=?, propertytypeid=?, property_name=?, address=?, city=?, location=?, rerano=?, area=?, sqft_price=?, extra=?, image=?, updated_at=? 
+        WHERE propertyid=?`;
+
+      db.query(
+        updateSQL,
+        [builderid, propertytypeid, property_name, address, city, location, rerano, area, sqft_price, extra, finalImagePath, currentdate, Id],
+        (err) => {
+          if (err) {
+            console.error("Error updating property:", err);
+            return res.status(500).json({ message: "Database error", error: err });
+          }
+          res.status(200).json({ message: "Property updated successfully", imageUrl: finalImagePath });
+        }
+      );
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return res.status(500).json({ message: "Internal server error", error });
+  }
 };
 
 export const del = (req, res) => {

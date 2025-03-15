@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 import propertyPicture from "../assets/property/propertyPicture.svg";
 import { FaHeart } from "react-icons/fa";
@@ -82,13 +82,36 @@ const properties = [
 
 export default function Flat() {
   const navigate = useNavigate();
+  const [flats, setFlats] = useState([]);
   //filter
   const [city, setCity] = useState("");
   const [location, setLocation] = useState("");
   const [budget, setBudget] = useState("");
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const handleSearch = () => {
-    onSearch({ location, budget });
+    onSearch({ city, location, budget });
+  };
+
+  //Fetch Data
+  const fetchData = async () => {
+    try {
+      const response = await fetch("https://api.reparv.in/properties", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch properties.");
+      const data = await response.json();
+      setFlats(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
   };
 
   return (

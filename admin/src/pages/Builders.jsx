@@ -98,9 +98,11 @@ const Builders = () => {
 
   const add = async (e) => {
     e.preventDefault();
-  
-    const endpoint = newBuilder.builderid ? `edit/${newBuilder.builderid}` : "add";
-  
+
+    const endpoint = newBuilder.builderid
+      ? `edit/${newBuilder.builderid}`
+      : "add";
+
     try {
       const response = await fetch(`${URI}/admin/builders/${endpoint}`, {
         method: newBuilder.builderid ? "PUT" : "POST",
@@ -108,15 +110,19 @@ const Builders = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newBuilder),
       });
-  
+
       if (response.status === 409) {
         alert("Builder already exists!");
       } else if (!response.ok) {
         throw new Error(`Failed to save builder. Status: ${response.status}`);
       } else {
-        alert(newBuilder.builderid ? "Builder updated successfully!" : "Builder added successfully!");
+        alert(
+          newBuilder.builderid
+            ? "Builder updated successfully!"
+            : "Builder added successfully!"
+        );
       }
-  
+
       // Clear form only after successful fetch
       setNewBuilder({
         company_name: "",
@@ -129,11 +135,10 @@ const Builders = () => {
         website: "",
         notes: "",
       });
-  
+
       setShowBuilderForm(false);
-  
+
       await fetchData(); // Ensure latest data is fetched
-  
     } catch (err) {
       console.error("Error saving builder:", err);
     }
@@ -311,80 +316,58 @@ const Builders = () => {
     },
     {
       name: "",
-      cell: (row) => <ActionDropdown row={row} onAction={handleActionSelect} />,
+      cell: (row) => <ActionDropdown row={row} />,
     },
   ];
 
-  const ActionDropdown = ({ row, onAction }) => {
-    const [isOpen, setIsOpen] = useState(false);
+  const ActionDropdown = ({ row }) => {
+    const [selectedAction, setSelectedAction] = useState("");
 
-    const handleAction = (action) => {
-      setIsOpen(false);
-      onAction(action, row.builderid);
+    const handleActionSelect = (action, id) => {
+      switch (action) {
+        case "status":
+          status(id);
+          break;
+        case "update":
+          edit(id);
+          break;
+        case "delete":
+          del(id);
+          break;
+        case "assignlogin":
+          setSelectedBuilderId(id);
+          setGiveAccess(true);
+          break;
+
+        default:
+          console.log("Invalid action");
+      }
     };
 
     return (
       <div className="relative inline-block w-[120px]">
-        <div
-          className="flex items-center justify-between p-2 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <span className="text-[12px]">Action</span>
+        <div className="flex items-center justify-between p-2 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <span className=" text-[12px]">{selectedAction || "Action"}</span>
           <FiMoreVertical className="text-gray-500" />
         </div>
-        {isOpen && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
-            <div className="py-1">
-              <button
-                className="block w-full px-2 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
-                onClick={() => handleAction("status")}
-              >
-                Status
-              </button>
-
-              <button
-                className="block w-full px-2 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
-                onClick={() => handleAction("update")}
-              >
-                Update
-              </button>
-              <button
-                className="block w-full px-2 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
-                onClick={() => handleAction("assignlogin")}
-              >
-                Assign Login
-              </button>
-              <button
-                className="block w-full px-2 py-2 text-sm text-left hover:bg-gray-100 text-red-600"
-                onClick={() => handleAction("delete")}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        )}
+        <select
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          value={selectedAction}
+          onChange={(e) => {
+            const action = e.target.value;
+            handleActionSelect(action, row.builderid);
+          }}
+        >
+          <option value="" disabled>
+            Select Action
+          </option>
+          <option value="status">Status</option>
+          <option value="update">Update</option>
+          <option value="assignlogin">Assign Login</option>
+          <option value="delete">Delete</option>
+        </select>
       </div>
     );
-  };
-
-  const handleActionSelect = (action, builderid) => {
-    switch (action) {
-      case "status":
-        status(builderid);
-        break;
-      case "update":
-        edit(builderid);
-        break;
-      case "delete":
-        del(builderid);
-        break;
-      case "assignlogin":
-        setSelectedBuilderId(builderid);
-        setGiveAccess(true);
-        break;
-      default:
-        console.log("Invalid action");
-    }
   };
 
   return (

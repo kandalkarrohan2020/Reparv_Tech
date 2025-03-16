@@ -16,7 +16,7 @@ router.post("/login", async (req, res) => {
 
     // ✅ Use a Promise for db.query to avoid callback issues
     const user = await new Promise((resolve, reject) => {
-      db.query("SELECT * FROM employees WHERE email = ?", [email], (err, results) => {
+      db.query("SELECT * FROM employees INNER join roles ON roles.roleid = employees.roleid WHERE employees.email = ? and employees.status='Active' ", [email], (err, results) => {
         if (err) reject({ status: 500, message: "Database error", error: err });
         else if (results.length === 0) reject({ status: 401, message: "Invalid email or password" });
         else resolve(results[0]);
@@ -39,13 +39,14 @@ router.post("/login", async (req, res) => {
       id: user.id,
       email: user.email,
       name: user.name,
+      contact: user.contact,
       role: user.role,
     };
 
     // ✅ Set secure cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "none",
       maxAge: 10 * 24 * 60 * 60 * 1000,
     });
@@ -77,7 +78,7 @@ router.get("/session-data", (req, res) => {
 router.post("/logout", (req, res) => {
   res.clearCookie("token", { 
     httpOnly: true, 
-    secure: false, 
+    secure: true, 
     sameSite: "none" 
   });
   console.log("Logout SuccessFully");

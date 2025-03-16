@@ -26,6 +26,8 @@ import auctionmembersRoutes from "./routes/admin/auctionmemberRoutes.js";
 
 import employeeLoginRoutes from "./routes/employee/employeeLoginRoutes.js";
 import employeeBuildersRoutes from "./routes/employee/employeeBuildersRoutes.js";
+import employeePropertyRoutes from "./routes/employee/employeePropertyRoutes.js";
+import employeePropertytypeRoutes from "./routes/employee/employeePropertytypeRoutes.js";
 import employeeTicketRoutes from "./routes/employee/employeeTicketRoutes.js";
 import employeeEnquirersRoutes from "./routes/employee/employeeEnquirersRoutes.js";
 const app = express();
@@ -51,7 +53,8 @@ const allowedOrigins = [
   "http://localhost:5174",
   "https://reparv-tech.onrender.com",
   "https://admin.reparv.in",
-  "https://reparv.in"
+  "https://reparv.in",
+  "https://employee.reparv.in",
 ];
 
 app.use(
@@ -122,6 +125,8 @@ app.use("/admin/auctionmembers", auctionmembersRoutes);
 //Employee Routes
 app.use("/employee", employeeLoginRoutes);
 app.use("/employee/builders", employeeBuildersRoutes);
+app.use("/employee/properties", employeePropertyRoutes);
+app.use("/employee/propertytypes", employeePropertytypeRoutes);
 app.use("employee/enquirers",employeeEnquirersRoutes);
 app.use("employee/tickets",employeeTicketRoutes);
 

@@ -47,7 +47,7 @@ function Login() {
         console.log("Login Successful", response.data);
         localStorage.setItem("user",JSON.stringify(response.data.user));
         storeTokenInCookie(response.data.token);
-        navigate("/overview"); // Redirect after successful login
+        navigate("/overview",{replace:true});
       } else {
         setErrorMessage("Invalid login credentials.");
       }

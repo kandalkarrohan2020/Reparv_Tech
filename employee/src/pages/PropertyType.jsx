@@ -127,6 +127,7 @@ const PropertyType = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Full Name"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -137,6 +138,7 @@ const PropertyType = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Property Price"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -147,6 +149,7 @@ const PropertyType = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Address"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -157,6 +160,7 @@ const PropertyType = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Type"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -167,6 +171,7 @@ const PropertyType = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Area In Sq.Ft"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -176,7 +181,7 @@ const PropertyType = () => {
                   Property Picture
                 </label>
                 <div className="w-full mt-2">
-                  <input type="file" className="hidden" id="rera-documents" />
+                  <input type="file" required className="hidden" id="rera-documents" />
                   <label
                     htmlFor="rera-documents"
                     className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"

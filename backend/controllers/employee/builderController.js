@@ -28,7 +28,6 @@ export const getAllActive = (req, res) => {
   });
 };
 
-
 // **Fetch Single by ID**
 export const getById = (req, res) => {
   const builderid = parseInt(req.params.id);

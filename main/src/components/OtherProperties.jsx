@@ -7,6 +7,7 @@ import { BiBath } from "react-icons/bi";
 import { FaDiamond } from "react-icons/fa6";
 import populerTag from "../assets/property/populerTag.svg";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const properties = [
   {
@@ -151,11 +152,9 @@ function OtherProperties({ type }) {
   return (
     <div className="otherProperties w-full overflow-scroll scrollbar-hide grid place-items-center grid-flow-col gap-6 py-4 sm:p-5">
       {(type === "rent" ? propertiesRent : properties).map((property) => (
-        <div
+        <Link 
+          to={`/property-info/${property.propertyid}`}
           key={property.id}
-          onClick={() => {
-            navigate("/property");
-          }}
           className="min-w-[375px] group rounded-lg shadow-md bg-white hover:bg-[#076300] "
         >
           <img
@@ -218,7 +217,7 @@ function OtherProperties({ type }) {
               </div>
             </div>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

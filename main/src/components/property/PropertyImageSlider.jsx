@@ -6,8 +6,10 @@ import "swiper/css/pagination";
 import "swiper/css/thumbs";
 import { Navigation, Pagination, Thumbs } from "swiper/modules";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { useAuth } from "../../store/auth";
 
 const PropertyImageSlider = ({ property }) => {
+  const {URI} = useAuth();
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [mainSwiper, setMainSwiper] = useState(null);
   const [slidesPerView, setSlidesPerView] = useState(1);
@@ -27,16 +29,17 @@ const PropertyImageSlider = ({ property }) => {
       {/* Thumbnail Swiper (Above main image on medium and large screens, below on small screens) */}
       <div className="order-1 md:order-0 m-2 overflow-scroll whitespace-nowrap scrollbar-hide border border-[#00000033] rounded-lg p-3">
         <div className="flex gap-3 w-full">
-          {property.images.map((img, index) => (
+          {property.map((img, index) => (
             <div
-              key={index}
+              key={img.image}
               className={`w-[100px] h-[65px] flex-shrink-0 cursor-pointer border rounded-lg overflow-hidden bg-center bg-cover transition-opacity duration-300 ${activeIndex === index ? "opacity-100" : "opacity-50"}`}
-              style={{ backgroundImage: `url(${img})` }}
+              style={{ backgroundImage: `url(${URI}/uploads/${img?.image})` }}
               onClick={() => {
                 mainSwiper && mainSwiper.slideTo(index);
                 setActiveIndex(index);
               }}
-            />
+            >
+            </div>
           ))}
         </div>
       </div>
@@ -56,9 +59,9 @@ const PropertyImageSlider = ({ property }) => {
           onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
           className="relative overflow-hidden"
         >
-          {property.images.map((img, index) => (
+          {property.map((img, index) => (
             <SwiperSlide key={index}>
-              <img src={img} className="w-full h-90 object-cover rounded-tr-lg rounded-tl-lg sm:rounded-lg" />
+              <img src={URI+"/uploads/"+img.image} className="w-full h-90 object-cover rounded-tr-lg rounded-tl-lg sm:rounded-lg" />
             </SwiperSlide>
           ))}
         </Swiper>

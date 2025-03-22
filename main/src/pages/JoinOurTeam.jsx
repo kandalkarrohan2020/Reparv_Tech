@@ -1,6 +1,9 @@
 import React from "react";
 import image from "../assets/joinOurTeam/image.svg";
 import responsiveImage from "../assets/joinOurTeam/responsiveImage.svg";
+import axios from "axios";
+import { useState } from "react";
+import { useAuth } from "../store/auth";
 
 import icon1 from "../assets/joinOurTeam/icon1.svg";
 import icon2 from "../assets/joinOurTeam/icon2.svg";
@@ -9,6 +12,8 @@ import icon4 from "../assets/joinOurTeam/icon4.svg";
 import icon5 from "../assets/joinOurTeam/icon5.svg";
 import icon6 from "../assets/joinOurTeam/icon6.svg";
 import formImage from "../assets/joinOurTeam/formImage.svg";
+import { Element ,Link } from "react-scroll";
+
 
 const benefits = [
   {
@@ -49,7 +54,35 @@ const benefits = [
   },
 ];
 
+
+
 function JoinOurTeam() {
+  const { URI } = useAuth();
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  
+  const [responseMessage, setResponseMessage] = useState("");
+  
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(formData);
+    try {
+      const response = await axios.post(`${URI}/frontend/joinourteam/add`, formData);
+      setResponseMessage(response.data.message);
+      setFormData({ firstname: "", lastname: "", email: "", phone: "", message: "" });
+    } catch (error) {
+      setResponseMessage(error.response?.data?.error || "Failed to submit form.");
+    }
+  };
   return (
     <div className="joinOurTeam w-full max-w-7xl mx-auto p-4 sm:p-6">
       <div className="w-full my-4 gap-6 flex items-center justify-center">
@@ -71,9 +104,11 @@ function JoinOurTeam() {
             alt=""
             className="w-full sm:hidden block object-cover"
           />
+          <Link to="contact">
           <button className="w-[250px] my-4 mx-auto sm:mx-0 bg-[#0BB501] active:scale-95 cursor-pointer text-white font-semibold py-3 px-4 rounded-lg">
             Become A Professional
           </button>
+          </Link>
         </div>
       </div>
 
@@ -103,7 +138,7 @@ function JoinOurTeam() {
         </div>
       </div>
 
-      <div className="bg-white py-12 px-4 sm:px-6 lg:px-8">
+      <Element className="bg-white py-12 px-4 sm:px-6 lg:px-8" name="contact">
         <div className="max-w-7xl mx-auto text-center flex gap-2 flex-col">
           <h2 className="text-2xl md:text-4xl font-semibold text-[#076300]">
             Join Our Team! Become A Professional
@@ -122,73 +157,83 @@ function JoinOurTeam() {
             />
           </div>
 
-          <form className="bg-white p-6 w-full flex flex-col gap-4 max-w-3xl border border-[#0000001A] rounded-lg">
+          <form onSubmit={handleSubmit} className="bg-white p-6 w-full flex flex-col gap-4 max-w-3xl border border-[#0000001A] rounded-lg">
             <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-6 gap-4">
               <div>
-                <label className="block text-base font-semibold ml-1">
-                  First Name
-                </label>
+                <label className="block text-base font-semibold ml-1">First Name</label>
                 <input
                   type="text"
+                  name="firstname"
+                  value={formData.firstname}
+                  onChange={handleChange}
                   placeholder="Enter First Name"
                   className="w-full mt-2 py-4 px-5 border rounded-md border-[#0000001A] focus:outline-none focus:ring-1 focus:ring-green-500"
                 />
               </div>
               <div>
-                <label className="block text-base font-semibold ml-1">
-                  Last Name
-                </label>
+                <label className="block text-base font-semibold ml-1">Last Name</label>
                 <input
                   type="text"
+                  name="lastname"
+                  value={formData.lastname}
+                  onChange={handleChange}
                   placeholder="Enter Last Name"
                   className="w-full mt-2 py-4 px-5 border rounded-md border-[#0000001A] focus:outline-none focus:ring-1 focus:ring-green-500"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-6 gap-4 ">
+            <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-6 gap-4">
               <div>
-                <label className="block text-base font-semibold ml-1">
-                  Email
-                </label>
+                <label className="block text-base font-semibold ml-1">Email</label>
                 <input
                   type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   placeholder="Enter your Email"
                   className="w-full mt-2 py-4 px-5 border rounded-md border-[#0000001A] focus:outline-none focus:ring-1 focus:ring-green-500"
                 />
               </div>
               <div>
-                <label className="block text-base font-semibold ml-1">
-                  Phone
-                </label>
+                <label className="block text-base font-semibold ml-1">Phone</label>
                 <input
                   type="text"
+                  name="phone"
+                  value={formData.phone}
                   placeholder="Enter Phone Number"
                   className="w-full mt-2 py-4 px-5 border rounded-md border-[#0000001A] focus:outline-none focus:ring-1 focus:ring-green-500"
+                  required
+                  onChange={(e) => {
+                    const input = e.target.value;
+                    if (/^\d{0,10}$/.test(input)) {
+                      setFormData({ ...formData, phone: input });
+                    }
+                  }}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-base font-semibold ml-1">
-                Message
-              </label>
+              <label className="block text-base font-semibold ml-1">Message</label>
               <textarea
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
                 placeholder="Enter your Message here.."
                 className="w-full mt-2 py-4 px-5 border rounded-md border-[#0000001A] focus:outline-none focus:ring-1 focus:ring-green-500"
                 rows="4"
               ></textarea>
             </div>
 
-            <button
-              type="submit"
-              className="w-[200px] mx-auto bg-[#2ECD24] active:scale-95 text-white font-medium py-2 rounded-lg"
-            >
+            <button type="submit" className="w-[200px] mx-auto bg-[#2ECD24] active:scale-95 text-white font-medium py-2 rounded-lg">
               Submit
             </button>
+
+            {responseMessage && <p className="text-center text-green-600 mt-2">{responseMessage}</p>}
           </form>
         </div>
-      </div>
+      </Element>
     </div>
   );
 }

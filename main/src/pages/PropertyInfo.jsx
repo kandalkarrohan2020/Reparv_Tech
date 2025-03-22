@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
@@ -15,6 +15,7 @@ import { FaRupeeSign } from "react-icons/fa";
 import { FaDiamond } from "react-icons/fa6";
 import populerTag from "../assets/property/populerTag.svg";
 import OtherProperties from "../components/OtherProperties";
+import { useParams } from "react-router-dom";
 
 const property = {
   title: "Seaside Serenity Villa",
@@ -45,19 +46,73 @@ const property = {
 };
 
 export default function PropertyInfo() {
+  const { id } = useParams();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { setShowInquiryForm } = useAuth();
+  const { setShowInquiryForm, URI } = useAuth();
+  const [propertyInfo, setPropertyInfo] = useState({});
+  const [propertyImages, setPropertyImages] = useState([]);
+
   const prevImage = () => {
     setCurrentIndex((prev) =>
-      prev === 0 ? property.images.length - 1 : prev - 1
+      prev === 0 ? propertyImages.length - 1 : prev - 1
     );
   };
 
   const nextImage = () => {
     setCurrentIndex((prev) =>
-      prev === property.images.length - 1 ? 0 : prev + 1
+      prev === propertyImages.length - 1 ? 0 : prev + 1
     );
   };
+
+  // *Fetch Data from API*
+  const fetchData = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/propertyinfo/" + id, {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch property info.");
+
+      const data = await response.json();
+      console.log(data);
+      setPropertyInfo(data);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  // *Fetch Data from API*
+  const fetchImages = async () => {
+    try {
+      const response = await fetch(
+        URI + "/frontend/propertyinfo/getimages/" + id,
+        {
+          method: "GET",
+          credentials: "include", // ✅ Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch property info.");
+
+      const data = await response.json();
+      console.log(data);
+      setPropertyImages([...data]);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+  console.log("image", propertyImages);
+  useEffect(() => {
+    fetchData();
+    fetchImages();
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto p-2 sm:p-4">
@@ -65,42 +120,74 @@ export default function PropertyInfo() {
       <div className="flex items-center justify-between p-4">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-base sm:text-xl font-semibold">
-            {property.title}
+            {propertyInfo.property_name}
           </h1>
           <div className="flex items-center text-xs gap-1 text-[#000000] border border-[#00000033] rounded-lg py-2 px-4 ">
             <FaMapMarkerAlt className="text-black" />
-            <span>{property.location}</span>
+            <span>
+              {propertyInfo.location}, {propertyInfo.city}
+            </span>
           </div>
         </div>
         <div className="w-[100px] h-13 flex flex-col items-start justify-center">
           <p className="text-xs ml-1 text-[#00000066] font-medium">Price</p>
           <div className="flex items-center justify-center text-base font-semibold text-black">
             <MdCurrencyRupee className="w-5 h-5" />
-            <span>{property.price}</span>
+            <span>{propertyInfo.sqft_price}</span>
           </div>
         </div>
       </div>
 
       {/* Image Container */}
-      <PropertyImageSlider property={property} />
+      <PropertyImageSlider property={propertyImages} />
 
       <div className="description grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-        <div className="h-[400px] sm:h-[330px] flex flex-col gap-2 p-4 md:p-7 border border-[#00000033] rounded-lg">
+        <div className="h-70 flex flex-col gap-2 p-4 md:p-7 border border-[#00000033] rounded-lg">
           <h2 className="text-lg leading-6 font-semibold">Description</h2>
 
           <p className="text-[#00000066] text-xs font-medium leading-5 mt-2">
-            {property.description}
+            {propertyInfo.description}
           </p>
+          <hr />
+          <div className="grid grid-cols-2 gap-y-2 my-2 text-[#00000066] text-[10px] font-medium">
+            <p>
+              <b className="text-xs text-black">Wing : </b> {propertyInfo.wing}
+            </p>
+            <p>
+              <b className="text-xs text-black">Price : </b> {propertyInfo.sqft_price}
+            </p>
+            <p>
+              <b className="text-xs text-black">Floor :</b> {propertyInfo.floor}
+            </p>
+            <p>
+              <b className="text-xs text-black">Flat_No :</b>{" "}
+              {propertyInfo.flatno}
+            </p>
+            <p>
+              <b className="text-xs text-black">Direction :</b>{" "}
+              {propertyInfo.direction}
+            </p>
+            <p>
+              <b className="text-xs text-black">CarpetArea :</b>{" "}
+              {propertyInfo.carpetarea}
+            </p>
+            <p>
+              <b className="text-xs text-black">Super Builtup : </b>
+              {propertyInfo.superbuiltup}
+            </p>
+            <p>
+              <b className="text-xs text-black">Construction Age :</b>{" "}
+              {propertyInfo.ageofconstruction} year
+            </p>
+          </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm place-items-center font-medium mt-4 px-4 py-4 border-t">
+          <div className=" hidden  grid-cols-2 sm:grid-cols-3 gap-3 text-sm place-items-center font-medium mt-4 px-4 py-4 border-t">
             <div className="bedroom w-full h-22 flex-1 gap-3 flex-col text-[#00000066] px-3">
               <div className="flex items-center gap-1 text-xs">
                 <MdOutlineKingBed className="w-5 h-5" />
                 <p>Bedrooms</p>
               </div>
-              <p className="text-sm md:text-lg text-black font-semibold">
-                {property.details.bedrooms}
-              </p>
+              <p className="text-sm md:text-lg text-black font-semibold">3</p>
             </div>
 
             <div className="bathroom w-full h-22 flex-1 gap-3 flex-col text-[#00000066] px-3 border-l sm:border-x">
@@ -108,9 +195,7 @@ export default function PropertyInfo() {
                 <BiBath className="w-5 h-5" />
                 <p>Bathrooms</p>
               </div>
-              <p className="text-sm md:text-lg text-black font-semibold">
-                {property.details.bathrooms}
-              </p>
+              <p className="text-sm md:text-lg text-black font-semibold">4</p>
             </div>
             <div className="area w-full sm:w-[130px] flex-1 h-22 gap-3 flex-col text-[#00000066] px-3 border-t sm:border-t-0 pt-2 sm:pt-0">
               <div className="flex items-center gap-1 text-xs">
@@ -118,7 +203,7 @@ export default function PropertyInfo() {
                 <p>Area</p>
               </div>
               <p className="text-sm md:text-lg text-black font-semibold">
-                {property.details.area}
+                {propertyInfo.area}
               </p>
             </div>
           </div>

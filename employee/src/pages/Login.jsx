@@ -92,6 +92,7 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               type="text"
+              required
               placeholder="Email Address OR Username"
               className="w-full border-none outline-none text-[14px]"
             />
@@ -102,6 +103,7 @@ function Login() {
             <FaLock className="text-black/20 w-[20px] h-[20px] group-focus-within:text-[#0BB501]" />
             <input
               value={password}
+              required
               onChange={(e) => setPassword(e.target.value)}
               type={isPasswordShow ? "text" : "password"}
               placeholder="Password"

@@ -16,6 +16,8 @@ const Properties = () => {
     showUploadImagesForm,
     setShowUploadImagesForm,
     URI,
+    showAdditionalInfoForm,
+    setShowAdditionalInfoForm,
   } = useAuth();
   const [datas, setDatas] = useState([]);
   const [propertyTypeData, setPropertyTypeData] = useState([]);
@@ -48,7 +50,6 @@ const Properties = () => {
   const removeSingleImage = () => {
     setSelectedImage(null);
   };
-
 
   //Fetch Builder
   const fetchBuilder = async () => {
@@ -106,7 +107,7 @@ const Properties = () => {
 
   const add = async (e) => {
     e.preventDefault();
-  
+
     const formData = new FormData();
     formData.append("builderid", newProperty.builderid);
     formData.append("propertytypeid", newProperty.propertytypeid);
@@ -121,18 +122,18 @@ const Properties = () => {
     if (selectedImage) {
       formData.append("image", selectedImage); // Attach the image file
     }
-  
+
     const endpoint = newProperty.propertyid
       ? `edit/${newProperty.propertyid}`
       : "add";
-  
+
     try {
       const response = await fetch(`${URI}/employee/properties/${endpoint}`, {
         method: newProperty.propertyid ? "PUT" : "POST",
         credentials: "include",
         body: formData, // Use FormData instead of JSON
       });
-  
+
       if (response.status === 409) {
         alert("Property already exists!");
       } else if (!response.ok) {
@@ -144,7 +145,7 @@ const Properties = () => {
             : "Property added successfully!"
         );
       }
-  
+
       // Clear form after successful response
       setPropertyData({
         builderid: "",
@@ -158,7 +159,7 @@ const Properties = () => {
         sqft_price: "",
         extra: "",
       });
-  
+
       setShowPropertyForm(false);
       await fetchData(); // Ensure latest data is fetched
     } catch (err) {
@@ -322,13 +323,14 @@ const Properties = () => {
   );
   const columns = [
     { name: "SN", selector: (row, index) => index + 1, sortable: true },
-    { name: "Image", cell: (row) => (
-      <div
-        className={`h-12 overflow-hidden`}
-      >
-       <img src={`${URI}${row.image}`} alt="Image" className="h-full"/>
-      </div>
-    ), },
+    {
+      name: "Image",
+      cell: (row) => (
+        <div className={`h-12 overflow-hidden`}>
+          <img src={`${URI}${row.image}`} alt="Image" className="h-full" />
+        </div>
+      ),
+    },
     { name: "Builder", selector: (row) => row.company_name, sortable: true },
     { name: "Type", selector: (row) => row.propertytype, sortable: true },
     { name: "Name", selector: (row) => row.property_name, sortable: true },
@@ -388,6 +390,11 @@ const Properties = () => {
     console.log("Upload Images");
   };
 
+  //Additional Info 
+  const additionalInfo = () => {
+    console.log("Add Info");
+  }
+
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
 
@@ -409,7 +416,7 @@ const Properties = () => {
           approve(propertyid);
           break;
         case "additionalinfo":
-          additionalInfo(propertyid);
+          setShowAdditionalInfoForm(true);
           break;
         default:
           console.log("Invalid action");
@@ -506,7 +513,7 @@ const Properties = () => {
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Builder/Company
               </label>
-              <select
+              <select required
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
                 style={{ backgroundImage: "none" }}
                 value={newProperty.builderid}
@@ -531,7 +538,7 @@ const Properties = () => {
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Property Type
               </label>
-              <select
+              <select required
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
                 style={{ backgroundImage: "none" }}
                 value={newProperty.propertytypeid}
@@ -558,6 +565,7 @@ const Properties = () => {
               </label>
               <input
                 type="text"
+                required
                 placeholder="Enter Property Name"
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={newProperty.property_name}
@@ -575,6 +583,7 @@ const Properties = () => {
               </label>
               <input
                 type="text"
+                required
                 placeholder="Enter Address"
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={newProperty.address}
@@ -589,6 +598,7 @@ const Properties = () => {
               </label>
               <input
                 type="text"
+                required
                 placeholder="Enter City"
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={newProperty.city}
@@ -606,6 +616,7 @@ const Properties = () => {
               </label>
               <input
                 type="text"
+                required
                 placeholder="Enter Location"
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={newProperty.location}
@@ -623,6 +634,7 @@ const Properties = () => {
               </label>
               <input
                 type="text"
+                required
                 placeholder="Enter Rera No."
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={newProperty.rerano}
@@ -637,6 +649,7 @@ const Properties = () => {
               </label>
               <input
                 type="number"
+                required
                 placeholder="Enter Area in Sq.ft"
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={newProperty.area}
@@ -651,6 +664,7 @@ const Properties = () => {
               </label>
               <input
                 type="number"
+                required
                 placeholder="Enter Price Per Sqft"
                 className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={newProperty.sqft_price}
@@ -668,6 +682,7 @@ const Properties = () => {
               </label>
               <input
                 type="text"
+                required
                 placeholder="Enter Extra Details"
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={newProperty.extra}
@@ -706,7 +721,7 @@ const Properties = () => {
               {selectedImage && (
                 <div className="relative mt-2">
                   <img
-                    src={(URL.createObjectURL(selectedImage))}
+                    src={URL.createObjectURL(selectedImage)}
                     alt="Uploaded preview"
                     className="w-full object-cover rounded-lg border border-gray-300"
                   />
@@ -765,6 +780,7 @@ const Properties = () => {
               <div className="w-full mt-2">
                 <input
                   type="file"
+                  required
                   accept="image/*"
                   multiple
                   onChange={handleImageChange}
@@ -820,6 +836,66 @@ const Properties = () => {
                 className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
               >
                 Upload Images
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div
+        className={`${
+          showAdditionalInfoForm ? "flex" : "hidden"
+        } z-[61] overflow-scroll scrollbar-hide w-[400px] h-[75vh] lg:h-[300px] md:w-[700px] fixed`}
+      >
+        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">Additional Info</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowAdditionalInfoForm(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form
+            onSubmit={additionalInfo}
+            className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2"
+          >
+            <div className="w-full">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Enter Information
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="Enter Info"
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"       
+              />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Enter Information
+              </label>
+              <input
+                type="text"
+                placeholder="Enter Info"
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"       
+              />
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                onClick={() => {
+                  setShowAdditionalInfoForm(false);
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Add Info
               </button>
             </div>
           </form>

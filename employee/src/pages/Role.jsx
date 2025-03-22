@@ -224,6 +224,7 @@ const Role = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Role"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newRole.role}

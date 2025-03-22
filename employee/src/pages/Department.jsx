@@ -199,7 +199,7 @@ const Department = () => {
           
         </>
       ) : (
-        <div className="z-[61] roleForm overflow-scroll scrollbar-hide w-[400px] h-[600px] md:w-[700px] md:h-[650px] flex fixed">
+        <div className="z-[61] overflow-scroll scrollbar-hide w-[400px] h-[600px] md:w-[700px] md:h-[650px] flex fixed">
           <div className="w-[330px] sm:w-[600px] sm:h-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[650px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[16px] font-semibold">Department</h2>
@@ -222,6 +222,7 @@ const Department = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Department"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newDepartment.department}

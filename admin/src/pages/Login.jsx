@@ -90,6 +90,7 @@ function Login() {
             <FaEnvelope className="text-black/20 w-[20px] h-[20px] mr-[10px] group-focus-within:text-[#0BB501]" />
             <input
               value={email}
+              required
               onChange={(e) => setEmail(e.target.value)}
               type="text"
               placeholder="Email Address OR Username"
@@ -104,6 +105,7 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               type={isPasswordShow ? "text" : "password"}
+              required
               placeholder="Password"
               className="w-full border-none mx-[10px] outline-none text-[14px]"
             />

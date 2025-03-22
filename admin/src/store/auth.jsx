@@ -33,6 +33,10 @@ const [isActive, setIsActive] = useState("Builders");
 const [giveAccess, setGiveAccess] = useState(false);
 const [showUploadImagesForm, setShowUploadImagesForm] = useState(false);
 const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
+const [ showAssignSalesForm, setShowAssignSalesForm ] = useState(false);
+const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
+const [showPropertyInfo, setShowPropertyInfo] = useState(false);
 return <AuthContext.Provider
  value={
     {   URI,
@@ -53,6 +57,10 @@ return <AuthContext.Provider
         giveAccess, setGiveAccess,
         user, setUser,
         showUploadImagesForm, setShowUploadImagesForm,
+        showAdditionalInfoForm, setShowAdditionalInfoForm,
+        showAssignSalesForm, setShowAssignSalesForm,
+        showEnquiryStatusForm, setShowEnquiryStatusForm,
+        showPropertyInfo, setShowPropertyInfo
     }
 }>
     {children}

@@ -5,12 +5,13 @@ import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import FilterData from "../components/FilterData";
 import { useAuth } from "../store/auth";
 import AddButton from "../components/AddButton";
-import ActionSelect  from "../components/ActionSelect";
+import ActionSelect from "../components/ActionSelect";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 
 const PropertyType = () => {
-  const { setShowPropertyTypeForm, showPropertyTypeForm, action, URI } = useAuth();
+  const { setShowPropertyTypeForm, showPropertyTypeForm, action, URI } =
+    useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -20,7 +21,7 @@ const PropertyType = () => {
 
   const fetchDatas = async () => {
     try {
-      const response = await fetch(URI+"/admin/propertytypes", {
+      const response = await fetch(URI + "/admin/propertytypes", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -38,43 +39,56 @@ const PropertyType = () => {
   useEffect(() => {
     fetchDatas();
   }, []);
-  
 
-  const filteredData = datas.filter((item) =>
-    item.propertytype.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.status.toLowerCase().includes(searchTerm.toLowerCase()) 
-  
+  const filteredData = datas.filter(
+    (item) =>
+      item.propertytype.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const columns = [
     { name: "SN", selector: (row, index) => index + 1, sortable: true },
-    { name: "Property Type", selector: (row) => row.propertytype, sortable: true },
+    {
+      name: "Property Type",
+      selector: (row) => row.propertytype,
+      sortable: true,
+    },
     { name: "Description", selector: (row) => row.description, sortable: true },
-    { name: "Status", 
+    {
+      name: "Status",
       cell: (row) => (
-        <span className={`px-2 py-1 rounded-md ${row.status === "Active" ? "bg-[#EAFBF1] text-[#0BB501]" : "bg-[#FBE9E9] text-[#FF0000]"}`}>
+        <span
+          className={`px-2 py-1 rounded-md ${
+            row.status === "Active"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : "bg-[#FBE9E9] text-[#FF0000]"
+          }`}
+        >
           {row.status}
         </span>
-      )},
-    { 
-      name: "", 
-      cell: (row) => 
-        <ActionSelect 
+      ),
+    },
+    {
+      name: "",
+      cell: (row) => (
+        <ActionSelect
           // statusAction={() =>status(row.salespersonsid)}
-          editAction={() =>edit(row.salespersonsid)}  // Dynamic edit route
+          editAction={() => edit(row.salespersonsid)} // Dynamic edit route
           deleteAction={() => del(row.salespersonsid)} // Delete function
         />
-    }
+      ),
+    },
   ];
 
- 
   return (
     <>
       {!showPropertyTypeForm ? (
         <>
           <div className="properties overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
             <div className="properties-table w-full h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
-              <p className="block md:hidden text-lg font-semibold">Properties Type</p> 
+              <p className="block md:hidden text-lg font-semibold">
+                Properties Type
+              </p>
               <div className="searchBarContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
                   <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
@@ -92,10 +106,7 @@ const PropertyType = () => {
                       <FilterData />
                       <CustomDateRangePicker />
                     </div>
-                    <AddButton
-                      label={"Add "}
-                      func={setShowPropertyTypeForm}
-                    />
+                    <AddButton label={"Add "} func={setShowPropertyTypeForm} />
                   </div>
                 </div>
               </div>
@@ -104,8 +115,6 @@ const PropertyType = () => {
                 <DataTable columns={columns} data={filteredData} pagination />
               </div>
             </div>
-
-            
           </div>
         </>
       ) : (
@@ -115,7 +124,7 @@ const PropertyType = () => {
               <h2 className="text-[16px] font-semibold">Property Type</h2>
               <IoMdClose
                 onClick={() => {
-                    setShowPropertyTypeForm(false);
+                  setShowPropertyTypeForm(false);
                 }}
                 className="w-6 h-6 cursor-pointer"
               />
@@ -127,6 +136,7 @@ const PropertyType = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Full Name"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -137,6 +147,7 @@ const PropertyType = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Property Price"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -147,6 +158,7 @@ const PropertyType = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Address"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -157,6 +169,7 @@ const PropertyType = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Type"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -167,6 +180,7 @@ const PropertyType = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Area In Sq.Ft"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -176,7 +190,12 @@ const PropertyType = () => {
                   Property Picture
                 </label>
                 <div className="w-full mt-2">
-                  <input type="file" className="hidden" id="rera-documents" />
+                  <input
+                    type="file"
+                    required
+                    className="hidden"
+                    id="rera-documents"
+                  />
                   <label
                     htmlFor="rera-documents"
                     className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"

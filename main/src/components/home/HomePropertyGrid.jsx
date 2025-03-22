@@ -14,14 +14,15 @@ export default function HomePropertyGrid() {
   const navigate = useNavigate();
 
   const items = [
-    { icon: flatIcon, label: "FLAT", to:"/flat"},
-    { icon: farmvillaIcon, label: "FARM VILLA", to:"/farmvilla" },
-    { icon: plotIcon, label: "PLOT", to:"/plot" },
-    { icon: rentalIcon, label: "RENTAL", to:"/rental" },
-    { icon: leaseIcon, label: "LEASE", to:"/lease" },
-    { icon: farmIcon, label: "FARM", to:"/farm" },
-    { icon: leaseIcon, label: "Row House", to:"/lease" },
-    { icon: farmIcon, label: "Duplex", to:"/farm" },
+    { icon: flatIcon, label: "New Project", to:"/new-project" },
+    { icon: flatIcon, label: "Resale", to:"/resale"},
+    { icon: rentalIcon, label: "Rental", to:"/rental" },
+    { icon: leaseIcon, label: "Lease", to:"/lease" },
+    { icon: farmIcon, label: "Farm House", to:"/farm-house" },
+    { icon: flatIcon, label: "Flat", to:"/flat" },
+    { icon: plotIcon, label: "Plot", to:"/plot" },
+    { icon: flatIcon, label: "Row House", to:"/row-house" },
+    
   ];
   
   return (

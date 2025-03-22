@@ -7,13 +7,15 @@ import {
   status,
   approve,
   del,
+  addImages,
+  editAdditionalInfo,
+  additionalInfoAdd,
+  propertyInfo,
 } from "../../controllers/admin/propertyController.js";
-import cookieParser from "cookie-parser";
 import multer from "multer";
 import path from "path";
 
 const router = express.Router();
-router.use(cookieParser());
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -43,5 +45,9 @@ router.put("/edit/:id", upload.single("image"), update);
 router.put("/status/:id", status);
 router.put("/approve/:id", approve);
 router.delete("/delete/:id", del);
+router.post("/addimages",upload.array("images[]"), addImages);
+router.post("/additionalinfoadd", additionalInfoAdd);
+router.get("/propertyinfo/:id", propertyInfo);
+router.put("/editadditionalinfo/:id", editAdditionalInfo);
 
 export default router;

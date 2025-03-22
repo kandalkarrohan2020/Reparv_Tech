@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import propertyPicture from "../assets/property/propertyPicture.svg";
@@ -10,86 +10,90 @@ import { FaDiamond } from "react-icons/fa6";
 import populerTag from "../assets/property/populerTag.svg";
 import { useNavigate, Navigate } from "react-router-dom";
 import VideoReviewSection from "../components/VideoReviewSection";
-
-const properties = [
-  {
-    id: 1,
-    price: "2,095",
-    name: "Palm Harbor",
-    beds: 3,
-    baths: 2,
-    size: "5×7 m²",
-    popular: true,
-    like: true,
-    image: propertyPicture,
-  },
-  {
-    id: 2,
-    price: "2,700",
-    name: "Beverly Springfield",
-    beds: 4,
-    baths: 2,
-    size: "6×7.5 m²",
-    popular: true,
-    like: true,
-    image: propertyPicture,
-  },
-  {
-    id: 3,
-    price: "4,555",
-    name: "Faulkner Ave",
-    beds: 4,
-    baths: 3,
-    size: "8×10 m²",
-    popular: true,
-    like: true,
-    image: propertyPicture,
-  },
-  {
-    id: 4,
-    price: "2,400",
-    name: "St. Crystal",
-    beds: 4,
-    baths: 2,
-    size: "6×8 m²",
-    popular: false,
-    like: false,
-    image: propertyPicture,
-  },
-  {
-    id: 5,
-    price: "1,500",
-    name: "Cove Red",
-    beds: 2,
-    baths: 1,
-    size: "5×7.5 m²",
-    popular: false,
-    like: false,
-    image: propertyPicture,
-  },
-  {
-    id: 6,
-    price: "1,600",
-    name: "Tarpon Bay",
-    beds: 3,
-    baths: 1,
-    size: "5×7 m²",
-    popular: false,
-    like: false,
-    image: propertyPicture,
-  },
-];
+import { useAuth } from "../store/auth";
+import { Link } from "react-router-dom";
 
 export default function Plot() {
-  const navigate = useNavigate();
-  //filter
   const [city, setCity] = useState("");
+  const [allCity, setAllCity] = useState([]);
+  const [allLocation, setAllLocation] = useState([]);
   const [location, setLocation] = useState("");
   const [budget, setBudget] = useState("");
+  const [properties, setProperties] = useState([]);
+  const { URI } = useAuth();
 
   const handleSearch = () => {
     onSearch({ location, budget });
   };
+
+  // *Fetch Data from API*
+  const fetchData = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/plot", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch properties.");
+
+      const data = await response.json();
+      setProperties(data);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  // *Fetch Data from API*
+  const fetchAllCity = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/plot/allcity", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch properties.");
+
+      const data = await response.json();
+      
+      setAllCity([...data]);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  // *Fetch Data from API*
+  const fetchLocation = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/plot/alllocation", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch properties.");
+
+      const data = await response.json();
+
+      setAllLocation([...data]);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    fetchAllCity();
+    fetchLocation();
+  }, []);
+
   return (
     <div className="properties w-full max-w-[1400px] flex flex-col p-4 sm:py-6 sm:px-0 mx-auto">
       <div className="propertiesHeading w-full h-30 hidden sm:flex flex-col items-center justify-center gap-5 mb-4">
@@ -118,9 +122,11 @@ export default function Plot() {
               className="w-full h-10 px-2 border border-[#00000033] rounded-md"
             >
               <option value="">Select City</option>
-              <option value="Nagpur">Nagpur</option>
-              <option value="Amaravati">Amaravati</option>
-              <option value="Chandrapur">Chandrapur</option>
+              {allCity?.map((city) => (
+                <option value={city.city} key={city}>
+                  {city.city.charAt(0).toUpperCase() + city.city.slice(1)}
+                </option>
+              ))}
             </select>
           </div>
           <div className="flex">
@@ -130,9 +136,11 @@ export default function Plot() {
               className="w-full h-10 px-2 border border-[#00000033] rounded-md"
             >
               <option value="">Select Location</option>
-              <option value="Ram Nagar">Ram Nagar</option>
-              <option value="Sharda Nagar">Sharda Nagar</option>
-              <option value="Rk Nagar">RK Nagar</option>
+              {allLocation?.map((location) => (
+                <option value={location.location} key={location.location}>
+                  {location.location.charAt(0).toUpperCase() + location.location.slice(1)}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -161,17 +169,15 @@ export default function Plot() {
       {/* Properties Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 py-4 sm:p-5">
         {properties.map((property) => (
-          <div
+          <Link
+            to={`/property-info/${property.propertyid}`}
             key={property.id}
-            onClick={() => {
-              navigate("/property");
-            }}
-            className="group rounded-lg shadow-md bg-white hover:bg-[#076300] "
+            className="group rounded-lg shadow-md bg-white hover:bg-[#076300] overflow-hidden"
           >
             <img
-              src={property.image}
+              src={`${URI}${property.image}`}
               alt={property.name}
-              className="w-full object-cover"
+              className=" object-cover h-[250px] w-full"
             />
             <div className="relative p-4">
               {property.popular && (
@@ -184,14 +190,10 @@ export default function Plot() {
                 <div className="flex flex-col justify-between gap-2 text-xl lg:text-2xl font-extrabold p-2">
                   <div className="text-[#076300] group-hover:text-white flex items-center justify-start">
                     <FaRupeeSign />
-                    <p> {property.price} </p>
-                    <p className="text-[#00000066] group-hover:text-[#e2e2e2] text-sm md:text-base font-medium m-1">
-                      {" "}
-                      /month{" "}
-                    </p>
+                    <p> {property.sqft_price} </p>
                   </div>
                   <h2 className="text-[#000929] group-hover:text-white ml-1">
-                    {property.name}
+                    {property.property_name}
                   </h2>
                 </div>
                 <div
@@ -205,7 +207,7 @@ export default function Plot() {
 
               <div className="address text-[10px] md:text-xs lg:text-base font-normal px-3">
                 <p className="text-[#808080] group-hover:text-[#e2e2e2]">
-                  Trimurti Nagar, Nagpur
+                  {property.location}, {property.city}
                 </p>
               </div>
 
@@ -213,8 +215,10 @@ export default function Plot() {
 
               <div className="flex justify-between text-xs md:text-sm text-[#808080] group-hover:text-[#e2e2e2] mt-2 px-2">
                 <div className="flex items-center justify-start gap-2">
-                  <MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
-                  {property.beds} Beds
+                  {
+                    //<MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
+                  }
+                  {property.area} Sq.ft Area
                 </div>
                 <div className="flex items-center justify-start gap-2">
                   <BiBath className="text-[#076300] group-hover:text-white w-4 h-4" />
@@ -226,12 +230,11 @@ export default function Plot() {
                 </div>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
       {/* Customer Review */}
-      <VideoReviewSection />
     </div>
   );
 }

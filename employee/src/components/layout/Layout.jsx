@@ -28,17 +28,42 @@ function Layout() {
     showProfile,
     setShowProfile,
     giveAccess,
+    setGiveAccess,
     showSalesForm,
+    setShowSalesForm,
     showEplDetailsForm,
+    setShowEplDetailsForm,
     showBuilderForm,
+    setShowBuilderForm,
     showAuctionForm,
+    setShowAuctionForm,
     showPropertyForm,
+    setShowPropertyForm,
     showPropertyTypeForm,
+    setShowPropertyTypeForm,
     showRoleForm,
+    setShowRoleForm,
     showDepartmentForm,
-    isLoggedIn
+    setShowDepartmentForm,
+    showUploadImagesForm, setShowUploadImagesForm,
+    showAdditionalInfoForm, setShowAdditionalInfoForm,
+    isLoggedIn,
   } = useAuth();
-  
+
+  const overlays = [
+    { state: giveAccess, setter: setGiveAccess },
+    { state: showSalesForm, setter: setShowSalesForm },
+    { state: showEplDetailsForm, setter: setShowEplDetailsForm },
+    { state: showAuctionForm, setter: setShowAuctionForm },
+    { state: showBuilderForm, setter: setShowBuilderForm },
+    { state: showDepartmentForm, setter: setShowDepartmentForm },
+    { state: showPropertyForm, setter: setShowPropertyForm },
+    { state: showPropertyTypeForm, setter: setShowPropertyTypeForm },
+    { state: showRoleForm, setter: setShowRoleForm },
+    { state: showUploadImagesForm, setter: setShowUploadImagesForm },
+    { state: showAdditionalInfoForm, setter: setShowAdditionalInfoForm },
+  ];
+
   const getNavLinkClass = (path) => {
     return location.pathname === path
       ? "font-semibold bg-[#E3FFDF] shadow-[0px_1px_0px_0px_rgba(0,_0,_0,_0.1)]"
@@ -47,31 +72,9 @@ function Layout() {
 
   const getHeading = (label) => {
     setHeading(label);
-    localStorage.setItem("head",label);
+    localStorage.setItem("head", label);
   };
-  
-  const fetchUserDetails = async () => {
-    try {
-      const response = await fetch(URI + "/employee/profile", {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-  
-      if (!response.ok) throw new Error("Failed to fetch user details");
-  
-      const data = await response.json(); // ✅ Parse JSON response
-  
-      console.log("Fetched user data:", data); // ✅ Log actual data
-  
-      //localStorage.setItem("user", JSON.stringify(data.user)); // ✅ Store user data in localStorage
-    } catch (err) {
-      console.error("Error fetching user details:", err);
-    }
-  };
-  
+
   return (
     <div className="flex flex-col w-full h-screen bg-[#F5F5F6]">
       {/* Mobile Menu Toggle */}
@@ -81,7 +84,6 @@ function Layout() {
           <FaUserCircle
             onClick={() => {
               setShowProfile("true");
-              fetchUserDetails();
             }}
             className="w-8 h-8 text-[#076300]"
           />
@@ -123,7 +125,6 @@ function Layout() {
             <FaUserCircle
               onClick={() => {
                 setShowProfile("true");
-                
               }}
               className="w-8 h-8 text-[#076300]"
             />
@@ -155,13 +156,12 @@ function Layout() {
               { to: "/enquirers", icon: enquirersIcon, label: "Enquirers" },
               //{ to: "/customers", icon: customersIcon, label: "Customers" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
-              /*{
+            /*{
                 to: "/propertytypes",
                 icon: enquirersIcon,
                 label: "Property Types",
               },*/
               { to: "/builders", icon: partnerIcon, label: "Builders" },
-              
               /*{
                 to: "/salespersons",
                 icon: partnerIcon,
@@ -170,9 +170,11 @@ function Layout() {
               //{ to: "/auctionmembers", icon: partnerIcon, label: "Auction Members" },
               { to: "/employees", icon: employeeIcon, label: "Employees" },
               { to: "/role", icon: employeeIcon, label: "Roles" },
-              { to: "/department", icon: employeeIcon, label: "Departments" },*/
+              { to: "/department", icon: employeeIcon, label: "Departments" },
+              */
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
-              /*{ to: "/map", icon: mapIcon, label: "Map" },
+              /*
+              { to: "/map", icon: mapIcon, label: "Map" },
               { to: "/calender", icon: calenderIcon, label: "Calendar" },
               {
                 to: "/raw-materials",
@@ -183,7 +185,8 @@ function Layout() {
                 to: "/marketing",
                 icon: marketingIcon,
                 label: "Marketing Templates",
-              },*/
+              },
+              */
             ].map(({ to, icon, label }) => (
               <NavLink
                 onClick={() => {
@@ -224,19 +227,19 @@ function Layout() {
         </div>
       </div>
       {showProfile && <Profile />}
-      {(giveAccess ||
-        showSalesForm ||
-        showEplDetailsForm ||
-        showBuilderForm ||
-        showAuctionForm ||
-        showPropertyForm ||
-        showPropertyTypeForm ||
-        showRoleForm ||
-        showDepartmentForm) && (
-        <div className="w-full h-screen z-[60] fixed bg-[#767676a0] "></div>
+      
+      {overlays.map(({ state, setter }, index) =>
+        state ? (
+          <div
+            key={index}
+            className="w-full h-screen z-[60] fixed bg-[#767676a0]"
+            onClick={() => setter(false)}
+          ></div>
+        ) : null
       )}
     </div>
   );
 }
 
 export default Layout;
+

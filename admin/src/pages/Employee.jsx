@@ -332,7 +332,7 @@ const Employee = () => {
       ),
     },
     {
-      name: "Login Status",
+      name: "Assign Login",
       cell: (row) => (
         <span
           className={`px-2 py-1 rounded-md ${
@@ -462,6 +462,7 @@ const Employee = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Full Name"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newEmployee.name}
@@ -476,6 +477,7 @@ const Employee = () => {
                 </label>
                 <input
                   type="number"
+                  required
                   placeholder="Enter UID No"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newEmployee.uid}
@@ -494,6 +496,7 @@ const Employee = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Contact Number"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newEmployee.contact}
@@ -512,6 +515,7 @@ const Employee = () => {
                 </label>
                 <input
                   type="email"
+                  required
                   placeholder="Enter Mail"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newEmployee.email}
@@ -527,6 +531,7 @@ const Employee = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Complete Address"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newEmployee.address}
@@ -542,6 +547,7 @@ const Employee = () => {
                 </label>
                 <input
                   type="date"
+                  required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newEmployee.dob}
                   onChange={(e) => {
@@ -555,7 +561,7 @@ const Employee = () => {
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
                   Department
                 </label>
-                <select
+                <select required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
                   style={{ backgroundImage: "none" }}
                   value={newEmployee.departmentid}
@@ -578,7 +584,7 @@ const Employee = () => {
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
                   Role
                 </label>
-                <select
+                <select required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
                   style={{ backgroundImage: "none" }}
                   value={newEmployee.roleid}
@@ -600,6 +606,7 @@ const Employee = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Salary"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newEmployee.salary}
@@ -614,6 +621,7 @@ const Employee = () => {
                 </label>
                 <input
                   type="date"
+                  required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newEmployee.doj}
                   onChange={(e) => {
@@ -675,6 +683,7 @@ const Employee = () => {
               </label>
               <input
                 type="text"
+                required
                 placeholder="Enter UserName"
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={username}
@@ -689,6 +698,7 @@ const Employee = () => {
               </label>
               <input
                 type="password"
+                required
                 placeholder="Enter Password"
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={password}

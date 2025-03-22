@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import reparvLogo from "../../assets/reparvLogo.svg";
 import footerLogo from "../../assets/footerLogo.svg";
 import { NavLink } from "react-router-dom";
@@ -13,10 +13,14 @@ import { FaYoutube } from "react-icons/fa";
 import { useAuth } from "../../store/auth";
 import { useNavigate } from "react-router-dom";
 import SuccessScreen from "../SuccessScreen";
+import { Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+
 
 function Layout() {
-  const { showInquiryForm, setShowInquiryForm, showSuccess, setShowSuccess } =
+  const { showInquiryForm, setShowInquiryForm, showSuccess, setShowSuccess, URI } =
     useAuth();
+  const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useState(false);
@@ -24,13 +28,19 @@ function Layout() {
     return location.pathname === path ? "font-semibold text-[#0BB501]" : "";
   };
 
+  useEffect(()=>{
+     setFormData({...formData, propertyid: id});
+  },[showInquiryForm])
+
   //Inquiry Form Data
   const [formData, setFormData] = useState({
-    fullName: "",
+    propertyid: id,
+    fullname: "",
     phone: "",
     email: "",
     budget: "",
     city: "",
+    location: "",
     message: "",
   });
 
@@ -38,11 +48,43 @@ function Layout() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted", formData);
-    setShowInquiryForm(false);
-    setShowSuccess(true);
+  
+    try {
+      const response = await fetch(`${URI}/frontend/enquiry/add`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json", // Tell server it's JSON
+        },
+        body: JSON.stringify(formData), // Convert object to JSON
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to save property. Status: ${response.status}`);
+      } else {
+        setShowSuccess(true);
+        setShowInquiryForm(false);
+      }
+  
+      // Clear form after success
+      setFormData({
+        ...formData,
+        propertyid: id,
+        fullname: "",
+        phone: "",
+        email: "",
+        budget: "",
+        city: "",
+        location: "",
+        message: "",
+      });
+  
+    } catch (err) {
+      console.error("Error saving enquiry:", err);
+    }
   };
 
   return (
@@ -172,8 +214,6 @@ function Layout() {
         <Outlet />
       </div>
 
-      
-
       {/* footer */}
       <div className="w-full bg-black">
         <div className="footer w-full max-w-7xl mx-auto hidden md:flex flex-col gap-8 bg-[#000000] text-white py-15 px-18 lg:px-25">
@@ -182,33 +222,81 @@ function Layout() {
           </div>
 
           <div className="footerBody w-full flex justify-between">
-            <div className="leftBody flex flex-col gap-7 text-lg font-medium">
+            <div className="leftBody flex flex-col gap-9 text-lg font-medium">
               <h3 className="text-xl font-bold">Company</h3>
-              <p>Properties</p>
-              <p>About Us</p>
-              <p>Contact Us</p>
+              <p className="block xl:hidden">Properties</p>
+              <p className="cursor-pointer">
+                <Link to="/about-us">About Us</Link>
+              </p>
+              <p className="cursor-pointer">
+                <Link to="/contact-us">Contact Us</Link>
+              </p>
+            </div>
+
+            <div className="leftBody hidden xl:flex flex-col gap-7 text-lg font-medium">
+              <h3 className="text-xl font-bold">Properties</h3>
+              <div className="grid grid-cols-2 gap-x-10 text-base">
+                <p className="cursor-pointer pr-4 text-base">
+                  <Link to="/flat">Flat</Link>
+                </p>
+                <p className="cursor-pointer text-base">
+                  <Link to="/plot">Plot</Link>
+                </p>
+                <p className="cursor-pointer text-base">
+                  <Link to="/new-project">New Project</Link>
+                </p>
+                <p className="cursor-pointer ">
+                  <Link to="/resale">Resale</Link>
+                </p>
+                <p className="cursor-pointer ">
+                  <Link to="/farm-house">Farm House</Link>
+                </p>
+                <p className="cursor-pointer ">
+                  <Link to="/rental">Rental</Link>
+                </p>
+                <p className="cursor-pointer ">
+                  <Link to="/row-house">Row House</Link>
+                </p>
+                <p className="cursor-pointer ">
+                  <Link to="/lease">Lease</Link>
+                </p>
+              </div>
             </div>
 
             <div className="midBody flex flex-col gap-7 text-lg font-medium">
               <h3 className="text-xl font-bold">Become a Professional</h3>
-              <p>Join Our Team</p>
+              <p className="cursor-pointer">
+                <Link to="/join-our-team">Join Our Team</Link>
+              </p>
             </div>
 
             <div className="rightBody flex flex-col gap-7">
               <h3 className="text-xl font-bold">Social Link</h3>
               <div className="socialLink flex gap-2 text-2xl">
-                <div className="facebook flex items-center justify-center w-13 h-13 bg-[#141414] rounded-full">
+                <Link
+                  to="https://www.facebook.com/reparv/"
+                  className="facebook flex items-center justify-center w-13 h-13 bg-[#141414] rounded-full"
+                >
                   <FaFacebookF />
-                </div>
-                <div className="linkedin flex items-center justify-center w-13 h-13 bg-[#141414] rounded-full">
+                </Link>
+                <Link
+                  to="https://www.linkedin.com/company/105339179"
+                  className="linkedin flex items-center justify-center w-13 h-13 bg-[#141414] rounded-full"
+                >
                   <FaLinkedin />
-                </div>
-                <div className="twitter flex items-center justify-center w-13 h-13 bg-[#141414] rounded-full">
+                </Link>
+                <Link
+                  to="https://www.instagram.com/reparv.official/"
+                  className="twitter flex items-center justify-center w-13 h-13 bg-[#141414] rounded-full"
+                >
                   <FaInstagram />
-                </div>
-                <div className="youtube flex items-center justify-center w-13 h-13 bg-[#141414] rounded-full">
+                </Link>
+                <Link
+                  to="https://www.youtube.com/@reparv"
+                  className="youtube flex items-center justify-center w-13 h-13 bg-[#141414] rounded-full"
+                >
                   <FaYoutube />
-                </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -229,28 +317,40 @@ function Layout() {
           </div>
 
           <div className="footerRight flex flex-col gap-5 text-xs leading-1.5 sm:text-lg font-medium">
-            <p>Properties</p>
-            <p>Join Our Team</p>
-            <p>About Us</p>
-            <p>Contact Us</p>
+            <Link to="/home">Properties</Link>
+            <Link to="/join-our-team">Join Our Team</Link>
+            <Link to="/about-us">About Us</Link>
+            <Link to="/contact-us">Contact Us</Link>
           </div>
         </div>
 
         <div className="rightBody flex flex-col gap-3">
           <h3 className="text-lg font-bold">Social Link</h3>
           <div className="socialLink flex gap-2 text-md">
-            <div className="facebook flex items-center justify-center w-11 h-11 bg-[#141414] rounded-full">
+            <Link
+              to="https://www.facebook.com/reparv/"
+              className="facebook flex items-center justify-center w-11 h-11 bg-[#141414] rounded-full"
+            >
               <FaFacebookF />
-            </div>
-            <div className="linkedin flex items-center justify-center w-11 h-11 bg-[#141414] rounded-full">
+            </Link>
+            <Link
+              to="https://www.linkedin.com/company/105339179"
+              className="linkedin flex items-center justify-center w-11 h-11 bg-[#141414] rounded-full"
+            >
               <FaLinkedin />
-            </div>
-            <div className="twitter flex items-center justify-center w-11 h-11 bg-[#141414] rounded-full">
+            </Link>
+            <Link
+              to="https://www.instagram.com/reparv.official/"
+              className="twitter flex items-center justify-center w-11 h-11 bg-[#141414] rounded-full"
+            >
               <FaInstagram />
-            </div>
-            <div className="youtube flex items-center justify-center w-11 h-11 bg-[#141414] rounded-full">
+            </Link>
+            <Link
+              to="https://www.youtube.com/@reparv"
+              className="youtube flex items-center justify-center w-11 h-11 bg-[#141414] rounded-full"
+            >
               <FaYoutube />
-            </div>
+            </Link>
           </div>
         </div>
 
@@ -275,7 +375,7 @@ function Layout() {
               />
             </div>
 
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
                   <label htmlFor="fullName" className="ml-1">
@@ -283,10 +383,10 @@ function Layout() {
                   </label>
                   <input
                     type="text"
-                    name="fullName"
+                    name="fullname"
                     id="fullName"
                     placeholder="Enter Full Name"
-                    value={formData.fullName}
+                    value={formData.fullname}
                     onChange={handleChange}
                     className="w-full font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
                     required
@@ -340,25 +440,44 @@ function Layout() {
                     required
                   />
                 </div>
-              </div>
 
-              <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
-                <label htmlFor="city" className="ml-1">
-                  Select City
-                </label>
-                <select
-                  name="city"
-                  id="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  className="w-full font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
-                  required
-                >
-                  <option value="">Select City</option>
-                  <option value="Nagpur">Nagpur</option>
-                  <option value="Chandrapur">Chandrapur</option>
-                  <option value="Amaravati">Amaravati</option>
-                </select>
+                <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
+                  <label htmlFor="city" className="ml-1">
+                    Select City
+                  </label>
+                  <select
+                    name="city"
+                    id="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    className="w-full font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
+                    required
+                  >
+                    <option value="">Select City</option>
+                    <option value="Nagpur">Nagpur</option>
+                    <option value="Chandrapur">Chandrapur</option>
+                    <option value="Amaravati">Amaravati</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
+                  <label htmlFor="city" className="ml-1">
+                    Select Location
+                  </label>
+                  <select
+                    name="location"
+                    id="location"
+                    value={formData.location}
+                    onChange={handleChange}
+                    className="w-full font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
+                    required
+                  >
+                    <option value="">Select Location</option>
+                    <option value="Nagpur">Anand Nagar</option>
+                    <option value="Chandrapur">Ram Nagar</option>
+                    <option value="Amaravati">Adarsh Nagar</option>
+                  </select>
+                </div>
               </div>
 
               <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
@@ -377,8 +496,8 @@ function Layout() {
               </div>
               <div className="w-full flex items-center justify-center pb-5">
                 <button
-                  type="button"
-                  onClick={handleSubmit}
+                  type="Submit"
+                  //onClick={handleSubmit}
                   className="w-40 h-12 bg-[#0BB501] text-white text-base rounded-md hover:bg-green-700 active:scale-95"
                 >
                   Submit

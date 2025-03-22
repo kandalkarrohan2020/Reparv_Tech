@@ -432,6 +432,7 @@ const Builders = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Company Name"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.company_name}
@@ -449,6 +450,7 @@ const Builders = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Contact"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.contact_person}
@@ -466,6 +468,7 @@ const Builders = () => {
                 </label>
                 <input
                   type="number"
+                  required
                   placeholder="Enter Contact Number"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.contact}
@@ -484,6 +487,7 @@ const Builders = () => {
                 </label>
                 <input
                   type="email"
+                  required
                   placeholder="Enter Email"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.email}
@@ -498,6 +502,7 @@ const Builders = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Office Address"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.office_address}
@@ -516,6 +521,7 @@ const Builders = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter Registration No."
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.registration_no}
@@ -534,6 +540,7 @@ const Builders = () => {
                 </label>
                 <input
                   type="date"
+                  required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.dor}
                   onChange={(e) => {
@@ -549,6 +556,7 @@ const Builders = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter website"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.website}
@@ -562,7 +570,7 @@ const Builders = () => {
                   Notes
                 </label>
                 <input
-                  type="text"
+                  type="text" 
                   placeholder="Enter notes"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.notes}
@@ -623,6 +631,7 @@ const Builders = () => {
               </label>
               <input
                 type="text"
+                required
                 placeholder="Enter UserName"
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={username}
@@ -637,6 +646,7 @@ const Builders = () => {
               </label>
               <input
                 type="password"
+                required
                 placeholder="Enter Password"
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={password}

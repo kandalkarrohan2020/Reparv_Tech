@@ -1,17 +1,37 @@
+import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import swipper1 from "../../assets/swiper/swiper1.svg";
-import swipper2 from "../../assets/swiper/swiper2.svg";
-import swipper3 from "../../assets/swiper/swiper3.svg";
-import swipper4 from "../../assets/swiper/swiper4.svg";
-import swipper5 from "../../assets/swiper/swiper5.svg";
-
-const images = [swipper1, swipper2, swipper3, swipper4, swipper5];
+import { useAuth } from "../../store/auth";
 
 export default function ImageSlider() {
+  const { URI } = useAuth();
+  const [sliderImages, setSliderImages] = useState([]);
+  
+  // **Fetch Data from API**
+  const getSliderImages = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/slider", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch slider Images.");
+      const data = await response.json();
+      setSliderImages(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  useEffect(()=>{
+    getSliderImages(); 
+  },[]);
+
   return (
     <div className="relative w-full mx-auto max-w-7xl flex items-center justify-center mb-15 md:mb-25">
       <Swiper
@@ -30,10 +50,10 @@ export default function ImageSlider() {
         grabCursor={true}
         className="shadow-lg overflow-scroll scrollbar-hide sm:overflow-hidden"
       >
-        {images.map((img, index) => (
+        {sliderImages.map((img, index) => (
           <SwiperSlide key={index}>
             <img
-              src={img}
+              src={URI+"/uploads/"+img.image}
               alt={`Slide ${index + 1}`}
               className="w-full h-auto object-cover"
             />

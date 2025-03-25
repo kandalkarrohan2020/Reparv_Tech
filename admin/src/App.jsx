@@ -19,10 +19,14 @@ import Role from "./pages/Role.jsx";
 import Department from "./pages/Department.jsx";
 import PropertyType from "./pages/PropertyType.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
+import Slider from "./pages/Slider.jsx";
+import Testimonial from "./pages/Testimonial.jsx";
+import ScrollToTop from "./components/ScrollToTop.jsx";
 
 const App = () => {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="" element={<Login />} />
         <Route path="/" element={<Layout />}>
@@ -40,6 +44,8 @@ const App = () => {
           <Route path="/role" element={<Role />} />
           <Route path="/department" element={<Department />} />
           <Route path="/tickets" element={<Ticketing />} />
+          <Route path="/slider" element={<Slider/>} />
+          <Route path="/testimonial" element={<Testimonial/>} />
           <Route path="/raw-materials" element={<RawMaterials />} />
           <Route path="/marketing" element={<Marketing />} />
           <Route path="*" element={<ErrorPage />}></Route>

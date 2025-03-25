@@ -21,10 +21,22 @@ export default function NewProject() {
   const [budget, setBudget] = useState("");
   const [properties, setProperties] = useState([]);
   const { URI } = useAuth();
-
+  const [filteredProperties, setFilteredProperties] = useState(properties);
+  
   const handleSearch = () => {
-    onSearch({ location, budget });
+    const filtered = properties.filter((property) => {
+      return (
+        (city ? property.city === city : true) &&
+        (location ? property.location === location : true) &&
+        (budget ? property.sqft_price <= budget : true)
+      );
+    });
+  
+    setFilteredProperties(filtered);
   };
+  useEffect(() => {
+    setFilteredProperties(properties); // Show all properties initially
+  }, [properties]);
 
   // *Fetch Data from API*
   const fetchData = async () => {
@@ -60,7 +72,7 @@ export default function NewProject() {
       if (!response.ok) throw new Error("Failed to fetch properties.");
 
       const data = await response.json();
-      
+
       setAllCity([...data]);
     } catch (err) {
       console.error("Error fetching:", err);
@@ -88,11 +100,38 @@ export default function NewProject() {
     }
   };
 
+  const fetchLocationByCity = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/newproject/location/" + city, {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch properties.");
+
+      const data = await response.json();
+
+      setAllLocation([...data]);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
   useEffect(() => {
     fetchData();
     fetchAllCity();
     fetchLocation();
+    
   }, []);
+
+  useEffect(()=>{
+    if(city){
+      fetchLocationByCity();
+    }
+  },[city]);
 
   return (
     <div className="properties w-full max-w-[1400px] flex flex-col p-4 sm:py-6 sm:px-0 mx-auto">
@@ -106,7 +145,7 @@ export default function NewProject() {
       </div>
       {/* Search Bar */}
       <div className="w-full flex flex-wrap gap-2 justify-between sm:px-5">
-        <div className="w-full sm:w-[350px] h-10 sm:h-15 flex gap-3 items-center justify-start border border-[#00000033] rounded-lg px-4 sm:p-4 focus:outline-none">
+        <div className="w-full sm:w-[350px] h-10 sm:h-15 flex gap-3 items-center justify-start border border-[#00000033] rounded-lg px-4 sm:p-4">
           <FiSearch className=" sm:w-6 sm:h-6 text-[#076300] " />
           <input
             type="text"
@@ -119,7 +158,7 @@ export default function NewProject() {
             <select
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              className="w-full h-10 px-2 border border-[#00000033] rounded-md"
+              className="w-full h-10 px-3 border border-[#00000033] appearance-none rounded-md  focus:outline-none focus:ring-1 focus:ring-green-500"
             >
               <option value="">Select City</option>
               {allCity?.map((city) => (
@@ -133,12 +172,13 @@ export default function NewProject() {
             <select
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full h-10 px-2 border border-[#00000033] rounded-md"
+              className="w-full h-10 px-3 border border-[#00000033] appearance-none rounded-md  focus:outline-none focus:ring-1 focus:ring-green-500"
             >
               <option value="">Select Location</option>
               {allLocation?.map((location) => (
                 <option value={location.location} key={location.location}>
-                  {location.location.charAt(0).toUpperCase() + location.location.slice(1)}
+                  {location.location.charAt(0).toUpperCase() +
+                    location.location.slice(1)}
                 </option>
               ))}
             </select>
@@ -148,12 +188,14 @@ export default function NewProject() {
             <select
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
-              className="w-full h-10 px-2 border border-[#00000033] rounded-md"
+              className="w-full h-10 px-3 border border-[#00000033] appearance-none rounded-md  focus:outline-none focus:ring-1 focus:ring-green-500"
             >
               <option value="">Select Budget</option>
               <option value="1000">Up to 1,000</option>
               <option value="5000">Up to 5,000</option>
               <option value="10000">Up to 10,000</option>
+              <option value="50000">Up to 50,000</option>
+              <option value="100000">Up to 10,00,00</option>
             </select>
           </div>
 
@@ -168,7 +210,7 @@ export default function NewProject() {
 
       {/* Properties Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 py-4 sm:p-5">
-        {properties.map((property) => (
+        {filteredProperties.length > 0 ? (filteredProperties.map((property) => (
           <Link
             to={`/property-info/${property.propertyid}`}
             key={property.id}
@@ -214,27 +256,34 @@ export default function NewProject() {
               <hr className="text-[#F0EFFB] my-3" />
 
               <div className="flex justify-between text-xs md:text-sm text-[#808080] group-hover:text-[#e2e2e2] mt-2 px-2">
-                <div className="flex items-center justify-start gap-2">
-                  {
-                    //<MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
-                  }
-                  {property.area} Sq.ft Area
-                </div>
-                <div className="flex items-center justify-start gap-2">
-                  <BiBath className="text-[#076300] group-hover:text-white w-4 h-4" />
-                  {property.baths} Bathrooms
-                </div>
+                {/*<div className="flex items-center justify-start gap-2">
+                                        {
+                                          //<MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
+                                        }
+                                        {property.area} Sq.ft Area
+                                      </div>
+                                      <div className="flex items-center justify-start gap-2">
+                                        <BiBath className="text-[#076300] group-hover:text-white w-4 h-4" />
+                                        {property.baths} Bathrooms
+                                      </div>
+                                      */}
                 <div className="flex items-center justify-start gap-2">
                   <FaDiamond className="text-[#076300] group-hover:text-white w-3 h-3" />
-                  {property.size}
+                  {property.area} Sq.ft Area
                 </div>
               </div>
             </div>
           </Link>
-        ))}
+        ))) : (
+
+          <h1 className="text-2xl font-bold m-4">No Properties Found</h1>
+        )}
       </div>
 
       {/* Customer Review */}
+      <div className="w-full h-[1px] mt-5 bg-[#00000033] "></div>
+      <VideoReviewSection />
+      
     </div>
   );
 }

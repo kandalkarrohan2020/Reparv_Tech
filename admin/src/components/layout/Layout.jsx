@@ -50,6 +50,8 @@ function Layout() {
     showAssignSalesForm, setShowAssignSalesForm,
     showEnquiryStatusForm, setShowEnquiryStatusForm,
     showPropertyInfo, setShowPropertyInfo,
+    showSliderForm, setShowSliderForm,
+    showFeedbackForm, setShowFeedbackForm,
     isLoggedIn,
   } = useAuth();
 
@@ -68,6 +70,8 @@ function Layout() {
     { state: showAdditionalInfoForm, setter: setShowAdditionalInfoForm },
     { state: showEnquiryStatusForm, setter: setShowEnquiryStatusForm },
     { state: showPropertyInfo, setter: setShowPropertyInfo },
+    { state: showSliderForm, setter: setShowSliderForm },
+    { state: showFeedbackForm, setter: setShowFeedbackForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -180,6 +184,8 @@ function Layout() {
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
               { to: "/map", icon: mapIcon, label: "Map" },
               { to: "/calender", icon: calenderIcon, label: "Calendar" },
+              { to: "/slider", icon: marketingIcon, label: "Slider" },
+              { to: "/testimonial", icon: marketingIcon, label: "Testimonial" },
               {
                 to: "/raw-materials",
                 icon: materialIcon,

@@ -21,9 +21,57 @@ export default function Duplex() {
   const [budget, setBudget] = useState("");
   const [properties, setProperties] = useState([]);
   const { URI } = useAuth();
+  const [filteredProperties, setFilteredProperties] = useState(properties);
+
+  useEffect(() => {
+    fetchData();
+    fetchAllCity();
+    fetchLocation();
+  }, []);
+
+  useEffect(() => {
+    if (city) {
+      fetchLocationByCity();
+    }
+  }, [city]);
+
+  useEffect(() => {
+    setFilteredProperties(properties); // Show all properties initially
+  }, [properties]);
 
   const handleSearch = () => {
-    onSearch({ location, budget });
+    const filtered = properties.filter((property) => {
+      return (
+        (city ? property.city === city : true) &&
+        (location ? property.location === location : true) &&
+        (budget ? property.sqft_price <= budget : true)
+      );
+    });
+
+    setFilteredProperties(filtered);
+  };
+
+  const fetchLocationByCity = async () => {
+    try {
+      const response = await fetch(
+        URI + "/frontend/duplex/location/" + city,
+        {
+          method: "GET",
+          credentials: "include", // ✅ Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch properties.");
+
+      const data = await response.json();
+
+      setAllLocation([...data]);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
   };
 
   // *Fetch Data from API*
@@ -60,7 +108,7 @@ export default function Duplex() {
       if (!response.ok) throw new Error("Failed to fetch properties.");
 
       const data = await response.json();
-      
+
       setAllCity([...data]);
     } catch (err) {
       console.error("Error fetching:", err);
@@ -88,12 +136,6 @@ export default function Duplex() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-    fetchAllCity();
-    fetchLocation();
-  }, []);
-
   return (
     <div className="properties w-full max-w-[1400px] flex flex-col p-4 sm:py-6 sm:px-0 mx-auto">
       <div className="propertiesHeading w-full h-30 hidden sm:flex flex-col items-center justify-center gap-5 mb-4">
@@ -119,7 +161,7 @@ export default function Duplex() {
             <select
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              className="w-full h-10 px-2 border border-[#00000033] rounded-md"
+              className="w-full h-10 px-2 border  appearance-none border-[#00000033] rounded-md"
             >
               <option value="">Select City</option>
               {allCity?.map((city) => (
@@ -133,12 +175,13 @@ export default function Duplex() {
             <select
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full h-10 px-2 border border-[#00000033] rounded-md"
+              className="w-full h-10 px-2 border  appearance-none border-[#00000033] rounded-md"
             >
               <option value="">Select Location</option>
               {allLocation?.map((location) => (
                 <option value={location.location} key={location.location}>
-                  {location.location.charAt(0).toUpperCase() + location.location.slice(1)}
+                  {location.location.charAt(0).toUpperCase() +
+                    location.location.slice(1)}
                 </option>
               ))}
             </select>
@@ -148,12 +191,14 @@ export default function Duplex() {
             <select
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
-              className="w-full h-10 px-2 border border-[#00000033] rounded-md"
+              className="w-full h-10 px-2 border  appearance-none border-[#00000033] rounded-md"
             >
               <option value="">Select Budget</option>
               <option value="1000">Up to 1,000</option>
               <option value="5000">Up to 5,000</option>
               <option value="10000">Up to 10,000</option>
+              <option value="50000">Up to 50,000</option>
+              <option value="100000">Up to 10,00,00</option>
             </select>
           </div>
 
@@ -168,73 +213,81 @@ export default function Duplex() {
 
       {/* Properties Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 py-4 sm:p-5">
-        {properties.map((property) => (
-          <Link
-            to={`/property-info/${property.propertyid}`}
-            key={property.id}
-            className="group rounded-lg shadow-md bg-white hover:bg-[#076300] overflow-hidden"
-          >
-            <img
-              src={`${URI}${property.image}`}
-              alt={property.name}
-              className=" object-cover h-[250px] w-full"
-            />
-            <div className="relative p-4">
-              {property.popular && (
-                <img
-                  src={populerTag}
-                  className="absolute top-[-15px] left-[-8px]"
-                ></img>
-              )}
-              <div className="w-full py-3 flex items-center justify-between">
-                <div className="flex flex-col justify-between gap-2 text-xl lg:text-2xl font-extrabold p-2">
-                  <div className="text-[#076300] group-hover:text-white flex items-center justify-start">
-                    <FaRupeeSign />
-                    <p> {property.sqft_price} </p>
+        {filteredProperties.length > 0 ? (
+          filteredProperties.map((property) => (
+            <Link
+              to={`/property-info/${property.propertyid}`}
+              key={property.id}
+              className="group rounded-lg shadow-md bg-white hover:bg-[#076300] overflow-hidden"
+            >
+              <img
+                src={`${URI}${property.image}`}
+                alt={property.name}
+                className=" object-cover h-[250px] w-full"
+              />
+              <div className="relative p-4">
+                {property.popular && (
+                  <img
+                    src={populerTag}
+                    className="absolute top-[-15px] left-[-8px]"
+                  ></img>
+                )}
+                <div className="w-full py-3 flex items-center justify-between">
+                  <div className="flex flex-col justify-between gap-2 text-xl lg:text-2xl font-extrabold p-2">
+                    <div className="text-[#076300] group-hover:text-white flex items-center justify-start">
+                      <FaRupeeSign />
+                      <p> {property.sqft_price} </p>
+                    </div>
+                    <h2 className="text-[#000929] group-hover:text-white ml-1">
+                      {property.property_name}
+                    </h2>
                   </div>
-                  <h2 className="text-[#000929] group-hover:text-white ml-1">
-                    {property.property_name}
-                  </h2>
+                  <div
+                    className={`likeBtn w-12 h-12 mr-4 flex items-center justify-center border border-[#E8E6F9] rounded-full bg-white ${
+                      property.like === true
+                        ? "text-[#076300]"
+                        : "text-[#E8E6F9]"
+                    } `}
+                  >
+                    <FaHeart />
+                  </div>
                 </div>
-                <div
-                  className={`likeBtn w-12 h-12 mr-4 flex items-center justify-center border border-[#E8E6F9] rounded-full bg-white ${
-                    property.like === true ? "text-[#076300]" : "text-[#E8E6F9]"
-                  } `}
-                >
-                  <FaHeart />
+
+                <div className="address text-[10px] md:text-xs lg:text-base font-normal px-3">
+                  <p className="text-[#808080] group-hover:text-[#e2e2e2]">
+                    {property.location}, {property.city}
+                  </p>
+                </div>
+
+                <hr className="text-[#F0EFFB] my-3" />
+
+                <div className="flex justify-between text-xs md:text-sm text-[#808080] group-hover:text-[#e2e2e2] mt-2 px-2">
+                  <div className="flex items-center justify-start gap-2">
+                    {
+                      //<MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
+                    }
+                    {property.area} Sq.ft Area
+                  </div>
+                  <div className="flex items-center justify-start gap-2">
+                    <BiBath className="text-[#076300] group-hover:text-white w-4 h-4" />
+                    {property.baths} Bathrooms
+                  </div>
+                  <div className="flex items-center justify-start gap-2">
+                    <FaDiamond className="text-[#076300] group-hover:text-white w-3 h-3" />
+                    {property.size}
+                  </div>
                 </div>
               </div>
-
-              <div className="address text-[10px] md:text-xs lg:text-base font-normal px-3">
-                <p className="text-[#808080] group-hover:text-[#e2e2e2]">
-                  {property.location}, {property.city}
-                </p>
-              </div>
-
-              <hr className="text-[#F0EFFB] my-3" />
-
-              <div className="flex justify-between text-xs md:text-sm text-[#808080] group-hover:text-[#e2e2e2] mt-2 px-2">
-                <div className="flex items-center justify-start gap-2">
-                  {
-                    //<MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
-                  }
-                  {property.area} Sq.ft Area
-                </div>
-                <div className="flex items-center justify-start gap-2">
-                  <BiBath className="text-[#076300] group-hover:text-white w-4 h-4" />
-                  {property.baths} Bathrooms
-                </div>
-                <div className="flex items-center justify-start gap-2">
-                  <FaDiamond className="text-[#076300] group-hover:text-white w-3 h-3" />
-                  {property.size}
-                </div>
-              </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          ))
+        ) : (
+          <h1 className="text-2xl font-bold m-4">No Properties Found</h1>
+        )}
       </div>
 
       {/* Customer Review */}
+      <div className="w-full h-[1px] mt-5 bg-[#00000033] "></div>
+      <VideoReviewSection />
     </div>
   );
 }

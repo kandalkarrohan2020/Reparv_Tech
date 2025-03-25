@@ -328,7 +328,7 @@ const Enquirers = () => {
       name: "Intrested Property",
       cell: (row) => (
         <div
-          className={`w-full h-12 overflow-hidden flex items-center justify-center`}
+          className={`w-full h-16 overflow-hidden flex items-center justify-center`}
         >
           <img
             src={`${URI}${row.image}`}
@@ -373,7 +373,7 @@ const Enquirers = () => {
       name: "Assign To",
       cell: (row) => (
         <span
-          className={`px-2 py-1 rounded-md ${
+          className={`w-[300px] px-2 py-1 rounded-md ${
             row.assign === "No Assign"
               ? "bg-[#FFEAEA] text-[#ff2323]"
               : "bg-[#EAFBF1] text-[#0BB501]"
@@ -440,7 +440,7 @@ const Enquirers = () => {
             <CiSearch />
             <input
               type="text"
-              placeholder="Search Builder"
+              placeholder="Search Enquirer"
               className="search-input md:w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -455,7 +455,7 @@ const Enquirers = () => {
         </div>
         <h2 className="text-[16px] font-semibold">Enquirer List</h2>
         <div className="overflow-scroll scrollbar-hide">
-          <DataTable columns={columns} data={filteredData} pagination />
+          <DataTable className="scrollbar-hide" columns={columns} data={filteredData} pagination />
         </div>
       </div>
 

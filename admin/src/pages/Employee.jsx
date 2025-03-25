@@ -15,7 +15,8 @@ const Employee = () => {
     action,
     giveAccess,
     setGiveAccess,
-    token, URI
+    token,
+    URI,
   } = useAuth();
   const [datas, setDatas] = useState([]);
   const [roleData, setRoleData] = useState([]);
@@ -41,32 +42,33 @@ const Employee = () => {
   // *Fetch Data from API*
   const fetchData = async () => {
     try {
-      const response = await fetch(URI+"/admin/employees", {
+      const response = await fetch(URI + "/admin/employees", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
       });
-  
+
       if (!response.ok) throw new Error("Failed to fetch employees.");
-      
+
       const data = await response.json();
       setDatas(data);
     } catch (err) {
       console.error("Error fetching:", err);
     }
   };
-  
+
   //Fetch roles data
   const fetchRoleData = async () => {
     try {
-      const response = await fetch(URI+"/admin/roles", {
+      const response = await fetch(URI + "/admin/roles", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
-        }});
+        },
+      });
       if (!response.ok) throw new Error("Failed to fetch roles.");
       const data = await response.json();
       setRoleData(data); // Store the fetched data
@@ -78,12 +80,13 @@ const Employee = () => {
   //Fetch department data
   const fetchDepartmentData = async () => {
     try {
-      const response = await fetch(URI+"/admin/departments", {
+      const response = await fetch(URI + "/admin/departments", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
-        }});
+        },
+      });
       if (!response.ok) throw new Error("Failed to fetch departments.");
       const data = await response.json();
       setDepartmentData(data); // Store the fetched data
@@ -98,15 +101,12 @@ const Employee = () => {
 
     const endpoint = newEmployee.id ? `edit/${newEmployee.id}` : "add";
     try {
-      const response = await fetch(
-        URI+ `/admin/employees/${endpoint}`,
-        {
-          method: action === "update" ? "PUT" : "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newEmployee),
-        }
-      );
+      const response = await fetch(URI + `/admin/employees/${endpoint}`, {
+        method: action === "update" ? "PUT" : "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newEmployee),
+      });
 
       if (!response.ok) throw new Error("Failed to save employee.");
 
@@ -137,12 +137,12 @@ const Employee = () => {
       console.error("Error saving :", err);
     }
   };
-  
+
   const add = async (e) => {
     e.preventDefault();
-  
+
     const endpoint = newEmployee.id ? `edit/${newEmployee.id}` : "add";
-  
+
     try {
       const response = await fetch(`${URI}/admin/employees/${endpoint}`, {
         method: newEmployee.id ? "PUT" : "POST",
@@ -150,15 +150,19 @@ const Employee = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newEmployee),
       });
-  
+
       if (response.status === 409) {
         alert("Employee already exists!");
       } else if (!response.ok) {
         throw new Error(`Failed to save employee. Status: ${response.status}`);
       } else {
-        alert(newEmployee.id ? "Employee updated successfully!" : "Employee added successfully!");
+        alert(
+          newEmployee.id
+            ? "Employee updated successfully!"
+            : "Employee added successfully!"
+        );
       }
-  
+
       // Clear form only after successful fetch
       setEmployeeData({
         name: "",
@@ -173,11 +177,10 @@ const Employee = () => {
         doj: "",
         status: "",
       });
-  
+
       setShowEplDetailsForm(false);
-  
+
       await fetchData(); // Ensure latest data is fetched
-  
     } catch (err) {
       console.error("Error saving employee:", err);
     }
@@ -185,7 +188,7 @@ const Employee = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI+`/admin/employees/${id}`, {
+      const response = await fetch(URI + `/admin/employees/${id}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -206,13 +209,10 @@ const Employee = () => {
     if (!window.confirm("Are you sure you want to delete this employee?"))
       return;
     try {
-      const response = await fetch(
-        URI+`/admin/employees/delete/${id}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
+      const response = await fetch(URI + `/admin/employees/delete/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
 
       const data = await response.json();
       if (response.ok) {
@@ -235,13 +235,10 @@ const Employee = () => {
       return;
 
     try {
-      const response = await fetch(
-        URI+`/admin/employees/status/${id}`,
-        {
-          method: "PUT",
-          credentials: "include",
-        }
-      );
+      const response = await fetch(URI + `/admin/employees/status/${id}`, {
+        method: "PUT",
+        credentials: "include",
+      });
       const data = await response.json();
       console.log(response);
       if (response.ok) {
@@ -265,7 +262,7 @@ const Employee = () => {
 
     try {
       const response = await fetch(
-        URI+`/admin/employees/assignlogin/${selectedEmployeeId}`,
+        URI + `/admin/employees/assignlogin/${selectedEmployeeId}`,
         {
           method: "PUT",
           credentials: "include",
@@ -561,7 +558,8 @@ const Employee = () => {
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
                   Department
                 </label>
-                <select required
+                <select
+                  required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
                   style={{ backgroundImage: "none" }}
                   value={newEmployee.departmentid}
@@ -584,7 +582,8 @@ const Employee = () => {
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
                   Role
                 </label>
-                <select required
+                <select
+                  required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
                   style={{ backgroundImage: "none" }}
                   value={newEmployee.roleid}

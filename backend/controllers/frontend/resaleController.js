@@ -1,10 +1,10 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 
-
 // **Fetch All**
 export const getAll = (req, res) => {
-    const sql = "SELECT * FROM properties WHERE propertytypeid='Resale' AND status='active' AND approve='Approved' ORDER BY propertyid DESC";
+  const sql =
+    "SELECT * FROM properties WHERE propertytypeid='Resale' AND status='Active' AND approve='Approved' ORDER BY propertyid DESC";
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching:", err);
@@ -16,7 +16,8 @@ export const getAll = (req, res) => {
 
 // ** Fetch All City **
 export const getAllCity = (req, res) => {
-  const sql = "select distinct city from properties where status='active' and approve='Approved' and propertytypeid='Resale' ";
+  const sql =
+    "select distinct city from properties where status='Active' and approve='Approved' and propertytypeid='Resale' ";
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching:", err);
@@ -28,13 +29,33 @@ export const getAllCity = (req, res) => {
 
 // ** Fetch All City **
 export const getAllLocation = (req, res) => {
-    const sql = "select distinct location from properties where status='active' and approve='Approved' and propertytypeid='Resale' ";
-    db.query(sql, (err, result) => {
-      if (err) {
-        console.error("Error fetching:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-      res.json(result);
-    });
-  };
+  const sql =
+    "select distinct location from properties where status='Active' and approve='Approved' and propertytypeid='Resale' ";
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error fetching:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    res.json(result);
+  });
+};
 
+// ** Fetch All Location By City **
+export const getLocationByCity = (req, res) => {
+  const city = req.params.city;
+  const sql = `
+    SELECT DISTINCT location 
+    FROM properties 
+    WHERE status = 'Active' 
+    AND approve = 'Approved' 
+    AND propertytypeid = 'Resale' 
+    AND city = ?`;
+
+  db.query(sql, [city], (err, result) => {
+    if (err) {
+      console.error("Error fetching:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    res.json(result);
+  });
+};

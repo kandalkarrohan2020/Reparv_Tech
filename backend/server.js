@@ -20,6 +20,8 @@ import propertytypeRoutes from "./routes/admin/propertytypeRoutes.js";
 import enquirerRoutes from "./routes/admin/enquirerRoutes.js";
 import auctionmembersRoutes from "./routes/admin/auctionmemberRoutes.js";
 //import ticketRoutes from "./routes/admin/ticketRoutes.js";
+import sliderRoutes from "./routes/admin/sliderRoutes.js";
+import testimonialRoutes from "./routes/admin/testimonialRoutes.js";
 //import calenderRoutes from "./routes/admin/calenderRoutes.js";
 //import marketingRoutes from "./routes/admin/marketingRoutes.js";
 //import rawmaterialRoutes from "./routes/admin/rawmaterialRoutes.js";
@@ -36,6 +38,8 @@ import flatRoutes from "./routes/frontend/flatRoutes.js";
 import rowhouseRoutes from "./routes/frontend/rowhouseRoutes.js";
 import propertyinfoRoutes from "./routes/frontend/propertyinfoRoutes.js";
 import enquiryRoutes from "./routes/frontend/enquiryRoutes.js";
+import sliderImagesRoutes from "./routes/frontend/sliderRoutes.js";
+import testimonialFeedbackRoutes from "./routes/frontend/testimonialRoutes.js";
 
 //employee
 import employeeLoginRoutes from "./routes/employee/employeeLoginRoutes.js";
@@ -43,6 +47,24 @@ import employeeBuildersRoutes from "./routes/employee/employeeBuildersRoutes.js"
 import employeePropertyRoutes from "./routes/employee/employeePropertyRoutes.js";
 import employeeTicketRoutes from "./routes/employee/employeeTicketRoutes.js";
 import employeeEnquirersRoutes from "./routes/employee/employeeEnquirersRoutes.js";
+
+//sales
+import salesLoginRoutes from "./routes/sales/salesLoginRoutes.js";
+//import salesOverviewRoutes from "./routes/sales/salesOverviewRoutes.js";
+import salesPropertyRoutes from "./routes/sales/salesPropertyRoutes.js";
+//import salesTicketRoutes from "./routes/sales/salesTicketRoutes.js";
+import salesEnquirersRoutes from "./routes/sales/salesEnquirerRoutes.js";
+import salesNewprojectRoutes from "./routes/sales/salesNewprojectRoutes.js";
+import salesResaleRoutes from "./routes/sales/salesResaleRoutes.js";
+import salesRentalRoutes from "./routes/sales/salesRentalRoutes.js";
+import salesLeaseRoutes from "./routes/sales/salesLeaseRoutes.js";
+import salesFarmhouseRoutes from "./routes/sales/salesFarmhouseRoutes.js";
+import salesPlotRoutes from "./routes/sales/salesPlotRoutes.js";
+import salesFlatRoutes from "./routes/sales/salesFlatRoutes.js";
+import salesRowhouseRoutes from "./routes/sales/salesRowhouseRoutes.js";
+import salesPropertyinfoRoutes from "./routes/sales/salesPropertyinfoRoutes.js";
+import salesEnquiryRoutes from "./routes/sales/salesEnquiryRoutes.js";
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -104,6 +126,7 @@ const verifyToken = (req, res, next) => {
     const publicRoutes = [
       "/admin/login",
       "/employee/login",
+      "/sales/login",
       "/frontend/joinourteam",
       "/frontend/newproject",
       "/frontend/resale",
@@ -114,7 +137,9 @@ const verifyToken = (req, res, next) => {
       "/frontend/plot",
       "/frontend/rowhouse",
       "/frontend/propertyinfo",
-      "/frontend/enquiry"
+      "/frontend/enquiry",
+      "/frontend/slider",
+      "/frontend/testimonial",
     ];
   
     // ✅ Allow public routes to pass through
@@ -159,7 +184,8 @@ app.use("/frontend/plot", plotRoutes);
 app.use("/frontend/flat", flatRoutes);
 app.use("/frontend/rowhouse", rowhouseRoutes);
 app.use("/frontend/enquiry", enquiryRoutes);
-
+app.use("/frontend/slider",sliderImagesRoutes);
+app.use("/frontend/testimonial",testimonialFeedbackRoutes);
 
 app.use(verifyToken);
 app.use("/admin/employees", employeeRoutes);
@@ -175,9 +201,10 @@ app.use("/admin/propertytypes", propertytypeRoutes);
 app.use("/admin/enquirers", enquirerRoutes);
 app.use("/admin/auctionmembers", auctionmembersRoutes);
 //app.use("/admin/tickets", ticketRoutes);
+app.use("/admin/slider", sliderRoutes);
+app.use("/admin/testimonial",testimonialRoutes);
 // app.use("/admin/calenders", calenderRoutes);
 // app.use("/admin/marketing", marketingRoutes);
-//app.use("/employee/login", loginRoutes);
 
 
 //Employee Routes
@@ -186,6 +213,26 @@ app.use("/employee/builders", employeeBuildersRoutes);
 app.use("/employee/properties", employeePropertyRoutes);
 app.use("/employee/enquirers",employeeEnquirersRoutes);
 app.use("/employee/tickets",employeeTicketRoutes);
+
+
+//Sales Person Routes
+app.use("/sales", salesLoginRoutes);
+app.use("/sales/enquirers",salesEnquirersRoutes);
+//app.use("/sales/overview", salesOverviewRoutes);
+app.use("/sales/properties", salesPropertyRoutes);
+//app.use("/sales/tickets",salesTicketRoutes);
+
+app.use("/sales/propertyinfo", salesPropertyinfoRoutes);
+app.use("/sales/newproject", salesNewprojectRoutes);
+app.use("/sales/resale", salesResaleRoutes);
+app.use("/sales/rental", salesRentalRoutes);
+app.use("/sales/lease", salesLeaseRoutes);
+app.use("/sales/farmhouse", salesFarmhouseRoutes);
+app.use("/sales/plot", salesPlotRoutes);
+app.use("/sales/flat", salesFlatRoutes);
+app.use("/sales/rowhouse", salesRowhouseRoutes);
+app.use("/sales/enquiry", salesEnquiryRoutes);
+
 
 
 // ✅ Start Server

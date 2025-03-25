@@ -48,6 +48,7 @@ const Properties = () => {
     area: "",
     sqft_price: "",
     extra: "",
+    videourl: "",
   });
 
   //Single Image Upload
@@ -134,6 +135,7 @@ const Properties = () => {
     formData.append("area", newProperty.area);
     formData.append("sqft_price", newProperty.sqft_price);
     formData.append("extra", newProperty.extra);
+    formData.append("videourl", newProperty.videourl);
     if (selectedImage) {
       formData.append("image", selectedImage); // Attach the image file
     }
@@ -176,56 +178,6 @@ const Properties = () => {
       });
 
       setShowPropertyForm(false);
-      await fetchData(); // Ensure latest data is fetched
-    } catch (err) {
-      console.error("Error saving property:", err);
-    }
-  };
-
-  //Add or update record
-  const add2 = async (e) => {
-    e.preventDefault();
-
-    const endpoint = newProperty.propertyid
-      ? `edit/${newProperty.propertyid}`
-      : "add";
-
-    try {
-      const response = await fetch(`${URI}/admin/properties/${endpoint}`, {
-        method: newProperty.propertyid ? "PUT" : "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newProperty),
-      });
-
-      if (response.status === 409) {
-        alert("Property already exists!");
-      } else if (!response.ok) {
-        throw new Error(`Failed to save property. Status: ${response.status}`);
-      } else {
-        alert(
-          newProperty.propertyid
-            ? "Property updated successfully!"
-            : "Property added successfully!"
-        );
-      }
-
-      // Clear form only after a successful response
-      setPropertyData({
-        builderid: "",
-        propertytypeid: "",
-        property_name: "",
-        address: "",
-        city: "",
-        location: "",
-        rerano: "",
-        area: "",
-        sqft_price: "",
-        extra: "",
-      });
-
-      setShowPropertyForm(false);
-
       await fetchData(); // Ensure latest data is fetched
     } catch (err) {
       console.error("Error saving property:", err);
@@ -477,7 +429,7 @@ const Properties = () => {
     {
       name: "Image",
       cell: (row) => (
-        <div className={`w-full h-12 overflow-hidden`}>
+        <div className={`w-full h-14 overflow-hidden flex items-center justify-center`}>
           <img src={`${URI}${row.image}`} alt="Image" className="w-full h-[90%] object-cover" />
         </div>
       ),
@@ -606,7 +558,7 @@ const Properties = () => {
 
         <h2 className="text-[16px] font-semibold">Properties List</h2>
         <div className="overflow-scroll scrollbar-hide">
-          <DataTable columns={columns} data={filteredData} pagination />
+          <DataTable className="scrollbar-hide" columns={columns} data={filteredData} pagination />
         </div>
       </div>
 
@@ -822,7 +774,22 @@ const Properties = () => {
                 }
               />
             </div>
-
+            
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Video Link
+              </label>
+              <input
+                type="text"
+                placeholder="Enter Video Link"
+                required
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={newProperty.videourl}
+                onChange={(e) =>
+                  setPropertyData({ ...newProperty, videourl: e.target.value })
+                }
+              />
+            </div>
             <div className="w-full">
               <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
                 Upload Property Image
@@ -866,9 +833,9 @@ const Properties = () => {
                 </div>
               )}
             </div>
-
+            <div></div>
             <div className="flex h-10 mt-8 md:mt-6 justify-end gap-6">
-              <button
+              <button type="button"
                 onClick={() => {
                   setShowPropertyForm(false);
                 }}
@@ -1141,7 +1108,7 @@ const Properties = () => {
               />
             </div>
             <div className="flex mt-8 md:mt-6 justify-end gap-6">
-              <button
+              <button type="button"
                 onClick={() => {
                   setShowAdditionalInfoForm(false);
                 }}

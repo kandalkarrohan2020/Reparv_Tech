@@ -51,6 +51,7 @@ export const add = (req, res) => {
     area,
     sqft_price,
     extra,
+    videourl,
   } = req.body;
 
   // Check if an image was uploaded
@@ -65,7 +66,8 @@ export const add = (req, res) => {
     !location ||
     !rerano ||
     !area ||
-    !sqft_price
+    !sqft_price ||
+    !videourl
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
@@ -79,8 +81,8 @@ export const add = (req, res) => {
       if (result.length > 0)
         return res.status(202).json({ message: "Property already exists!" });
 
-      const insertSQL = `INSERT INTO properties (builderid, propertytypeid, property_name, address, city, location, rerano, area, sqft_price, extra, image, updated_at, created_at) 
-                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const insertSQL = `INSERT INTO properties (builderid, propertytypeid, property_name, address, city, location, rerano, area, sqft_price, extra, videourl, image, updated_at, created_at) 
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       db.query(
         insertSQL,
@@ -95,6 +97,7 @@ export const add = (req, res) => {
           area,
           sqft_price,
           extra,
+          videourl,
           imagePath,
           currentdate,
           currentdate,
@@ -137,6 +140,7 @@ export const update = (req, res) => {
     area,
     sqft_price,
     extra,
+    videourl,
   } = req.body;
 
   // Check if required fields are provided
@@ -149,7 +153,8 @@ export const update = (req, res) => {
     !location ||
     !rerano ||
     !area ||
-    !sqft_price
+    !sqft_price ||
+    !videourl
   ) {
     return res
       .status(400)
@@ -178,7 +183,7 @@ export const update = (req, res) => {
 
       const updateSQL = `
       UPDATE properties 
-      SET builderid=?, propertytypeid=?, property_name=?, address=?, city=?, location=?, rerano=?, area=?, sqft_price=?, extra=?, image=?, updated_at=? 
+      SET builderid=?, propertytypeid=?, property_name=?, address=?, city=?, location=?, rerano=?, area=?, sqft_price=?, extra=?, videourl=?, image=?, updated_at=? 
       WHERE propertyid=?`;
 
       db.query(
@@ -194,6 +199,7 @@ export const update = (req, res) => {
           area,
           sqft_price,
           extra,
+          videourl,
           finalImagePath, // Use the existing image if no new image is uploaded
           currentdate,
           Id,

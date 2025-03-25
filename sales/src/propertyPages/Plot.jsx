@@ -1,0 +1,234 @@
+import React, { useEffect } from "react";
+import { useState } from "react";
+import { FiSearch } from "react-icons/fi";
+//import propertyPicture from "../assets/property/propertyPicture.svg";
+import { FaHeart } from "react-icons/fa";
+import { FaRupeeSign } from "react-icons/fa";
+import { MdOutlineKingBed } from "react-icons/md";
+import { BiBath } from "react-icons/bi";
+import { FaDiamond } from "react-icons/fa6";
+//import populerTag from "../assets/property/populerTag.svg";
+import { useNavigate, Navigate } from "react-router-dom";
+//import VideoReviewSection from "../components/VideoReviewSection";
+import { useAuth } from "../store/auth";
+import { Link } from "react-router-dom";
+
+export default function Plot() {
+  const [city, setCity] = useState("");
+  const [allCity, setAllCity] = useState([]);
+  const [allLocation, setAllLocation] = useState([]);
+  const [location, setLocation] = useState("");
+  const [budget, setBudget] = useState("");
+  const [properties, setProperties] = useState([]);
+  const { URI } = useAuth();
+
+  const handleSearch = () => {
+    onSearch({ location, budget });
+  };
+
+  // *Fetch Data from API*
+  const fetchData = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/plot", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch properties.");
+
+      const data = await response.json();
+      setProperties(data);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  // *Fetch Data from API*
+  const fetchAllCity = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/plot/allcity", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch properties.");
+
+      const data = await response.json();
+
+      setAllCity([...data]);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  // *Fetch Data from API*
+  const fetchLocation = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/plot/alllocation", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch properties.");
+
+      const data = await response.json();
+
+      setAllLocation([...data]);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    fetchAllCity();
+    fetchLocation();
+  }, []);
+
+  return (
+    <div className="properties w-full max-w-[1400px] flex flex-col p-4 sm:py-6 sm:px-0 mx-auto">
+      {/* Search Bar */}
+      <div className="w-full flex flex-wrap gap-2 justify-between sm:px-5">
+        <div className="w-full sm:w-[350px] h-10 sm:h-15 flex gap-3 items-center justify-start border border-[#00000033] rounded-lg px-4 sm:p-4 focus:outline-none">
+          <FiSearch className=" sm:w-6 sm:h-6 text-[#076300] " />
+          <input
+            type="text"
+            placeholder="Search..."
+            className="bg-transparent focus:outline-none text-sm sm:text-base"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2 sm:gap-5 bg-transparent">
+          <div className="flex">
+            <select
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              className="w-full h-10 px-2 border border-[#00000033] rounded-md"
+            >
+              <option value="">Select City</option>
+              {allCity?.map((city) => (
+                <option value={city.city} key={city}>
+                  {city.city.charAt(0).toUpperCase() + city.city.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex">
+            <select
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="w-full h-10 px-2 border border-[#00000033] rounded-md"
+            >
+              <option value="">Select Location</option>
+              {allLocation?.map((location) => (
+                <option value={location.location} key={location.location}>
+                  {location.location.charAt(0).toUpperCase() +
+                    location.location.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex">
+            <select
+              value={budget}
+              onChange={(e) => setBudget(e.target.value)}
+              className="w-full h-10 px-2 border border-[#00000033] rounded-md"
+            >
+              <option value="">Select Budget</option>
+              <option value="1000">Up to 1,000</option>
+              <option value="5000">Up to 5,000</option>
+              <option value="10000">Up to 10,000</option>
+            </select>
+          </div>
+
+          <button
+            onClick={handleSearch}
+            className="w-[100px] h-10 bg-[#076300] text-white rounded-lg active:scale-95"
+          >
+            Search
+          </button>
+        </div>
+      </div>
+
+      {/* Properties Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 py-4 sm:p-5">
+        {properties.map((property) => (
+          <Link
+            to={`/property-info/${property.propertyid}`}
+            key={property.id}
+            className="group rounded-lg shadow-md bg-white hover:bg-[#076300] overflow-hidden"
+          >
+            <img
+              src={`${URI}${property.image}`}
+              alt={property.name}
+              className=" object-cover h-[250px] w-full"
+            />
+            <div className="relative p-4">
+              {property.popular && (
+                <img
+                  src={""}
+                  className="absolute top-[-15px] left-[-8px]"
+                ></img>
+              )}
+              <div className="w-full py-3 flex items-center justify-between">
+                <div className="flex flex-col justify-between gap-2 text-xl lg:text-2xl font-extrabold p-2">
+                  <div className="text-[#076300] group-hover:text-white flex items-center justify-start">
+                    <FaRupeeSign />
+                    <p> {property.sqft_price} </p>
+                  </div>
+                  <h2 className="text-[#000929] group-hover:text-white ml-1">
+                    {property.property_name}
+                  </h2>
+                </div>
+                <div
+                  className={`likeBtn w-12 h-12 mr-4 flex items-center justify-center border border-[#E8E6F9] rounded-full bg-white ${
+                    property.like === true ? "text-[#076300]" : "text-[#E8E6F9]"
+                  } `}
+                >
+                  <FaHeart />
+                </div>
+              </div>
+
+              <div className="address text-[10px] md:text-xs lg:text-base font-normal px-3">
+                <p className="text-[#808080] group-hover:text-[#e2e2e2]">
+                  {property.location}, {property.city}
+                </p>
+              </div>
+
+              <hr className="text-[#F0EFFB] my-3" />
+
+              <div className="flex justify-between text-xs md:text-sm text-[#808080] group-hover:text-[#e2e2e2] mt-2 px-2">
+                {/*<div className="flex items-center justify-start gap-2">
+                                        {
+                                          //<MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
+                                        }
+                                        {property.area} Sq.ft Area
+                                      </div>
+                                      <div className="flex items-center justify-start gap-2">
+                                        <BiBath className="text-[#076300] group-hover:text-white w-4 h-4" />
+                                        {property.baths} Bathrooms
+                                      </div>
+                                      */}
+                <div className="flex items-center justify-start gap-2">
+                  <FaDiamond className="text-[#076300] group-hover:text-white w-3 h-3" />
+                  {property.area} Sq.ft Area
+                </div>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* Customer Review */}
+    </div>
+  );
+}

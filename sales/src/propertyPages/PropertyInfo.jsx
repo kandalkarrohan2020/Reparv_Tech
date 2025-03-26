@@ -96,68 +96,68 @@ export default function PropertyInfo() {
           <hr className="my-2" />
 
           {/* Property Details */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[#00000066] text-[10px] font-medium">
-            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[#00000066] text-[12px] font-medium">
+            <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center pl-4 justify-start border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Wing</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center " >
                 <p className="text-black font-semibold">{propertyInfo.wing}</p>
               </div>
             </div>
-            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+            <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center pl-4 justify-start border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Price</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center " >
                 <p className="text-black font-semibold" >{propertyInfo.sqft_price} /sqft</p>
               </div>
             </div>
-            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+            <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center pl-4 justify-start border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Floor</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center " >
                 <p className="text-black font-semibold">{propertyInfo.floor}</p>
               </div>
             </div>
-            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+            <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center pl-4 justify-start border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Flat No</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center " >
                 <p className="text-black font-semibold">{propertyInfo.flatno}</p>
               </div>
             </div>
-            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+            <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center pl-4 justify-start border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Direction</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center " >
                 <p className="text-black font-semibold">{propertyInfo.direction}</p>
               </div>
             </div>
-            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+            <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center pl-4 justify-start border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Carpet Area</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center " >
                 <p className="text-black font-semibold">{propertyInfo.carpetarea}</p>
               </div>
             </div>
-            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+            <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center pl-4 justify-start border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Super Built-up</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center " >
                 <p className="text-black font-semibold">{propertyInfo.superbuiltup}</p>
               </div>
             </div>
-            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+            <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center pl-4 justify-start border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Construction Age</b> </p>
               </div>
-              <div className="w-[40%] flex items-center justify-center p-1 " >
+              <div className="w-[40%] flex items-center pl-4 justify-start" >
                 <p className="text-black font-semibold">{propertyInfo.ageofconstruction}</p>
               </div>
             </div>
@@ -190,7 +190,7 @@ export default function PropertyInfo() {
       {/* Inquiry Button */}
       <div 
         onClick={() => setShowInquiryForm(true)}
-        className="hidden fixed z-30 w-full sm:w-auto right-0 bottom-0 sm:bottom-15 sm:right-25 md:bottom-25 md:right-35 px-4 py-2 sm:px-10 sm:py-3 bg-[#0BB501] rounded-tl-2xl border-2 border-white sm:border-none rounded-tr-2xl sm:rounded-[32px] text-white text-md sm:text-xl shadow-lg hover:scale-105 active:scale-100 cursor-pointer"
+        className="fixed z-30 w-full sm:w-auto right-0 bottom-0 sm:bottom-16 sm:right-24 md:bottom-25 md:right-35 px-4 py-2 sm:px-10 sm:py-3 bg-[#0BB501] rounded-tl-2xl border-2 border-white sm:border-none rounded-tr-2xl sm:rounded-[32px] text-white text-md sm:text-xl shadow-lg hover:scale-105 active:scale-100 cursor-pointer"
       >
         <p className="text-center font-medium">Inquiry Now</p>
       </div>

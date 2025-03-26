@@ -52,6 +52,7 @@ function Layout() {
     showPropertyInfo, setShowPropertyInfo,
     showSliderForm, setShowSliderForm,
     showFeedbackForm, setShowFeedbackForm,
+    showPartnerForm, setShowPartnerForm,
     isLoggedIn,
   } = useAuth();
 
@@ -72,6 +73,7 @@ function Layout() {
     { state: showPropertyInfo, setter: setShowPropertyInfo },
     { state: showSliderForm, setter: setShowSliderForm },
     { state: showFeedbackForm, setter: setShowFeedbackForm },
+    { state: showPartnerForm, setter: setShowPartnerForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -176,6 +178,11 @@ function Layout() {
                 to: "/salespersons",
                 icon: partnerIcon,
                 label: "Sales Persons",
+              },
+              {
+                to: "/onboardingpartner",
+                icon: partnerIcon,
+                label: "Onboarding Partners",
               },
               //{ to: "/auctionmembers", icon: partnerIcon, label: "Auction Members" },
               { to: "/employees", icon: employeeIcon, label: "Employees" },

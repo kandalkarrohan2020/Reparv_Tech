@@ -96,15 +96,71 @@ export default function PropertyInfo() {
           <hr className="my-2" />
 
           {/* Property Details */}
-          <div className="grid grid-cols-2 gap-y-2 text-[#00000066] text-[10px] font-medium">
-            <p><b className="text-xs text-black">Wing:</b> {propertyInfo.wing}</p>
-            <p><b className="text-xs text-black">Price:</b> {propertyInfo.sqft_price}</p>
-            <p><b className="text-xs text-black">Floor:</b> {propertyInfo.floor}</p>
-            <p><b className="text-xs text-black">Flat No:</b> {propertyInfo.flatno}</p>
-            <p><b className="text-xs text-black">Direction:</b> {propertyInfo.direction}</p>
-            <p><b className="text-xs text-black">Carpet Area:</b> {propertyInfo.carpetarea}</p>
-            <p><b className="text-xs text-black">Super Built-up:</b> {propertyInfo.superbuiltup}</p>
-            <p><b className="text-xs text-black">Construction Age:</b> {propertyInfo.ageofconstruction} years</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[#00000066] text-[10px] font-medium">
+            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+                <p><b className="text-xs text-black">Wing</b> </p>
+              </div>
+              <div className="w-[40%] flex items-center justify-center " >
+                <p className="text-black font-semibold">{propertyInfo.wing}</p>
+              </div>
+            </div>
+            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+                <p><b className="text-xs text-black">Price</b> </p>
+              </div>
+              <div className="w-[40%] flex items-center justify-center " >
+                <p className="text-black font-semibold" >{propertyInfo.sqft_price} /sqft</p>
+              </div>
+            </div>
+            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+                <p><b className="text-xs text-black">Floor</b> </p>
+              </div>
+              <div className="w-[40%] flex items-center justify-center " >
+                <p className="text-black font-semibold">{propertyInfo.floor}</p>
+              </div>
+            </div>
+            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+                <p><b className="text-xs text-black">Flat No</b> </p>
+              </div>
+              <div className="w-[40%] flex items-center justify-center " >
+                <p className="text-black font-semibold">{propertyInfo.flatno}</p>
+              </div>
+            </div>
+            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+                <p><b className="text-xs text-black">Direction</b> </p>
+              </div>
+              <div className="w-[40%] flex items-center justify-center " >
+                <p className="text-black font-semibold">{propertyInfo.direction}</p>
+              </div>
+            </div>
+            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+                <p><b className="text-xs text-black">Carpet Area</b> </p>
+              </div>
+              <div className="w-[40%] flex items-center justify-center " >
+                <p className="text-black font-semibold">{propertyInfo.carpetarea}</p>
+              </div>
+            </div>
+            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+                <p><b className="text-xs text-black">Super Built-up</b> </p>
+              </div>
+              <div className="w-[40%] flex items-center justify-center " >
+                <p className="text-black font-semibold">{propertyInfo.superbuiltup}</p>
+              </div>
+            </div>
+            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+                <p><b className="text-xs text-black">Construction Age</b> </p>
+              </div>
+              <div className="w-[40%] flex items-center justify-center p-1 " >
+                <p className="text-black font-semibold">{propertyInfo.ageofconstruction}</p>
+              </div>
+            </div>
           </div>
         </div>
 

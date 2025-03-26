@@ -3,6 +3,10 @@ import moment from "moment";
 
 export const add = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const salesId = req.user.id;
+  if (!salesId) {
+    return res.status(400).json({message: "Invalid Sales Id"});
+  }
 
   const {
     propertyid,
@@ -13,7 +17,7 @@ export const add = async (req, res) => {
     city,
     location,
     message,
-  } = req.body; // Removed 'await'
+  } = req.body;
 
   // Validate required fields
   if (
@@ -31,18 +35,20 @@ export const add = async (req, res) => {
 
   const insertSQL = `INSERT INTO enquirers (
     propertyid,
+    salespersonid,
     customer,
     contact,
     email,
     budget,
     city,
     location,
-    message, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    message, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(
     insertSQL,
     [
       propertyid,
+      salesId,
       fullname,
       phone,
       email,

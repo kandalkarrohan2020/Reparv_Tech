@@ -286,51 +286,6 @@ export const status = (req, res) => {
   );
 };
 
-export const assignLogin2 = async (req, res) => {
-  const { username, password } = req.body;
-  const Id = parseInt(req.params.id);
-
-  if (!username || !password) {
-    return res.status(400).json({ message: "Username and password are required" });
-  }
-
-  if (isNaN(Id)) {
-    return res.status(400).json({ message: "Invalid Employee ID" });
-  }
-
-  db.query("SELECT * FROM salespersons WHERE salespersonsid = ?", [Id], async (err, result) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Sales Person not found" });
-    } else {
-      let loginstatus = result[0].loginstatus === 'Active' ? 'Inactive' : 'Active';
-
-      try {
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-        db.query(
-          "UPDATE salespersons SET loginstatus = ?, username = ?, password = ? WHERE salespersonsid = ?",
-          [loginstatus, username, hashedPassword, Id],
-          (err, updateResult) => {
-            if (err) {
-              console.error("Error updating login info:", err);
-              return res.status(500).json({ message: "Database error", error: err });
-            }
-            res.status(200).json({ message: "Sales Person login assigned successfully" });
-          }
-        );
-      } catch (hashError) {
-        console.error("Password hashing error:", hashError);
-        return res.status(500).json({ message: "Error hashing password", error: hashError });
-      }
-    }
-  });
-};
-
 export const assignLogin = async (req, res) => {
   
   const { username,password } = req.body;

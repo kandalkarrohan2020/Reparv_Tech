@@ -1,0 +1,315 @@
+import db from "../../config/dbconnect.js";
+import moment from "moment";
+import bcrypt from "bcryptjs";
+
+const saltRounds = 10;
+// **Fetch All **
+export const getAll = (req, res) => {
+  const sql = "SELECT * FROM onboardingpartner ORDER BY partnerid DESC";
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error fetching :", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    res.json(result);
+  });
+};
+
+// **Fetch All**
+export const getAllActive = (req, res) => {
+  const sql =
+    "SELECT * FROM onboardingpartner WHERE status = 'Active' ORDER BY partnerid DESC";
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error fetching:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    res.json(result);
+  });
+};
+
+// **Fetch Single by ID**
+export const getById = (req, res) => {
+  const Id = parseInt(req.params.id);
+  const sql = "SELECT * FROM onboardingpartner WHERE partnerid = ?";
+
+  db.query(sql, [Id], (err, result) => {
+    if (err) {
+      console.error("Error fetching :", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Partner not found" });
+    }
+    res.json(result[0]);
+  });
+};
+
+// **Add New **
+export const add = (req, res) => {
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const { fullname, contact, address, city, experience, adharno, panno } =
+    req.body;
+
+  if (
+    !fullname ||
+    !contact ||
+    !address ||
+    !city ||
+    !experience ||
+    !adharno ||
+    !panno
+  ) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+  // Handle uploaded files
+  const adharImageFile = req.files?.["adharImage"]?.[0];
+  const panImageFile = req.files?.["panImage"]?.[0];
+
+  const adharImageUrl = adharImageFile
+    ? `/uploads/${adharImageFile.filename}`
+    : null;
+  const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
+
+  const checkSql = `SELECT * FROM onboardingpartner WHERE contact = ? OR adharno = ?`;
+
+  db.query(checkSql, [contact, adharno], (checkErr, checkResult) => {
+    if (checkErr) {
+      console.error("Error checking existing Partner:", checkErr);
+      return res
+        .status(500)
+        .json({ message: "Database error during validation", error: checkErr });
+    }
+
+    if (checkResult.length > 0) {
+      return res.status(409).json({
+        message:
+          "onBoarding Partner already exists with this contact or Aadhaar number",
+      });
+    }
+  });
+  const sql = `INSERT INTO onboardingpartner (fullname, contact, address, city, experience, adharno, panno, adharimage, panimage, updated_at, created_at) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  db.query(
+    sql,
+    [
+      fullname,
+      contact,
+      address,
+      city,
+      experience,
+      adharno,
+      panno,
+      adharImageUrl,
+      panImageUrl,
+      currentdate,
+      currentdate,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting :", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+      res.status(201).json({
+        message: "On Boarding Partner added successfully",
+        Id: result.insertId,
+      });
+    }
+  );
+};
+
+export const edit = (req, res) => {
+  const partnerid = req.params.id;
+  if (!partnerid) {
+    return res.status(400).json({ message: "Invalid Partner ID" });
+  }
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const { fullname, contact, address, city, experience, adharno, panno } =
+    req.body;
+
+  if (
+    !fullname ||
+    !contact ||
+    !address ||
+    !city ||
+    !experience ||
+    !adharno ||
+    !panno
+  ) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  // Handle uploaded files
+  const adharImageFile = req.files?.["adharImage"]?.[0];
+  const panImageFile = req.files?.["panImage"]?.[0];
+
+  const adharImageUrl = adharImageFile
+    ? `/uploads/${adharImageFile.filename}`
+    : null;
+  const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
+
+  let updateSql = `UPDATE onboardingpartner SET fullname = ?, contact = ?, address = ?, city = ?, experience = ?, adharno = ?, panno = ?, updated_at = ?`;
+  const updateValues = [
+    fullname,
+    contact,
+    address,
+    city,
+    experience,
+    adharno,
+    panno,
+    currentdate,
+  ];
+
+  if (adharImageUrl) {
+    updateSql += `, adharimage = ?`;
+    updateValues.push(adharImageUrl);
+  }
+
+  if (panImageUrl) {
+    updateSql += `, panimage = ?`;
+    updateValues.push(panImageUrl);
+  }
+
+  updateSql += ` WHERE partnerid = ?`;
+  updateValues.push(partnerid);
+
+  db.query(updateSql, updateValues, (updateErr, result) => {
+    if (updateErr) {
+      console.error("Error updating Partner:", updateErr);
+      return res
+        .status(500)
+        .json({ message: "Database error during update", error: updateErr });
+    }
+
+    res.status(200).json({ message: "Partner updated successfully" });
+  });
+};
+
+// **Delete **
+export const del = (req, res) => {
+  const Id = parseInt(req.params.id);
+
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Partner ID" });
+  }
+
+  db.query(
+    "SELECT * FROM onboardingpartner WHERE partnerid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Sales person not found" });
+      }
+
+      db.query(
+        "DELETE FROM onboardingpartner WHERE partnerid = ?",
+        [Id],
+        (err) => {
+          if (err) {
+            console.error("Error deleting :", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+          res
+            .status(200)
+            .json({ message: "Partner deleted successfully" });
+        }
+      );
+    }
+  );
+};
+
+//**Change status */
+export const status = (req, res) => {
+  const Id = parseInt(req.params.id);
+  console.log(Id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Partner ID" });
+  }
+
+  db.query(
+    "SELECT * FROM onboardingpartner WHERE partnerid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      let status = "";
+      if (result[0].status === "Active") {
+        status = "Inactive";
+      } else {
+        status = "Active";
+      }
+      console.log(status);
+      db.query(
+        "UPDATE onboardingpartner SET status = ? WHERE partnerid = ?",
+        [status, Id],
+        (err, result) => {
+          if (err) {
+            console.error("Error deleting :", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+          res
+            .status(200)
+            .json({ message: "Partner status change successfully" });
+        }
+      );
+    }
+  );
+};
+
+export const assignLogin = async (req, res) => {
+  const { username, password } = req.body;
+  const Id = parseInt(req.params.id);
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Partner ID" });
+  }
+
+  db.query(
+    "SELECT * FROM onboardingpartner WHERE partnerid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Partner not found" });
+      } else {
+        let loginstatus = "";
+        if (result[0].loginstatus === "Active") {
+          loginstatus = "Inactive";
+        } else {
+          loginstatus = "Active";
+        }
+
+        db.query(
+          "UPDATE onboardingpartner SET loginstatus = ?, username = ?, password = ? WHERE partnerid = ?",
+          [loginstatus, username, hashedPassword, Id],
+          (err, result) => {
+            if (err) {
+              console.error("Error deleting :", err);
+              return res
+                .status(500)
+                .json({ message: "Database error", error: err });
+            }
+            res
+              .status(200)
+              .json({ message: "Partner login assigned successfully" });
+          }
+        );
+      }
+    }
+  );
+};

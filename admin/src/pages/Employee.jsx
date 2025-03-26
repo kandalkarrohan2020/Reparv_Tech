@@ -425,7 +425,7 @@ const Employee = () => {
             </div>
             <h2 className="text-[16px] font-semibold">Employee List</h2>
             <div className="overflow-scroll scrollbar-hide">
-              <DataTable columns={columns} data={filteredData} pagination />
+              <DataTable className="overflow-scroll scrollbar-hide" columns={columns} data={filteredData} pagination />
             </div>
           </div>
         </>

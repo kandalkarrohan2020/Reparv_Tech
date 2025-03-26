@@ -111,7 +111,7 @@ export default function Plot() {
   const fetchLocationByCity = async () => {
     try {
       const response = await fetch(
-        URI + "/frontend/plot/location/" + city,
+        URI + "/sales/plot/location/" + city,
         {
           method: "GET",
           credentials: "include", // ✅ Ensures cookies are sent

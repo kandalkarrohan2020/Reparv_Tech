@@ -18,6 +18,7 @@ const delTokenInCookie = () => {
 }
 //const URI = "http://localhost:3000";
 const URI = "https://api.reparv.in";
+
 const [showEplDetailsForm, setShowEplDetailsForm ] = useState(false);
 const [showBuilderForm, setShowBuilderForm ] = useState(false);
 const [showSalesForm, setShowSalesForm ] = useState(false);
@@ -34,11 +35,13 @@ const [giveAccess, setGiveAccess] = useState(false);
 const [showUploadImagesForm, setShowUploadImagesForm] = useState(false);
 const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
-const [ showAssignSalesForm, setShowAssignSalesForm ] = useState(false);
+const [showAssignSalesForm, setShowAssignSalesForm] = useState(false);
 const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
 const [showPropertyInfo, setShowPropertyInfo] = useState(false);
 const [showSliderForm, setShowSliderForm] = useState(false);
 const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+const [showPartnerForm, setShowPartnerForm ] = useState(false);
+
 return <AuthContext.Provider
  value={
     {   URI,
@@ -64,7 +67,8 @@ return <AuthContext.Provider
         showEnquiryStatusForm, setShowEnquiryStatusForm,
         showPropertyInfo, setShowPropertyInfo,
         showSliderForm, setShowSliderForm,
-        showFeedbackForm, setShowFeedbackForm
+        showFeedbackForm, setShowFeedbackForm,
+        showPartnerForm, setShowPartnerForm ,
     }
 }>
     {children}

@@ -16,6 +16,7 @@ import departmentRoutes from "./routes/admin/departmentRoutes.js";
 //import stateRoutes from "./routes/admin/stateRoutes.js";
 //import cityRoutes from "./routes/admin/cityRoutes.js";
 import salespersonRoutes from "./routes/admin/salespersonRoutes.js";
+import partnerRoutes from "./routes/admin/partnerRoutes.js";
 import propertytypeRoutes from "./routes/admin/propertytypeRoutes.js";
 import enquirerRoutes from "./routes/admin/enquirerRoutes.js";
 import auctionmembersRoutes from "./routes/admin/auctionmemberRoutes.js";
@@ -65,6 +66,14 @@ import salesRowhouseRoutes from "./routes/sales/salesRowhouseRoutes.js";
 import salesPropertyinfoRoutes from "./routes/sales/salesPropertyinfoRoutes.js";
 import salesEnquiryRoutes from "./routes/sales/salesEnquiryRoutes.js";
 
+// import Partner Routes
+import partnerLoginRoutes from "./routes/onboardingPartner/partnerLoginRoutes.js";
+//import salesOverviewRoutes from "./routes/onboardingPartner/partnerOverviewRoutes.js";
+import partnerPropertyRoutes from "./routes/onboardingPartner/partnerPropertyRoutes.js";
+import partnerBuilderRoutes from "./routes/onboardingPartner/partnerBuilderRoutes.js";
+//import salesTicketRoutes from "./routes/onboardingPartner/partnerTicketRoutes.js";
+
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -86,6 +95,7 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
+  "http://localhost:5175",
   "https://reparv-tech.onrender.com",
   "https://admin.reparv.in",
   "https://reparv.in",
@@ -197,6 +207,7 @@ app.use("/admin/departments", departmentRoutes);
 //app.use("/admin/states", stateRoutes);
 //app.use("/admin/cities", cityRoutes);
 app.use("/admin/salespersons", salespersonRoutes);
+app.use("/admin/partner", partnerRoutes);
 app.use("/admin/propertytypes", propertytypeRoutes);
 app.use("/admin/enquirers", enquirerRoutes);
 app.use("/admin/auctionmembers", auctionmembersRoutes);
@@ -233,7 +244,12 @@ app.use("/sales/flat", salesFlatRoutes);
 app.use("/sales/rowhouse", salesRowhouseRoutes);
 app.use("/sales/enquiry", salesEnquiryRoutes);
 
-
+// On Boarding Partner Routes
+app.use("/partner", partnerLoginRoutes);
+//app.use("/partner/overview", partnerOverviewRoutes);
+app.use("/partner/properties", partnerPropertyRoutes);
+app.use("/partner/builders", partnerBuilderRoutes);
+//app.use("/partner/tickets",partnerTicketRoutes);
 
 // ✅ Start Server
 app.listen(PORT, () => {

@@ -40,12 +40,12 @@ function OtherProperties({ propertyTypeId }) {
   }, [propertyTypeId]);
 
   return (
-    <div className="otherProperties w-full overflow-scroll scrollbar-hide grid place-items-center grid-flow-col gap-8 py-4 sm:p-5">
+    <div className="otherProperties w-full overflow-scroll scrollbar-hide grid place-items-center grid-flow-col gap-3 py-4 sm:p-0">
       {properties.map((property) => (
         <Link
           to={`/property-info/${property.propertyid}`}
           key={property.propertyid}
-          className="w-[500px] group rounded-lg shadow-md bg-white hover:bg-[#076300] overflow-hidden"
+          className="w-[350px] group rounded-lg shadow-md bg-white hover:bg-[#076300] overflow-hidden"
         >
           <img
             src={`${URI}${property.image}`}

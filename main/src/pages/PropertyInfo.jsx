@@ -96,41 +96,41 @@ export default function PropertyInfo() {
           <hr className="my-2" />
 
           {/* Property Details */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[#00000066] text-[10px] font-medium">
-            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[#00000066] text-[12px] font-medium">
+            <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Wing</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center " >
                 <p className="text-black font-semibold">{propertyInfo.wing}</p>
               </div>
             </div>
-            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+            <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Price</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center " >
                 <p className="text-black font-semibold" >{propertyInfo.sqft_price} /sqft</p>
               </div>
             </div>
-            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+            <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Floor</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center " >
                 <p className="text-black font-semibold">{propertyInfo.floor}</p>
               </div>
             </div>
-            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+            <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Flat No</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center " >
                 <p className="text-black font-semibold">{propertyInfo.flatno}</p>
               </div>
             </div>
-            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+            <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Direction</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center " >
@@ -138,7 +138,7 @@ export default function PropertyInfo() {
               </div>
             </div>
             <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Carpet Area</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center " >
@@ -146,7 +146,7 @@ export default function PropertyInfo() {
               </div>
             </div>
             <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Super Built-up</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center " >
@@ -154,7 +154,7 @@ export default function PropertyInfo() {
               </div>
             </div>
             <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-center border-r border-[#00000033]" >
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
                 <p><b className="text-xs text-black">Construction Age</b> </p>
               </div>
               <div className="w-[40%] flex items-center justify-center p-1 " >

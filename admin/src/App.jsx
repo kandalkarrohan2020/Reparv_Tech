@@ -22,6 +22,7 @@ import ErrorPage from "./pages/ErrorPage.jsx";
 import Slider from "./pages/Slider.jsx";
 import Testimonial from "./pages/Testimonial.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
+import OnBoardingPartner from "./pages/OnBoardingPartner.jsx";
 
 const App = () => {
   return (
@@ -39,6 +40,7 @@ const App = () => {
           <Route path="/customers" element={<Customers />} />
           <Route path="/builders" element={<Builders />} />
           <Route path="/salespersons" element={<SalesPerson />} />
+          <Route path="/onboardingpartner" element={<OnBoardingPartner />} />
           <Route path="/auctionmembers" element={<AuctionMembers />} />
           <Route path="/employees" element={<Employee />} />
           <Route path="/role" element={<Role />} />

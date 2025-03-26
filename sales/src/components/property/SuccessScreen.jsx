@@ -1,6 +1,6 @@
 import React from 'react'
 import { MdDone } from "react-icons/md";
-import { useAuth } from '../store/auth';
+import { useAuth } from '../../store/auth';
 
 function SuccessScreen() {
   const { setShowSuccess } = useAuth();

@@ -22,6 +22,7 @@ export default function IndivisualHouse() {
   const [properties, setProperties] = useState([]);
   const { URI } = useAuth();
   const [filteredProperties, setFilteredProperties] = useState(properties);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -50,6 +51,14 @@ export default function IndivisualHouse() {
 
     setFilteredProperties(filtered);
   };
+  useEffect(() => {
+      setFilteredProperties(properties); // Show all properties initially
+    }, [properties]);
+  
+    const filteredData = filteredProperties.filter(
+      (item) =>
+        item.property_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   const fetchLocationByCity = async () => {
     try {
@@ -157,6 +166,8 @@ export default function IndivisualHouse() {
             type="text"
             placeholder="Search..."
             className=" focus:outline-none text-sm sm:text-base"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="flex flex-wrap gap-2 sm:gap-5 bg-white">
@@ -168,7 +179,7 @@ export default function IndivisualHouse() {
             >
               <option value="">Select City</option>
               {allCity?.map((city) => (
-                <option value={city.city} key={city}>
+                <option value={city.city} key={city.city}>
                   {city.city.charAt(0).toUpperCase() + city.city.slice(1)}
                 </option>
               ))}
@@ -216,11 +227,11 @@ export default function IndivisualHouse() {
 
       {/* Properties Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 py-4 sm:p-5">
-        {filteredProperties.length > 0 ? (
-          filteredProperties.map((property) => (
+        {filteredData.length > 0 ? (
+          filteredData.map((property) => (
             <Link
               to={`/property-info/${property.propertyid}`}
-              key={property.id}
+              key={property.propertyid}
               className="group rounded-lg shadow-md bg-white hover:bg-[#076300] overflow-hidden"
             >
               <img

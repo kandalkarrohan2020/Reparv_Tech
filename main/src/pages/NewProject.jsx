@@ -22,7 +22,8 @@ export default function NewProject() {
   const [properties, setProperties] = useState([]);
   const { URI } = useAuth();
   const [filteredProperties, setFilteredProperties] = useState(properties);
-  
+  const [searchTerm, setSearchTerm] = useState("");
+
   const handleSearch = () => {
     const filtered = properties.filter((property) => {
       return (
@@ -31,12 +32,17 @@ export default function NewProject() {
         (budget ? property.sqft_price <= budget : true)
       );
     });
-  
+
     setFilteredProperties(filtered);
   };
   useEffect(() => {
     setFilteredProperties(properties); // Show all properties initially
   }, [properties]);
+
+  const filteredData = filteredProperties.filter(
+    (item) =>
+      item.property_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // *Fetch Data from API*
   const fetchData = async () => {
@@ -102,13 +108,16 @@ export default function NewProject() {
 
   const fetchLocationByCity = async () => {
     try {
-      const response = await fetch(URI + "/frontend/newproject/location/" + city, {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + "/frontend/newproject/location/" + city,
+        {
+          method: "GET",
+          credentials: "include", // ✅ Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to fetch properties.");
 
@@ -124,14 +133,13 @@ export default function NewProject() {
     fetchData();
     fetchAllCity();
     fetchLocation();
-    
   }, []);
 
-  useEffect(()=>{
-    if(city){
+  useEffect(() => {
+    if (city) {
       fetchLocationByCity();
     }
-  },[city]);
+  }, [city]);
 
   return (
     <div className="properties w-full max-w-[1400px] flex flex-col p-4 sm:py-6 sm:px-0 mx-auto">
@@ -151,6 +159,8 @@ export default function NewProject() {
             type="text"
             placeholder="Search..."
             className=" focus:outline-none text-sm sm:text-base"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="flex flex-wrap gap-2 sm:gap-5 bg-white">
@@ -162,7 +172,7 @@ export default function NewProject() {
             >
               <option value="">Select City</option>
               {allCity?.map((city) => (
-                <option value={city.city} key={city}>
+                <option value={city.city} key={city.city}>
                   {city.city.charAt(0).toUpperCase() + city.city.slice(1)}
                 </option>
               ))}
@@ -210,53 +220,56 @@ export default function NewProject() {
 
       {/* Properties Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 py-4 sm:p-5">
-        {filteredProperties.length > 0 ? (filteredProperties.map((property) => (
-          <Link
-            to={`/property-info/${property.propertyid}`}
-            key={property.id}
-            className="group rounded-lg shadow-md bg-white hover:bg-[#076300] overflow-hidden"
-          >
-            <img
-              src={`${URI}${property.image}`}
-              alt={property.name}
-              className=" object-cover h-[250px] w-full"
-            />
-            <div className="relative p-4">
-              {property.popular && (
-                <img
-                  src={populerTag}
-                  className="absolute top-[-15px] left-[-8px]"
-                ></img>
-              )}
-              <div className="w-full py-3 flex items-center justify-between">
-                <div className="flex flex-col justify-between gap-2 text-xl lg:text-2xl font-extrabold p-2">
-                  <div className="text-[#076300] group-hover:text-white flex items-center justify-start">
-                    <FaRupeeSign />
-                    <p> {property.sqft_price} </p>
+        {filteredData.length > 0 ? (
+          filteredData.map((property) => (
+            <Link
+              to={`/property-info/${property.propertyid}`}
+              key={property.propertyid}
+              className="group rounded-lg shadow-md bg-white hover:bg-[#076300] overflow-hidden"
+            >
+              <img
+                src={`${URI}${property.image}`}
+                alt={property.name}
+                className=" object-cover h-[250px] w-full"
+              />
+              <div className="relative p-4">
+                {property.popular && (
+                  <img
+                    src={populerTag}
+                    className="absolute top-[-15px] left-[-8px]"
+                  ></img>
+                )}
+                <div className="w-full py-3 flex items-center justify-between">
+                  <div className="flex flex-col justify-between gap-2 text-xl lg:text-2xl font-extrabold p-2">
+                    <div className="text-[#076300] group-hover:text-white flex items-center justify-start">
+                      <FaRupeeSign />
+                      <p> {property.sqft_price} </p>
+                    </div>
+                    <h2 className="text-[#000929] group-hover:text-white ml-1">
+                      {property.property_name}
+                    </h2>
                   </div>
-                  <h2 className="text-[#000929] group-hover:text-white ml-1">
-                    {property.property_name}
-                  </h2>
+                  <div
+                    className={`likeBtn w-12 h-12 mr-4 flex items-center justify-center border border-[#E8E6F9] rounded-full bg-white ${
+                      property.like === true
+                        ? "text-[#076300]"
+                        : "text-[#E8E6F9]"
+                    } `}
+                  >
+                    <FaHeart />
+                  </div>
                 </div>
-                <div
-                  className={`likeBtn w-12 h-12 mr-4 flex items-center justify-center border border-[#E8E6F9] rounded-full bg-white ${
-                    property.like === true ? "text-[#076300]" : "text-[#E8E6F9]"
-                  } `}
-                >
-                  <FaHeart />
+
+                <div className="address text-[10px] md:text-xs lg:text-base font-normal px-3">
+                  <p className="text-[#808080] group-hover:text-[#e2e2e2]">
+                    {property.location}, {property.city}
+                  </p>
                 </div>
-              </div>
 
-              <div className="address text-[10px] md:text-xs lg:text-base font-normal px-3">
-                <p className="text-[#808080] group-hover:text-[#e2e2e2]">
-                  {property.location}, {property.city}
-                </p>
-              </div>
+                <hr className="text-[#F0EFFB] my-3" />
 
-              <hr className="text-[#F0EFFB] my-3" />
-
-              <div className="flex justify-between text-xs md:text-sm text-[#808080] group-hover:text-[#e2e2e2] mt-2 px-2">
-                {/*<div className="flex items-center justify-start gap-2">
+                <div className="flex justify-between text-xs md:text-sm text-[#808080] group-hover:text-[#e2e2e2] mt-2 px-2">
+                  {/*<div className="flex items-center justify-start gap-2">
                                         {
                                           //<MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
                                         }
@@ -267,15 +280,15 @@ export default function NewProject() {
                                         {property.baths} Bathrooms
                                       </div>
                                       */}
-                <div className="flex items-center justify-start gap-2">
-                  <FaDiamond className="text-[#076300] group-hover:text-white w-3 h-3" />
-                  {property.area} Sq.ft Area
+                  <div className="flex items-center justify-start gap-2">
+                    <FaDiamond className="text-[#076300] group-hover:text-white w-3 h-3" />
+                    {property.area} Sq.ft Area
+                  </div>
                 </div>
               </div>
-            </div>
-          </Link>
-        ))) : (
-
+            </Link>
+          ))
+        ) : (
           <h1 className="text-2xl font-bold m-4">No Properties Found</h1>
         )}
       </div>
@@ -283,7 +296,6 @@ export default function NewProject() {
       {/* Customer Review */}
       <div className="w-full h-[1px] mt-5 bg-[#00000033] "></div>
       <VideoReviewSection />
-      
     </div>
   );
 }

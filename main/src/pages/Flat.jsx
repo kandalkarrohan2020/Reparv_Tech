@@ -22,6 +22,7 @@ export default function Flat() {
   const [properties, setProperties] = useState([]);
   const { URI } = useAuth();
   const [filteredProperties, setFilteredProperties] = useState(properties);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -50,19 +51,23 @@ export default function Flat() {
 
     setFilteredProperties(filtered);
   };
+  useEffect(() => {
+    setFilteredProperties(properties); // Show all properties initially
+  }, [properties]);
+
+  const filteredData = filteredProperties.filter((item) =>
+    item.property_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const fetchLocationByCity = async () => {
     try {
-      const response = await fetch(
-        URI + "/frontend/flat/location/" + city,
-        {
-          method: "GET",
-          credentials: "include", // ✅ Ensures cookies are sent
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(URI + "/frontend/flat/location/" + city, {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) throw new Error("Failed to fetch properties.");
 
@@ -154,6 +159,8 @@ export default function Flat() {
             type="text"
             placeholder="Search..."
             className=" focus:outline-none text-sm sm:text-base"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="flex flex-wrap gap-2 sm:gap-5 bg-white">
@@ -165,7 +172,7 @@ export default function Flat() {
             >
               <option value="">Select City</option>
               {allCity?.map((city) => (
-                <option value={city.city} key={city}>
+                <option value={city.city} key={city.city}>
                   {city.city.charAt(0).toUpperCase() + city.city.slice(1)}
                 </option>
               ))}
@@ -213,8 +220,8 @@ export default function Flat() {
 
       {/* Properties Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 py-4 sm:p-5">
-        {filteredProperties.length > 0 ? (
-          filteredProperties.map((property) => (
+        {filteredData.length > 0 ? (
+          filteredData.map((property) => (
             <Link
               to={`/property-info/${property.propertyid}`}
               key={property.propertyid}

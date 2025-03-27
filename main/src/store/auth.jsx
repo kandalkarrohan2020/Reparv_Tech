@@ -4,6 +4,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
 
+const [loading, setLoading] = useState(false);
 const [isActive, setIsActive] = useState(false);
 const [showInquiryForm, setShowInquiryForm] = useState(false);
 const [showSuccess, setShowSuccess] = useState(false);
@@ -16,7 +17,7 @@ return <AuthContext.Provider
         isActive, setIsActive,
         showInquiryForm, setShowInquiryForm,
         showSuccess, setShowSuccess,
-        URI,
+        URI, loading, setLoading,
     }
 }>
     {children}

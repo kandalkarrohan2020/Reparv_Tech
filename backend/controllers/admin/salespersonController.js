@@ -64,7 +64,6 @@ export const add = (req, res) => {
     !address ||
     !city ||
     !experience ||
-    !rerano ||
     !adharno ||
     !panno
   ) {
@@ -152,7 +151,6 @@ export const edit = (req, res) => {
     !address ||
     !city ||
     !experience ||
-    !rerano ||
     !adharno ||
     !panno
   ) {

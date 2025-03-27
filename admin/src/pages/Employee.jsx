@@ -7,6 +7,7 @@ import { IoMdClose } from "react-icons/io";
 import EmployeeFilter from "../components/employee/EmployeeFilter";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
+import Loader from "../components/Loader";
 
 const Employee = () => {
   const {
@@ -16,7 +17,7 @@ const Employee = () => {
     giveAccess,
     setGiveAccess,
     token,
-    URI,
+    URI, loading, setLoading,
   } = useAuth();
   const [datas, setDatas] = useState([]);
   const [roleData, setRoleData] = useState([]);
@@ -140,10 +141,11 @@ const Employee = () => {
 
   const add = async (e) => {
     e.preventDefault();
-
+   
     const endpoint = newEmployee.id ? `edit/${newEmployee.id}` : "add";
 
     try {
+      setLoading(true);
       const response = await fetch(`${URI}/admin/employees/${endpoint}`, {
         method: newEmployee.id ? "PUT" : "POST",
         credentials: "include",
@@ -184,6 +186,9 @@ const Employee = () => {
     } catch (err) {
       console.error("Error saving employee:", err);
     }
+    finally {
+      setLoading(false);
+    }
   };
   //fetch data on form
   const edit = async (id) => {
@@ -208,6 +213,8 @@ const Employee = () => {
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this employee?"))
       return;
+
+    
     try {
       const response = await fetch(URI + `/admin/employees/delete/${id}`, {
         method: "DELETE",
@@ -224,6 +231,9 @@ const Employee = () => {
       }
     } catch (error) {
       console.error("Error deleting :", error);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -261,6 +271,7 @@ const Employee = () => {
       return;
 
     try {
+      setLoading(true);
       const response = await fetch(
         URI + `/admin/employees/assignlogin/${selectedEmployeeId}`,
         {
@@ -286,6 +297,8 @@ const Employee = () => {
       fetchData();
     } catch (error) {
       console.error("Error deleting :", error);
+    } finally{
+      setLoading(false);
     }
   };
 
@@ -646,6 +659,7 @@ const Employee = () => {
                 >
                   Save
                 </button>
+                <Loader/>
               </div>
             </form>
           </div>
@@ -721,6 +735,7 @@ const Employee = () => {
               >
                 Give Access
               </button>
+              <Loader></Loader>
             </div>
           </form>
         </div>

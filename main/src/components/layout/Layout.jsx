@@ -15,10 +15,10 @@ import { useNavigate } from "react-router-dom";
 import SuccessScreen from "../SuccessScreen";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
-
+import Loader from "../Loader";
 
 function Layout() {
-  const { showInquiryForm, setShowInquiryForm, showSuccess, setShowSuccess, URI } =
+  const { showInquiryForm, setShowInquiryForm, showSuccess, setShowSuccess, URI, setLoading } =
     useAuth();
   const { id } = useParams();
   const location = useLocation();
@@ -51,7 +51,7 @@ function Layout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    setLoading(true);
     try {
       const response = await fetch(`${URI}/frontend/enquiry/add`, {
         method: "POST",
@@ -84,6 +84,8 @@ function Layout() {
   
     } catch (err) {
       console.error("Error saving enquiry:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -502,6 +504,7 @@ function Layout() {
                 >
                   Submit
                 </button>
+                <Loader></Loader>
               </div>
             </form>
           </div>

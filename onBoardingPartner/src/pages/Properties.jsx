@@ -8,6 +8,7 @@ import AddButton from "../components/AddButton";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
+import Loader from "../components/Loader";
 
 const Properties = () => {
   const {
@@ -17,7 +18,7 @@ const Properties = () => {
     setShowUploadImagesForm,
     showAdditionalInfoForm,
     setShowAdditionalInfoForm,
-    URI,
+    URI, setLoading,
   } = useAuth();
   const [datas, setDatas] = useState([]);
   const [propertyTypeData, setPropertyTypeData] = useState([]);
@@ -102,7 +103,6 @@ const Properties = () => {
   };
   */
 
-
   //Fetch Data
   const fetchData = async () => {
     try {
@@ -123,7 +123,7 @@ const Properties = () => {
 
   const add = async (e) => {
     e.preventDefault();
-
+    
     const formData = new FormData();
     formData.append("builderid", newProperty.builderid);
     formData.append("propertytypeid", newProperty.propertytypeid);
@@ -141,6 +141,7 @@ const Properties = () => {
     }
 
     try {
+      setLoading(true);
       const response = await fetch(`${URI}/partner/properties/add`, {
         method: "POST",
         credentials: "include",
@@ -152,9 +153,7 @@ const Properties = () => {
       } else if (!response.ok) {
         throw new Error(`Failed to save property. Status: ${response.status}`);
       } else {
-        alert(
-          "Property added successfully!"
-        );
+        alert("Property added successfully!");
       }
 
       // Clear form after successful response
@@ -175,6 +174,8 @@ const Properties = () => {
       await fetchData(); // Ensure latest data is fetched
     } catch (err) {
       console.error("Error saving property:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -211,7 +212,7 @@ const Properties = () => {
 
   const addImages = async (e) => {
     e.preventDefault();
-
+    
     const formData = new FormData();
     formData.append("propertyid", propertyId);
     if (images && images.length > 0) {
@@ -221,6 +222,7 @@ const Properties = () => {
     }
 
     try {
+      setLoading(true);
       const response = await fetch(`${URI}/admin/properties/addimages`, {
         method: "POST",
         credentials: "include",
@@ -242,21 +244,28 @@ const Properties = () => {
     } catch (err) {
       console.error("Error saving property:", err);
     }
+  finally {
+    setLoading(false);
+  }
   };
 
   //additional info
   const openAdditionalInfo = async (id) => {
+    
     try {
-      const response = await fetch(URI + `/admin/properties/propertyinfo/${id}`, {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + `/admin/properties/propertyinfo/${id}`,
+        {
+          method: "GET",
+          credentials: "include", // ✅ Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch property.");
       const data = await response.json();
-      
+
       setNewAddInfo(data);
       setShowAdditionalInfoForm(true);
     } catch (err) {
@@ -266,12 +275,13 @@ const Properties = () => {
 
   const additionalInfo = async (e) => {
     e.preventDefault();
-
+    
     const endpoint = newAddInfo.propertyinfoid
       ? `editadditionalinfo/${newAddInfo.propertyinfoid}`
       : "additionalinfoadd";
 
     try {
+      setLoading(true);
       const response = await fetch(`${URI}/admin/properties/${endpoint}`, {
         method: newAddInfo.propertyinfoid ? "PUT" : "POST",
         credentials: "include",
@@ -313,6 +323,9 @@ const Properties = () => {
     } catch (err) {
       console.error("Error saving property:", err);
     }
+    finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -333,8 +346,14 @@ const Properties = () => {
     {
       name: "Image",
       cell: (row) => (
-        <div className={`w-full h-14 overflow-hidden flex items-center justify-center`}>
-          <img src={`${URI}${row.image}`} alt="Image" className="w-full h-[90%] object-cover" />
+        <div
+          className={`w-full h-14 overflow-hidden flex items-center justify-center`}
+        >
+          <img
+            src={`${URI}${row.image}`}
+            alt="Image"
+            className="w-full h-[90%] object-cover"
+          />
         </div>
       ),
     },
@@ -446,7 +465,12 @@ const Properties = () => {
 
         <h2 className="text-[16px] font-semibold">Properties List</h2>
         <div className="overflow-scroll scrollbar-hide">
-          <DataTable className="scrollbar-hide" columns={columns} data={filteredData} pagination />
+          <DataTable
+            className="scrollbar-hide"
+            columns={columns}
+            data={filteredData}
+            pagination
+          />
         </div>
       </div>
 
@@ -606,13 +630,19 @@ const Properties = () => {
               </label>
               <input
                 type="text"
-                required
                 placeholder="Enter Rera No."
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={newProperty.rerano}
-                onChange={(e) =>
-                  setPropertyData({ ...newProperty, rerano: e.target.value })
-                }
+                onChange={(e) => {
+                  const input = e.target.value;
+                  if (/^\d{0,10}$/.test(input)) {
+                    // Allows only up to 10 digits
+                    setPropertyData({
+                      ...newProperty,
+                      rerano: e.target.value,
+                    });
+                  }
+                }}
               />
             </div>
             <div className="w-full ">
@@ -662,7 +692,7 @@ const Properties = () => {
                 }
               />
             </div>
-            
+
             <div className="w-full ">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Video Link
@@ -723,7 +753,8 @@ const Properties = () => {
             </div>
             <div></div>
             <div className="flex h-10 mt-8 md:mt-6 justify-end gap-6">
-              <button type="button"
+              <button
+                type="button"
                 onClick={() => {
                   setShowPropertyForm(false);
                 }}
@@ -737,6 +768,7 @@ const Properties = () => {
               >
                 Save
               </button>
+              <Loader></Loader>
             </div>
           </form>
         </div>
@@ -830,6 +862,7 @@ const Properties = () => {
               >
                 Upload Images
               </button>
+              <Loader></Loader>
             </div>
           </form>
         </div>
@@ -996,7 +1029,8 @@ const Properties = () => {
               />
             </div>
             <div className="flex mt-8 md:mt-6 justify-end gap-6">
-              <button type="button"
+              <button
+                type="button"
                 onClick={() => {
                   setShowAdditionalInfoForm(false);
                 }}
@@ -1010,6 +1044,7 @@ const Properties = () => {
               >
                 Add Info
               </button>
+              <Loader></Loader>
             </div>
           </form>
         </div>

@@ -1,180 +1,34 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaRupeeSign } from "react-icons/fa";
 import { CiSearch } from "react-icons/ci";
 import card1 from "../assets/overview/card1.svg";
 import card2 from "../assets/overview/card2.svg";
 import card3 from "../assets/overview/card3.svg";
 import card4 from "../assets/overview/card4.svg";
-import { useNavigate } from "react-router-dom";
-import Paging from "../components/Paging";
 import CitySelector from "../components/CitySelector";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
+import DataTable from "react-data-table-component";
 
 function Overview() {
-  // const [user, setUser] = useState(null);
-  const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   axios.get("http://localhost:3000/api/v1/users/auth", { withCredentials: true })
-  //     .then(response => setUser(response.data.user))
-  //     .catch(() => navigate("/")); // Redirect to login if not authenticated
-  // }, [navigate]);
-
-  // if (!user) return <h2>Loading...</h2>;
-
-  const data = [
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 1",
-      deals: 1,
-      dealAmount: "₹942.00",
-      reparvShare: "₹942.00",
-      dealSqFt: "942 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 2",
-      deals: 2,
-      dealAmount: "₹881.00",
-      reparvShare: "₹881.00",
-      dealSqFt: "881 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 3",
-      deals: 3,
-      dealAmount: "₹409.00",
-      reparvShare: "₹409.00",
-      dealSqFt: "409 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 4",
-      deals: 4,
-      dealAmount: "₹953.00",
-      reparvShare: "₹953.00",
-      dealSqFt: "953 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 5",
-      deals: 5,
-      dealAmount: "₹907.00",
-      reparvShare: "₹907.00",
-      dealSqFt: "907 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 3",
-      deals: 3,
-      dealAmount: "₹409.00",
-      reparvShare: "₹409.00",
-      dealSqFt: "409 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 4",
-      deals: 4,
-      dealAmount: "₹953.00",
-      reparvShare: "₹953.00",
-      dealSqFt: "953 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 5",
-      deals: 5,
-      dealAmount: "₹907.00",
-      reparvShare: "₹907.00",
-      dealSqFt: "907 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 3",
-      deals: 3,
-      dealAmount: "₹409.00",
-      reparvShare: "₹409.00",
-      dealSqFt: "409 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 4",
-      deals: 4,
-      dealAmount: "₹953.00",
-      reparvShare: "₹953.00",
-      dealSqFt: "953 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 5",
-      deals: 5,
-      dealAmount: "₹907.00",
-      reparvShare: "₹907.00",
-      dealSqFt: "907 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 3",
-      deals: 3,
-      dealAmount: "₹409.00",
-      reparvShare: "₹409.00",
-      dealSqFt: "409 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 4",
-      deals: 4,
-      dealAmount: "₹953.00",
-      reparvShare: "₹953.00",
-      dealSqFt: "953 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 5",
-      deals: 5,
-      dealAmount: "₹907.00",
-      reparvShare: "₹907.00",
-      dealSqFt: "907 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 3",
-      deals: 3,
-      dealAmount: "₹409.00",
-      reparvShare: "₹409.00",
-      dealSqFt: "409 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 4",
-      deals: 4,
-      dealAmount: "₹953.00",
-      reparvShare: "₹953.00",
-      dealSqFt: "953 Sq. Ft.",
-    },
-    {
-      projectName: "Project Name",
-      builderName: "Builder Name 5",
-      deals: 5,
-      dealAmount: "₹907.00",
-      reparvShare: "₹907.00",
-      dealSqFt: "907 Sq. Ft.",
-    },
+  const [overviewData, setOverviewData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  const filteredData = overviewData?.filter(
+    (item) =>
+      item.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.builderName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.dealAmount.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const columns = [
+    { name: "SN", selector: (row, index) => index + 1, sortable: true },
+    { name: "Project Name", selector: (row) => row.projectName, sortable: true },
+    { name: "Builder Name", selector: (row) => row.builderName, sortable: true },
+    { name: "Deals", selector: (row) => row.deals, sortable: true },
+    { name: "Deal Amount", selector: (row) => row.dealAmount, sortable: true },
+    { name: "Reparv Share", selector: (row) => row.reparvShare, sortable: true },
+    { name: "Deal In SQFT", selector: (row) => row.dealInSqFt, sortable: true }
   ];
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  // Calculate total pages
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-
-  // Get data for the current page
-  const currentData = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-  const emptyRows = itemsPerPage - currentData.length;
-  
   return (
     <div className="overview overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
   
@@ -182,22 +36,22 @@ function Overview() {
         {[
           {
             label: "Total Deal Amount",
-            value: "30.6 Lac",
+            value: "00 Lac",
             icon: card1,
           },
           {
             label: "No. of Deal Done",
-            value: "7,265",
+            value: "00",
             icon: card2,
           },
           {
             label: "Reparv Share",
-            value: "70K",
+            value: "00",
             icon: card3,
           },
           {
             label: "Deal in Sq. Ft.",
-            value: "7,265 Sq. Ft.",
+            value: "00 Sq. Ft.",
             icon: card4,
           },
         ].map((card, index) => (
@@ -226,7 +80,7 @@ function Overview() {
             <CiSearch />
             <input
               type="text"
-              placeholder="Search Builder"
+              placeholder="Search"
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
             />
           </div>
@@ -239,88 +93,10 @@ function Overview() {
         </div>
         
         <div className="overflow-scroll scrollbar-hide">
-          <table className="overview-table w-[1188px] 2xl:w-full h-[320px] rounded-[16px]">
-            <thead>
-              <tr>
-                {[
-                  "Project Name",
-                  "Owner / Company Name",
-                  "No. of Deal Done",
-                  "Deal Done Amount",
-                  "Reparv Share (Amount)",
-                  "Deal Sq. Ft.",
-                ].map((header, index) => (
-                  <th
-                    key={index}
-                    className="py-[15px] px-[10px] text-left text-xs font-normal text-[#00000066]"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {currentData.map((row, index) => (
-                <tr key={index}>
-                  <td style={{width:"155px", height:"52px"}}
-                    className={`p-[15px] text-sm font-normal text-black ${
-                      index % 2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
-                    } `}
-                  >
-                    {row.projectName}
-                  </td>
-                  <td
-                    className={`p-[15px] text-sm font-normal text-black ${
-                      index % 2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
-                    } `}
-                  >
-                    {row.builderName}
-                  </td>
-                  <td
-                    className={`p-[15px] text-sm font-normal text-black ${
-                      index % 2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
-                    } `}
-                  >
-                    {row.deals}
-                  </td>
-                  <td
-                    className={`p-[15px] text-sm font-normal text-black ${
-                      index % 2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
-                    } `}
-                  >
-                    {row.dealAmount}
-                  </td>
-                  <td
-                    className={`p-[15px] text-sm font-normal text-black ${
-                      index % 2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
-                    } `}
-                  >
-                    {row.reparvShare}
-                  </td>
-                  <td
-                    className={`p-[15px] text-sm font-normal text-black ${
-                      index % 2 == 0 ? "bg-[#0000000A]" : "bg-[#00000003]"
-                    } `}
-                  >
-                    {row.dealSqFt}
-                  </td>
-                </tr>
-              ))}
-              {Array.from({ length: emptyRows }).map((_, index) => (
-                <tr key={`empty-${index}`}>
-                  <td colSpan={7} className="h-13"></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <DataTable className="scrollbar-hide" columns={columns} data={filteredData} pagination />
         </div>
+        
       </div>
-
-      <Paging
-        totalPages={totalPages}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
     </div>
   );
 }

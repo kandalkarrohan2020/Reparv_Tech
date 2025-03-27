@@ -4,6 +4,7 @@ import responsiveImage from "../assets/joinOurTeam/responsiveImage.svg";
 import axios from "axios";
 import { useState } from "react";
 import { useAuth } from "../store/auth";
+import Loader from "../components/Loader";
 
 import icon1 from "../assets/joinOurTeam/icon1.svg";
 import icon2 from "../assets/joinOurTeam/icon2.svg";
@@ -57,7 +58,7 @@ const benefits = [
 
 
 function JoinOurTeam() {
-  const { URI } = useAuth();
+  const { URI, setLoading } = useAuth();
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -73,6 +74,7 @@ function JoinOurTeam() {
   };
   
   const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     console.log(formData);
     try {
@@ -81,7 +83,7 @@ function JoinOurTeam() {
       setFormData({ firstname: "", lastname: "", email: "", phone: "", message: "" });
     } catch (error) {
       setResponseMessage(error.response?.data?.error || "Failed to submit form.");
-    }
+    } finally {setLoading(false);}
   };
   return (
     <div className="joinOurTeam w-full max-w-7xl mx-auto p-4 sm:p-6">
@@ -228,8 +230,8 @@ function JoinOurTeam() {
 
             <button type="submit" className="w-[200px] mx-auto bg-[#2ECD24] active:scale-95 text-white font-medium py-2 rounded-lg">
               Submit
-            </button>
-
+            </button> 
+            
             {responseMessage && <p className="text-center text-green-600 mt-2">{responseMessage}</p>}
           </form>
         </div>

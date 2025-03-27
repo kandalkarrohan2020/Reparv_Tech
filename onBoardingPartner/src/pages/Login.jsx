@@ -9,9 +9,18 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../store/auth";
 import Cookies from "js-cookie";
+import Loader from "../components/Loader";
 
 function Login() {
-  const {user, setUser, accessToken, storeTokenInCookie, isLoggedIn, URI} = useAuth();
+  const {
+    user,
+    setUser,
+    accessToken,
+    storeTokenInCookie,
+    isLoggedIn,
+    URI,
+    setLoading,
+  } = useAuth();
   const [isPasswordShow, setIsPasswordShow] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -24,6 +33,7 @@ function Login() {
 
   const userLogin = async (e) => {
     e.preventDefault();
+    
     setErrorMessage(""); // Reset error message
 
     if (!username || !password) {
@@ -31,9 +41,10 @@ function Login() {
       return;
     }
 
-    const url = URI+"/partner/login"; // Ensure correct API URL
+    const url = URI + "/partner/login"; // Ensure correct API URL
 
     try {
+      setLoading(true);
       const response = await axios.post(
         url,
         { username, password },
@@ -45,7 +56,7 @@ function Login() {
 
       if (response.data.token) {
         console.log("Login Successful", response.data);
-        localStorage.setItem("user",JSON.stringify(response.data.user));
+        localStorage.setItem("user", JSON.stringify(response.data.user));
         storeTokenInCookie(response.data.token);
         navigate("/overview", { replace: true });
       } else {
@@ -55,6 +66,8 @@ function Login() {
       setErrorMessage(
         error.response?.data?.message || "Login failed. Please try again."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,7 +88,10 @@ function Login() {
       {/* Right Section */}
       <div className="w-full md:w-1/2 h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#0BB501] to-[#076300] rounded-tl-[20px] md:rounded-l-[20px] relative p-4">
         <div className="w-full max-w-[364px] bg-white shadow-md rounded-[12px] py-[24px] px-[32px] flex flex-col items-start gap-[22px]">
-          <h2 className="text-[26px] font-bold text-black">Login..!</h2>
+          <div className="w-full flex items-center justify-between gap-2">
+            <h2 className="text-[26px] font-bold text-black">Login..!</h2>
+            <Loader></Loader>
+          </div>
           <p className="text-[18px] font-normal text-black">
             Enter Your Login Credentials
           </p>

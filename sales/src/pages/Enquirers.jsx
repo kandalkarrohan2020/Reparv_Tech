@@ -7,6 +7,7 @@ import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import { useAuth } from "../store/auth";
+import Loader from "../components/Loader";
 
 const Enquirers = () => {
   const {
@@ -67,7 +68,7 @@ const Enquirers = () => {
   // change status record
   const changeEnquiryStatus = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     if (enquiryStatus === "Visit Scheduled") {
       if (!visitDate || !visitRemark) {
         return alert("All Fields Are Required!");
@@ -94,6 +95,8 @@ const Enquirers = () => {
         }
       } catch (error) {
         console.error("Error while Add Visit Scheduled:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -125,12 +128,14 @@ const Enquirers = () => {
             paymenttype: "",
             dealamount: "",
             remark: "",
-          })
+          });
         } else {
           alert(`Error: ${data.message}`);
         }
       } catch (error) {
         console.error("Error while Add Token:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -159,6 +164,8 @@ const Enquirers = () => {
         }
       } catch (error) {
         console.error("Error while Add Follow Up Remark:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -187,6 +194,8 @@ const Enquirers = () => {
         }
       } catch (error) {
         console.error("Error while Add Cancelled Remark:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -221,6 +230,8 @@ const Enquirers = () => {
       }
     } catch (error) {
       console.error("Error changing status:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -368,7 +379,12 @@ const Enquirers = () => {
         </div>
         <h2 className="text-[16px] font-semibold">Enquirer List</h2>
         <div className="overflow-scroll scrollbar-hide">
-          <DataTable className="scrollbar-hide" columns={columns} data={filteredData} pagination />
+          <DataTable
+            className="scrollbar-hide"
+            columns={columns}
+            data={filteredData}
+            pagination
+          />
         </div>
       </div>
 
@@ -628,6 +644,7 @@ const Enquirers = () => {
               >
                 Set Status
               </button>
+              <Loader></Loader>
             </div>
           </form>
         </div>

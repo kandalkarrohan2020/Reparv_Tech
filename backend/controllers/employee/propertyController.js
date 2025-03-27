@@ -44,7 +44,7 @@ export const add = (req, res) => {
   // Check if an image was uploaded
   const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
 
-  if (!builderid || !propertytypeid || !property_name || !address || !city || !location || !rerano || !area || !sqft_price) {
+  if (!builderid || !propertytypeid || !property_name || !address || !city || !location || !area || !sqft_price) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -96,7 +96,6 @@ export const update = (req, res) => {
     !address ||
     !city ||
     !location ||
-    !rerano ||
     !area ||
     !sqft_price
   ) {

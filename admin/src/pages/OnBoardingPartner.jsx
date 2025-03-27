@@ -8,12 +8,13 @@ import FilterData from "../components/FilterData";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
+import Loader from "../components/Loader";
 
 const OnBoardingPartner = () => {
   const {
     showPartnerForm,
     setShowPartnerForm,
-    URI,
+    URI, setLoading,
     giveAccess,
     setGiveAccess,
   } = useAuth();
@@ -81,7 +82,8 @@ const OnBoardingPartner = () => {
 
   const add = async (e) => {
     e.preventDefault();
-
+  
+  
     const formData = new FormData();
     Object.entries(newPartner).forEach(([key, value]) => {
       formData.append(key, value);
@@ -94,6 +96,7 @@ const OnBoardingPartner = () => {
       : "add";
 
     try {
+      setLoading(true);
       const response = await fetch(`${URI}/admin/partner/${endpoint}`, {
         method: newPartner.partnerid ? "PUT" : "POST",
         credentials: "include",
@@ -127,6 +130,9 @@ const OnBoardingPartner = () => {
     } catch (err) {
       console.error("Error saving Sales Person:", err);
     }
+    finally {
+      setLoading(false);
+    }
   };
 
   //fetch data on form
@@ -153,8 +159,9 @@ const OnBoardingPartner = () => {
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this Partner?"))
       return;
-
+   
     try {
+      setLoading(true);
       const response = await fetch(URI + `/admin/partner/delete/${id}`, {
         method: "DELETE",
         credentials: "include", // ✅ Ensures cookies are sent
@@ -172,6 +179,9 @@ const OnBoardingPartner = () => {
       }
     } catch (error) {
       console.error("Error deleting On boarding Partner:", error);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -203,6 +213,7 @@ const OnBoardingPartner = () => {
 
   // Assign login record
   const assignLogin = async (e) => {
+    
     e.preventDefault();
     if (
       !window.confirm(
@@ -210,8 +221,10 @@ const OnBoardingPartner = () => {
       )
     )
       return;
-
+    
+   
     try {
+      setLoading(true);
       const response = await fetch(
         URI + `/admin/partner/assignlogin/${partnerId}`,
         {
@@ -237,6 +250,9 @@ const OnBoardingPartner = () => {
       fetchData();
     } catch (error) {
       console.error("Error deleting :", error);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -531,10 +547,10 @@ const OnBoardingPartner = () => {
                 placeholder="Enter Pan Number"
                 value={newPartner.panno}
                 onChange={(e) => {
-                  setNewPartner({
-                    ...newPartner,
-                    panno: e.target.value,
-                  });
+                  const input = e.target.value.toUpperCase(); // Convert to uppercase
+                  if (/^[A-Z0-9]{0,10}$/.test(input)) {
+                    setNewPartner({ ...newPartner, panno: input });
+                  }
                 }}
                 className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -645,6 +661,7 @@ const OnBoardingPartner = () => {
               >
                 Save
               </button>
+              <Loader></Loader>
             </div>
           </form>
         </div>
@@ -723,6 +740,7 @@ const OnBoardingPartner = () => {
               >
                 Give Access
               </button>
+              <Loader></Loader>
             </div>
           </form>
         </div>

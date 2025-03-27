@@ -8,6 +8,7 @@ import AddButton from "../components/AddButton";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
+import Loader from "../components/Loader";
 
 const Properties = () => {
   const {
@@ -17,7 +18,7 @@ const Properties = () => {
     setShowUploadImagesForm,
     showAdditionalInfoForm,
     setShowAdditionalInfoForm,
-    URI,
+    URI, loading, setLoading,
   } = useAuth();
   const [datas, setDatas] = useState([]);
   const [propertyTypeData, setPropertyTypeData] = useState([]);
@@ -105,6 +106,7 @@ const Properties = () => {
 
   //Fetch Data
   const fetchData = async () => {
+    setLoading(true);
     try {
       const response = await fetch(URI + "/admin/properties", {
         method: "GET",
@@ -119,11 +121,14 @@ const Properties = () => {
     } catch (err) {
       console.error("Error fetching :", err);
     }
+    finally {
+      setLoading(false);
+    }
   };
 
   const add = async (e) => {
     e.preventDefault();
-
+    
     const formData = new FormData();
     formData.append("builderid", newProperty.builderid);
     formData.append("propertytypeid", newProperty.propertytypeid);
@@ -145,6 +150,7 @@ const Properties = () => {
       : "add";
 
     try {
+      setLoading(true);
       const response = await fetch(`${URI}/admin/properties/${endpoint}`, {
         method: newProperty.propertyid ? "PUT" : "POST",
         credentials: "include",
@@ -182,6 +188,9 @@ const Properties = () => {
     } catch (err) {
       console.error("Error saving property:", err);
     }
+    finally {
+      setLoading(false);
+    }
   };
 
   //fetch data on form
@@ -205,8 +214,9 @@ const Properties = () => {
 
   // Delete record
   const del = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this property?"))
-      return;
+    
+    if (!window.confirm("Are you sure you want to delete this property?")) return;
+
     try {
       const response = await fetch(URI + `/admin/properties/delete/${id}`, {
         method: "DELETE",
@@ -223,6 +233,8 @@ const Properties = () => {
       }
     } catch (error) {
       console.error("Error deleting :", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -306,6 +318,7 @@ const Properties = () => {
   };
 
   const addImages = async (e) => {
+    
     e.preventDefault();
 
     const formData = new FormData();
@@ -317,6 +330,7 @@ const Properties = () => {
     }
 
     try {
+      setLoading(true);
       const response = await fetch(`${URI}/admin/properties/addimages`, {
         method: "POST",
         credentials: "include",
@@ -328,6 +342,7 @@ const Properties = () => {
       } else if (!response.ok) {
         throw new Error(`Failed to save property. Status: ${response.status}`);
       } else {
+        setLoading(false);
         alert("Images Uploaded Successfully!");
       }
 
@@ -338,6 +353,10 @@ const Properties = () => {
     } catch (err) {
       console.error("Error saving property:", err);
     }
+    finally {
+      setLoading(false);
+    }
+    
   };
 
   //additional info
@@ -362,12 +381,13 @@ const Properties = () => {
 
   const additionalInfo = async (e) => {
     e.preventDefault();
-
+   
     const endpoint = newAddInfo.propertyinfoid
       ? `editadditionalinfo/${newAddInfo.propertyinfoid}`
       : "additionalinfoadd";
 
     try {
+      setLoading(true);
       const response = await fetch(`${URI}/admin/properties/${endpoint}`, {
         method: newAddInfo.propertyinfoid ? "PUT" : "POST",
         credentials: "include",
@@ -388,7 +408,6 @@ const Properties = () => {
             : "Additional Info added successfully!"
         );
       }
-
       // Clear form only after a successful response
       setNewAddInfo({
         propertyid: "",
@@ -408,6 +427,9 @@ const Properties = () => {
       await fetchData(); // Ensure latest data is fetched
     } catch (err) {
       console.error("Error saving property:", err);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -718,13 +740,15 @@ const Properties = () => {
               </label>
               <input
                 type="text"
-                required
                 placeholder="Enter Rera No."
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={newProperty.rerano}
-                onChange={(e) =>
-                  setPropertyData({ ...newProperty, rerano: e.target.value })
-                }
+                onChange={(e) => {
+                  const input = e.target.value.toUpperCase(); // Convert to uppercase
+                  if (/^[A-Z0-9]{0,10}$/.test(input)) {
+                    setPropertyData({ ...newProperty, rerano: input });
+                  }
+                }}
               />
             </div>
             <div className="w-full ">
@@ -849,6 +873,7 @@ const Properties = () => {
               >
                 Save
               </button>
+              <Loader />
             </div>
           </form>
         </div>
@@ -942,6 +967,7 @@ const Properties = () => {
               >
                 Upload Images
               </button>
+              <Loader />
             </div>
           </form>
         </div>
@@ -1122,6 +1148,7 @@ const Properties = () => {
               >
                 Add Info
               </button>
+              <Loader />
             </div>
           </form>
         </div>

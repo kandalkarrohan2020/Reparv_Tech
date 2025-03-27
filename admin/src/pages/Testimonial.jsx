@@ -6,9 +6,10 @@ import AddButton from "../components/AddButton";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
+import Loader from "../components/Loader";
 
 const Testimonial = () => {
-  const { showFeedbackForm, setShowFeedbackForm, URI } = useAuth();
+  const { showFeedbackForm, setShowFeedbackForm, URI, setLoading } = useAuth();
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [newFeedback, setNewFeedback] = useState({
@@ -36,10 +37,11 @@ const Testimonial = () => {
 
   const addOrUpdate = async (e) => {
     e.preventDefault();
-
+   
     const endpoint = newFeedback.id ? `edit/${newFeedback.id}` : "add";
 
     try {
+      setLoading(true);
       const response = await fetch(`${URI}/admin/testimonial/${endpoint}`, {
         method: newFeedback.id ? "PUT" : "POST",
         credentials: "include",
@@ -74,6 +76,9 @@ const Testimonial = () => {
     } catch (err) {
       console.error("Error saving employee:", err);
     }
+    finally {
+      setLoading(false);
+    }
   };
   //fetch data on form
   const edit = async (id) => {
@@ -98,7 +103,6 @@ const Testimonial = () => {
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this Feedback?"))
       return;
-
     try {
       const response = await fetch(URI + `/admin/testimonial/delete/${id}`, {
         method: "DELETE",
@@ -115,6 +119,9 @@ const Testimonial = () => {
       }
     } catch (error) {
       console.error("Error deleting :", error);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -332,6 +339,7 @@ const Testimonial = () => {
               >
                 Add Testimonial
               </button>
+              <Loader></Loader>
             </div>
           </form>
         </div>

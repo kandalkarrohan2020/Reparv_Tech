@@ -64,10 +64,8 @@ export const add = (req, res) => {
     !address ||
     !city ||
     !location ||
-    !rerano ||
     !area ||
-    !sqft_price ||
-    !videourl
+    !sqft_price
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }

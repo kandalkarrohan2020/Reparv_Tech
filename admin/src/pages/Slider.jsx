@@ -6,9 +6,10 @@ import AddButton from "../components/AddButton";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
+import Loader from "../components/Loader";
 
 const Slider = () => {
-  const { showSliderForm, setShowSliderForm, URI } = useAuth();
+  const { showSliderForm, setShowSliderForm, URI, setLoading } = useAuth();
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -45,7 +46,7 @@ const Slider = () => {
   //Add Images
   const addImages = async (e) => {
     e.preventDefault();
-
+    
     const formData = new FormData();
     if (images && images.length > 0) {
       images.forEach((image) => {
@@ -54,6 +55,7 @@ const Slider = () => {
     }
 
     try {
+      setLoading(true);
       const response = await fetch(`${URI}/admin/slider/addimages`, {
         method: "POST",
         credentials: "include",
@@ -73,13 +75,16 @@ const Slider = () => {
     } catch (err) {
       console.error("Error saving Slider Images:", err);
     }
+    finally {
+      setLoading(false);
+    }
   };
 
   // Delete Image
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this Slider Image?"))
       return;
-
+  
     try {
       const response = await fetch(URI + `/admin/slider/delete/${id}`, {
         method: "DELETE",
@@ -96,6 +101,9 @@ const Slider = () => {
       }
     } catch (error) {
       console.error("Error deleting :", error);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -315,6 +323,7 @@ const Slider = () => {
               >
                 Upload Images
               </button>
+              <Loader></Loader>
             </div>
           </form>
         </div>

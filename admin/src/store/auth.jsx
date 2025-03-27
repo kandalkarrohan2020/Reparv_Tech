@@ -19,6 +19,7 @@ const delTokenInCookie = () => {
 //const URI = "http://localhost:3000";
 const URI = "https://api.reparv.in";
 
+const [loading, setLoading] = useState(false);
 const [showEplDetailsForm, setShowEplDetailsForm ] = useState(false);
 const [showBuilderForm, setShowBuilderForm ] = useState(false);
 const [showSalesForm, setShowSalesForm ] = useState(false);
@@ -44,7 +45,7 @@ const [showPartnerForm, setShowPartnerForm ] = useState(false);
 
 return <AuthContext.Provider
  value={
-    {   URI,
+    {   URI, loading, setLoading,
         isLoggedIn, storeTokenInCookie, delTokenInCookie,
         accessToken, setAccessToken,
         showEplDetailsForm,setShowEplDetailsForm,

@@ -7,6 +7,7 @@ import FilterData from "../components/FilterData";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
+import Loader from "../components/Loader";
 
 const Builders = () => {
   const {
@@ -15,7 +16,7 @@ const Builders = () => {
     action,
     giveAccess,
     setGiveAccess,
-    URI,
+    URI, loading, setLoading,
   } = useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -98,12 +99,13 @@ const Builders = () => {
 
   const add = async (e) => {
     e.preventDefault();
-
+    
     const endpoint = newBuilder.builderid
       ? `edit/${newBuilder.builderid}`
       : "add";
 
     try {
+      setLoading(true);
       const response = await fetch(`${URI}/admin/builders/${endpoint}`, {
         method: newBuilder.builderid ? "PUT" : "POST",
         credentials: "include",
@@ -142,6 +144,9 @@ const Builders = () => {
     } catch (err) {
       console.error("Error saving builder:", err);
     }
+    finally {
+      setLoading(false);
+    }
   };
 
   //fetch data on form
@@ -167,7 +172,6 @@ const Builders = () => {
   const del = async (builderid) => {
     if (!window.confirm("Are you sure you want to delete this builder?"))
       return;
-
     try {
       const response = await fetch(
         URI + `/admin/builders/delete/${builderid}`,
@@ -190,6 +194,9 @@ const Builders = () => {
       }
     } catch (error) {
       console.error("Error deleting Builder:", error);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -231,6 +238,7 @@ const Builders = () => {
       return;
 
     try {
+      setLoading(true);
       const response = await fetch(
         URI + `/admin/builders/assignlogin/${selectedBuilderId}`,
         {
@@ -475,7 +483,7 @@ const Builders = () => {
                   onChange={(e) => {
                     const input = e.target.value;
                     if (/^\d{0,10}$/.test(input)) {
-                      // Allows only up to 12 digits
+                      // Allows only up to 10 digits
                       setNewBuilder({ ...newBuilder, contact: input });
                     }
                   }}
@@ -595,6 +603,7 @@ const Builders = () => {
                 >
                   Save
                 </button>
+                <Loader />
               </div>
             </form>
           </div>

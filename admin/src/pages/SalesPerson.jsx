@@ -8,9 +8,10 @@ import FilterData from "../components/FilterData";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
+import Loader from "../components/Loader";
 
 const SalesPerson = () => {
-  const { showSalesForm, setShowSalesForm, URI, giveAccess, setGiveAccess } =
+  const { showSalesForm, setShowSalesForm, URI, giveAccess, setGiveAccess, setLoading } =
     useAuth();
 
   const [datas, setDatas] = useState([]);
@@ -77,7 +78,7 @@ const SalesPerson = () => {
 
   const add = async (e) => {
     e.preventDefault();
-  
+    
     const formData = new FormData();
     Object.entries(newSalesPerson).forEach(([key, value]) => {
       formData.append(key, value);
@@ -90,6 +91,7 @@ const SalesPerson = () => {
       : "add";
   
     try {
+      setLoading(true);
       const response = await fetch(`${URI}/admin/salespersons/${endpoint}`, {
         method: newSalesPerson.salespersonsid ? "PUT" : "POST",
         credentials: "include",
@@ -124,6 +126,9 @@ const SalesPerson = () => {
     } catch (err) {
       console.error("Error saving Sales Person:", err);
     }
+    finally {
+      setLoading(false);
+    }
   };
 
   //fetch data on form
@@ -150,7 +155,7 @@ const SalesPerson = () => {
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this Sales Person?"))
       return;
-
+   
     try {
       const response = await fetch(URI + `/admin/salespersons/delete/${id}`, {
         method: "DELETE",
@@ -170,7 +175,11 @@ const SalesPerson = () => {
     } catch (error) {
       console.error("Error deleting Sales Person:", error);
     }
+    finally {
+      setLoading(false);
+    }
   };
+
 
   // change status record
   const status = async (id) => {
@@ -211,8 +220,9 @@ const SalesPerson = () => {
       )
     )
       return;
-
+    
     try {
+      setLoading(true);
       const response = await fetch(
         URI + `/admin/salespersons/assignlogin/${salesPersonId}`,
         {
@@ -238,6 +248,9 @@ const SalesPerson = () => {
       fetchData();
     } catch (error) {
       console.error("Error deleting :", error);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -435,10 +448,11 @@ const SalesPerson = () => {
                 placeholder="Enter Contact Number"
                 value={newSalesPerson.contact}
                 onChange={(e) => {
-                  setNewSalesPerson({
-                    ...newSalesPerson,
-                    contact: e.target.value,
-                  });
+                  const input = e.target.value;
+                    if (/^\d{0,10}$/.test(input)) {
+                      // Allows only up to 10 digits
+                      setNewSalesPerson({ ...newSalesPerson, contact: input });
+                    }
                 }}
                 className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -502,15 +516,14 @@ const SalesPerson = () => {
                 RERA Number
               </label>
               <input
-                type="number"
-                required
+                type="text"
                 placeholder="Enter Rera Number"
                 value={newSalesPerson.rerano}
                 onChange={(e) => {
-                  setNewSalesPerson({
-                    ...newSalesPerson,
-                    rerano: e.target.value,
-                  });
+                  const input = e.target.value.toUpperCase(); // Convert to uppercase
+                  if (/^[A-Z0-9]{0,10}$/.test(input)) {
+                    setNewSalesPerson({ ...newSalesPerson, rerano: input });
+                  }
                 }}
                 className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -520,15 +533,16 @@ const SalesPerson = () => {
                 Adhar Card Number
               </label>
               <input
-                type="number"
+                type="text"
                 required
                 placeholder="Enter Adhar Number"
                 value={newSalesPerson.adharno}
                 onChange={(e) => {
-                  setNewSalesPerson({
-                    ...newSalesPerson,
-                    adharno: e.target.value,
-                  });
+                  const input = e.target.value;
+                    if (/^\d{0,12}$/.test(input)) {
+                      // Allows only up to 12 digits
+                      setNewSalesPerson({ ...newSalesPerson, adharno: input });
+                    }
                 }}
                 className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -539,15 +553,15 @@ const SalesPerson = () => {
                 Pan Card Number
               </label>
               <input
-                type="number"
+                type="text"
                 required
                 placeholder="Enter Pan Number"
                 value={newSalesPerson.panno}
                 onChange={(e) => {
-                  setNewSalesPerson({
-                    ...newSalesPerson,
-                    panno: e.target.value,
-                  });
+                  const input = e.target.value.toUpperCase(); // Convert to uppercase
+                  if (/^[A-Z0-9]{0,10}$/.test(input)) {
+                    setNewSalesPerson({ ...newSalesPerson, panno: input });
+                  }
                 }}
                 className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -658,6 +672,7 @@ const SalesPerson = () => {
               >
                 Save
               </button>
+              <Loader></Loader>
             </div>
           </form>
         </div>
@@ -736,6 +751,7 @@ const SalesPerson = () => {
               >
                 Give Access
               </button>
+              <Loader></Loader>
             </div>
           </form>
         </div>

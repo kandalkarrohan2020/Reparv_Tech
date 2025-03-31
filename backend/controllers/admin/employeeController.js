@@ -1,6 +1,7 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 import bcrypt from "bcryptjs";
+import sendEmail from "../../utils/nodeMailer.js";
 
 const saltRounds = 10;
 // **Fetch All **
@@ -149,36 +150,64 @@ export const status = (req, res) => {
 
 // assign login to employee
 export const assignLogin = async (req, res) => {
-  
-  const { username,password } = req.body;
-  const Id = parseInt(req.params.id);
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-  if (isNaN(Id)) {
-    return res.status(400).json({ message: "Invalid Employee ID" });
-  }
+  try {
+    const { username, password } = req.body;
+    const Id = parseInt(req.params.id);
 
-  db.query("SELECT * FROM employees WHERE id = ?", [Id], (err, result) => {
-    if (err) {  
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    } 
-    if (result.length === 0) {      
-      return res.status(404).json({ message: "Employee not found" });
-    } else {
-      let loginstatus='';
-    if (result[0].loginstatus === 'Active') {
-      loginstatus='Inactive';
-    }else{
-      loginstatus='Active';
+    if (isNaN(Id)) {
+      return res.status(400).json({ message: "Invalid Employee ID" });
     }
-    
-      db.query("UPDATE employees SET loginstatus = ?, username = ?, password = ? WHERE id = ?", [loginstatus, username, hashedPassword, Id], (err,result) => {
+
+    // Hash the password securely
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Fetch salesperson details first
+    db.query(
+      "SELECT * FROM employees WHERE id = ?",
+      [Id],
+      (err, result) => {
         if (err) {
-          console.error("Error deleting :", err);
-          return res.status(500).json({ message: "Database error", error: err });
+          console.error("Database error:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
         }
-        res.status(200).json({ message: "Employee login assigned successfully" });
-      });
-    }
-  });
+
+        if (result.length === 0) {
+          return res.status(404).json({ message: "Sales Person not found" });
+        }
+
+        // Store original email before updating the database
+        const email = result[0].email;
+        const role = result[0].roleid;
+        let loginstatus =
+          result[0].loginstatus === "Active" ? "Inactive" : "Active";
+
+        // Update salesperson details
+        db.query(
+          "UPDATE employees SET loginstatus = ?, username = ?, password = ? WHERE id = ?",
+          [loginstatus, username, hashedPassword, Id],
+          (updateErr, updateResult) => {
+            if (updateErr) {
+              console.error("Error updating salesperson:", updateErr);
+              return res
+                .status(500)
+                .json({ message: "Database error", error: updateErr });
+            }
+
+            // Send email after successful update
+            sendEmail(email, username, password, role);
+
+            res
+              .status(200)
+              .json({ message: "Employee login assigned successfully" });
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error("Error assigning login:", error);
+    res.status(500).json({ message: "Internal server error", error });
+  }
 };
+

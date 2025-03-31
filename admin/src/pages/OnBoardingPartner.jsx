@@ -27,6 +27,7 @@ const OnBoardingPartner = () => {
   const [newPartner, setNewPartner] = useState({
     fullname: "",
     contact: "",
+    email: "",
     address: "",
     city: "",
     experience: "",
@@ -117,6 +118,7 @@ const OnBoardingPartner = () => {
         setNewPartner({
           fullname: "",
           contact: "",
+          email: "",
           address: "",
           city: "",
           experience: "",
@@ -272,6 +274,7 @@ const OnBoardingPartner = () => {
     { name: "SN", selector: (row, index) => index + 1, sortable: true },
     { name: "Full Name", selector: (row) => row.fullname, sortable: true },
     { name: "Contact", selector: (row) => row.contact, sortable: true },
+    { name: "Email", selector: (row) => row.email, sortable: true },
     { name: "Experience", selector: (row) => row.experience, sortable: true },
     { name: "Adhar No", selector: (row) => row.adharno, sortable: true },
     { name: "PAN No", selector: (row) => row.panno, sortable: true },
@@ -458,6 +461,24 @@ const OnBoardingPartner = () => {
                       }
                 }}
                 className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Email
+              </label>
+              <input
+                type="email"
+                required
+                placeholder="Enter Email"
+                value={newPartner.email}
+                onChange={(e) => {
+                  setNewPartner({
+                    ...newPartner,
+                    email: e.target.value,
+                  });
+                }}
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="w-full">

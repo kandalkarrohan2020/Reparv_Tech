@@ -1,6 +1,7 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 import bcrypt from "bcryptjs";
+import sendEmail from "../../utils/nodeMailer.js";
 
 const saltRounds = 10;
 // **Fetch All **
@@ -17,7 +18,8 @@ export const getAll = (req, res) => {
 
 // **Fetch All**
 export const getAllActive = (req, res) => {
-  const sql = "SELECT * FROM salespersons WHERE status = 'Active' ORDER BY salespersonsid DESC";
+  const sql =
+    "SELECT * FROM salespersons WHERE status = 'Active' ORDER BY salespersonsid DESC";
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching:", err);
@@ -50,6 +52,7 @@ export const add = (req, res) => {
   const {
     fullname,
     contact,
+    email,
     address,
     city,
     experience,
@@ -61,6 +64,7 @@ export const add = (req, res) => {
   if (
     !fullname ||
     !contact ||
+    !email ||
     !address ||
     !city ||
     !experience ||
@@ -80,7 +84,7 @@ export const add = (req, res) => {
 
   const checkSql = `SELECT * FROM salespersons WHERE contact = ? OR adharno = ?`;
 
-  db.query(checkSql, [contact, adharno], (checkErr, checkResult) => {
+  db.query(checkSql, [contact, adharno, email], (checkErr, checkResult) => {
     if (checkErr) {
       console.error("Error checking existing salesperson:", checkErr);
       return res
@@ -89,22 +93,21 @@ export const add = (req, res) => {
     }
 
     if (checkResult.length > 0) {
-      return res
-        .status(409)
-        .json({
-          message:
-            "Sales person already exists with this contact or Aadhaar number",
-        });
+      return res.status(409).json({
+        message:
+          "Sales person already exists with this contact or Aadhaar number",
+      });
     }
   });
-  const sql = `INSERT INTO salespersons (fullname, contact, address, city, experience, rerano, adharno, panno, adharimage, panimage, updated_at, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO salespersons (fullname, contact, email, address, city, experience, rerano, adharno, panno, adharimage, panimage, updated_at, created_at) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(
     sql,
     [
       fullname,
       contact,
+      email,
       address,
       city,
       experience,
@@ -121,12 +124,10 @@ export const add = (req, res) => {
         console.error("Error inserting :", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
-      res
-        .status(201)
-        .json({
-          message: "Sales person added successfully",
-          Id: result.insertId,
-        });
+      res.status(201).json({
+        message: "Sales person added successfully",
+        Id: result.insertId,
+      });
     }
   );
 };
@@ -136,6 +137,7 @@ export const edit = (req, res) => {
   const {
     fullname,
     contact,
+    email,
     address,
     city,
     experience,
@@ -148,6 +150,7 @@ export const edit = (req, res) => {
   if (
     !fullname ||
     !contact ||
+    !email ||
     !address ||
     !city ||
     !experience ||
@@ -166,40 +169,43 @@ export const edit = (req, res) => {
     : null;
   const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
 
-    let updateSql = `UPDATE salespersons SET fullname = ?, contact = ?, address = ?, city = ?, experience = ?, rerano = ?, adharno = ?, panno = ?, updated_at = ?`;
-    const updateValues = [
-      fullname,
-      contact,
-      address,
-      city,
-      experience,
-      rerano,
-      adharno,
-      panno,
-      currentdate,
-    ];
+  let updateSql = `UPDATE salespersons SET fullname = ?, contact = ?, email = ?, address = ?, city = ?, experience = ?, rerano = ?, adharno = ?, panno = ?, updated_at = ?`;
+  const updateValues = [
+    fullname,
+    contact,
+    email,
+    address,
+    city,
+    experience,
+    rerano,
+    adharno,
+    panno,
+    currentdate,
+  ];
 
-    if (adharImageUrl) {
-      updateSql += `, adharimage = ?`;
-      updateValues.push(adharImageUrl);
+  if (adharImageUrl) {
+    updateSql += `, adharimage = ?`;
+    updateValues.push(adharImageUrl);
+  }
+
+  if (panImageUrl) {
+    updateSql += `, panimage = ?`;
+    updateValues.push(panImageUrl);
+  }
+
+  updateSql += ` WHERE salespersonsid = ?`;
+  updateValues.push(salespersonsid);
+
+  db.query(updateSql, updateValues, (updateErr, result) => {
+    if (updateErr) {
+      console.error("Error updating salesperson:", updateErr);
+      return res
+        .status(500)
+        .json({ message: "Database error during update", error: updateErr });
     }
 
-    if (panImageUrl) {
-      updateSql += `, panimage = ?`;
-      updateValues.push(panImageUrl);
-    }
-
-    updateSql += ` WHERE salespersonsid = ?`;
-    updateValues.push(salespersonsid);
-
-    db.query(updateSql, updateValues, (updateErr, result) => {
-      if (updateErr) {
-        console.error("Error updating salesperson:", updateErr);
-        return res.status(500).json({ message: "Database error during update", error: updateErr });
-      }
-
-      res.status(200).json({ message: "Sales person updated successfully" });
-    });
+    res.status(200).json({ message: "Sales person updated successfully" });
+  });
 };
 
 // **Delete **
@@ -285,36 +291,62 @@ export const status = (req, res) => {
 };
 
 export const assignLogin = async (req, res) => {
-  
-  const { username,password } = req.body;
-  const Id = parseInt(req.params.id);
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-  if (isNaN(Id)) {
-    return res.status(400).json({ message: "Invalid Employee ID" });
-  }
+  try {
+    const { username, password } = req.body;
+    const Id = parseInt(req.params.id);
 
-  db.query("SELECT * FROM salespersons WHERE salespersonsid = ?", [Id], (err, result) => {
-    if (err) {  
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    } 
-    if (result.length === 0) {      
-      return res.status(404).json({ message: "Sales Person not found" });
-    } else {
-      let loginstatus='';
-    if (result[0].loginstatus === 'Active') {
-      loginstatus='Inactive';
-    }else{
-      loginstatus='Active';
+    if (isNaN(Id)) {
+      return res.status(400).json({ message: "Invalid ID" });
     }
-    
-      db.query("UPDATE salespersons SET loginstatus = ?, username = ?, password = ? WHERE salespersonsid = ?", [loginstatus, username, hashedPassword, Id], (err,result) => {
+
+    // Hash the password securely
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Fetch salesperson details first
+    db.query(
+      "SELECT * FROM salespersons WHERE salespersonsid = ?",
+      [Id],
+      (err, result) => {
         if (err) {
-          console.error("Error deleting :", err);
-          return res.status(500).json({ message: "Database error", error: err });
+          console.error("Database error:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
         }
-        res.status(200).json({ message: "Sales Person login assigned successfully" });
-      });
-    }
-  });
+
+        if (result.length === 0) {
+          return res.status(404).json({ message: "Sales Person not found" });
+        }
+
+        // Store original email before updating the database
+        const email = result[0].email;
+        let loginstatus =
+          result[0].loginstatus === "Active" ? "Inactive" : "Active";
+
+        // Update salesperson details
+        db.query(
+          "UPDATE salespersons SET loginstatus = ?, username = ?, password = ? WHERE salespersonsid = ?",
+          [loginstatus, username, hashedPassword, Id],
+          (updateErr, updateResult) => {
+            if (updateErr) {
+              console.error("Error updating salesperson:", updateErr);
+              return res
+                .status(500)
+                .json({ message: "Database error", error: updateErr });
+            }
+
+            // Send email after successful update
+            sendEmail(email, username, password, "Sales Person");
+
+            res
+              .status(200)
+              .json({ message: "Sales Person login assigned successfully" });
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error("Error assigning login:", error);
+    res.status(500).json({ message: "Internal server error", error });
+  }
 };

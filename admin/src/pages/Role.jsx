@@ -8,9 +8,10 @@ import AddButton from "../components/AddButton";
 import { IoMdClose } from "react-icons/io";
 import EmployeeFilter from "../components/employee/EmployeeFilter";
 import DataTable  from "react-data-table-component";
+import Loader from "../components/Loader";
 
 const Role = () => {
-  const { showRoleForm, setShowRoleForm, action, URI } = useAuth();
+  const { showRoleForm, setShowRoleForm, action, URI, setLoading } = useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [newRole, setNewRole] = useState({ roleid: "",role: "" });
@@ -39,6 +40,7 @@ const Role = () => {
       
     const endpoint = newRole.roleid ? `edit/${newRole.roleid}` : "add";
     try {
+      setLoading(true);
       const response = await fetch(URI+`/admin/roles/${endpoint}`, {
         method: action === "update" ? "PUT" : "POST",
         credentials: "include",
@@ -62,6 +64,8 @@ const Role = () => {
       fetchData();
     } catch (err) {
       console.error("Error saving :", err);
+    } finally {
+      setLoading(false);
     }
   };
   
@@ -246,6 +250,7 @@ const Role = () => {
                   >
                     {action}
                   </button>
+                  <Loader></Loader>
               </div>
             </form>
            

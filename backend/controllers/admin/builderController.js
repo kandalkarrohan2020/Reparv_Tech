@@ -1,6 +1,7 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 import bcrypt from "bcryptjs";
+import sendEmail from "../../utils/nodeMailer.js";
 
 const saltRounds = 10;
 
@@ -156,34 +157,57 @@ export const status = (req, res) => {
   });
 };
 
-// **Assign Login to Builder**
+// ** Assign Login to Builder **
 export const assignLogin = async (req, res) => {
-  const { username, password } = req.body;
-  const Id = parseInt(req.params.id);
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  try {
+    const { username, password } = req.body;
+    const Id = parseInt(req.params.id);
 
-  if (isNaN(Id)) {
-    return res.status(400).json({ message: "Invalid Builder ID" });
-  }
-
-  db.query("SELECT * FROM builders WHERE builderid = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
+    if (isNaN(Id)) {
+      return res.status(400).json({ message: "Invalid Builder ID" });
     }
 
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Builder not found" });
-    }
+    const hashedPassword = await bcrypt.hash(password, saltRounds); 
 
-    const newLoginStatus = result[0].loginstatus === "Active" ? "Inactive" : "Active";
+    db.query(
+      "SELECT * FROM builders WHERE builderid = ?",
+      [Id],
+      (err, result) => {
+        if (err) {
+          console.error("Database error:", err);
+          return res.status(500).json({ message: "Database error", error: err });
+        }
+        if (result.length === 0) {
+          return res.status(404).json({ message: "Builder not found" });
+        }
 
-    db.query("UPDATE builders SET loginstatus = ?, username = ?, password = ? WHERE builderid = ?", [newLoginStatus, username, hashedPassword, Id], (err) => {
-      if (err) {
-        console.error("Error assigning login:", err);
-        return res.status(500).json({ message: "Database error", error: err });
+        let loginstatus = result[0].loginstatus === "Active" ? "Inactive" : "Active";
+        const email = result[0].email; 
+
+        db.query(
+          "UPDATE builders SET loginstatus = ?, username = ?, password = ? WHERE builderid = ?",
+          [loginstatus, username, hashedPassword, Id],
+          (err, updateResult) => {
+            if (err) {
+              console.error("Error updating record:", err);
+              return res.status(500).json({ message: "Database error", error: err });
+            }
+
+            // Send email after successful update
+            sendEmail(email, username, password, "Builder")
+              .then(() => {
+                res.status(200).json({ message: "Builder login assigned successfully and email sent." });
+              })
+              .catch((emailError) => {
+                console.error("Error sending email:", emailError);
+                res.status(500).json({ message: "Login updated but email failed to send." });
+              });
+          }
+        );
       }
-      res.status(200).json({ message: `Builder login assigned successfully, status changed to ${newLoginStatus}` });
-    });
-  });
+    );
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    res.status(500).json({ message: "Unexpected server error", error });
+  }
 };

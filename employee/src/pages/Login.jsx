@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import ReparvMainLogo from "../assets/layout/reparvMainLogo.svg";
 import LoginLeftIMG from "../assets/login/LoginLeftIMG.svg";
 import LoginLine from "../assets/login/LoginLine.png";
-import { FaEnvelope, FaLock } from "react-icons/fa";
+import { FaUser, FaLock } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { IoMdEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
@@ -11,11 +11,11 @@ import { useAuth } from "../store/auth";
 import Cookies from "js-cookie";
 
 function Login() {
-  const {user, setUser, accessToken, storeTokenInCookie, isLoggedIn, URI} = useAuth();
+  const { user, setUser, storeTokenInCookie, URI } = useAuth();
   const [isPasswordShow, setIsPasswordShow] = useState(false);
-  const [email, setEmail] = useState("");
+  const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // ✅ State for error messages
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,17 +26,17 @@ function Login() {
     e.preventDefault();
     setErrorMessage(""); // Reset error message
 
-    if (!email || !password) {
+    if (!emailOrUsername || !password) {
       setErrorMessage("All fields are required.");
       return;
     }
 
-    const url = URI+"/employee/login"; // Ensure correct API URL
+    const url = `${URI}/employee/login`; // Ensure correct API URL
 
     try {
       const response = await axios.post(
         url,
-        { email, password },
+        { emailOrUsername, password }, // ✅ Sending emailOrUsername instead of email
         {
           withCredentials: true,
           headers: { "Content-Type": "application/json" },
@@ -45,9 +45,9 @@ function Login() {
 
       if (response.data.token) {
         console.log("Login Successful", response.data);
-        localStorage.setItem("user",JSON.stringify(response.data.user));
+        localStorage.setItem("user", JSON.stringify(response.data.user));
         storeTokenInCookie(response.data.token);
-        navigate("/overview",{replace:true});
+        navigate("/overview", { replace: true });
       } else {
         setErrorMessage("Invalid login credentials.");
       }
@@ -80,17 +80,17 @@ function Login() {
             Enter Your Login Credentials
           </p>
 
-          {/* ✅ Show Error Message */}
+          {/* Show Error Message */}
           {errorMessage && (
             <p className="text-red-500 text-sm">{errorMessage}</p>
           )}
 
-          {/* Email Input */}
+          {/* Email or Username Input */}
           <div className="group w-full max-w-[300px] h-[60px] flex items-center border border-black/20 rounded-full px-[26px] focus-within:border-[#0BB501]">
-            <FaEnvelope className="text-black/20 w-[20px] h-[20px] mr-[10px] group-focus-within:text-[#0BB501]" />
+            <FaUser className="text-black/20 w-[20px] h-[20px] mr-[10px] group-focus-within:text-[#0BB501]" />
             <input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={emailOrUsername}
+              onChange={(e) => setEmailOrUsername(e.target.value)}
               type="text"
               required
               placeholder="Email Address OR Username"
@@ -122,7 +122,7 @@ function Login() {
             )}
           </div>
 
-          {/* ✅ Login Button */}
+          {/*  Login Button */}
           <button
             onClick={userLogin}
             className="w-full max-w-[300px] h-[53px] bg-[#0BB501] text-white rounded-full text-[16px] font-semibold transition hover:text-[#fffcfc] active:scale-95"

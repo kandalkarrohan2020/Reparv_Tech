@@ -8,7 +8,6 @@ const ActionSelect = ({
   statusAction,
   editAction,
   deleteAction,
-  approveAction,
 }) => {
   const [selectedAction, setSelectedAction] = useState("");
   const { setShowEplDetailsForm, setAction, setShowUploadImagesForm} = useAuth();
@@ -61,8 +60,6 @@ const ActionSelect = ({
           Select Action
         </option>
         <option value="status">Status</option>
-        <option value="approve">Approve</option>
-        <option value="upload">Upload Image</option>
         <option value="update">Update</option>
         <option value="delete">Delete</option>
       </select>

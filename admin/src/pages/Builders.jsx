@@ -54,49 +54,6 @@ const Builders = () => {
     }
   };
 
-  //Add or update record
-  const add2 = async (e) => {
-    e.preventDefault();
-
-    const endpoint = newBuilder.builderid
-      ? `edit/${newBuilder.builderid}`
-      : "add";
-    try {
-      const response = await fetch(URI + `/admin/builders/${endpoint}`, {
-        method: action === "Add" ? "POST" : "PUT",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newBuilder),
-      });
-
-      if (!response.ok) throw new Error("Failed to save builders.");
-
-      if (newBuilder.builderid) {
-        alert("Builder updated successfully!");
-      } else if (response.status === 202) {
-        alert("Builder already Exit!!");
-      } else {
-        alert("Builder added successfully!");
-      }
-
-      setNewBuilder({
-        company_name: "",
-        contact_person: "",
-        contact: "",
-        email: "",
-        office_address: "",
-        registration_no: "",
-        dor: "",
-        website: "",
-        notes: "",
-      });
-      setShowBuilderForm(false);
-      fetchData();
-    } catch (err) {
-      console.error("Error saving Builder:", err);
-    }
-  };
-
   const add = async (e) => {
     e.preventDefault();
     
@@ -264,6 +221,8 @@ const Builders = () => {
       fetchData();
     } catch (error) {
       console.error("Error deleting :", error);
+    } finally {
+      setLoading(false);
     }
   };
 

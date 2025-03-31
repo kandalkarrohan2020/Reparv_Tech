@@ -5,28 +5,35 @@ import db from "../../config/dbconnect.js";
 
 const router = express.Router();
 
-// ✅ User Login Route
+// ✅ User Login Route (Supports Email or Username)
 router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { emailOrUsername, password } = req.body;
 
-    if (!email || !password) {
+    if (!emailOrUsername || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // ✅ Use a Promise for db.query to avoid callback issues
+    // ✅ Query to check both email and username
     const user = await new Promise((resolve, reject) => {
-      db.query("SELECT * FROM employees INNER join roles ON roles.roleid = employees.roleid WHERE employees.email = ? and employees.status='Active' ", [email], (err, results) => {
-        if (err) reject({ status: 500, message: "Database error", error: err });
-        else if (results.length === 0) reject({ status: 401, message: "Invalid email or password" });
-        else resolve(results[0]);
-      });
+      db.query(
+        `SELECT * FROM employees 
+         INNER JOIN roles ON roles.roleid = employees.roleid 
+         WHERE (employees.email = ? OR employees.username = ?) 
+         AND employees.status='Active'`,
+        [emailOrUsername, emailOrUsername], // Bind both email and username
+        (err, results) => {
+          if (err) reject({ status: 500, message: "Database error", error: err });
+          else if (results.length === 0) reject({ status: 401, message: "Invalid Email | Username" });
+          else resolve(results[0]);
+        }
+      );
     });
 
-    // ✅ Compare password inside try-catch to handle errors properly
-    const isMatch = await bcrypt.compare(password, user?.password);
+    // ✅ Check if password matches
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Wrong Password try again! " });
     }
 
     // ✅ Generate JWT Token
@@ -34,10 +41,11 @@ router.post("/login", async (req, res) => {
       expiresIn: "10d",
     });
 
-    // ✅ Store session data properly
+    // ✅ Store session data
     req.session.user = {
       id: user.id,
       email: user.email,
+      username: user.username, // Store username as well
       name: user.name,
       contact: user.contact,
       role: user.role,
@@ -51,15 +59,13 @@ router.post("/login", async (req, res) => {
       maxAge: 10 * 24 * 60 * 60 * 1000,
     });
 
-    // ✅ Send successful response
     return res.json({
       message: "Login successful",
       token,
-      user: req.session.user, // Now properly stored
+      user: req.session.user,
     });
 
   } catch (error) {
-    // ✅ Handle database and login errors properly
     console.error("Login Error:", error);
     return res.status(error.status || 500).json({ message: error.message || "Internal server error" });
   }
@@ -81,9 +87,8 @@ router.post("/logout", (req, res) => {
     secure: true, 
     sameSite: "none" 
   });
-  console.log("Logout SuccessFully");
+  console.log("Logout Successfully");
   return res.json({ message: "Logout successful." });
 });
-
 
 export default router;

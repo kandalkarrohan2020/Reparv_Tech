@@ -1,6 +1,7 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 import bcrypt from "bcryptjs";
+import sendEmail from "../../utils/nodeMailer.js";
 
 const saltRounds = 10;
 // **Fetch All **
@@ -48,12 +49,13 @@ export const getById = (req, res) => {
 // **Add New **
 export const add = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { fullname, contact, address, city, experience, adharno, panno } =
+  const { fullname, contact, email, address, city, experience, adharno, panno } =
     req.body;
 
   if (
     !fullname ||
     !contact ||
+    !email ||
     !address ||
     !city ||
     !experience ||
@@ -71,9 +73,9 @@ export const add = (req, res) => {
     : null;
   const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
 
-  const checkSql = `SELECT * FROM onboardingpartner WHERE contact = ? OR adharno = ?`;
+  const checkSql = `SELECT * FROM onboardingpartner WHERE contact = ? OR adharno = ? OR email = ?`;
 
-  db.query(checkSql, [contact, adharno], (checkErr, checkResult) => {
+  db.query(checkSql, [contact, adharno, email], (checkErr, checkResult) => {
     if (checkErr) {
       console.error("Error checking existing Partner:", checkErr);
       return res
@@ -88,14 +90,15 @@ export const add = (req, res) => {
       });
     }
   });
-  const sql = `INSERT INTO onboardingpartner (fullname, contact, address, city, experience, adharno, panno, adharimage, panimage, updated_at, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO onboardingpartner (fullname, contact, email, address, city, experience, adharno, panno, adharimage, panimage, updated_at, created_at) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(
     sql,
     [
       fullname,
       contact,
+      email,
       address,
       city,
       experience,
@@ -125,12 +128,13 @@ export const edit = (req, res) => {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { fullname, contact, address, city, experience, adharno, panno } =
+  const { fullname, contact, email, address, city, experience, adharno, panno } =
     req.body;
 
   if (
     !fullname ||
     !contact ||
+    !email ||
     !address ||
     !city ||
     !experience ||
@@ -149,10 +153,11 @@ export const edit = (req, res) => {
     : null;
   const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
 
-  let updateSql = `UPDATE onboardingpartner SET fullname = ?, contact = ?, address = ?, city = ?, experience = ?, adharno = ?, panno = ?, updated_at = ?`;
+  let updateSql = `UPDATE onboardingpartner SET fullname = ?, contact = ?, email = ?, address = ?, city = ?, experience = ?, adharno = ?, panno = ?, updated_at = ?`;
   const updateValues = [
     fullname,
     contact,
+    email,
     address,
     city,
     experience,
@@ -269,47 +274,55 @@ export const status = (req, res) => {
 };
 
 export const assignLogin = async (req, res) => {
-  const { username, password } = req.body;
-  const Id = parseInt(req.params.id);
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-  if (isNaN(Id)) {
-    return res.status(400).json({ message: "Invalid Partner ID" });
-  }
+  try {
+    const { username, password } = req.body;
+    const Id = parseInt(req.params.id);
 
-  db.query(
-    "SELECT * FROM onboardingpartner WHERE partnerid = ?",
-    [Id],
-    (err, result) => {
-      if (err) {
-        console.error("Database error:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-      if (result.length === 0) {
-        return res.status(404).json({ message: "Partner not found" });
-      } else {
-        let loginstatus = "";
-        if (result[0].loginstatus === "Active") {
-          loginstatus = "Inactive";
-        } else {
-          loginstatus = "Active";
+    if (isNaN(Id)) {
+      return res.status(400).json({ message: "Invalid Partner ID" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10); // Use 10 as salt rounds
+
+    db.query(
+      "SELECT * FROM onboardingpartner WHERE partnerid = ?",
+      [Id],
+      (err, result) => {
+        if (err) {
+          console.error("Database error:", err);
+          return res.status(500).json({ message: "Database error", error: err });
         }
+        if (result.length === 0) {
+          return res.status(404).json({ message: "Partner not found" });
+        }
+
+        let loginstatus = result[0].loginstatus === "Active" ? "Inactive" : "Active";
+        const email = result[0].email; 
 
         db.query(
           "UPDATE onboardingpartner SET loginstatus = ?, username = ?, password = ? WHERE partnerid = ?",
           [loginstatus, username, hashedPassword, Id],
-          (err, result) => {
+          (err, updateResult) => {
             if (err) {
-              console.error("Error deleting :", err);
-              return res
-                .status(500)
-                .json({ message: "Database error", error: err });
+              console.error("Error updating record:", err);
+              return res.status(500).json({ message: "Database error", error: err });
             }
-            res
-              .status(200)
-              .json({ message: "Partner login assigned successfully" });
+
+            // Send email after successful update
+            sendEmail(email, username, password, "Onboarding Partner")
+              .then(() => {
+                res.status(200).json({ message: "Partner login assigned successfully and email sent." });
+              })
+              .catch((emailError) => {
+                console.error("Error sending email:", emailError);
+                res.status(500).json({ message: "Login updated but email failed to send." });
+              });
           }
         );
       }
-    }
-  );
+    );
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    res.status(500).json({ message: "Unexpected server error", error });
+  }
 };

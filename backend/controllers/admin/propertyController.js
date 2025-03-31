@@ -71,8 +71,8 @@ export const add = (req, res) => {
   }
 
   db.query(
-    "SELECT * FROM properties WHERE rerano = ?",
-    [rerano],
+    "SELECT * FROM properties WHERE propertyid = ?",
+    [Id],
     (err, result) => {
       if (err)
         return res.status(500).json({ message: "Database error", error: err });

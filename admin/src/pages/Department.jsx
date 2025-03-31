@@ -8,9 +8,10 @@ import AddButton from "../components/AddButton";
 import { IoMdClose } from "react-icons/io";
 import EmployeeFilter from "../components/employee/EmployeeFilter";
 import DataTable  from "react-data-table-component";
+import Loader from "../components/Loader";
 
 const Department = () => {
-  const { showDepartmentForm, setShowDepartmentForm, action, URI} = useAuth();
+  const { showDepartmentForm, setShowDepartmentForm, action, URI, setLoading} = useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [newDepartment, setNewDepartment] = useState({ departmentid:"",department: "" });
@@ -40,6 +41,7 @@ const Department = () => {
     const endpoint = newDepartment.departmentid ? `edit/${newDepartment.departmentid}` : "add";
     
     try {
+      setLoading(true);
       const response = await fetch(URI+`/admin/departments/${endpoint}`, {
         method: action === "update" ? "PUT" : "POST",
         credentials: "include",
@@ -63,6 +65,9 @@ const Department = () => {
       fetchData();
     } catch (err) {
       console.error("Error saving :", err);
+    } 
+    finally {
+      setLoading(false);
     }
   };
   
@@ -245,6 +250,7 @@ const Department = () => {
                 >
                   {action}
                 </button>
+                <Loader></Loader>
               </div>
             </form>
           </div>

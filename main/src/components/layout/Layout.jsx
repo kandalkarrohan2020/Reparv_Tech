@@ -18,8 +18,14 @@ import { useParams } from "react-router-dom";
 import Loader from "../Loader";
 
 function Layout() {
-  const { showInquiryForm, setShowInquiryForm, showSuccess, setShowSuccess, URI, setLoading } =
-    useAuth();
+  const {
+    showInquiryForm,
+    setShowInquiryForm,
+    showSuccess,
+    setShowSuccess,
+    URI,
+    setLoading,
+  } = useAuth();
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -28,9 +34,9 @@ function Layout() {
     return location.pathname === path ? "font-semibold text-[#0BB501]" : "";
   };
 
-  useEffect(()=>{
-     setFormData({...formData, propertyid: id});
-  },[showInquiryForm])
+  useEffect(() => {
+    setFormData({ ...formData, propertyid: id });
+  }, [showInquiryForm]);
 
   //Inquiry Form Data
   const [formData, setFormData] = useState({
@@ -48,7 +54,6 @@ function Layout() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -61,14 +66,14 @@ function Layout() {
         },
         body: JSON.stringify(formData), // Convert object to JSON
       });
-  
+
       if (!response.ok) {
         throw new Error(`Failed to save property. Status: ${response.status}`);
       } else {
         setShowSuccess(true);
         setShowInquiryForm(false);
       }
-  
+
       // Clear form after success
       setFormData({
         ...formData,
@@ -81,7 +86,6 @@ function Layout() {
         location: "",
         message: "",
       });
-  
     } catch (err) {
       console.error("Error saving enquiry:", err);
     } finally {
@@ -458,27 +462,24 @@ function Layout() {
                     <option value="">Select City</option>
                     <option value="Nagpur">Nagpur</option>
                     <option value="Chandrapur">Chandrapur</option>
-                    <option value="Amaravati">Amaravati</option>
+                    <option value="Wardha">Wardha</option>
                   </select>
                 </div>
 
                 <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
-                  <label htmlFor="city" className="ml-1">
+                  <label htmlFor="location" className="ml-1">
                     Select Location
                   </label>
-                  <select
+                  <input
+                    type="text"
                     name="location"
                     id="location"
+                    placeholder="Enter Location"
                     value={formData.location}
                     onChange={handleChange}
                     className="w-full font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
                     required
-                  >
-                    <option value="">Select Location</option>
-                    <option value="Nagpur">Anand Nagar</option>
-                    <option value="Chandrapur">Ram Nagar</option>
-                    <option value="Amaravati">Adarsh Nagar</option>
-                  </select>
+                  />
                 </div>
               </div>
 

@@ -2,7 +2,10 @@ import express from "express";
 import {
   getAll,
   getById,
+  getImages,
   add,
+  update,
+  deleteImages,
   addImages,
   additionalInfoAdd,
   propertyInfo,
@@ -35,7 +38,10 @@ const upload = multer({
 
 router.get("/", getAll);
 router.get("/:id", getById);
+router.get("/images/:id", getImages);
+router.delete("/images/delete/:id", deleteImages);
 router.post("/add", upload.single("image"), add);
+router.put("/edit/:id", upload.single("image"), update);
 router.post("/addimages",upload.array("images[]"), addImages);
 router.post("/additionalinfoadd", additionalInfoAdd);
 router.get("/propertyinfo/:id", propertyInfo);

@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { FaMapMarkerAlt, FaArrowLeft, FaArrowRight, FaHeart, FaRupeeSign } from "react-icons/fa";
+import {
+  FaMapMarkerAlt,
+  FaArrowLeft,
+  FaArrowRight,
+  FaHeart,
+  FaRupeeSign,
+} from "react-icons/fa";
 import { MdCurrencyRupee, MdOutlineKingBed } from "react-icons/md";
 import { BiBath } from "react-icons/bi";
 import { FaVectorSquare } from "react-icons/fa";
@@ -8,6 +14,7 @@ import { useAuth } from "../store/auth";
 import PropertyImageSlider from "../components/property/PropertyImageSlider";
 import OtherProperties from "../components/OtherProperties";
 import propertyPicture from "../assets/property/propertyPicture.svg";
+import SocialShare from "../components/SocialShare";
 
 export default function PropertyInfo() {
   const { id } = useParams();
@@ -35,11 +42,14 @@ export default function PropertyInfo() {
   // Fetch Property Images
   const fetchImages = async () => {
     try {
-      const response = await fetch(`${URI}/frontend/propertyinfo/getimages/${id}`, {
-        method: "GET",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await fetch(
+        `${URI}/frontend/propertyinfo/getimages/${id}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch property images.");
       const data = await response.json();
       setPropertyImages([...data]);
@@ -69,10 +79,14 @@ export default function PropertyInfo() {
       {/* Property Heading */}
       <div className="flex items-center justify-between p-4">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-base sm:text-xl font-semibold">{propertyInfo.property_name}</h1>
+          <h1 className="text-base sm:text-xl font-semibold">
+            {propertyInfo.property_name}
+          </h1>
           <div className="flex items-center text-xs gap-1 text-[#000000] border border-[#00000033] rounded-lg py-2 px-4">
             <FaMapMarkerAlt />
-            <span>{propertyInfo.location}, {propertyInfo.city}</span>
+            <span>
+              {propertyInfo.location}, {propertyInfo.city}
+            </span>
           </div>
         </div>
         <div className="w-[100px] flex flex-col items-start justify-center">
@@ -91,74 +105,107 @@ export default function PropertyInfo() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
         {/* Description */}
         <div className="flex flex-col gap-2 p-4 md:p-7 border border-[#00000033] rounded-lg">
-          <h2 className="text-lg font-semibold">Description</h2>
-          <p className="text-[#00000066] text-xs font-medium mt-2">{propertyInfo.description}</p>
+          <div className="w-full flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Description</h2>
+            <SocialShare url={window.location.href}></SocialShare>
+          </div>
+          <p className="text-[#00000066] text-xs font-medium mt-2">
+            {propertyInfo.description}
+          </p>
           <hr className="my-2" />
 
           {/* Property Details */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[#00000066] text-[12px] font-medium">
             <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
-                <p><b className="text-xs text-black">Wing</b> </p>
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]">
+                <p>
+                  <b className="text-xs text-black">Wing</b>{" "}
+                </p>
               </div>
-              <div className="w-[40%] flex items-center justify-center " >
+              <div className="w-[40%] flex items-center justify-center ">
                 <p className="text-black font-semibold">{propertyInfo.wing}</p>
               </div>
             </div>
             <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
-                <p><b className="text-xs text-black">Price</b> </p>
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]">
+                <p>
+                  <b className="text-xs text-black">Price</b>{" "}
+                </p>
               </div>
-              <div className="w-[40%] flex items-center justify-center " >
-                <p className="text-black font-semibold" >{propertyInfo.sqft_price} /sqft</p>
+              <div className="w-[40%] flex items-center justify-center ">
+                <p className="text-black font-semibold">
+                  {propertyInfo.sqft_price} /sqft
+                </p>
               </div>
             </div>
             <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
-                <p><b className="text-xs text-black">Floor</b> </p>
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]">
+                <p>
+                  <b className="text-xs text-black">Floor</b>{" "}
+                </p>
               </div>
-              <div className="w-[40%] flex items-center justify-center " >
+              <div className="w-[40%] flex items-center justify-center ">
                 <p className="text-black font-semibold">{propertyInfo.floor}</p>
               </div>
             </div>
             <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
-                <p><b className="text-xs text-black">Flat No</b> </p>
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]">
+                <p>
+                  <b className="text-xs text-black">Flat No</b>{" "}
+                </p>
               </div>
-              <div className="w-[40%] flex items-center justify-center " >
-                <p className="text-black font-semibold">{propertyInfo.flatno}</p>
+              <div className="w-[40%] flex items-center justify-center ">
+                <p className="text-black font-semibold">
+                  {propertyInfo.flatno}
+                </p>
               </div>
             </div>
             <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
-                <p><b className="text-xs text-black">Direction</b> </p>
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]">
+                <p>
+                  <b className="text-xs text-black">Direction</b>{" "}
+                </p>
               </div>
-              <div className="w-[40%] flex items-center justify-center " >
-                <p className="text-black font-semibold">{propertyInfo.direction}</p>
-              </div>
-            </div>
-            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
-                <p><b className="text-xs text-black">Carpet Area</b> </p>
-              </div>
-              <div className="w-[40%] flex items-center justify-center " >
-                <p className="text-black font-semibold">{propertyInfo.carpetarea}</p>
+              <div className="w-[40%] flex items-center justify-center ">
+                <p className="text-black font-semibold">
+                  {propertyInfo.direction}
+                </p>
               </div>
             </div>
             <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
-                <p><b className="text-xs text-black">Super Built-up</b> </p>
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]">
+                <p>
+                  <b className="text-xs text-black">Carpet Area</b>{" "}
+                </p>
               </div>
-              <div className="w-[40%] flex items-center justify-center " >
-                <p className="text-black font-semibold">{propertyInfo.superbuiltup}</p>
+              <div className="w-[40%] flex items-center justify-center ">
+                <p className="text-black font-semibold">
+                  {propertyInfo.carpetarea}
+                </p>
               </div>
             </div>
             <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]" >
-                <p><b className="text-xs text-black">Construction Age</b> </p>
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]">
+                <p>
+                  <b className="text-xs text-black">Super Built-up</b>{" "}
+                </p>
               </div>
-              <div className="w-[40%] flex items-center justify-center p-1 " >
-                <p className="text-black font-semibold">{propertyInfo.ageofconstruction}</p>
+              <div className="w-[40%] flex items-center justify-center ">
+                <p className="text-black font-semibold">
+                  {propertyInfo.superbuiltup}
+                </p>
+              </div>
+            </div>
+            <div className="w-full h-8 flex border-2 border-[#00000033] rounded-xl">
+              <div className="w-[60%] flex items-center justify-start pl-4 border-r border-[#00000033]">
+                <p>
+                  <b className="text-xs text-black">Construction Age</b>{" "}
+                </p>
+              </div>
+              <div className="w-[40%] flex items-center justify-center p-1 ">
+                <p className="text-black font-semibold">
+                  {propertyInfo.ageofconstruction}
+                </p>
               </div>
             </div>
           </div>
@@ -166,7 +213,9 @@ export default function PropertyInfo() {
 
         {/* Video Section */}
         <div className="flex flex-col gap-5 p-4 sm:p-6 border border-[#00000033] rounded-lg">
-          <h2 className="text-lg font-semibold">Key Features and Amenities | Watch Live</h2>
+          <h2 className="text-lg font-semibold">
+            Key Features and Amenities | Watch Live
+          </h2>
           <div className="w-full bg-white rounded-xl overflow-hidden border border-[#00000033]">
             {videoEmbedUrl ? (
               <iframe
@@ -183,7 +232,9 @@ export default function PropertyInfo() {
               <p>Video Not Found</p>
             )}
           </div>
-          <h2 className="text-lg font-semibold">{propertyInfo.property_name}</h2>
+          <h2 className="text-lg font-semibold">
+            {propertyInfo.property_name}
+          </h2>
         </div>
       </div>
 
@@ -200,7 +251,10 @@ export default function PropertyInfo() {
         <h2 className="text-lg md:text-2xl mx-auto text-black font-bold mb-4">
           Other Properties in this Project and Nearby
         </h2>
-        <OtherProperties propertyTypeId={propertyInfo.propertytypeid} key={propertyInfo.propertytypeid}/>
+        <OtherProperties
+          propertyTypeId={propertyInfo.propertytypeid}
+          key={propertyInfo.propertytypeid}
+        />
       </div>
     </div>
   );

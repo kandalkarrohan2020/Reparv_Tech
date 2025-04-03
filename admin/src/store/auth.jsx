@@ -22,7 +22,9 @@ const URI = "https://api.reparv.in";
 const [loading, setLoading] = useState(false);
 const [showEplDetailsForm, setShowEplDetailsForm ] = useState(false);
 const [showBuilderForm, setShowBuilderForm ] = useState(false);
+const [showBuilder, setShowBuilder ] = useState(false);
 const [showSalesForm, setShowSalesForm ] = useState(false);
+const [showSalesPerson, setShowSalesPerson ] = useState(false);
 const [showAuctionForm, setShowAuctionForm ] = useState(false);
 const [showPropertyForm, setShowPropertyForm ] = useState(false);
 const [showPropertyTypeForm, setShowPropertyTypeForm ] = useState(false);
@@ -37,10 +39,12 @@ const [showUploadImagesForm, setShowUploadImagesForm] = useState(false);
 const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
 const [showAssignSalesForm, setShowAssignSalesForm] = useState(false);
 const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
+const [showEnquiry, setShowEnquiry] = useState(false);
 const [showPropertyInfo, setShowPropertyInfo] = useState(false);
 const [showSliderForm, setShowSliderForm] = useState(false);
 const [showFeedbackForm, setShowFeedbackForm] = useState(false);
 const [showPartnerForm, setShowPartnerForm ] = useState(false);
+const [showPartner, setShowPartner ] = useState(false);
 
 return <AuthContext.Provider
  value={
@@ -51,7 +55,9 @@ return <AuthContext.Provider
         action,setAction,
         showProfile,setShowProfile,
         showBuilderForm, setShowBuilderForm ,
+        showBuilder, setShowBuilder,
         showSalesForm, setShowSalesForm,
+        showSalesPerson, setShowSalesPerson ,
         showAuctionForm, setShowAuctionForm,
         showTicketInfo, setShowTicketInfo,
         isActive, setIsActive,
@@ -64,10 +70,12 @@ return <AuthContext.Provider
         showAdditionalInfoForm, setShowAdditionalInfoForm,
         showAssignSalesForm, setShowAssignSalesForm,
         showEnquiryStatusForm, setShowEnquiryStatusForm,
+        showEnquiry, setShowEnquiry,
         showPropertyInfo, setShowPropertyInfo,
         showSliderForm, setShowSliderForm,
         showFeedbackForm, setShowFeedbackForm,
         showPartnerForm, setShowPartnerForm ,
+        showPartner, setShowPartner,
     }
 }>
     {children}

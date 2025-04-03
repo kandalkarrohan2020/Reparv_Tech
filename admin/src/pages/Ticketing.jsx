@@ -88,7 +88,7 @@ const Ticketing = () => {
     
       {!showTicketInfo ? (
         <>
-          <div className="ticketing-table w-full h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
+          <div className="ticketing-table w-full h-[80vh] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
             <p className="block md:hidden text-lg font-semibold">Ticketing</p>
             <div className="searchBarContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="search-bar w-full sm:w-1/2 min-w-[150px] max:w-[289px] md:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start md:justify-between bg-[#0000000A]">

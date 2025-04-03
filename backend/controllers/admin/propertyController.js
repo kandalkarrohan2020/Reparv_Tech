@@ -5,9 +5,17 @@ import path from "path";
 
 // **Fetch All Properties**
 export const getAll = (req, res) => {
-  const sql = `SELECT properties.*, builders.company_name FROM properties 
+  const sql = `SELECT properties.*,
+                      builders.company_name, 
+                      onboardingpartner.fullname, 
+                      onboardingpartner.contact,
+                      onboardingpartner.email,
+                      onboardingpartner.city 
+               FROM properties 
                INNER JOIN builders ON properties.builderid = builders.builderid 
-               ORDER BY properties.propertyid DESC`;
+               LEFT JOIN onboardingpartner ON properties.partnerid = onboardingpartner.partnerid 
+               ORDER BY properties.propertyid DESC;`;
+
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching properties:", err);
@@ -17,24 +25,69 @@ export const getAll = (req, res) => {
   });
 };
 
+
 // **Fetch Single Property by ID**
 export const getById = (req, res) => {
   const Id = parseInt(req.params.id);
-  if (isNaN(Id))
+  if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Property ID" });
+  }
 
-  const sql = "SELECT properties.*, builders.company_name FROM properties inner join builders on builders.builderid = properties.builderid WHERE propertyid = ?";
+  const sql = `
+    SELECT 
+      properties.*, 
+      builders.company_name, 
+      onboardingpartner.fullname, 
+      onboardingpartner.contact, 
+      onboardingpartner.email,
+      onboardingpartner.city
+    FROM properties
+    INNER JOIN builders ON builders.builderid = properties.builderid
+    LEFT JOIN onboardingpartner ON properties.partnerid = onboardingpartner.partnerid
+    WHERE properties.propertyid = ?
+    ORDER BY properties.propertyid DESC;
+  `;
+
   db.query(sql, [Id], (err, result) => {
     if (err) {
       console.error("Error fetching property:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
+    
     if (result.length === 0) {
       return res.status(404).json({ message: "Property not found" });
     }
-    res.json(result[0]);
+
+    res.json(result[0]); // Return only the first property
   });
 };
+
+// get all images 
+export const getImages = (req, res) => {
+  const partnerId = req.user.id;
+  if (!partnerId) {
+    return res.status(400).json({ message: "Unauthorized Access" });
+  }
+
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)){
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  const sql = "SELECT * FROM propertiesimages WHERE propertyid = ?";
+  db.query(sql, [Id], (err, result) => {
+    if (err) {
+      console.error("Error fetching property images:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Property not found" });
+    }
+    res.json(result);
+  });
+
+}
+
 
 // **Add Property**
 export const add = (req, res) => {
@@ -448,6 +501,49 @@ export const propertyInfo = (req, res) => {
       return res.status(201).json({ propertyid: Id });
     }
     res.json(result[0]);
+  });
+};
+
+
+export const deleteImages = (req, res) => {
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  // First, fetch the image path from the database
+  db.query("SELECT image FROM propertiesimages WHERE imageid = ?", [Id], (err, result) => {
+    if (err) {
+      console.error("Error fetching image:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Image not found" });
+    }
+
+    const imagePath = result[0].image; // Get the image path
+    if (imagePath) {
+      const filePath = path.join(process.cwd(), imagePath); // Full path to the file
+
+      // Delete the image file from the uploads folder
+      fs.unlink(filePath, (err) => {
+        if (err && err.code !== "ENOENT") {
+          console.error("Error deleting image:", err);
+        }
+
+        // Now delete the record from the database
+        db.query("DELETE FROM propertiesimages WHERE imageid = ?", [Id], (err) => {
+          if (err) {
+            console.error("Error deleting Image:", err);
+            return res.status(500).json({ message: "Database error", error: err });
+          }
+          res.status(200).json({ message: "Image deleted successfully" });
+        });
+      });
+    } else {
+      res.status(404).json({ message: "Image path not found" });
+    }
   });
 };
 

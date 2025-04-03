@@ -37,6 +37,8 @@ function Layout() {
     setShowPropertyInfo,
     showInquiryForm,
     setShowInquiryForm,
+    showEnquiry,
+    setShowEnquiry,
     showSuccess,
     setShowSuccess,
     isLoggedIn,
@@ -104,6 +106,7 @@ function Layout() {
     { state: showUploadImagesForm, setter: setShowUploadImagesForm },
     { state: showAdditionalInfoForm, setter: setShowAdditionalInfoForm },
     { state: showEnquiryStatusForm, setter: setShowEnquiryStatusForm },
+    { state: showEnquiry, setter: setShowEnquiry},
     { state: showPropertyInfo, setter: setShowPropertyInfo },
   ];
 

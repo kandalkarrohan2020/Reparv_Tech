@@ -12,6 +12,7 @@ import { useAuth } from "../store/auth";
 import { Link } from "react-router-dom";
 
 export default function Duplex() {
+  const navigate = useNavigate();
   const [city, setCity] = useState("");
   const [allCity, setAllCity] = useState([]);
   const [allLocation, setAllLocation] = useState([]);
@@ -139,6 +140,26 @@ export default function Duplex() {
     }
   };
 
+  const addLike = async (id) => {
+    try {
+      const response = await fetch(URI + "/frontend/duplex/like/" + id, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to Add Like.");
+      else{
+        console.log("Like added Successfully!");
+        fetchData();
+      }
+    } catch (err) {
+      console.log("Error Updating Like:", err);
+    }
+  };
+
   return (
     <div className="properties w-full max-w-[1400px] flex flex-col p-4 sm:py-6 sm:px-0 mx-auto">
       {/* Search Bar */}
@@ -212,8 +233,8 @@ export default function Duplex() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 py-4 sm:p-5">
         {filteredData.length > 0 ? (
           filteredData.map((property) => (
-            <Link
-              to={`/property-info/${property.propertyid}`}
+            <div
+              onClick={() => navigate(`/property-info/${property.propertyid}`)}
               key={property.propertyid}
               className="group rounded-lg shadow-md bg-white hover:bg-[#076300] overflow-hidden"
             >
@@ -223,7 +244,7 @@ export default function Duplex() {
                 className=" object-cover h-[250px] w-full"
               />
               <div className="relative p-4">
-                {property.popular && (
+                {property.likes > 500 && (
                   <img
                     src={populerTag}
                     className="absolute top-[-15px] left-[-8px]"
@@ -236,46 +257,62 @@ export default function Duplex() {
                       <p> {property.sqft_price} </p>
                     </div>
                     <h2 className="text-[#000929] group-hover:text-white ml-1">
-                      {property.property_name}
+                      {property.property_name.length > 18
+                        ? `${property.property_name.slice(0, 18)}...`
+                        : property.property_name}
                     </h2>
                   </div>
-                  <div
-                    className={`likeBtn w-12 h-12 mr-4 flex items-center justify-center border border-[#E8E6F9] rounded-full bg-white ${
-                      property.like === true
-                        ? "text-[#076300]"
-                        : "text-[#E8E6F9]"
-                    } `}
-                  >
-                    <FaHeart />
+                  <div className="flex flex-col gap-1 items-center justify-center p-2">
+                    <div
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        addLike(property.propertyid);
+                        
+                      }}
+                      className={`likeBtn w-12 h-12 flex items-center justify-center border border-[#E8E6F9] rounded-full bg-white ${
+                        property.likes > 0
+                          ? "text-[#076300]"
+                          : "text-[#E8E6F9]"
+                      } `}
+                    >
+                      <FaHeart />
+                    </div>
+                    <span className="text-[#076300] font-semibold group-hover:text-white">
+                      {property.likes}
+                    </span>
                   </div>
                 </div>
 
                 <div className="address text-[10px] md:text-xs lg:text-base font-normal px-3">
                   <p className="text-[#808080] group-hover:text-[#e2e2e2]">
-                    {property.location}, {property.city}
+                    {property.location.length > 20
+                      ? `${property.location.slice(0, 20)}...`
+                      : property.location}
+                    , {property.city}
                   </p>
                 </div>
 
                 <hr className="text-[#F0EFFB] my-3" />
 
                 <div className="flex justify-between text-xs md:text-sm text-[#808080] group-hover:text-[#e2e2e2] mt-2 px-2">
-                  <div className="flex items-center justify-start gap-2">
-                    {
-                      //<MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
-                    }
-                    {property.area} Sq.ft Area
-                  </div>
-                  <div className="flex items-center justify-start gap-2">
-                    <BiBath className="text-[#076300] group-hover:text-white w-4 h-4" />
-                    {property.baths} Bathrooms
-                  </div>
+                  {/*<div className="flex items-center justify-start gap-2">
+                                        {
+                                          //<MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
+                                        }
+                                        {property.area} Sq.ft Area
+                                      </div>
+                                      <div className="flex items-center justify-start gap-2">
+                                        <BiBath className="text-[#076300] group-hover:text-white w-4 h-4" />
+                                        {property.baths} Bathrooms
+                                      </div>
+                                      */}
                   <div className="flex items-center justify-start gap-2">
                     <FaDiamond className="text-[#076300] group-hover:text-white w-3 h-3" />
-                    {property.size}
+                    {property.area} Sq.ft Area
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
           ))
         ) : (
           <h1 className="text-2xl font-bold m-4">No Properties Found</h1>

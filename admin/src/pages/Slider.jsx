@@ -139,7 +139,7 @@ const Slider = () => {
   );
 
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, sortable: true },
+    { name: "SN", selector: (row, index) => index + 1, width:"50px" },
     {
       name: "Images",
       cell: (row) => (
@@ -152,7 +152,7 @@ const Slider = () => {
             className="w-[300px] h-[90%] object- cursor-pointer"
           />
         </div>
-      ),
+      ), minWidth:"300px"
     },
     {
       name: "Status",
@@ -166,11 +166,11 @@ const Slider = () => {
         >
           {row.status}
         </span>
-      ),
+      ), minWidth:"130px"
     },
     {
       name: "Action",
-      cell: (row) => <ActionDropdown row={row} />,
+      cell: (row) => <ActionDropdown row={row} />, minWidth:"120px"
     },
   ];
 
@@ -219,7 +219,7 @@ const Slider = () => {
       className={`slider overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
     >
       <div
-        className={`flex role-table w-full h-[578px] flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]`}
+        className={`flex role-table w-full h-[80vh] flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]`}
       >
         <p className="block md:hidden text-lg font-semibold">Slider</p>
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">

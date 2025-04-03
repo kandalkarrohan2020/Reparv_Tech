@@ -163,10 +163,10 @@ const Testimonial = () => {
   );
 
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, sortable: true },
-    { name: "Client Name", selector: (row) => row.client, sortable: true },
-    { name: "Message", selector: (row) => row.message, sortable: true },
-    { name: "Video URL", selector: (row) => row.url, sortable: true },
+    { name: "SN", selector: (row, index) => index + 1, width:"50px"},
+    { name: "Client Name", selector: (row) => row.client, sortable: true , minWidth: "150px"},
+    { name: "Message", selector: (row) => row.message, sortable: true , minWidth: "150px"},
+    { name: "Video URL", selector: (row) => row.url, sortable: true , minWidth: "250px"},
     {
       name: "Status",
       cell: (row) => (
@@ -179,11 +179,11 @@ const Testimonial = () => {
         >
           {row.status}
         </span>
-      ),
+      ), width: "120px"
     },
     {
       name: "Action",
-      cell: (row) => <ActionDropdown row={row} />,
+      cell: (row) => <ActionDropdown row={row} />, width: "120px"
     },
   ];
 
@@ -236,7 +236,7 @@ const Testimonial = () => {
       className={`slider overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
     >
       <div
-        className={`flex role-table w-full h-[578px] flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]`}
+        className={`flex role-table w-full h-[80vh] flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]`}
       >
         <p className="block md:hidden text-lg font-semibold">Testimonials</p>
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">

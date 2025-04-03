@@ -14,6 +14,7 @@ import { useAuth } from "../store/auth";
 import { Link } from "react-router-dom";
 
 export default function Plot() {
+  const navigate = useNavigate();
   const [city, setCity] = useState("");
   const [allCity, setAllCity] = useState([]);
   const [allLocation, setAllLocation] = useState([]);
@@ -40,13 +41,12 @@ export default function Plot() {
   }, [properties]);
 
   useEffect(() => {
-      setFilteredProperties(properties); // Show all properties initially
-    }, [properties]);
-  
-    const filteredData = filteredProperties.filter(
-      (item) =>
-        item.property_name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    setFilteredProperties(properties); // Show all properties initially
+  }, [properties]);
+
+  const filteredData = filteredProperties.filter((item) =>
+    item.property_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // *Fetch Data from API*
   const fetchData = async () => {
@@ -112,16 +112,13 @@ export default function Plot() {
 
   const fetchLocationByCity = async () => {
     try {
-      const response = await fetch(
-        URI + "/frontend/plot/location/" + city,
-        {
-          method: "GET",
-          credentials: "include", // ✅ Ensures cookies are sent
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(URI + "/frontend/plot/location/" + city, {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) throw new Error("Failed to fetch properties.");
 
@@ -130,6 +127,26 @@ export default function Plot() {
       setAllLocation([...data]);
     } catch (err) {
       console.error("Error fetching:", err);
+    }
+  };
+
+  const addLike = async (id) => {
+    try {
+      const response = await fetch(URI + "/frontend/plot/like/" + id, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to Add Like.");
+      else{
+        console.log("Like added Successfully!");
+        fetchData();
+      }
+    } catch (err) {
+      console.log("Error Updating Like:", err);
     }
   };
 
@@ -225,8 +242,8 @@ export default function Plot() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 py-4 sm:p-5">
         {filteredData.length > 0 ? (
           filteredData.map((property) => (
-            <Link
-              to={`/property-info/${property.propertyid}`}
+            <div
+              onClick={() => navigate(`/property-info/${property.propertyid}`)}
               key={property.propertyid}
               className="group rounded-lg shadow-md bg-white hover:bg-[#076300] overflow-hidden"
             >
@@ -249,23 +266,37 @@ export default function Plot() {
                       <p> {property.sqft_price} </p>
                     </div>
                     <h2 className="text-[#000929] group-hover:text-white ml-1">
-                      {property.property_name}
+                      {property.property_name.length > 18
+                        ? `${property.property_name.slice(0, 18)}...`
+                        : property.property_name}
                     </h2>
                   </div>
-                  <div
-                    className={`likeBtn w-12 h-12 mr-4 flex items-center justify-center border border-[#E8E6F9] rounded-full bg-white ${
-                      property.like === true
-                        ? "text-[#076300]"
-                        : "text-[#E8E6F9]"
-                    } `}
-                  >
-                    <FaHeart />
+                  <div className="flex flex-col gap-1 items-center justify-center p-2">
+                    <div
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        addLike(property.propertyid);
+                      }}
+                      className={`likeBtn w-12 h-12 flex items-center justify-center border border-[#E8E6F9] rounded-full bg-white ${
+                        property.likes > 0
+                          ? "text-[#076300]"
+                          : "text-[#E8E6F9]"
+                      } `}
+                    >
+                      <FaHeart />
+                    </div>
+                    <span className="text-[#076300] font-semibold group-hover:text-white">
+                      {property.likes}
+                    </span>
                   </div>
                 </div>
 
                 <div className="address text-[10px] md:text-xs lg:text-base font-normal px-3">
                   <p className="text-[#808080] group-hover:text-[#e2e2e2]">
-                    {property.location}, {property.city}
+                    {property.location.length > 20
+                      ? `${property.location.slice(0, 20)}...`
+                      : property.location}
+                    , {property.city}
                   </p>
                 </div>
 
@@ -273,23 +304,23 @@ export default function Plot() {
 
                 <div className="flex justify-between text-xs md:text-sm text-[#808080] group-hover:text-[#e2e2e2] mt-2 px-2">
                   {/*<div className="flex items-center justify-start gap-2">
-                                        {
-                                          //<MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
-                                        }
-                                        {property.area} Sq.ft Area
-                                      </div>
-                                      <div className="flex items-center justify-start gap-2">
-                                        <BiBath className="text-[#076300] group-hover:text-white w-4 h-4" />
-                                        {property.baths} Bathrooms
-                                      </div>
-                                      */}
+                                                    {
+                                                      //<MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
+                                                    }
+                                                    {property.area} Sq.ft Area
+                                                  </div>
+                                                  <div className="flex items-center justify-start gap-2">
+                                                    <BiBath className="text-[#076300] group-hover:text-white w-4 h-4" />
+                                                    {property.baths} Bathrooms
+                                                  </div>
+                                                  */}
                   <div className="flex items-center justify-start gap-2">
                     <FaDiamond className="text-[#076300] group-hover:text-white w-3 h-3" />
                     {property.area} Sq.ft Area
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
           ))
         ) : (
           <h1 className="text-2xl font-bold m-4">No Properties Found</h1>

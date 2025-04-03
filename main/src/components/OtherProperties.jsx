@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../store/auth";
 
 function OtherProperties({ propertyTypeId }) {
+  const navigate = useNavigate();
   const { URI } = useAuth();
   const [properties, setProperties] = useState([]);
 
@@ -34,6 +35,30 @@ function OtherProperties({ propertyTypeId }) {
       console.error("Error fetching:", err);
     }
   };
+
+  const addLike = async (id) => {
+    try {
+      const response = await fetch(
+        `${URI}/frontend/${propertyTypeId}/like/${id}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to Add Like.");
+      else {
+        console.log("Like added Successfully!");
+        fetchData();
+      }
+    } catch (err) {
+      console.log("Error Updating Like:", err);
+    }
+  };
+
   console.log(properties);
   useEffect(() => {
     fetchData();
@@ -42,8 +67,8 @@ function OtherProperties({ propertyTypeId }) {
   return (
     <div className="otherProperties w-full overflow-scroll scrollbar-hide grid place-items-center grid-flow-col gap-6 py-4 sm:p-5">
       {properties.map((property) => (
-        <Link
-          to={`/property-info/${property.propertyid}`}
+        <div
+          onClick={() => navigate(`/property-info/${property.propertyid}`)}
           key={property.propertyid}
           className="w-[375px] group rounded-lg shadow-md bg-white hover:bg-[#076300] overflow-hidden"
         >
@@ -53,7 +78,7 @@ function OtherProperties({ propertyTypeId }) {
             className=" object-cover h-[250px] w-full"
           />
           <div className="relative p-4">
-            {property.popular && (
+            {property.likes > 500 && (
               <img
                 src={populerTag}
                 className="absolute top-[-15px] left-[-8px]"
@@ -66,21 +91,35 @@ function OtherProperties({ propertyTypeId }) {
                   <p> {property.sqft_price} </p>
                 </div>
                 <h2 className="text-[#000929] group-hover:text-white ml-1">
-                  {property.property_name}
+                  {property.property_name.length > 16
+                    ? `${property.property_name.slice(0, 15)}...`
+                    : property.property_name}
                 </h2>
               </div>
-              <div
-                className={`likeBtn w-12 h-12 mr-4 flex items-center justify-center border border-[#E8E6F9] rounded-full bg-white ${
-                  property.like === true ? "text-[#076300]" : "text-[#E8E6F9]"
-                } `}
-              >
-                <FaHeart />
+              <div className="flex flex-col gap-1 items-center justify-center p-2">
+                <div
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    addLike(property.propertyid);
+                  }}
+                  className={`likeBtn w-12 h-12 flex items-center justify-center border border-[#E8E6F9] rounded-full bg-white ${
+                    property.likes > 0 ? "text-[#076300]" : "text-[#E8E6F9]"
+                  } `}
+                >
+                  <FaHeart />
+                </div>
+                <span className="text-[#076300] font-semibold group-hover:text-white">
+                  {property.likes}
+                </span>
               </div>
             </div>
 
             <div className="address text-[10px] md:text-xs lg:text-base font-normal px-3">
               <p className="text-[#808080] group-hover:text-[#e2e2e2]">
-                {property.location}, {property.city}
+                {property.location.length > 16
+                  ? `${property.location.slice(0, 15)}...`
+                  : property.location}
+                , {property.city}
               </p>
             </div>
 
@@ -88,23 +127,23 @@ function OtherProperties({ propertyTypeId }) {
 
             <div className="flex justify-between text-xs md:text-sm text-[#808080] group-hover:text-[#e2e2e2] mt-2 px-2">
               {/*<div className="flex items-center justify-start gap-2">
-                        {
-                          //<MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
-                        }
-                        {property.area} Sq.ft Area
-                      </div>
-                      <div className="flex items-center justify-start gap-2">
-                        <BiBath className="text-[#076300] group-hover:text-white w-4 h-4" />
-                        {property.baths} Bathrooms
-                      </div>
-                      */}
+                                                            {
+                                                              //<MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
+                                                            }
+                                                            {property.area} Sq.ft Area
+                                                          </div>
+                                                          <div className="flex items-center justify-start gap-2">
+                                                            <BiBath className="text-[#076300] group-hover:text-white w-4 h-4" />
+                                                            {property.baths} Bathrooms
+                                                          </div>
+                                                          */}
               <div className="flex items-center justify-start gap-2">
                 <FaDiamond className="text-[#076300] group-hover:text-white w-3 h-3" />
                 {property.area} Sq.ft Area
               </div>
             </div>
           </div>
-        </Link>
+        </div>
       ))}
     </div>
   );

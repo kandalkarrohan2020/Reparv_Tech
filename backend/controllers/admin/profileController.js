@@ -5,24 +5,32 @@ import sendEmail from "../../utils/nodeMailer.js";
 
 const saltRounds = 10;
 
-export const getProfile = (req, res) => {
+export const getProfile = async (req, res) => {
   const Id = req.user?.id; 
   if (!Id) {
     return res.status(400).json({ message: "Unauthorized User" });
   }
 
   const sql = "SELECT * FROM users WHERE id = ?";
-  
-  db.query(sql, [Id], (err, result) => {
-    if (err) {
-      console.error("Error fetching profile:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
+
+  try {
+    const result = await new Promise((resolve, reject) => {
+      db.query(sql, [Id], (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
+
     if (result.length === 0) {
       return res.status(404).json({ message: "User not found" });
     }
+
     res.json(result[0]);
-  });
+    
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    res.status(500).json({ message: "Database error", error });
+  }
 };
 
 export const editProfile = (req, res) => {

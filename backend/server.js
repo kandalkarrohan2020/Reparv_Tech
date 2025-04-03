@@ -24,7 +24,7 @@ import auctionmembersRoutes from "./routes/admin/auctionmemberRoutes.js";
 //import ticketRoutes from "./routes/admin/ticketRoutes.js";
 import sliderRoutes from "./routes/admin/sliderRoutes.js";
 import testimonialRoutes from "./routes/admin/testimonialRoutes.js";
-//import calenderRoutes from "./routes/admin/calenderRoutes.js";
+import calenderRoutes from "./routes/admin/calenderRoutes.js";
 //import marketingRoutes from "./routes/admin/marketingRoutes.js";
 //import rawmaterialRoutes from "./routes/admin/rawmaterialRoutes.js";
 
@@ -68,6 +68,7 @@ import salesFlatRoutes from "./routes/sales/salesFlatRoutes.js";
 import salesRowhouseRoutes from "./routes/sales/salesRowhouseRoutes.js";
 import salesPropertyinfoRoutes from "./routes/sales/salesPropertyinfoRoutes.js";
 import salesEnquiryRoutes from "./routes/sales/salesEnquiryRoutes.js";
+import salesCalenderRoutes from "./routes/sales/calenderRoutes.js";
 
 // import Partner Routes
 import partnerLoginRoutes from "./routes/onboardingPartner/partnerLoginRoutes.js";
@@ -96,6 +97,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 const allowedOrigins = [
+  "https://reparv.onrender.com",
   "https://reparv-tech.onrender.com",
   "https://admin.reparv.in",
   "https://reparv.in",
@@ -228,7 +230,7 @@ app.use("/admin/auctionmembers", auctionmembersRoutes);
 //app.use("/admin/tickets", ticketRoutes);
 app.use("/admin/slider", sliderRoutes);
 app.use("/admin/testimonial", testimonialRoutes);
-// app.use("/admin/calenders", calenderRoutes);
+app.use("/admin/calender", calenderRoutes);
 // app.use("/admin/marketing", marketingRoutes);
 
 //Employee Routes
@@ -246,6 +248,7 @@ app.use("/sales/enquirers", salesEnquirersRoutes);
 //app.use("/sales/overview", salesOverviewRoutes);
 app.use("/sales/properties", salesPropertyRoutes);
 //app.use("/sales/tickets",salesTicketRoutes);
+app.use("/sales/calender", salesCalenderRoutes);
 
 app.use("/sales/propertyinfo", salesPropertyinfoRoutes);
 app.use("/sales/newproject", salesNewprojectRoutes);

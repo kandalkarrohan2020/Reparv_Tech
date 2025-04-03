@@ -31,6 +31,7 @@ const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
 const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
 const [showPropertyInfo, setShowPropertyInfo] = useState(false);
 const [showInquiryForm, setShowInquiryForm] = useState(false);
+const [showEnquiry, setShowEnquiry] = useState(false);
 const [showSuccess, setShowSuccess] = useState(false);
 return <AuthContext.Provider
  value={
@@ -48,6 +49,7 @@ return <AuthContext.Provider
         showEnquiryStatusForm, setShowEnquiryStatusForm,
         showPropertyInfo, setShowPropertyInfo,
         showInquiryForm, setShowInquiryForm,
+        showEnquiry, setShowEnquiry,
         showSuccess, setShowSuccess
     }
 }>

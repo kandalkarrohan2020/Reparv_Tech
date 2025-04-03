@@ -2,6 +2,8 @@ import express from "express";
 import {
   getAll,
   getById,
+  getImages,
+  deleteImages,
   add,
   update,
   status,
@@ -40,6 +42,8 @@ const upload = multer({
 
 router.get("/", getAll);
 router.get("/:id", getById);
+router.get("/images/:id", getImages);
+router.delete("/images/delete/:id", deleteImages);
 router.post("/add", upload.single("image"), add);
 router.put("/edit/:id", upload.single("image"), update);
 router.put("/status/:id", status);

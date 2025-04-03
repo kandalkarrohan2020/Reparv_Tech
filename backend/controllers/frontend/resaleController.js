@@ -59,3 +59,22 @@ export const getLocationByCity = (req, res) => {
     res.json(result);
   });
 };
+
+export const addLike = async (req, res) => {
+  const propertyId = req.params.id;
+
+  if(!propertyId){
+   return res.status(401).json({message: "Invalid Property Id"});
+  }
+
+  const sql = `UPDATE properties SET likes = likes+1 WHERE propertyid = ?`;
+
+  db.query(sql, [propertyId], (err, result) => {
+   if (err) {
+     console.error("Error fetching:", err);
+     return res.status(500).json({ message: "Database error", error: err });
+   }
+   res.json(result);
+  });
+}
+

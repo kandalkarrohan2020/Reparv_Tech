@@ -16,11 +16,15 @@ const Enquirers = () => {
     setShowEnquiryStatusForm,
     showPropertyInfo,
     setShowPropertyInfo,
+    setLoading,
+    showEnquiry,
+    setShowEnquiry,
   } = useAuth();
 
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [enquiryId, setEnquiryId] = useState("");
+  const [enquiry, setEnquiry] = useState({});
   const [property, setProperty] = useState({});
   const [enquiryStatus, setEnquiryStatus] = useState("");
   const [followUpRemark, setFollowUpRemark] = useState("");
@@ -253,6 +257,24 @@ const Enquirers = () => {
     }
   };
 
+  const viewEnquiry = async (id) => {
+    try {
+      const response = await fetch(URI + `/admin/enquirers/${id}`, {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch enquiry.");
+      const data = await response.json();
+      setEnquiry(data);
+      setShowEnquiry(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -323,6 +345,9 @@ const Enquirers = () => {
 
     const handleActionSelect = (action, id) => {
       switch (action) {
+        case "view":
+          viewEnquiry(id);
+          break;
         case "status":
           setEnquiryId(id);
           setShowEnquiryStatusForm(true);
@@ -347,8 +372,9 @@ const Enquirers = () => {
           }}
         >
           <option value="" disabled>
-            Change Status
+            Action
           </option>
+          <option value="view">View</option>
           <option value="status">Status</option>
         </select>
       </div>
@@ -814,6 +840,135 @@ const Enquirers = () => {
           </form>
         </div>
       </div>
+
+      {/* Show Enquiry Info */}
+             <div
+              className={`${
+                showEnquiry ? "flex" : "hidden"
+              } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
+            >
+              <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-[16px] font-semibold">Enquiry Details</h2>
+                  <IoMdClose
+                    onClick={() => {
+                      setShowEnquiry(false);
+                    }}
+                    className="w-6 h-6 cursor-pointer"
+                  />
+                </div>
+                <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
+                  <div className="w-full ">
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      Customer Name
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={enquiry.customer}
+                      readOnly
+                    />
+                  </div>
+                  <div className="w-full ">
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      Contact
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={enquiry.contact}
+                      readOnly
+                    />
+                  </div>
+                  <div className="w-full ">
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      Email
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={enquiry.email}
+                      readOnly
+                    />
+                  </div>
+                  <div className="w-full ">
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      budget
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={enquiry.budget}
+                      readOnly
+                    />
+                  </div>
+                  <div className="w-full ">
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      City
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={enquiry.city}
+                      readOnly
+                    />
+                  </div>
+                  <div className="w-full ">
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      Location
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={enquiry.location}
+                      readOnly
+                    />
+                  </div>
+                  <div className="w-full ">
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      Message
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={enquiry.message}
+                      readOnly
+                    />
+                  </div>
+                  <div className="w-full ">
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      Status
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={enquiry.status}
+                      readOnly
+                    />
+                  </div>
+                  <div className="w-full ">
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      Assign Login
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={enquiry.assign}
+                      readOnly
+                    />
+                  </div>
+                </form>
+              </div>
+            </div>
     </div>
   );
 };

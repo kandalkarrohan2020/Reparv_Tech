@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import reparvMainLogo from "../../assets/layout/reparvMainLogo.svg";
-import calenderIcon from "../../assets/layout/calenderIcon.svg";
-import customersIcon from "../../assets/layout/customersIcon.svg";
 import enquirersIcon from "../../assets/layout/enquirersIcon.svg";
-import mapIcon from "../../assets/layout/mapIcon.svg";
-import materialIcon from "../../assets/layout/materialIcon.svg";
 import overviewIcon from "../../assets/layout/overviewIcon.svg";
 import partnerIcon from "../../assets/layout/partnerIcon.svg";
-import employeeIcon from "../../assets/layout/employeeIcon.svg";
 import ticketingIcon from "../../assets/layout/ticketingIcon.svg";
-import marketingIcon from "../../assets/layout/marketingIcon.svg";
 import { Outlet } from "react-router-dom";
 import { IoMenu } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
@@ -27,41 +21,29 @@ function Layout() {
   const {
     showProfile,
     setShowProfile,
-    giveAccess,
-    setGiveAccess,
-    showSalesForm,
-    setShowSalesForm,
-    showEplDetailsForm,
-    setShowEplDetailsForm,
     showBuilderForm,
     setShowBuilderForm,
-    showAuctionForm,
-    setShowAuctionForm,
     showPropertyForm,
     setShowPropertyForm,
-    showPropertyTypeForm,
-    setShowPropertyTypeForm,
-    showRoleForm,
-    setShowRoleForm,
-    showDepartmentForm,
-    setShowDepartmentForm,
+    showPropertyInfo,
+    setShowPropertyInfo,
     showUploadImagesForm, setShowUploadImagesForm,
     showAdditionalInfoForm, setShowAdditionalInfoForm,
+    showTicket,
+    setShowTicket,
+    showTicketForm,
+    setShowTicketForm,
     isLoggedIn,
   } = useAuth();
 
   const overlays = [
-    { state: giveAccess, setter: setGiveAccess },
-    { state: showSalesForm, setter: setShowSalesForm },
-    { state: showEplDetailsForm, setter: setShowEplDetailsForm },
-    { state: showAuctionForm, setter: setShowAuctionForm },
     { state: showBuilderForm, setter: setShowBuilderForm },
-    { state: showDepartmentForm, setter: setShowDepartmentForm },
     { state: showPropertyForm, setter: setShowPropertyForm },
-    { state: showPropertyTypeForm, setter: setShowPropertyTypeForm },
-    { state: showRoleForm, setter: setShowRoleForm },
+    { state: showPropertyInfo, setter: setShowPropertyInfo },
     { state: showUploadImagesForm, setter: setShowUploadImagesForm },
     { state: showAdditionalInfoForm, setter: setShowAdditionalInfoForm },
+    { state: showTicketForm, setter: setShowTicketForm },
+    { state: showTicket, setter: setShowTicket },
   ];
 
   const getNavLinkClass = (path) => {
@@ -153,40 +135,9 @@ function Layout() {
             {/* Navigation Links */}
             {[
               { to: "/overview", icon: overviewIcon, label: "Overview" },
-              { to: "/enquirers", icon: enquirersIcon, label: "Enquirers" },
-              //{ to: "/customers", icon: customersIcon, label: "Customers" },
-              { to: "/properties", icon: enquirersIcon, label: "Properties" },
-            /*{
-                to: "/propertytypes",
-                icon: enquirersIcon,
-                label: "Property Types",
-              },*/
               { to: "/builders", icon: partnerIcon, label: "Builders" },
-              /*{
-                to: "/salespersons",
-                icon: partnerIcon,
-                label: "Sales Persons",
-              },
-              //{ to: "/auctionmembers", icon: partnerIcon, label: "Auction Members" },
-              { to: "/employees", icon: employeeIcon, label: "Employees" },
-              { to: "/role", icon: employeeIcon, label: "Roles" },
-              { to: "/department", icon: employeeIcon, label: "Departments" },
-              */
+              { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
-              /*
-              { to: "/map", icon: mapIcon, label: "Map" },
-              { to: "/calender", icon: calenderIcon, label: "Calendar" },
-              {
-                to: "/raw-materials",
-                icon: materialIcon,
-                label: "Raw Materials",
-              },
-              {
-                to: "/marketing",
-                icon: marketingIcon,
-                label: "Marketing Templates",
-              },
-              */
             ].map(({ to, icon, label }) => (
               <NavLink
                 onClick={() => {

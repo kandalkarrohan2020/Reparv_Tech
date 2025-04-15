@@ -8,6 +8,7 @@ import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
+import { RiArrowDropDownLine } from "react-icons/ri";
 
 const Builders = () => {
   const {
@@ -28,6 +29,7 @@ const Builders = () => {
   const [selectedBuilderId, setSelectedBuilderId] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [selectedLister, setSelectedLister] = useState("Select Builder Lister");
   const [newBuilder, setNewBuilder] = useState({
     builderid: "",
     company_name: "",
@@ -43,7 +45,7 @@ const Builders = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/admin/builders", {
+      const response = await fetch(URI + "/admin/builders/get/"+selectedLister, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -52,7 +54,6 @@ const Builders = () => {
       });
       if (!response.ok) throw new Error("Failed to fetch builders.");
       const data = await response.json();
-
       setDatas(data);
     } catch (err) {
       console.error("Error fetching builders:", err);
@@ -250,7 +251,7 @@ const Builders = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [selectedLister]);
 
   const filteredData = datas.filter(
     (item) =>
@@ -264,17 +265,42 @@ const Builders = () => {
   );
 
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, sortable: false, width:"50px" },
+    {
+      name: "SN",
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: "50px",
+    },
     {
       name: "Company Name",
       selector: (row) => row.company_name,
-      sortable: true, minWidth: "150px"
+      sortable: true,
+      minWidth: "150px",
     },
-    { name: "Contact Person", selector: (row) => row.contact_person , minWidth: "150px"},
-    { name: "Contact", selector: (row) => row.contact , minWidth: "150px"},
-    { name: "Email", selector: (row) => row.email , minWidth: "150px"},
+    {
+      name: "Contact Person",
+      selector: (row) => row.contact_person,
+      minWidth: "150px",
+    },
+    {
+      name: "Builder Lister",
+      cell: (row) => (
+        <div className="w-full flex flex-col gap-[2px]">
+          <p>{row.listerName}</p>
+          <p>{row.listerContact}</p>
+        </div>
+      ),
+      omit: false,
+      width: "180px",
+    },
+    { name: "Contact", selector: (row) => row.contact, minWidth: "150px" },
+    { name: "Email", selector: (row) => row.email, minWidth: "150px" },
     { name: "Office address", selector: (row) => row.office_address },
-    { name: "Registration No", selector: (row) => row.registration_no , minWidth: "150px"},
+    {
+      name: "Registration No",
+      selector: (row) => row.registration_no,
+      minWidth: "150px",
+    },
     {
       name: "Status",
       cell: (row) => (
@@ -308,6 +334,13 @@ const Builders = () => {
       cell: (row) => <ActionDropdown row={row} />,
     },
   ];
+
+  const hasBuilderLister = datas.some((row) => !!row.listerName);
+ 
+  const finalColumns = columns.map((col) => {
+    if (col.name === "Builder Lister") return { ...col, omit: !hasBuilderLister };
+    return col;
+  });
 
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
@@ -369,8 +402,27 @@ const Builders = () => {
     >
       {!showBuilderForm ? (
         <>
-          <div className="builder-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
+          <div className="builder-table overflow-scroll scrollbar-hide w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
             <p className="block md:hidden text-lg font-semibold">Builders</p>
+            <div className="w-full sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+              <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+                <span>{selectedLister || "Select Lister"}</span>
+                <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+              </div>
+              <select
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                value={selectedLister}
+                onChange={(e) => {
+                  setSelectedLister(e.target.value);
+                }}
+              >
+                <option value="Select Builder Lister">
+                  Select Builder Lister
+                </option>
+                <option value="Reparv Employee">Reparv Employee</option>
+                <option value="Project Partner">Project Partner</option>
+              </select>
+            </div>
             <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
               <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
                 <CiSearch />
@@ -392,7 +444,12 @@ const Builders = () => {
             </div>
             <h2 className="text-[16px] font-semibold">Builders List</h2>
             <div className="overflow-scroll scrollbar-hide">
-              <DataTable columns={columns} data={filteredData} pagination />
+              <DataTable
+                className="overflow-scroll scrollbar-hide"
+                columns={finalColumns}
+                data={filteredData}
+                pagination
+              />
             </div>
           </div>
         </>
@@ -535,7 +592,7 @@ const Builders = () => {
                   type="date"
                   required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newBuilder.dor}
+                  value={newBuilder.dor?.split("T")[0]}
                   onChange={(e) => {
                     const selectedDate = e.target.value; // Get full date
                     const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD

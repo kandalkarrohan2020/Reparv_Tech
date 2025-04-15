@@ -96,49 +96,6 @@ const Employee = () => {
     }
   };
 
-  //Add or update record
-  const add2 = async (e) => {
-    e.preventDefault();
-
-    const endpoint = newEmployee.id ? `edit/${newEmployee.id}` : "add";
-    try {
-      const response = await fetch(URI + `/admin/employees/${endpoint}`, {
-        method: action === "update" ? "PUT" : "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newEmployee),
-      });
-
-      if (!response.ok) throw new Error("Failed to save employee.");
-
-      if (newEmployee.id) {
-        alert("Employee updated successfully!");
-      } else if (response.status === 202) {
-        alert("Employee already Exit!!");
-      } else {
-        alert("Employee added successfully!");
-      }
-
-      setEmployeeData({
-        name: "",
-        uid: "",
-        contact: "",
-        email: "",
-        address: "",
-        dob: "",
-        departmentid: "",
-        roleid: "",
-        salary: "",
-        doj: "",
-        status: "",
-      });
-      setShowEplDetailsForm(false);
-      fetchData();
-    } catch (err) {
-      console.error("Error saving :", err);
-    }
-  };
-
   const add = async (e) => {
     e.preventDefault();
    
@@ -559,7 +516,7 @@ const Employee = () => {
                   type="date"
                   required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newEmployee.dob}
+                  value={newEmployee.dob?.split("T")[0]}
                   onChange={(e) => {
                     const selectedDate = e.target.value; // Get full date
                     const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
@@ -635,7 +592,7 @@ const Employee = () => {
                   type="date"
                   required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newEmployee.doj}
+                  value={newEmployee.doj?.split("T")[0]}
                   onChange={(e) => {
                     const selectedDate = e.target.value; // Get full date
                     const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD

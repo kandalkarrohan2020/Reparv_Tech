@@ -23,6 +23,7 @@ const [loading, setLoading] = useState(false);
 const [showPropertyForm, setShowPropertyForm ] = useState(false);
 const [showProfile, setShowProfile ] = useState(false);
 const [showTicketInfo, setShowTicketInfo ] = useState(false);
+const [showTicketForm, setShowTicketForm ] = useState(false);
 const [isActive, setIsActive ] = useState(false);
 const [action, setAction ] = useState("Save Details");
 const [showUploadImagesForm, setShowUploadImagesForm] = useState(false);
@@ -32,6 +33,7 @@ const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
 const [showPropertyInfo, setShowPropertyInfo] = useState(false);
 const [showInquiryForm, setShowInquiryForm] = useState(false);
 const [showEnquiry, setShowEnquiry] = useState(false);
+const [showTicket, setShowTicket] = useState(false);
 const [showSuccess, setShowSuccess] = useState(false);
 return <AuthContext.Provider
  value={
@@ -40,6 +42,7 @@ return <AuthContext.Provider
         accessToken, setAccessToken,
         showProfile,setShowProfile,
         showTicketInfo, setShowTicketInfo,
+        showTicketForm, setShowTicketForm,
         isActive, setIsActive,
         action, setAction,
         showPropertyForm, setShowPropertyForm,
@@ -50,6 +53,7 @@ return <AuthContext.Provider
         showPropertyInfo, setShowPropertyInfo,
         showInquiryForm, setShowInquiryForm,
         showEnquiry, setShowEnquiry,
+        showTicket, setShowTicket,
         showSuccess, setShowSuccess
     }
 }>

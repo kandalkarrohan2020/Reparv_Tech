@@ -288,7 +288,12 @@ const Enquirers = () => {
       item.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, sortable: true },
+    {
+      name: "SN",
+      selector: (row, index) => index + 1,
+      sortable: true,
+      width: "50px",
+    },
     {
       name: "Intrested Property",
       cell: (row) => (
@@ -383,14 +388,14 @@ const Enquirers = () => {
 
   return (
     <div className="enquirers overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
-      <div className="enquirers-table w-full h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
+      <div className="enquirers-table w-full h-[80vh] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
         {/* <p className="block md:hidden text-lg font-semibold">Enquirers</p> */}
         <div className="searchBarContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full sm:w-1/2 min-w-[150px] max:w-[289px] md:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start md:justify-between bg-[#0000000A]">
             <CiSearch />
             <input
               type="text"
-              placeholder="Search Builder"
+              placeholder="Search Enquiry"
               className="search-input md:w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -403,7 +408,7 @@ const Enquirers = () => {
             </div>
           </div>
         </div>
-        <h2 className="text-[16px] font-semibold">Enquirer List</h2>
+        <h2 className="text-[16px] font-semibold">Enquiry List</h2>
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"
@@ -842,133 +847,133 @@ const Enquirers = () => {
       </div>
 
       {/* Show Enquiry Info */}
-             <div
-              className={`${
-                showEnquiry ? "flex" : "hidden"
-              } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
-            >
-              <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-[16px] font-semibold">Enquiry Details</h2>
-                  <IoMdClose
-                    onClick={() => {
-                      setShowEnquiry(false);
-                    }}
-                    className="w-6 h-6 cursor-pointer"
-                  />
-                </div>
-                <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Customer Name
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={enquiry.customer}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Contact
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={enquiry.contact}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Email
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={enquiry.email}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      budget
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={enquiry.budget}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      City
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={enquiry.city}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={enquiry.location}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Message
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={enquiry.message}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Status
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={enquiry.status}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Assign Login
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={enquiry.assign}
-                      readOnly
-                    />
-                  </div>
-                </form>
-              </div>
+      <div
+        className={`${
+          showEnquiry ? "flex" : "hidden"
+        } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
+      >
+        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">Enquiry Details</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowEnquiry(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Customer Name
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={enquiry.customer}
+                readOnly
+              />
             </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Contact
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={enquiry.contact}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Email
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={enquiry.email}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                budget
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={enquiry.budget}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                City
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={enquiry.city}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Location
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={enquiry.location}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Message
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={enquiry.message}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Status
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={enquiry.status}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Assign Login
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={enquiry.assign}
+                readOnly
+              />
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

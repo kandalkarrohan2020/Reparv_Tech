@@ -45,7 +45,7 @@ function Overview() {
             icon: card2,
           },
           {
-            label: "Reparv Share",
+            label: "Self Earning",
             value: "00",
             icon: card3,
           },

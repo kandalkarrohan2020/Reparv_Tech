@@ -18,7 +18,8 @@ const Properties = () => {
     setShowUploadImagesForm,
     showAdditionalInfoForm,
     setShowAdditionalInfoForm,
-    showPropertyInfo, setShowPropertyInfo,
+    showPropertyInfo,
+    setShowPropertyInfo,
     URI,
     setLoading,
   } = useAuth();
@@ -428,7 +429,12 @@ const Properties = () => {
       item.rerano.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, sortable: false, width:"50px" },
+    {
+      name: "SN",
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: "50px",
+    },
     {
       name: "Image",
       cell: (row) => (
@@ -438,19 +444,29 @@ const Properties = () => {
           <img
             src={`${URI}${row.image}`}
             alt="Image"
-            onClick={()=>viewProperty(row.propertyid)}
+            onClick={() => viewProperty(row.propertyid)}
             className="w-full h-[90%] object-cover"
           />
         </div>
       ),
     },
     { name: "Name", selector: (row) => row.property_name, sortable: true },
-    { name: "Builder", selector: (row) => row.company_name, sortable: true, minWidth:"100px" },
+    {
+      name: "Builder",
+      selector: (row) => row.company_name,
+      sortable: true,
+      minWidth: "100px",
+    },
     { name: "Type", selector: (row) => row.propertytypeid, sortable: true },
     { name: "Address", selector: (row) => row.address, sortable: true },
     { name: "city", selector: (row) => row.city, sortable: true },
     { name: "Location", selector: (row) => row.location, sortable: true },
-    { name: "Rera No.", selector: (row) => row.rerano, sortable: true, minWidth:"130px"},
+    {
+      name: "Rera No.",
+      selector: (row) => row.rerano,
+      sortable: true,
+      minWidth: "130px",
+    },
     { name: "Area", selector: (row) => row.area, sortable: true },
     { name: "Price Sqft", selector: (row) => row.sqft_price, sortable: true },
     {
@@ -589,7 +605,7 @@ const Properties = () => {
               >
                 <option value="">Select Builder/Company</option>
                 {builderData
-                  .filter((builder) => builder.status === "Active") // ✅ Only active types
+                  .filter((builder) => builder.status === "Active")
                   .map((builder, index) => (
                     <option key={index} value={builder.builderid}>
                       {builder.company_name}
@@ -597,6 +613,7 @@ const Properties = () => {
                   ))}
               </select>
             </div>
+
             <div className="w-full">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Property Type
@@ -613,14 +630,9 @@ const Properties = () => {
                 }
               >
                 <option value="">Select Property Type</option>
-                <option value="NewProject">New Project</option>
-                <option value="Resale">Resale</option>
                 <option value="Rental">Rental</option>
+                <option value="Resale">Resale</option>
                 <option value="Lease">Lease</option>
-                <option value="FarmHouse">Farm House</option>
-                <option value="Flat">Flat</option>
-                <option value="Plot">Plot</option>
-                <option value="RowHouse">Row House</option>
               </select>
             </div>
             <div className="w-full ">
@@ -854,37 +866,40 @@ const Properties = () => {
               className="w-6 h-6 cursor-pointer"
             />
           </div>
-          <div className={`${propertyImages.length === 0? "hidden" : "grid"} grid grid-cols-3 gap-2 mt-2`}>
-            {
-              propertyImages?.map((image, index) => {
-                const imageUrl = `${URI}/uploads/${image.image}`;
-                return (
-                  <div key={image.imageid} className="relative">
-                    <img
-                      src={imageUrl}
-                      alt="Uploaded preview"
-                      className={`w-full h-24 object-cover rounded-lg border ${
-                        index === 0
-                          ? "border-4 border-blue-500"
-                          : "border-gray-300"
-                      }`}
-                    />
-                    <button
-                      onClick={() => {
-                        deleteImages(image.imageid, image.propertyid);
-                        if(propertyImages.length === 1){
-                          if (propertyImages.length === 1) {
-                            setPropertyImages([]);
-                          }
+          <div
+            className={`${
+              propertyImages.length === 0 ? "hidden" : "grid"
+            } grid grid-cols-3 gap-2 mt-2`}
+          >
+            {propertyImages?.map((image, index) => {
+              const imageUrl = `${URI}/uploads/${image.image}`;
+              return (
+                <div key={image.imageid} className="relative">
+                  <img
+                    src={imageUrl}
+                    alt="Uploaded preview"
+                    className={`w-full h-24 object-cover rounded-lg border ${
+                      index === 0
+                        ? "border-4 border-blue-500"
+                        : "border-gray-300"
+                    }`}
+                  />
+                  <button
+                    onClick={() => {
+                      deleteImages(image.imageid, image.propertyid);
+                      if (propertyImages.length === 1) {
+                        if (propertyImages.length === 1) {
+                          setPropertyImages([]);
                         }
-                      }}
-                      className="absolute w-6 h-6 top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                );
-              })}
+                      }
+                    }}
+                    className="absolute w-6 h-6 top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
+                  >
+                    ✕
+                  </button>
+                </div>
+              );
+            })}
           </div>
           <form
             onSubmit={addImages}

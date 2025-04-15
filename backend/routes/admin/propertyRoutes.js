@@ -40,7 +40,7 @@ const upload = multer({
   },
 });
 
-router.get("/", getAll);
+router.get("/get/:lister", getAll);
 router.get("/:id", getById);
 router.get("/images/:id", getImages);
 router.delete("/images/delete/:id", deleteImages);

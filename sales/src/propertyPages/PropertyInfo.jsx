@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "../store/auth";
 import PropertyImageSlider from "../components/property/PropertyImageSlider";
 import OtherProperties from "../components/property/OtherProperties";
+import FormatPrice from "../components/FormatPrice";
 //import propertyPicture from "../assets/property/propertyPicture.svg";
 import SocialShare from "../components/SocialShare";
 
@@ -92,8 +93,7 @@ export default function PropertyInfo() {
         <div className="w-[100px] flex flex-col items-start justify-center">
           <p className="text-xs ml-1 text-[#00000066] font-medium">Price</p>
           <div className="flex items-center text-base font-semibold text-black">
-            <MdCurrencyRupee className="w-5 h-5" />
-            <span>{propertyInfo.sqft_price}</span>
+          <FormatPrice price={propertyInfo.sqft_price} />
           </div>
         </div>
       </div>
@@ -117,24 +117,24 @@ export default function PropertyInfo() {
           {/* Property Details */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[#00000066] text-[12px] font-medium">
             <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center pl-4 justify-start border-r border-[#00000033]">
+              <div className="w-[40%] flex items-center pl-4 justify-start border-r border-[#00000033]">
                 <p>
                   <b className="text-xs text-black">Wing</b>{" "}
                 </p>
               </div>
-              <div className="w-[40%] flex items-center justify-center ">
+              <div className="w-[60%] flex items-center justify-center ">
                 <p className="text-black font-semibold">{propertyInfo.wing}</p>
               </div>
             </div>
             <div className="w-full h-10 flex border-2 border-[#00000033] rounded-xl">
-              <div className="w-[60%] flex items-center pl-4 justify-start border-r border-[#00000033]">
+              <div className="w-[40%] flex items-center pl-4 justify-start border-r border-[#00000033]">
                 <p>
                   <b className="text-xs text-black">Price</b>{" "}
                 </p>
               </div>
-              <div className="w-[40%] flex items-center justify-center ">
+              <div className="w-[60%] flex items-center justify-center ">
                 <p className="text-black font-semibold">
-                  {propertyInfo.sqft_price} /sqft
+                 <FormatPrice price={propertyInfo.sqft_price} /> /sqft
                 </p>
               </div>
             </div>

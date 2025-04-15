@@ -6,7 +6,10 @@ const saltRounds = 10;
 
 // **Fetch All**
 export const getAll = (req, res) => {
-  const sql = "SELECT * FROM builders ORDER BY builderid DESC";
+  const sql = `SELECT builders.*
+    FROM builders 
+    INNER JOIN employees ON builders.builderadder = employees.uid
+    ORDER BY builders.builderid DESC;`;
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching:", err);
@@ -18,7 +21,11 @@ export const getAll = (req, res) => {
 
 // **Fetch All**
 export const getAllActive = (req, res) => {
-  const sql = "SELECT * FROM builders WHERE status = 'Active' ORDER BY builderid DESC";
+  const sql = `SELECT builders.*
+    FROM builders 
+    INNER JOIN employees ON builders.builderadder = employees.uid
+    WHERE builders.status = 'Active'
+    ORDER BY builders.builderid DESC`;
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching:", err);
@@ -47,6 +54,10 @@ export const getById = (req, res) => {
 
 // **Add New Builder**
 export const add = (req, res) => {
+  const adharId = req.user.adharId;
+  if(!adharId){
+    return res.status(401).json({ message: "Unauthorized! Please Login Again." });
+  }
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const { company_name, contact_person, contact, email, office_address, registration_no, dor, website, notes } = req.body;
 
@@ -58,9 +69,9 @@ export const add = (req, res) => {
     if (err) return res.status(500).json({ message: "Database error", error: err });
 
     if (result.length === 0) {
-      const insertSQL = `INSERT INTO builders (company_name, contact_person, contact, email, office_address, registration_no, dor, website, notes, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const insertSQL = `INSERT INTO builders (builderadder, company_name, contact_person, contact, email, office_address, registration_no, dor, website, notes, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-      db.query(insertSQL, [company_name, contact_person, contact, email, office_address, registration_no, dor, website, notes, currentdate, currentdate], (err, result) => {
+      db.query(insertSQL, [adharId, company_name, contact_person, contact, email, office_address, registration_no, dor, website, notes, currentdate, currentdate], (err, result) => {
         if (err) {
           console.error("Error inserting:", err);
           return res.status(500).json({ message: "Database error", error: err });

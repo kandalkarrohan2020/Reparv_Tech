@@ -31,7 +31,10 @@ const [showPropertyTypeForm, setShowPropertyTypeForm ] = useState(false);
 const [showRoleForm, setShowRoleForm ] = useState(false);
 const [showDepartmentForm, setShowDepartmentForm ] = useState(false);
 const [showProfile, setShowProfile ] = useState(false);
-const [showTicketInfo, setShowTicketInfo ] = useState(false);
+const [showTicketInfo, setShowTicketInfo ] = useState(true);
+const [showTicketForm, setShowTicketForm ] = useState(false);
+const [showResponseForm, setShowResponseForm ] = useState(false);
+const [showTicket, setShowTicket ] = useState(false);
 const [action, setAction ] = useState("Save Details");
 const [isActive, setIsActive] = useState("Builders");
 const [giveAccess, setGiveAccess] = useState(false);
@@ -45,6 +48,7 @@ const [showSliderForm, setShowSliderForm] = useState(false);
 const [showFeedbackForm, setShowFeedbackForm] = useState(false);
 const [showPartnerForm, setShowPartnerForm ] = useState(false);
 const [showPartner, setShowPartner ] = useState(false);
+
 
 return <AuthContext.Provider
  value={
@@ -60,6 +64,9 @@ return <AuthContext.Provider
         showSalesPerson, setShowSalesPerson ,
         showAuctionForm, setShowAuctionForm,
         showTicketInfo, setShowTicketInfo,
+        showTicketForm, setShowTicketForm,
+        showTicket, setShowTicket,
+        showResponseForm, setShowResponseForm,
         isActive, setIsActive,
         showPropertyForm, setShowPropertyForm,
         showPropertyTypeForm, setShowPropertyTypeForm,

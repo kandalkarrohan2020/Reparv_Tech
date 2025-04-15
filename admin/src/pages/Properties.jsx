@@ -9,6 +9,7 @@ import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
+import { RiArrowDropDownLine } from "react-icons/ri";
 
 const Properties = () => {
   const {
@@ -57,6 +58,7 @@ const Properties = () => {
     extra: "",
     videourl: "",
   });
+  const [selectedPartner, setSelectedPartner] = useState("Select Property Lister");
 
   //Single Image Upload
   const [selectedImage, setSelectedImage] = useState(null);
@@ -113,7 +115,7 @@ const Properties = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(URI + "/admin/properties", {
+      const response = await fetch(`${URI}/admin/properties/get/${selectedPartner}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -123,6 +125,7 @@ const Properties = () => {
       if (!response.ok) throw new Error("Failed to fetch properties.");
       const data = await response.json();
       setDatas(data);
+      console.log(data);
     } catch (err) {
       console.error("Error fetching :", err);
     } finally {
@@ -495,6 +498,10 @@ const Properties = () => {
 
   useEffect(() => {
     fetchData();
+  }, [selectedPartner]);
+
+  useEffect(() => {
+    fetchData();
     fetchBuilder();
   }, []);
 
@@ -507,7 +514,12 @@ const Properties = () => {
       item.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, sortable: false, width: "50px", },
+    {
+      name: "SN",
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: "50px",
+    },
     {
       name: "Image",
       cell: (row) => (
@@ -522,14 +534,19 @@ const Properties = () => {
       ),
     },
     { name: "Builder", selector: (row) => row.company_name, sortable: true },
-    { name: "Onboarding Partner", cell: (row) => (
-      <div className="flex flex-col gap-[2px] p-2">
-        <span>{row.fullname}</span>
-        <span> {row.contact}</span>
-        <span> {row.city}</span>
-      </div>
-
-    ), sortable: true, minWidth: "180px" },
+    {
+      name: "Property Lister",
+      cell: (row) => (
+        <div className="flex flex-col gap-[2px] p-2">
+          <span>{row.fullname}</span>
+          <span> {row.contact}</span>
+          <span> {row.partnerCity}</span>
+        </div>
+      ),
+      omit: false,
+      sortable: true,
+      minWidth: "180px",
+    },
     { name: "Type", selector: (row) => row.propertytypeid, sortable: true },
     { name: "Name", selector: (row) => row.property_name, sortable: true },
     { name: "Address", selector: (row) => row.address, sortable: true },
@@ -538,7 +555,7 @@ const Properties = () => {
     { name: "Rera No.", selector: (row) => row.rerano, sortable: true },
     { name: "Area", selector: (row) => row.area, sortable: true },
     { name: "Price Sqft", selector: (row) => row.sqft_price, sortable: true },
-  
+
     {
       name: "Status",
       cell: (row) => (
@@ -565,13 +582,21 @@ const Properties = () => {
         >
           {row.approve}
         </span>
-      ),minWidth:"150px"
+      ),
+      minWidth: "150px",
     },
     {
       name: "Actions",
       cell: (row) => <ActionDropdown row={row} />,
     },
   ];
+
+  const hasPropertyLister = datas.some((row) => !!row.fullname);
+ 
+  const finalColumns = columns.map((col) => {
+    if (col.name === "Property Lister") return { ...col, omit: !hasPropertyLister };
+    return col;
+  });
 
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
@@ -637,6 +662,25 @@ const Properties = () => {
   return (
     <div className="properties overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
       <div className="properties-table w-full h-[80vh] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
+        <div className="w-full sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+          <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+            <span>{selectedPartner || "Select Partner"}</span>
+            <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+          </div>
+          <select
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            value={selectedPartner}
+            onChange={(e) => {
+              const action = e.target.value;
+              setSelectedPartner(action);
+            }}
+          >
+            <option value="Select Property Lister">Select Property Lister</option>
+            <option value="Reparv Employee">Reparv Employee</option>
+            <option value="Onboarding Partner">Onboarding Partner</option>
+            <option value="Project Partner">Project Partner</option>
+          </select>
+        </div>
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
             <CiSearch />
@@ -661,7 +705,7 @@ const Properties = () => {
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"
-            columns={columns}
+            columns={finalColumns}
             data={filteredData}
             pagination
           />
@@ -739,14 +783,13 @@ const Properties = () => {
                 }
               >
                 <option value="">Select Property Type</option>
-                <option value="NewProject">New Project</option>
-                <option value="Resale">Resale</option>
+                <option value="Flat">New Flat</option>
+                <option value="Plot">New Plot</option>
                 <option value="Rental">Rental</option>
-                <option value="Lease">Lease</option>
-                <option value="FarmHouse">Farm House</option>
-                <option value="Flat">Flat</option>
-                <option value="Plot">Plot</option>
+                <option value="Resale">Resale</option>
                 <option value="RowHouse">Row House</option>
+                <option value="Lease">Lease</option>
+                <option value="FarmHouse">Farm House</option>               
               </select>
             </div>
             <div className="w-full ">
@@ -1401,7 +1444,11 @@ const Properties = () => {
                 readOnly
               />
             </div>
-            <div className={`${property.partnerid === null? "hidden": "block"} w-full`}>
+            <div
+              className={`${
+                property.partnerid === null ? "hidden" : "block"
+              } w-full`}
+            >
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 OnBoarding Partner Name
               </label>
@@ -1413,7 +1460,11 @@ const Properties = () => {
                 readOnly
               />
             </div>
-            <div className={`${property.partnerid === null? "hidden": "block"} w-full`}>
+            <div
+              className={`${
+                property.partnerid === null ? "hidden" : "block"
+              } w-full`}
+            >
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 OnBoarding Partner Contact
               </label>
@@ -1425,7 +1476,11 @@ const Properties = () => {
                 readOnly
               />
             </div>
-            <div className={`${property.partnerid === null? "hidden": "block"} w-full`}>
+            <div
+              className={`${
+                property.partnerid === null ? "hidden" : "block"
+              } w-full`}
+            >
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 OnBoarding Partner Email
               </label>

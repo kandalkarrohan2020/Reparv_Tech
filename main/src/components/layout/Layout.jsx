@@ -16,6 +16,7 @@ import SuccessScreen from "../SuccessScreen";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import Loader from "../Loader";
+import JoinOurTeamDropdown from "../JoinOurTeamDropdown";
 
 function Layout() {
   const {
@@ -151,15 +152,8 @@ function Layout() {
               >
                 Contact Us
               </NavLink>
-              <NavLink
-                onClick={() => {
-                  setShowSidebar(false);
-                }}
-                to="/join-our-team"
-                className={`${getNavLinkClass("/join-our-team")}`}
-              >
-                Join Our Team
-              </NavLink>
+            
+              <JoinOurTeamDropdown className={`flex gap-1`}></JoinOurTeamDropdown>
             </div>
           </div>
         )}
@@ -206,12 +200,8 @@ function Layout() {
           >
             Contact Us
           </NavLink>
-          <NavLink
-            to="/join-our-team"
-            className={`${getNavLinkClass("/join-our-team")} flex gap-1`}
-          >
-            Join Our Team
-          </NavLink>
+
+          <JoinOurTeamDropdown className={`flex gap-1`}></JoinOurTeamDropdown>
         </div>
       </div>
 

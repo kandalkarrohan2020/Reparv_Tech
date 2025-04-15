@@ -4,7 +4,7 @@ import {getAll, getAllActive, getById, add, update, status, assignLogin, deleteB
 const router = express.Router();
 // router.use(cookieParser());
 
-router.get("/", getAll);
+router.get("/get/:lister", getAll);
 router.get("/active", getAllActive);
 router.get("/:id", getById);
 router.post("/add", add);

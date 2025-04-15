@@ -11,7 +11,7 @@ export const getProfile = (req, res) => {
     return res.status(400).json({ message: "Unauthorized User" });
   }
 
-  const sql = `SELECT * FROM employees INNER JOIN roles ON roles.roleid = employees.roleid WHERE WHERE id = ?`;
+  const sql = `SELECT * FROM employees INNER JOIN roles ON roles.roleid = employees.roleid WHERE id = ?`;
   db.query(sql, [Id], (err, result) => {
     if (err) {
       console.error("Error fetching profile:", err);
@@ -25,7 +25,7 @@ export const getProfile = (req, res) => {
 };
 
 export const editProfile = (req, res) => {
-  const userId = req.user?.id;
+  const userId = req.user.id;
   if (!userId) {
     return res.status(400).json({ message: "Invalid User ID" });
   }
@@ -39,7 +39,7 @@ export const editProfile = (req, res) => {
 
   // Fetch existing user profile first
   db.query(
-    "SELECT userimage FROM users WHERE id = ?",
+    "SELECT userimage FROM employees WHERE id = ?",
     [userId],
     (err, result) => {
       if (err) {

@@ -114,7 +114,7 @@ const OnBoardingPartner = () => {
         alert(
           newPartner.partnerid
             ? "Partner updated successfully!"
-            : "Partner Person added successfully!"
+            : "Partner added successfully!"
         );
 
         setNewPartner({
@@ -132,7 +132,7 @@ const OnBoardingPartner = () => {
         await fetchData();
       }
     } catch (err) {
-      console.error("Error saving Sales Person:", err);
+      console.error("Error saving Partner:", err);
     }
     finally {
       setLoading(false);
@@ -242,7 +242,7 @@ const OnBoardingPartner = () => {
     e.preventDefault();
     if (
       !window.confirm(
-        "Are you sure you want to assign login to this Sales Person?"
+        "Are you sure you want to assign login to this onBoarding Partner ?"
       )
     )
       return;

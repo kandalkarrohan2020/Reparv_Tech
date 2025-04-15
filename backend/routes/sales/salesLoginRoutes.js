@@ -29,7 +29,7 @@ router.post("/login", async (req, res) => {
             return reject(new Error("Database error"));
           }
           if (results.length === 0) {
-            return reject(new Error("Invalid Email Username"));
+            return reject(new Error("Invalid Email | Username"));
           }
           resolve(results[0]);
         }
@@ -43,7 +43,7 @@ router.post("/login", async (req, res) => {
     }
 
     //  Generate JWT Token
-    const token = jwt.sign({ id: user.salespersonsid, username: user.username }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user.salespersonsid, username: user.username, email: user.email, adharId: user.adharno }, process.env.JWT_SECRET, {
       expiresIn: "10d",
     });
 

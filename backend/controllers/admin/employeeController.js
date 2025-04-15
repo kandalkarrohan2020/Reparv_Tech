@@ -42,7 +42,8 @@ export const add = (req, res) => {
   if (!name || !uid || !contact || !email || !address || !dob || !departmentid || !roleid || !salary || !doj) {
     return res.status(400).json({ message: "All fields are required" });
   }
-
+  const joiningDate = moment(doj).isValid() ? moment(doj).add(1,"days").format("YYYY-MM-DD") : "";
+  const birthDate = moment(dob).isValid() ? moment(dob).add(1,"days").format("YYYY-MM-DD") : "";
   db.query("SELECT * FROM employees WHERE uid = ? OR contact = ? OR email = ?", [uid, contact, email], (err, result) => {
     if (err) return res.status(500).json({ message: "Database error", error: err });
       
@@ -51,7 +52,7 @@ export const add = (req, res) => {
         // **Add new employee**
         const insertSQL = `INSERT INTO employees (name, uid, contact, email, address, dob, departmentid, roleid, salary, doj, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-        db.query(insertSQL, [name, uid, contact, email, address, dob, departmentid, roleid, salary, doj, currentdate, currentdate], (err, result) => {
+        db.query(insertSQL, [name, uid, contact, email, address, birthDate, departmentid, roleid, salary, joiningDate, currentdate, currentdate], (err, result) => {
           if (err) {
             console.error("Error inserting :", err);
             return res.status(500).json({ message: "Database error", error: err });
@@ -74,13 +75,16 @@ export const update = (req, res) => {
   if (!name || !uid || !contact || !email || !address || !dob || !departmentid || !roleid || !salary || !doj) {
     return res.status(400).json({ message: "All fields are required" });
   }
+
+  const joiningDate = moment(doj).isValid() ? moment(doj).add(1,"days").format("YYYY-MM-DD") : "";
+  const birthDate = moment(dob).isValid() ? moment(dob).add(1,"days").format("YYYY-MM-DD") : "";
   db.query("SELECT * FROM employees WHERE id = ?", [Id], (err, result) => {
     if (err) return res.status(500).json({ message: "Database error", error: err });
     if (result.length === 0) return res.status(404).json({ message: "Employee not found" });
 
     const sql = `UPDATE employees SET name=?, uid=?, contact=?, email=?, address=?, dob=?, departmentid=?, roleid=?, salary=?, doj=?, updated_at=? WHERE id=?`;
 
-    db.query(sql, [name, uid, contact, email, address, dob, departmentid, roleid, salary, doj, currentdate, Id], (err) => {
+    db.query(sql, [name, uid, contact, email, address, birthDate, departmentid, roleid, salary, joiningDate, currentdate, Id], (err) => {
       if (err) {
         console.error("Error updating :", err);
         return res.status(500).json({ message: "Database error", error: err });

@@ -23,6 +23,8 @@ import Slider from "./pages/Slider.jsx";
 import Testimonial from "./pages/Testimonial.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import OnBoardingPartner from "./pages/OnBoardingPartner.jsx";
+import ProjectPartner from "./pages/projectPartner.jsx";
+import TerritoryPartner from "./pages/TerritoryPartner.jsx";
 
 const App = () => {
   return (
@@ -41,6 +43,8 @@ const App = () => {
           <Route path="/builders" element={<Builders />} />
           <Route path="/salespersons" element={<SalesPerson />} />
           <Route path="/onboardingpartner" element={<OnBoardingPartner />} />
+          <Route path="/projectpartner" element={<ProjectPartner />} />
+          <Route path="/territorypartner" element={<TerritoryPartner />} />
           <Route path="/auctionmembers" element={<AuctionMembers />} />
           <Route path="/employees" element={<Employee />} />
           <Route path="/role" element={<Role />} />

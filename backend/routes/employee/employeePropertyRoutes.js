@@ -2,18 +2,18 @@ import express from "express";
 import {
   getAll,
   getById,
+  getImages,
   add,
   update,
-  status,
-  approve,
-  del,
+  deleteImages,
+  addImages,
+  additionalInfoAdd,
+  propertyInfo,
 } from "../../controllers/employee/propertyController.js";
-import cookieParser from "cookie-parser";
 import multer from "multer";
 import path from "path";
 
 const router = express.Router();
-router.use(cookieParser());
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -38,10 +38,12 @@ const upload = multer({
 
 router.get("/", getAll);
 router.get("/:id", getById);
+router.get("/images/:id", getImages);
+router.delete("/images/delete/:id", deleteImages);
 router.post("/add", upload.single("image"), add);
 router.put("/edit/:id", upload.single("image"), update);
-router.put("/status/:id", status);
-router.put("/approve/:id", approve);
-router.delete("/delete/:id", del);
+router.post("/addimages",upload.array("images[]"), addImages);
+router.post("/additionalinfoadd", additionalInfoAdd);
+router.get("/propertyinfo/:id", propertyInfo);
 
 export default router;

@@ -35,7 +35,6 @@ function App() {
           <Route path="/farm-house" element={<FarmHouse/>} />
           <Route path="/property-info/:id" element={<PropertyInfo />} />
           <Route path="/about-us" element={<AboutUs/>} />
-          <Route path="/join-our-team" element={<JoinOurTeam />} />
           <Route path="/contact-us" element={<ContactUs />} />
         </Route>
       </Routes>

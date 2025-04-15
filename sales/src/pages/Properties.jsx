@@ -1,13 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
-import CustomDateRangePicker from "../components/CustomDateRangePicker";
-import FilterData from "../components/FilterData";
-import AddButton from "../components/AddButton";
-import { IoMdClose } from "react-icons/io";
-import DataTable from "react-data-table-component";
-import { FiMoreVertical } from "react-icons/fi";
 import HomePropertyGrid from "../components/property/HomePropertyGrid";
 
 const Properties = () => {
@@ -43,7 +36,7 @@ const Properties = () => {
   
   return (
     <div className="properties overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
-      <div className="properties-table overflow-scroll scrollbar-hide w-full h-[446px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
+      <div className="properties-table overflow-scroll scrollbar-hide w-full h-[500px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
       <p className="block md:hidden text-lg font-semibold">Properties</p>
         <HomePropertyGrid />
       </div>

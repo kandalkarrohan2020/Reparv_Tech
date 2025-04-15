@@ -14,6 +14,7 @@ import { useAuth } from "../store/auth";
 import PropertyImageSlider from "../components/property/PropertyImageSlider";
 import OtherProperties from "../components/OtherProperties";
 import propertyPicture from "../assets/property/propertyPicture.svg";
+import FormatPrice from "../components/FormatPrice";
 import SocialShare from "../components/SocialShare";
 
 export default function PropertyInfo() {
@@ -92,8 +93,7 @@ export default function PropertyInfo() {
         <div className="w-[100px] flex flex-col items-start justify-center">
           <p className="text-xs ml-1 text-[#00000066] font-medium">Price</p>
           <div className="flex items-center text-base font-semibold text-black">
-            <MdCurrencyRupee className="w-5 h-5" />
-            <span>{propertyInfo.sqft_price}</span>
+           <FormatPrice price={propertyInfo.sqft_price} />
           </div>
         </div>
       </div>
@@ -134,7 +134,7 @@ export default function PropertyInfo() {
               </div>
               <div className="w-[40%] flex items-center justify-center ">
                 <p className="text-black font-semibold">
-                  {propertyInfo.sqft_price} /sqft
+                <FormatPrice price={propertyInfo.sqft_price} /> /sqft
                 </p>
               </div>
             </div>

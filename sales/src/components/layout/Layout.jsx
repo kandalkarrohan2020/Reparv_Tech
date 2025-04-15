@@ -37,6 +37,10 @@ function Layout() {
     setShowPropertyInfo,
     showInquiryForm,
     setShowInquiryForm,
+    showTicket,
+    setShowTicket,
+    showTicketForm,
+    setShowTicketForm,
     showEnquiry,
     setShowEnquiry,
     showSuccess,
@@ -106,8 +110,11 @@ function Layout() {
     { state: showUploadImagesForm, setter: setShowUploadImagesForm },
     { state: showAdditionalInfoForm, setter: setShowAdditionalInfoForm },
     { state: showEnquiryStatusForm, setter: setShowEnquiryStatusForm },
+    { state: showTicketForm, setter: setShowTicketForm },
+    { state: showTicket, setter: setShowTicket },
     { state: showEnquiry, setter: setShowEnquiry},
     { state: showPropertyInfo, setter: setShowPropertyInfo },
+   
   ];
 
   const getNavLinkClass = (path) => {

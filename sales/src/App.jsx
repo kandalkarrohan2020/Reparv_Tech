@@ -13,10 +13,10 @@ import ErrorPage from "./pages/ErrorPage.jsx";
 import Flat from "./propertyPages/Flat.jsx";
 import Plot from "./propertyPages/Plot.jsx";
 import Rental from "./propertyPages/Rental.jsx";
-import Lease from "./propertyPages/Lease.jsx";
-import RowHouse from "./propertyPages/RowHouse.jsx";
-import NewProject from "./propertyPages/NewProject.jsx";
 import Resale from "./propertyPages/Resale.jsx";
+import RowHouse from "./propertyPages/RowHouse.jsx";
+import Lease from "./propertyPages/Lease.jsx";
+//import NewProject from "./propertyPages/NewProject.jsx";
 import FarmHouse from "./propertyPages/FarmHouse.jsx";
 import PropertyInfo from "./propertyPages/PropertyInfo.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
@@ -38,7 +38,7 @@ const App = () => {
           <Route path="/lease" element={<Lease/>} />
           <Route path="/row-house" element={<RowHouse/>} />
           <Route path="/plot" element={<Plot/>} />
-          <Route path="/new-project" element={<NewProject/>} />
+          
           <Route path="/resale" element={<Resale/>} />
           <Route path="/farm-house" element={<FarmHouse/>} />
           <Route path="/property-info/:id" element={<PropertyInfo />} />

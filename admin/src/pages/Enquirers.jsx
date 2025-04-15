@@ -480,7 +480,7 @@ const Enquirers = () => {
             <CiSearch />
             <input
               type="text"
-              placeholder="Search Enquirer"
+              placeholder="Search Enquiry"
               className="search-input md:w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -493,7 +493,7 @@ const Enquirers = () => {
             </div>
           </div>
         </div>
-        <h2 className="text-[16px] font-semibold">Enquirer List</h2>
+        <h2 className="text-[16px] font-semibold">Enquiry List</h2>
         <div className="overflow-scroll scrollbar-hide">
           <DataTable className="scrollbar-hide" columns={columns} data={filteredData} pagination />
         </div>

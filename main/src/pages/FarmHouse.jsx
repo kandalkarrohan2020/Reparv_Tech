@@ -12,6 +12,7 @@ import { useNavigate, Navigate } from "react-router-dom";
 import VideoReviewSection from "../components/VideoReviewSection";
 import { useAuth } from "../store/auth";
 import { Link } from "react-router-dom";
+import FormatPrice from "../components/FormatPrice";
 
 export default function FarmHouse() {
   const navigate = useNavigate();
@@ -265,8 +266,7 @@ export default function FarmHouse() {
                 <div className="w-full py-3 flex items-center justify-between">
                   <div className="flex flex-col justify-between gap-2 text-xl lg:text-2xl font-extrabold p-2">
                     <div className="text-[#076300] group-hover:text-white flex items-center justify-start">
-                      <FaRupeeSign />
-                      <p> {property.sqft_price} </p>
+                    <FormatPrice price={property.sqft_price} />
                     </div>
                     <h2 className="text-[#000929] group-hover:text-white ml-1">
                       {property.property_name.length > 18
@@ -331,7 +331,7 @@ export default function FarmHouse() {
       </div>
 
       {/* Customer Review */}
-      <div className="w-full h-[1px] mt-5 bg-[#00000033] "></div>
+      <div className="w-full  hidden md:block h-[1px] mt-5 bg-[#00000033] "></div>
       <VideoReviewSection />
     </div>
   );

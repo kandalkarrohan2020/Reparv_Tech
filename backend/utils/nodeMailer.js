@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmail = async (email, username, password, role) => {
+const sendEmail = async (email, username, password, role, url) => {
   try {
     const mailOptions = {
       from: `"Your Company" <${process.env.EMAIL_USER}>`,
@@ -22,6 +22,7 @@ const sendEmail = async (email, username, password, role) => {
       html: `
         <p>Hello,</p>
         <p>You have been assigned as a <strong>${role}</strong>.</p>
+        <p>This is Your URL for Login: <strong>${url}</strong>.</p>
         <p><strong>Username:</strong> ${username}</p>
         <p><strong>Password:</strong> ${password}</p>
         <p>Please log in and update your password for security.</p>

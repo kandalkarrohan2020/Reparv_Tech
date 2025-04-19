@@ -295,14 +295,14 @@ const OnBoardingPartner = () => {
 
   const columns = [
     { name: "SN", selector: (row, index) => index + 1, width:"50px" },
-    { name: "Full Name", selector: (row) => row.fullname, sortable: true , minWidth: "150px"},
-    { name: "Contact", selector: (row) => row.contact, sortable: true , minWidth: "150px"},
-    { name: "Email", selector: (row) => row.email, sortable: true , minWidth: "150px"},
+    { name: "Full Name", selector: (row) => row.fullname, sortable: true ,minWidth: "150px" },
+    { name: "Contact", selector: (row) => row.contact, sortable: true ,minWidth: "150px" },
+    { name: "Email", selector: (row) => row.email, sortable: true ,sminWidth: "150px" },
     { name: "Experience", selector: (row) => row.experience, sortable: true },
-    { name: "Adhar No", selector: (row) => row.adharno, sortable: true , minWidth: "150px"},
-    { name: "PAN No", selector: (row) => row.panno, sortable: true , minWidth: "150px"},
+    { name: "Adhar No", selector: (row) => row.adharno, sortable: true , minWidth: "150px" },
+    { name: "PAN No", selector: (row) => row.panno, sortable: true , minWidth: "150px" },
     { name: "City", selector: (row) => row.city, sortable: true },
-    { name: "Address", selector: (row) => row.address, sortable: true , minWidth: "150px"},
+    { name: "Address", selector: (row) => row.address, sortable: true , minWidth: "150px" },
 
     {
       name: "Status",

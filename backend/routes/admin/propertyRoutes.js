@@ -13,6 +13,7 @@ import {
   editAdditionalInfo,
   additionalInfoAdd,
   propertyInfo,
+  addRejectReason,
 } from "../../controllers/admin/propertyController.js";
 import multer from "multer";
 import path from "path";
@@ -47,6 +48,7 @@ router.delete("/images/delete/:id", deleteImages);
 router.post("/add", upload.single("image"), add);
 router.put("/edit/:id", upload.single("image"), update);
 router.put("/status/:id", status);
+router.put("/reject/:id", addRejectReason);
 router.put("/approve/:id", approve);
 router.delete("/delete/:id", del);
 router.post("/addimages",upload.array("images[]"), addImages);

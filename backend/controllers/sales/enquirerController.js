@@ -4,10 +4,13 @@ import moment from "moment";
 // **Fetch All **
 export const getAll = (req, res) => {
   const sql = `
-    SELECT enquirers.*, properties.image 
+    SELECT enquirers.*, properties.image,
+    territorypartner.fullname AS territoryName,
+    territorypartner.contact AS territoryContact
     FROM enquirers 
     INNER JOIN properties 
-    ON enquirers.propertyid = properties.propertyid 
+    ON enquirers.propertyid = properties.propertyid
+    LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
     WHERE enquirers.salespersonid = ? 
     AND properties.status = 'Active' 
     AND properties.approve = 'Approved' 
@@ -25,7 +28,15 @@ db.query(sql, [req.user.id], (err, results) => {
 // **Fetch Single by ID**
 export const getById = (req, res) => {
   const Id = parseInt(req.params.id);
-  const sql = "SELECT * FROM enquirers WHERE enquirersid = ?";
+  const sql = `SELECT enquirers.*, 
+       territorypartner.fullname AS territoryName,
+       territorypartner.contact AS territoryContact,
+       territoryenquiry.followup AS territoryFollowUp,
+       territoryenquiry.status AS territoryStatus 
+       FROM enquirers 
+       INNER JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
+       INNER JOIN territoryenquiry ON territoryenquiry.enquirerid = enquirers.enquirersid
+       WHERE enquirersid = ?`;
 
   db.query(sql, [Id], (err, result) => {
     if (err) {
@@ -38,6 +49,87 @@ export const getById = (req, res) => {
     res.json(result[0]);
   });
 };
+
+// **Fetch All Active Territory Partner**
+export const getPropertyCity = (req, res) => {
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Enquiry ID" });
+  }
+  
+  const sql = `SELECT properties.city FROM enquirers 
+               INNER JOIN properties 
+               ON enquirers.propertyid = properties.propertyid
+               WHERE enquirers.enquirersid = ? 
+               ORDER BY enquirers.enquirersid DESC`;
+  db.query(sql, [Id], (err, result) => {
+    if (err) {
+      console.error("Error fetching:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    res.json(result[0]);
+  });
+};
+
+// **Fetch All Active Territory Partner**
+export const getTerritoryPartners = (req, res) => {
+  const propertyCity = req.params.city;
+
+  const sql = "SELECT * FROM territorypartner WHERE status = 'Active' AND territorypartner.city = ? ORDER BY id DESC";
+  db.query(sql, [propertyCity], (err, result) => {
+    if (err) {
+      console.error("Error fetching:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    res.json(result);
+  });
+};
+
+// Assign Enquiry To Territory Partners
+export const assignEnquiry = async (req, res) => {
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const { territorypartnerid, territorypartnerdate } = req.body;
+  if (!territorypartnerid || !territorypartnerdate) {
+    return res.status(400).json({ message: "All Fields Required" });
+  }
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Enquiry ID" });
+  }
+
+  db.query(
+    "SELECT * FROM enquirers WHERE enquirersid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Enquiry not found" });
+      }
+
+      db.query(
+        "INSERT INTO territoryenquiry SET territorypartnerid = ?, enquirerid = ?, visitdate = ?, updated_at = ?, created_at = ?",
+        [territorypartnerid, Id, territorypartnerdate, currentdate, currentdate ],
+        (err, result) => {
+          if (err) {
+            console.error("Error assigning to territory partner :", err);
+            return res 
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+          res
+            .status(200)
+            .json({
+              message: "Enquiry assigned successfully to Territory Partner",
+            });
+        }
+      );
+    }
+  );
+};
+
 
 /* Change status */
 export const status = (req, res) => {

@@ -275,12 +275,12 @@ const Builders = () => {
       name: "Company Name",
       selector: (row) => row.company_name,
       sortable: true,
-      minWidth: "150px",
+      minWidth: "150px" 
     },
     {
       name: "Contact Person",
       selector: (row) => row.contact_person,
-      minWidth: "150px",
+      minWidth: "150px" 
     },
     {
       name: "Builder Lister",
@@ -294,12 +294,12 @@ const Builders = () => {
       width: "180px",
     },
     { name: "Contact", selector: (row) => row.contact, minWidth: "150px" },
-    { name: "Email", selector: (row) => row.email, minWidth: "150px" },
+    { name: "Email", selector: (row) => row.email, minWidth: "150px"  },
     { name: "Office address", selector: (row) => row.office_address },
     {
       name: "Registration No",
       selector: (row) => row.registration_no,
-      minWidth: "150px",
+      minWidth: "150px" 
     },
     {
       name: "Status",

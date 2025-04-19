@@ -309,7 +309,7 @@ export const assignLogin = async (req, res) => {
             }
 
             // Send email after successful update
-            sendEmail(email, username, password, "Project Partner")
+            sendEmail(email, username, password, "Project Partner", "https://projectpartner.reparv.in")
               .then(() => {
                 res.status(200).json({ message: "Project Partner login assigned successfully and email sent." });
               })

@@ -361,7 +361,7 @@ const Ticketing = () => {
   };
 
   return (
-    <div className="ticketing overflow-scroll w-full h-screen flex flex-col items-start justify-start">
+    <div className="ticketing overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
       <div className="ticket-table w-full h-[80vh] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
         {/* <p className="block md:hidden text-lg font-semibold">Tickets</p> */}
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">

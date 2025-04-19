@@ -166,6 +166,7 @@ export const update = (req, res) => {
   }
 
   const {
+    
     builderid,
     propertytypeid,
     property_name,
@@ -211,18 +212,25 @@ export const update = (req, res) => {
         return res.status(404).json({ message: "Property not found" });
       }
 
+      let approve;
+      if(result[0].approve === "Rejected" || result[0].approve === "Not Approved"){
+        approve = "Not Approved";
+      } else {
+        approve = "Approved"
+      }
+
       // Preserve existing image if no new image is uploaded
       const existingImage = result[0].image;
       const finalImagePath = imagePath || existingImage;
 
       const updateSQL = `
       UPDATE properties 
-      SET builderid=?, propertytypeid=?, property_name=?, address=?, city=?, location=?, rerano=?, area=?, sqft_price=?, extra=?, videourl=?, image=?, updated_at=? 
+      SET rejectreason=NULL, approve=?, builderid=?, propertytypeid=?, property_name=?, address=?, city=?, location=?, rerano=?, area=?, sqft_price=?, extra=?, videourl=?, image=?, updated_at=? 
       WHERE propertyid=?`;
 
       db.query(
         updateSQL,
-        [
+        [ approve,
           builderid,
           propertytypeid,
           property_name,

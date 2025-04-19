@@ -164,9 +164,9 @@ const Testimonial = () => {
 
   const columns = [
     { name: "SN", selector: (row, index) => index + 1, width:"50px"},
-    { name: "Client Name", selector: (row) => row.client, sortable: true , minWidth: "150px"},
-    { name: "Message", selector: (row) => row.message, sortable: true , minWidth: "150px"},
-    { name: "Video URL", selector: (row) => row.url, sortable: true , minWidth: "250px"},
+    { name: "Client Name", selector: (row) => row.client, sortable: true ,minWidth: "150px" },
+    { name: "Message", selector: (row) => row.message, sortable: true , minWidth: "150px" },
+    { name: "Video URL", selector: (row) => row.url, sortable: true , minWidth: "250px" },
     {
       name: "Status",
       cell: (row) => (

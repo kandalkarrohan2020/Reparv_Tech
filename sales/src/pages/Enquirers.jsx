@@ -16,6 +16,8 @@ const Enquirers = () => {
     setShowEnquiryStatusForm,
     showPropertyInfo,
     setShowPropertyInfo,
+    showAssignTerritory,
+    setShowAssignTerritory,
     setLoading,
     showEnquiry,
     setShowEnquiry,
@@ -27,6 +29,14 @@ const Enquirers = () => {
   const [enquiry, setEnquiry] = useState({});
   const [property, setProperty] = useState({});
   const [enquiryStatus, setEnquiryStatus] = useState("");
+  const [territoryPartnerList, setTerritoryPartnerList] = useState([]);
+  //const [propertyCity, setPropertyCity] = useState("");
+  const [territoryPartnerToAssign, setTerritoryPartnerToAssign] = useState({
+    territorypartnerid: "",
+    territorypartner: "",
+    territorypartnercontact: "",
+    territorypartnerdate: "",
+  });
   const [followUpRemark, setFollowUpRemark] = useState("");
   const [cancelledRemark, setCancelledRemark] = useState("");
   const [visitRemark, setVisitRemark] = useState("");
@@ -66,6 +76,92 @@ const Enquirers = () => {
       setDatas(data);
     } catch (err) {
       console.error("Error fetching :", err);
+    }
+  };
+
+  //Fetch City of Property
+  const fetchPropertyCity = async (id) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        URI + "/sales/enquirers/property/city/" + id,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch City.");
+      const data = await response.json();
+      console.log(data);
+      fetchTerritoryPartner(data.city);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //Fetch Territory Partner List By City of Property
+  const fetchTerritoryPartner = async (city) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        URI + "/sales/enquirers/territorypartner/active/" + city,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch Territory Partner.");
+      const data = await response.json();
+      setTerritoryPartnerList(data);
+      setShowAssignTerritory(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const assignTerritoryPartner = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      const response = await fetch(
+        URI + `/sales/enquirers/assign/to/partner/${enquiryId}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(territoryPartnerToAssign),
+        }
+      );
+      const data = await response.json();
+      console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      setTerritoryPartnerToAssign({
+        territorypartnerid: "",
+        territorypartnerdate: "",
+      });
+      setShowAssignTerritory(false);
+      fetchData();
+    } catch (error) {
+      console.error("Error deleting :", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -259,7 +355,7 @@ const Enquirers = () => {
 
   const viewEnquiry = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/enquirers/${id}`, {
+      const response = await fetch(URI + `/sales/enquirers/${id}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -291,14 +387,13 @@ const Enquirers = () => {
     {
       name: "SN",
       selector: (row, index) => index + 1,
-      sortable: true,
-      width: "50px",
+      width: "70px",
     },
     {
       name: "Intrested Property",
       cell: (row) => (
         <div
-          className={`w-full h-14 overflow-hidden flex items-center justify-center`}
+          className={`w-[140px] h-16 overflow-hidden flex items-center justify-center`}
         >
           <img
             src={`${URI}${row.image}`}
@@ -310,13 +405,27 @@ const Enquirers = () => {
           />
         </div>
       ),
+      width: "160px",
     },
     { name: "Customer", selector: (row) => row.customer, sortable: true },
     { name: "Contact", selector: (row) => row.contact, sortable: true },
     { name: "Email", selector: (row) => row.email, sortable: true },
     { name: "Location", selector: (row) => row.location, sortable: true },
     { name: "Budget", selector: (row) => row.budget, sortable: true },
-
+    {
+      name: "Territory Partner",
+      cell: (row) => (
+        <div className="flex flex-col gap-[2px]">
+        <span>
+          {row.territoryName || "-- NOT ASSIGN --"}
+        </span>
+        <span>
+        {row.territoryContact}
+        </span>
+        </div>
+      ),
+      minWidth: "200px",
+    },
     {
       name: "Status",
       cell: (row) => (
@@ -357,6 +466,10 @@ const Enquirers = () => {
           setEnquiryId(id);
           setShowEnquiryStatusForm(true);
           break;
+        case "territoryPartner":
+          setEnquiryId(id);
+          fetchPropertyCity(id);
+          break;
         default:
           console.log("Invalid action");
       }
@@ -381,6 +494,7 @@ const Enquirers = () => {
           </option>
           <option value="view">View</option>
           <option value="status">Status</option>
+          {row.territorypartnerid === null && <option value="territoryPartner">Territory Partner</option>}
         </select>
       </div>
     );
@@ -845,7 +959,108 @@ const Enquirers = () => {
           </form>
         </div>
       </div>
+      {/* Assign To Territory Partner */}
+      <div
+        className={` ${
+          !showAssignTerritory && "hidden"
+        } z-[61] overflow-scroll scrollbar-hide flex fixed`}
+      >
+        <div className="w-[330px] h-[350px] sm:w-[600px] sm:h-[300px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[300px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">
+              Assign Enquiry to Territory Partner
+            </h2>
+            <IoMdClose
+              onClick={() => {
+                setShowAssignTerritory(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={assignTerritoryPartner}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
+              <input
+                type="hidden"
+                value={enquiryId}
+                onChange={(e) => {
+                  setEnquiryId(e.target.value);
+                }}
+              />
 
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Territory Partner
+                </label>
+                <select
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={territoryPartnerToAssign.territorypartnerid}
+                  onChange={(e) => {
+                    setTerritoryPartnerToAssign({
+                      ...territoryPartnerToAssign,
+                      territorypartnerid: e.target.value,
+                    });
+                  }}
+                >
+                  <option value="">Select Territory Partner</option>
+                  {territoryPartnerList
+                    .filter(
+                      (territoryPartner) => territoryPartner.status === "Active"
+                    )
+                    .map((territoryPartner, index) => {
+                      return (
+                        <option key={index} value={territoryPartner.id}>
+                          {territoryPartner.fullname} |{" "}
+                          {territoryPartner.contact}
+                        </option>
+                      );
+                    })}
+                </select>
+              </div>
+
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={territoryPartnerToAssign.territorypartnerdate}
+                  onChange={(e) => {
+                    const selectedDate = e.target.value; // Get full date
+                    const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
+                  
+                    setTerritoryPartnerToAssign({
+                      ...territoryPartnerToAssign,
+                      territorypartnerdate: formattedDate,
+                    });
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAssignTerritory(false);
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Assign Enquiry
+              </button>
+              <Loader></Loader>
+            </div>
+          </form>
+        </div>
+      </div>
       {/* Show Enquiry Info */}
       <div
         className={`${
@@ -961,13 +1176,25 @@ const Enquirers = () => {
             </div>
             <div className="w-full ">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Assign Login
+                Territory Partner
               </label>
               <input
                 type="text"
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={enquiry.assign}
+                value={enquiry.territoryName + " | " + enquiry.territoryContact || "NOT ASSIGN"}
+                readOnly
+              />
+            </div>
+            <div className={`${enquiry.territoryFollowUp? "block":"hidden"}`}>
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Territory Follow Up
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={enquiry.territoryFollowUp}
                 readOnly
               />
             </div>

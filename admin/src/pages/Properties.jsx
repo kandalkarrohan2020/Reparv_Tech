@@ -21,6 +21,8 @@ const Properties = () => {
     setShowAdditionalInfoForm,
     showPropertyInfo,
     setShowPropertyInfo,
+    showRejectReasonForm,
+    setShowRejectReasonForm,
     URI,
     loading,
     setLoading,
@@ -28,6 +30,8 @@ const Properties = () => {
   const [datas, setDatas] = useState([]);
   const [propertyTypeData, setPropertyTypeData] = useState([]);
   const [property, setProperty] = useState({});
+  const [propertyKey, setPropertyKey] = useState("");
+  const [rejectReason, setRejectReason] = useState("");
   const [builderData, setBuilderData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [propertyImages, setPropertyImages] = useState([]);
@@ -58,7 +62,9 @@ const Properties = () => {
     extra: "",
     videourl: "",
   });
-  const [selectedPartner, setSelectedPartner] = useState("Select Property Lister");
+  const [selectedPartner, setSelectedPartner] = useState(
+    "Select Property Lister"
+  );
 
   //Single Image Upload
   const [selectedImage, setSelectedImage] = useState(null);
@@ -115,13 +121,16 @@ const Properties = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${URI}/admin/properties/get/${selectedPartner}`, {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${URI}/admin/properties/get/${selectedPartner}`,
+        {
+          method: "GET",
+          credentials: "include", // ✅ Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch properties.");
       const data = await response.json();
       setDatas(data);
@@ -307,6 +316,39 @@ const Properties = () => {
       fetchData();
     } catch (error) {
       console.error("Error deleting :", error);
+    }
+  };
+
+  // Add Property Reject Reason
+  const addRejectReason = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const response = await fetch(
+        URI + `/admin/properties/reject/${propertyKey}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ rejectReason }),
+        }
+      );
+      const data = await response.json();
+      console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      setShowRejectReasonForm(false);
+      setRejectReason("");
+      await fetchData();
+    } catch (error) {
+      console.error("Error adding reject reason:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -523,7 +565,7 @@ const Properties = () => {
     {
       name: "Image",
       cell: (row) => (
-        <div className="w-full h-14 overflow-hidden flex items-center justify-center">
+        <div className="w-[150px] h-14 overflow-hidden flex items-center justify-center">
           <img
             src={`${URI}${row.image}`}
             alt="Property"
@@ -532,6 +574,7 @@ const Properties = () => {
           />
         </div>
       ),
+      width: "160px",
     },
     { name: "Builder", selector: (row) => row.company_name, sortable: true },
     {
@@ -555,7 +598,6 @@ const Properties = () => {
     { name: "Rera No.", selector: (row) => row.rerano, sortable: true },
     { name: "Area", selector: (row) => row.area, sortable: true },
     { name: "Price Sqft", selector: (row) => row.sqft_price, sortable: true },
-
     {
       name: "Status",
       cell: (row) => (
@@ -577,12 +619,19 @@ const Properties = () => {
           className={`px-2 py-1 rounded-md ${
             row.approve === "Approved"
               ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FBE9E9] text-[#FF0000]"
+              : row.approve === "Rejected" 
+              ? "bg-[#FBE9E9] text-[#FF0000]"
+              : "bg-[#E9F2FF] text-[#0068FF]"
           }`}
         >
           {row.approve}
         </span>
       ),
+      minWidth: "150px",
+    },
+    {
+      name: "Reject Reason",
+      selector: (row) => row.rejectreason || "-- No Reason --",
       minWidth: "150px",
     },
     {
@@ -592,9 +641,10 @@ const Properties = () => {
   ];
 
   const hasPropertyLister = datas.some((row) => !!row.fullname);
- 
+
   const finalColumns = columns.map((col) => {
-    if (col.name === "Property Lister") return { ...col, omit: !hasPropertyLister };
+    if (col.name === "Property Lister")
+      return { ...col, omit: !hasPropertyLister };
     return col;
   });
 
@@ -621,6 +671,10 @@ const Properties = () => {
           break;
         case "approve":
           approve(propertyid);
+          break;
+        case "rejectReason":
+          setPropertyKey(propertyid);
+          setShowRejectReasonForm(true);
           break;
         case "additionalinfo":
           openAdditionalInfo(propertyid);
@@ -653,6 +707,7 @@ const Properties = () => {
           <option value="add_images">Add Images</option>
           <option value="additionalinfo">Additional Info</option>
           <option value="approve">Approve</option>
+          <option value="rejectReason">Reject Reason</option>
           <option value="delete">Delete</option>
         </select>
       </div>
@@ -675,7 +730,9 @@ const Properties = () => {
               setSelectedPartner(action);
             }}
           >
-            <option value="Select Property Lister">Select Property Lister</option>
+            <option value="Select Property Lister">
+              Select Property Lister
+            </option>
             <option value="Reparv Employee">Reparv Employee</option>
             <option value="Onboarding Partner">Onboarding Partner</option>
             <option value="Project Partner">Project Partner</option>
@@ -789,7 +846,7 @@ const Properties = () => {
                 <option value="Resale">Resale</option>
                 <option value="RowHouse">Row House</option>
                 <option value="Lease">Lease</option>
-                <option value="FarmHouse">Farm House</option>               
+                <option value="FarmHouse">Farm House</option>
               </select>
             </div>
             <div className="w-full ">
@@ -1307,6 +1364,68 @@ const Properties = () => {
         </div>
       </div>
 
+      {/* ADD Reject Reason Form */}
+      <div
+        className={` ${
+          !showRejectReasonForm && "hidden"
+        } z-[61] overflow-scroll scrollbar-hide flex fixed`}
+      >
+        <div className="w-[330px] h-[350px] sm:w-[600px] sm:h-[300px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[300px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">
+              Property Reject Reason
+            </h2>
+            <IoMdClose
+              onClick={() => {
+                setShowRejectReasonForm(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={addRejectReason}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-1">
+              <input
+                type="hidden"
+                value={propertyKey || ""}
+                onChange={(e) => setPropertyKey(e.target.value)}
+              />
+
+              <div className={`w-full `}>
+                <textarea
+                  rows={2}
+                  cols={40}
+                  placeholder="Enter Reason"
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={rejectReason}
+                  onChange={(e) => {
+                    setRejectReason(e.target.value);
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowRejectReasonForm(false);
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Add Reason
+              </button>
+              <Loader></Loader>
+            </div>
+          </form>
+        </div>
+      </div>
+
       {/* Show Property Info */}
       <div
         className={`${
@@ -1528,6 +1647,18 @@ const Properties = () => {
               />
             </div>
           </form>
+          <div className={`${property.rejectreason == null ? "hidden" : "block"} w-full mt-3`}>
+            <label className="block text-sm leading-4 text-[#00000066] font-medium">
+              Property Reject Reason
+            </label>
+            <textarea
+              rows={3}
+              disabled
+              readOnly
+              className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-[#f9f9f9]"
+              value={property.rejectreason}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import reparvMainLogo from "../../assets/layout/reparvMainLogo.svg";
 import overviewIcon from "../../assets/layout/overviewIcon.svg";
 import enquirersIcon from "../../assets/layout/enquirersIcon.svg";
 import ticketingIcon from "../../assets/layout/ticketingIcon.svg";
+import calenderIcon from "../../assets/layout/calenderIcon.svg";
 import { Outlet } from "react-router-dom";
 import { IoMenu } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
@@ -17,31 +18,29 @@ function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isShortBar, setIsShortbar] = useState(false);
   const [heading, setHeading] = useState(localStorage.getItem("head"));
+  const [propertyPath, setPropertyPath] = useState("");
   const {
-    showProfile, URI,
+    showProfile,
+    URI,
     setShowProfile,
-    showPropertyForm,
-    setShowPropertyForm,
-    showUploadImagesForm,
-    setShowUploadImagesForm,
-    showAdditionalInfoForm,
-    setShowAdditionalInfoForm,
-    showPropertyInfo,
-    setShowPropertyInfo,
     showTicket,
     setShowTicket,
     showTicketForm,
     setShowTicketForm,
+    showPropertyInfo,
+    setShowPropertyInfo,
+    showEnquiry,
+    setShowEnquiry,
+    showEnquiryStatusForm, setShowEnquiryStatusForm,
     isLoggedIn,
   } = useAuth();
 
   const overlays = [
-    { state: showPropertyForm, setter: setShowPropertyForm },
-    { state: showUploadImagesForm, setter: setShowUploadImagesForm },
-    { state: showAdditionalInfoForm, setter: setShowAdditionalInfoForm },
     { state: showTicketForm, setter: setShowTicketForm },
     { state: showTicket, setter: setShowTicket },
+    { state: showEnquiry, setter: setShowEnquiry },
     { state: showPropertyInfo, setter: setShowPropertyInfo },
+    { state: showEnquiryStatusForm, setter: setShowEnquiryStatusForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -54,6 +53,26 @@ function Layout() {
     setHeading(label);
     localStorage.setItem("head", label);
   };
+
+  const fetchPropertyPath = async () => {
+    try {
+      const response = await fetch(`${URI}/territory-partner/profile`, {
+        method: "GET",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!response.ok)
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      const data = await response.json(); 
+      setPropertyPath(data.propertytype.toLowerCase());
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+    }
+  };
+
+  useEffect(()=> {
+    fetchPropertyPath();
+  },[]);
 
   return (
     <div className="flex flex-col w-full h-screen bg-[#F5F5F6]">
@@ -133,8 +152,10 @@ function Layout() {
             {/* Navigation Links */}
             {[
               { to: "/overview", icon: overviewIcon, label: "Overview" },
-              { to: "/properties", icon: enquirersIcon, label: "Properties" },
+              { to: "/enquirers", icon: enquirersIcon, label: "Enquiries" },
+              { to: "/"+propertyPath, icon: enquirersIcon, label: "Properties" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
+              { to: "/calender", icon: calenderIcon, label: "Calender" },
             ].map(({ to, icon, label }) => (
               <NavLink
                 onClick={() => {

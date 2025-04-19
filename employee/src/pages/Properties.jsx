@@ -444,14 +444,32 @@ const Properties = () => {
       ),
     },
     { name: "Name", selector: (row) => row.property_name, sortable: true },
-    { name: "Builder", selector: (row) => row.company_name, sortable: true, minWidth:"100px" },
+    { name: "Builder", selector: (row) => row.company_name, sortable: true, minWidth: "100px" },
     { name: "Type", selector: (row) => row.propertytypeid, sortable: true },
     { name: "Address", selector: (row) => row.address, sortable: true },
     { name: "city", selector: (row) => row.city, sortable: true },
     { name: "Location", selector: (row) => row.location, sortable: true },
-    { name: "Rera No.", selector: (row) => row.rerano, sortable: true, minWidth:"130px"},
+    { name: "Rera No.", selector: (row) => row.rerano, sortable: true, minWidth: "130px" },
     { name: "Area", selector: (row) => row.area, sortable: true },
     { name: "Price Sqft", selector: (row) => row.sqft_price, sortable: true },
+    {
+      name: "Approve",
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 rounded-md ${
+            row.approve === "Approved"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : row.approve === "Rejected" 
+              ? "bg-[#FBE9E9] text-[#FF0000]"
+              : "bg-[#E9F2FF] text-[#0068FF]"
+          }`}
+        >
+          {row.approve}
+        </span>
+      ),
+      minWidth: "150px",
+    },
+    { name: "Reject Reason", selector: (row) => row.rejectreason || "-- No Reason --", minWidth:"150px" },
     {
       name: "Action",
       cell: (row) => <ActionDropdown row={row} />,
@@ -1313,6 +1331,18 @@ const Properties = () => {
               />
             </div>
           </form>
+          <div className={`${property.rejectreason == null ? "hidden" : "block"} w-full mt-3`}>
+            <label className="block text-sm leading-4 text-[#00000066] font-medium">
+              Property Reject Reason
+            </label>
+            <textarea
+              rows={3}
+              disabled
+              readOnly
+              className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-[#f9f9f9]"
+              value={property.rejectreason}
+            />
+          </div>
         </div>
       </div>
     </div>

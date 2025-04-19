@@ -95,6 +95,18 @@ import territoryPartnerProfileRoutes from "./routes/territoryPartner/profileRout
 import territoryPartnerPropertyRoutes from "./routes/territoryPartner/propertyRoutes.js";
 import territoryPartnerBuilderRoutes from "./routes/territoryPartner/builderRoutes.js";
 import territoryPartnerTicketRoutes from "./routes/territoryPartner/ticketRoutes.js";
+import territoryPartnerEnquirersRoutes from "./routes/territoryPartner/enquirerRoutes.js";
+import territoryPartnerCalenderRoutes from "./routes/territoryPartner/calenderRoutes.js";
+
+import territoryPartnerNewProjectRoutes from "./routes/territoryPartner/newprojectRoutes.js";
+import territoryPartnerResaleRoutes from "./routes/territoryPartner/resaleRoutes.js";
+import territoryPartnerRentalRoutes from "./routes/territoryPartner/rentalRoutes.js";
+import territoryPartnerLeaseRoutes from "./routes/territoryPartner/leaseRoutes.js";
+import territoryPartnerFarmhouseRoutes from "./routes/territoryPartner/farmhouseRoutes.js";
+import territoryPartnerPlotRoutes from "./routes/territoryPartner/plotRoutes.js";
+import territoryPartnerFlatRoutes from "./routes/territoryPartner/flatRoutes.js";
+import territoryPartnerRowhouseRoutes from "./routes/territoryPartner/rowhouseRoutes.js";
+import territoryPartnerPropertyinfoRoutes from "./routes/territoryPartner/propertyinfoRoutes.js"
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -115,6 +127,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
   "https://reparv.onrender.com",
   "https://reparv-tech.onrender.com",
   "https://admin.reparv.in",
@@ -307,6 +322,18 @@ app.use("/territory-partner/profile", territoryPartnerProfileRoutes);
 app.use("/territory-partner/properties", territoryPartnerPropertyRoutes);
 app.use("/territory-partner/builders", territoryPartnerBuilderRoutes);
 app.use("/territory-partner/tickets", territoryPartnerTicketRoutes);
+app.use("/territory-partner/enquirers", territoryPartnerEnquirersRoutes);
+app.use("/sales/calender", territoryPartnerCalenderRoutes);
+// Property Pages Routes
+app.use("/territory-partner/propertyinfo", territoryPartnerPropertyinfoRoutes);
+app.use("/territory-partner/newproject", territoryPartnerNewProjectRoutes);
+app.use("/territory-partner/resale", territoryPartnerResaleRoutes);
+app.use("/territory-partner/rental", territoryPartnerRentalRoutes);
+app.use("/territory-partner/lease", territoryPartnerLeaseRoutes);
+app.use("/territory-partner/farmhouse", territoryPartnerFarmhouseRoutes);
+app.use("/territory-partner/plot", territoryPartnerPlotRoutes);
+app.use("/territory-partner/flat", territoryPartnerFlatRoutes);
+app.use("/territory-partner/rowhouse", territoryPartnerRowhouseRoutes);
 
 
 // ✅ Start Server

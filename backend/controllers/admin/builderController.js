@@ -223,7 +223,7 @@ export const assignLogin = async (req, res) => {
             }
 
             // Send email after successful update
-            sendEmail(email, username, password, "Builder")
+            sendEmail(email, username, password, "Builder", "https://builder.reparv.in")
               .then(() => {
                 res.status(200).json({ message: "Builder login assigned successfully and email sent." });
               })

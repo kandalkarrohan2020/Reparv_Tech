@@ -277,13 +277,13 @@ const Employee = () => {
 
   const columns = [
     { name: "SN", selector: (row, index) => index + 1, width:"50px" },
-    { name: "Name", selector: (row) => row.name, sortable: true , minWidth: "150px"},
-    { name: "UID", selector: (row) => row.uid, sortable: true , minWidth: "140px"},
-    { name: "Contact", selector: (row) => row.contact, sortable: true , minWidth: "120px"},
-    { name: "Email", selector: (row) => row.email, sortable: true , minWidth: "150px"},
-    { name: "Salary", selector: (row) => row.salary, sortable: true , minWidth: "130px"},
-    { name: "Role", selector: (row) => row.role, sortable: true , minWidth: "130px"},
-    { name: "Department", selector: (row) => row.department, sortable: true , minWidth: "130px"},
+    { name: "Name", selector: (row) => row.name, sortable: true , minWidth: "150px" },
+    { name: "UID", selector: (row) => row.uid, sortable: true , minWidth: "140px" },
+    { name: "Contact", selector: (row) => row.contact, sortable: true , minWidth: "120px" },
+    { name: "Email", selector: (row) => row.email, sortable: true , minWidth: "150px" },
+    { name: "Salary", selector: (row) => row.salary, sortable: true , minWidth: "150px" },
+    { name: "Role", selector: (row) => row.role, sortable: true , minWidth: "130px" },
+    { name: "Department", selector: (row) => row.department, sortable: true , minWidth: "150px" },
     {
       name: "Status",
       cell: (row) => (

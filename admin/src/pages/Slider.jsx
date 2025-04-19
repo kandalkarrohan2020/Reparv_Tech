@@ -152,7 +152,7 @@ const Slider = () => {
             className="w-[300px] h-[90%] object- cursor-pointer"
           />
         </div>
-      ), minWidth:"300px"
+      ), minWidth: "300px" 
     },
     {
       name: "Status",
@@ -166,11 +166,11 @@ const Slider = () => {
         >
           {row.status}
         </span>
-      ), minWidth:"130px"
+      ), minWidth: "130px" 
     },
     {
       name: "Action",
-      cell: (row) => <ActionDropdown row={row} />, minWidth:"120px"
+      cell: (row) => <ActionDropdown row={row} />, minWidth: "120px" 
     },
   ];
 

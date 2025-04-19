@@ -275,7 +275,7 @@ export const status = (req, res) => {
 
 export const assignLogin = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, propertyType } = req.body;
     const Id = parseInt(req.params.id);
 
     if (isNaN(Id)) {
@@ -300,8 +300,8 @@ export const assignLogin = async (req, res) => {
         const email = result[0].email; 
 
         db.query(
-          "UPDATE territorypartner SET loginstatus = ?, username = ?, password = ? WHERE id = ?",
-          [loginstatus, username, hashedPassword, Id],
+          "UPDATE territorypartner SET loginstatus = ?, username = ?, password = ?, propertytype = ? WHERE id = ?",
+          [loginstatus, username, hashedPassword, propertyType, Id],
           (err, updateResult) => {
             if (err) {
               console.error("Error updating record:", err);
@@ -309,7 +309,7 @@ export const assignLogin = async (req, res) => {
             }
 
             // Send email after successful update
-            sendEmail(email, username, password, "Territory Partner")
+            sendEmail(email, username, password, "Territory Partner", "https://territory.reparv.in")
               .then(() => {
                 res.status(200).json({ message: "Territory Partner login assigned successfully and email sent." });
               })

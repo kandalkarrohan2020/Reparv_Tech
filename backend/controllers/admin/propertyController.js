@@ -402,14 +402,14 @@ export const approve = (req, res) => {
       }
 
       let approve = "";
-      if (result[0].approve === "Not Approved") {
+      if (result[0].approve === "Not Approved" || "Rejected") {
         approve = "Approved";
       } else {
         approve = "Not Approved";
       }
 
       db.query(
-        "UPDATE properties SET approve = ? WHERE propertyid = ?",
+        "UPDATE properties SET rejectreason = NULL, approve = ? WHERE propertyid = ?",
         [approve, Id],
         (err, result) => {
           if (err) {
@@ -421,6 +421,45 @@ export const approve = (req, res) => {
           res
             .status(200)
             .json({ message: "Property status change successfully" });
+        }
+      );
+    }
+  );
+};
+
+//**Change status */
+export const addRejectReason = (req, res) => {
+  const { rejectReason } = req.body;
+  if (!rejectReason) {
+    return res.status(401).json({ message: "All Field Are Required" });
+  }
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  db.query(
+    "SELECT * FROM properties WHERE propertyid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      db.query(
+        "UPDATE properties SET approve = 'Rejected', rejectreason = ? WHERE propertyid = ?",
+        [rejectReason, Id],
+        (err, result) => {
+          if (err) {
+            console.error("Error While Add Reject Reason :", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+          res
+            .status(200)
+            .json({ message: "Property Reject Reason Add successfully" });
         }
       );
     }

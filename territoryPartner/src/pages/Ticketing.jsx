@@ -74,7 +74,6 @@ const Ticketing = () => {
       if (!response.ok) throw new Error("Failed to fetch tickets.");
 
       const data = await response.json();
-      console.log(data);
       setData(data);
     } catch (err) {
       console.error("Error fetching:", err);
@@ -360,7 +359,7 @@ const Ticketing = () => {
   };
 
   return (
-    <div className="ticketing overflow-scroll w-full h-screen flex flex-col items-start justify-start">
+    <div className="ticketing overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
       <div className="ticket-table w-full h-[80vh] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
         {/* <p className="block md:hidden text-lg font-semibold">Tickets</p> */}
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
@@ -413,7 +412,6 @@ const Ticketing = () => {
           </div>
           <form onSubmit={addTicket} className="w-full">
             <div
-              onSubmit={addTicket}
               className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2"
             >
               <input

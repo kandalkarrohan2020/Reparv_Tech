@@ -336,7 +336,7 @@ export const assignLogin = async (req, res) => {
             }
 
             // Send email after successful update
-            sendEmail(email, username, password, "Sales Person");
+            sendEmail(email, username, password, "Sales Person", "https://sales.reparv.in");
 
             res
               .status(200)

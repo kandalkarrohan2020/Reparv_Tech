@@ -9,6 +9,9 @@ import {
   cancelled,
   followUp,
   token,
+  getTerritoryPartners,
+  assignEnquiry,
+  getPropertyCity,
 } from "../../controllers/sales/enquirerController.js";
 
 const router = express.Router();
@@ -36,7 +39,10 @@ const upload = multer({
 
 router.get("/", getAll);
 router.get("/:id", getById);
-router.put("/status/:id", status);
+router.get("/property/city/:id", getPropertyCity);
+router.get("/territorypartner/active/:city", getTerritoryPartners);
+router.post("/assign/to/partner/:id", assignEnquiry);
+router.get("/status/:id", status);
 router.post("/visitscheduled/:id", visitScheduled);
 router.post("/followup/:id", followUp);
 router.post("/cancelled/:id", cancelled);

@@ -28,6 +28,7 @@ const TerritoryPartner = () => {
   const [partner, setPartner] = useState({});
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [propertyType, setPropertyType] = useState("");
   const [newPartner, setNewPartner] = useState({
     fullname: "",
     contact: "",
@@ -261,7 +262,7 @@ const TerritoryPartner = () => {
             "Content-Type": "application/json",
           },
           credentials: "include", // ✅ Ensures cookies are sent
-          body: JSON.stringify({ partnerId, username, password }),
+          body: JSON.stringify({ partnerId, username, password, propertyType }),
         }
       );
       const data = await response.json();
@@ -274,6 +275,7 @@ const TerritoryPartner = () => {
       setPartnerId(null);
       setUsername("");
       setPassword("");
+      setPropertyType("");
       setGiveAccess(false);
       fetchData();
     } catch (error) {
@@ -301,39 +303,45 @@ const TerritoryPartner = () => {
       name: "Full Name",
       selector: (row) => row.fullname,
       sortable: true,
-      minWidth: "150px",
+      minWidth: "150px" 
+    },
+    {
+      name: "Property Type",
+      selector: (row) => row.propertytype || "-- NOT ASSIGN --",
+      sortable: true,
+      minWidth: "150px"
     },
     {
       name: "Contact",
       selector: (row) => row.contact,
       sortable: true,
-      minWidth: "150px",
+      minWidth: "150px" 
     },
     {
       name: "Email",
       selector: (row) => row.email,
       sortable: true,
-      minWidth: "150px",
+      minWidth: "150px" 
     },
     { name: "Experience", selector: (row) => row.experience, sortable: true },
     {
       name: "Adhar No",
       selector: (row) => row.adharno,
       sortable: true,
-      minWidth: "150px",
+      minWidth: "150px" 
     },
     {
       name: "PAN No",
       selector: (row) => row.panno,
       sortable: true,
-      minWidth: "150px",
+      minWidth: "150px" 
     },
     { name: "City", selector: (row) => row.city, sortable: true },
     {
       name: "Address",
       selector: (row) => row.address,
       sortable: true,
-      minWidth: "150px",
+      minWidth: "150px" 
     },
 
     {
@@ -808,6 +816,27 @@ const TerritoryPartner = () => {
                   setPassword(e.target.value);
                 }}
               />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Property Type
+              </label>
+              <select
+                required
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                style={{ backgroundImage: "none" }}
+                value={propertyType}
+                onChange={(e) => setPropertyType(e.target.value)}
+              >
+                <option value="">Select Property Type</option>
+                <option value="Flat">New Flat</option>
+                <option value="Plot">New Plot</option>
+                <option value="Rental">Rental</option>
+                <option value="Resale">Resale</option>
+                <option value="RowHouse">Row House</option>
+                <option value="Lease">Lease</option>
+                <option value="FarmHouse">Farm House</option>               
+              </select>
             </div>
             <div className="flex h-10 mt-8 md:mt-6 justify-end gap-6">
               <button

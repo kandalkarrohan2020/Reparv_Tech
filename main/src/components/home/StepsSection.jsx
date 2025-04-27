@@ -26,8 +26,8 @@ const StepsSection = () => {
   ];
 
   return (
-    <div className="flex flex-col items-center p-4 gap-6 pb-15 md:pb-25">
-      <h2 className="text-[20px] sm:text-[28px] md:text-[40px] leading-6 md:leading-15 font-medium text-[#076300] ">
+    <div className="flex flex-col items-center p-4 gap-6 pb-15 md:pb-15">
+      <h2 className="text-[20px] sm:text-[28px] leading-6 md:leading-15 font-medium text-[#076300] ">
         Get Your Property in 3 Steps
       </h2>
       <div className="bg-[#076300] text-white px-4 py-16 rounded-2xl shadow-lg w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-15 md:gap-8">

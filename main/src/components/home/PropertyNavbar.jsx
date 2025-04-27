@@ -24,16 +24,16 @@ const PropertyNavbar = () => {
   ];
 
   return (
-    <div className="relative md:bottom-60 z-10 w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.08)] p-4 sm:px-15 sm:py-6 flex flex-col items-center">
+    <div className="w-full max-w-[1050px] mx-auto mb-6 lg:mb-0 bg-white z-10 rounded-3xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.08)] p-4 sm:px-15 sm:py-6 flex flex-col gap-6 items-center">
       {/* Property Types */}
-      <div className="w-full grid place-items-center grid-cols-4 md:grid-cols-8 gap-3 sm:gap-8 mb-6">
+      <div className="w-full grid place-items-center grid-cols-4 md:grid-cols-8 gap-3 sm:gap-8">
         {propertyTypes.map((property, index) => (
           <div
             onClick={() => {
               navigate(property.to);
             }}
             key={index}
-            className="flex flex-col items-center text-center cursor-pointer hover:text-[#076300] transition"
+            className="flex flex-col items-center text-center cursor-pointer hover:text-[#0BB501] transition"
           >
             <img
               src={property.icon}
@@ -54,7 +54,7 @@ const PropertyNavbar = () => {
           <input
             type="text"
             placeholder="Search For Your Favourite Property"
-            className="w-full pl-10 md:pl-14 pr-6 py-4 text-xs md:text-base rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-[#00000066]"
+            className="w-full pl-10 md:pl-14 pr-6 py-3 text-xs md:text-base rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-[#00000066]"
           />
         </div>
       </div>

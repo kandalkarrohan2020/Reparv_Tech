@@ -31,6 +31,7 @@ import calenderRoutes from "./routes/admin/calenderRoutes.js";
 //import rawmaterialRoutes from "./routes/admin/rawmaterialRoutes.js";
 
 //fontend
+import allPropertiesRoutes from "./routes/frontend/allPropertiesRoutes.js"
 import joinourteamRoutes from "./routes/frontend/joinourteamRoutes.js";
 import newprojectRoutes from "./routes/frontend/newprojectRoutes.js";
 import resaleRoutes from "./routes/frontend/resaleRoutes.js";
@@ -190,6 +191,7 @@ const verifyToken = (req, res, next) => {
     "/partner/login",
     "/project-partner/login",
     "/territory-partner/login",
+    "/frontend/properties",
     "/frontend/joinourteam",
     "/frontend/newproject",
     "/frontend/resale",
@@ -243,6 +245,7 @@ app.get("/get-cookie", (req, res) => {
 app.use("/admin", loginRoutes);
 
 //frontend
+app.use("/frontend/properties", allPropertiesRoutes);
 app.use("/frontend/joinourteam", joinourteamRoutes);
 app.use("/frontend/propertyinfo", propertyinfoRoutes);
 app.use("/frontend/newproject", newprojectRoutes);

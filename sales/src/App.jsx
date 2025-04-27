@@ -18,6 +18,7 @@ import RowHouse from "./propertyPages/RowHouse.jsx";
 import Lease from "./propertyPages/Lease.jsx";
 //import NewProject from "./propertyPages/NewProject.jsx";
 import FarmHouse from "./propertyPages/FarmHouse.jsx";
+import Commercial from "./propertyPages/Commercial.jsx";
 import PropertyInfo from "./propertyPages/PropertyInfo.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 
@@ -41,6 +42,7 @@ const App = () => {
           
           <Route path="/resale" element={<Resale/>} />
           <Route path="/farm-house" element={<FarmHouse/>} />
+          <Route path="/commercial" element={<Commercial/>} />
           <Route path="/property-info/:id" element={<PropertyInfo />} />
           <Route path="*" element={<ErrorPage />}></Route>
         </Route>

@@ -303,7 +303,20 @@ const OnBoardingPartner = () => {
     { name: "PAN No", selector: (row) => row.panno, sortable: true , minWidth: "150px" },
     { name: "City", selector: (row) => row.city, sortable: true },
     { name: "Address", selector: (row) => row.address, sortable: true , minWidth: "150px" },
-
+    {
+      name: "Payment Status",
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 rounded-md ${
+            row.paymentstatus === "Success"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : "bg-[#FBE9E9] text-[#FF0000]"
+          }`}
+        >
+          {row.paymentstatus}
+        </span>
+      ), minWidth: "150px"
+    },
     {
       name: "Status",
       cell: (row) => (
@@ -909,6 +922,42 @@ const OnBoardingPartner = () => {
                   </div>
                   <div className="w-full ">
                     <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      Payment Status
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={partner.paymentstatus}
+                      readOnly
+                    />
+                  </div>
+                  <div className={`${partner.paymentid === null ? "hidden":"block"}`}>
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      Payment ID
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={partner.paymentid}
+                      readOnly
+                    />
+                  </div>
+                  <div className={`${partner.amount === null ? "hidden":"block"}`}>
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      Registration Amount
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={partner.amount}
+                      readOnly
+                    />
+                  </div>
+                  <div className="w-full ">
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
                       Status
                     </label>
                     <input
@@ -931,6 +980,7 @@ const OnBoardingPartner = () => {
                       readOnly
                     />
                   </div>
+                  <div></div>
                   <div className="w-full ">
                     <label className="block text-sm leading-4 text-[#00000066] font-medium">
                       Adhaar Image

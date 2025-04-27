@@ -17,6 +17,7 @@ import Resale from "./propertyPages/Resale.jsx";
 import Lease from "./propertyPages/Lease.jsx";
 import RowHouse from "./propertyPages/RowHouse.jsx";
 import FarmHouse from "./propertyPages/FarmHouse.jsx";
+import Commercial from "./propertyPages/Commercial.jsx";
 import PropertyInfo from "./propertyPages/PropertyInfo.jsx";
 
 
@@ -39,6 +40,7 @@ const App = () => {
           <Route path="/plot" element={<Plot/>} />
           <Route path="/resale" element={<Resale/>} />
           <Route path="/farm-house" element={<FarmHouse/>} />
+          <Route path="/commercial" element={<Commercial/>} />
           <Route path="/property-info/:id" element={<PropertyInfo />} />
           <Route path="*" element={<ErrorPage />}></Route>
         </Route>

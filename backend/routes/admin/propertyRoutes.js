@@ -31,7 +31,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // ✅ Limit file size (5MB)
   fileFilter: (req, file, cb) => {
     const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
     if (!allowedTypes.includes(file.mimetype)) {
@@ -51,9 +50,31 @@ router.put("/status/:id", status);
 router.put("/reject/:id", addRejectReason);
 router.put("/approve/:id", approve);
 router.delete("/delete/:id", del);
-router.post("/addimages",upload.array("images[]"), addImages);
-router.post("/additionalinfoadd", additionalInfoAdd);
+router.post("/addimages", upload.array("images[]"), addImages);
 router.get("/propertyinfo/:id", propertyInfo);
-router.put("/editadditionalinfo/:id", editAdditionalInfo);
+router.post(
+  "/additionalinfoadd",
+  upload.fields([
+    { name: "owneradhar", maxCount: 1 },
+    { name: "ownerpan", maxCount: 1 },
+    { name: "schedule", maxCount: 1 },
+    { name: "signed", maxCount: 1 },
+    { name: "satbara", maxCount: 1 },
+    { name: "ebill", maxCount: 1 },
+  ]),
+  additionalInfoAdd
+);
+router.put(
+  "/editadditionalinfo/:id",
+  upload.fields([
+    { name: "owneradhar", maxCount: 1 },
+    { name: "ownerpan", maxCount: 1 },
+    { name: "schedule", maxCount: 1 },
+    { name: "signed", maxCount: 1 },
+    { name: "satbara", maxCount: 1 },
+    { name: "ebill", maxCount: 1 },
+  ]),
+  editAdditionalInfo
+);
 
 export default router;

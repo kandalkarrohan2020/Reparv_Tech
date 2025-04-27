@@ -1174,6 +1174,18 @@ const Enquirers = () => {
                 readOnly
               />
             </div>
+            <div className={`${enquiry.remark? "block":"hidden"}`}>
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Follow Up
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={enquiry.remark}
+                readOnly
+              />
+            </div>
             <div className="w-full ">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Territory Partner

@@ -1,0 +1,42 @@
+*{
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+@import "tailwindcss";
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+
+/* Styling for pagination bullets */
+.custom-pagination span{
+  width: 20px; /* Width of the bullet */
+  height: 5px; /* Height of the bullet */
+  background-color: #ffffff; /* Tailwind gray-300 */
+  border-radius: 60px; /* Make the bullets rounded */
+  transition: all 0.3s ease; /* Smooth transitions */
+  opacity: 1;
+}
+
+.custom-pagination2 span{
+  width: 20px; /* Width of the bullet */
+  height: 5px; /* Height of the bullet */
+  background-color: #00000066; /* Tailwind gray-300 */
+  border-radius: 60px; /* Make the bullets rounded */
+  transition: all 0.3s ease; /* Smooth transitions */
+  opacity: 1;
+}
+
+/* Active bullet */
+.custom-pagination .swiper-pagination-bullet-active {
+  background-color: #0BB501; /* Active color: green */
+}
+
+.custom-pagination2 .swiper-pagination-bullet-active {
+  background-color: #0BB501; /* Active color: green */
+}
+
+/* scrollbar hide */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

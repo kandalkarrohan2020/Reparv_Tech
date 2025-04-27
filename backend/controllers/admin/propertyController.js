@@ -66,7 +66,7 @@ export const getById = (req, res) => {
 
   const sql = `
     SELECT 
-      properties.*, 
+      properties.*, propertiesinfo.*,
       builders.company_name, 
       onboardingpartner.fullname, 
       onboardingpartner.contact, 
@@ -75,6 +75,7 @@ export const getById = (req, res) => {
     FROM properties
     INNER JOIN builders ON builders.builderid = properties.builderid
     LEFT JOIN onboardingpartner ON properties.partnerid = onboardingpartner.partnerid
+    LEFT JOIN propertiesinfo ON properties.propertyid = propertiesinfo.propertyid
     WHERE properties.propertyid = ?
     ORDER BY properties.propertyid DESC;
   `;
@@ -499,7 +500,7 @@ export const addImages = (req, res) => {
   }
 };
 
-// ** Add New Additional Info **
+// ** New Additional Info Add API **
 export const additionalInfoAdd = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
 
@@ -514,13 +515,23 @@ export const additionalInfoAdd = (req, res) => {
     superbuiltup,
     salesprice,
     description,
+    ownercontact,
   } = req.body;
 
-  // Step 2: Insert only if not exists
+  // Files check
+  const owneradhar = req.files?.owneradhar ? req.files.owneradhar[0].filename : null;
+  const ownerpan = req.files?.ownerpan ? req.files.ownerpan[0].filename : null;
+  const schedule = req.files?.schedule ? req.files.schedule[0].filename : null;
+  const signed = req.files?.signed ? req.files.signed[0].filename : null;
+  const satbara = req.files?.satbara ? req.files.satbara[0].filename : null;
+  const ebill = req.files?.ebill ? req.files.ebill[0].filename : null;
+
   const insertSQL = `
-      INSERT INTO propertiesinfo 
-      (propertyid, wing, floor, flatno, direction, ageofconstruction, carpetarea, superbuiltup, salesprice, description, updated_at, created_at) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    INSERT INTO propertiesinfo 
+    (propertyid, wing, floor, flatno, direction, ageofconstruction, carpetarea, superbuiltup, salesprice, description, ownercontact,
+      owneradhar, ownerpan, schedule, signed, satbara, ebill, updated_at, created_at) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
 
   db.query(
     insertSQL,
@@ -535,6 +546,13 @@ export const additionalInfoAdd = (req, res) => {
       superbuiltup,
       salesprice,
       description,
+      ownercontact,
+      owneradhar,
+      ownerpan,
+      schedule,
+      signed,
+      satbara,
+      ebill,
       currentdate,
       currentdate,
     ],
@@ -552,6 +570,107 @@ export const additionalInfoAdd = (req, res) => {
       });
     }
   );
+};
+
+// ** Additional Info Edit API **
+export const editAdditionalInfo = (req, res) => {
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const Id = parseInt(req.params.id);
+
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property Info ID" });
+  }
+
+  const {
+    wing,
+    floor,
+    flatno,
+    direction,
+    ageofconstruction,
+    carpetarea,
+    superbuiltup,
+    salesprice,
+    description,
+    ownercontact,
+  } = req.body;
+
+  // Files check
+  const owneradhar = req.files?.owneradhar ? req.files.owneradhar[0].filename : null;
+  const ownerpan = req.files?.ownerpan ? req.files.ownerpan[0].filename : null;
+  const schedule = req.files?.schedule ? req.files.schedule[0].filename : null;
+  const signed = req.files?.signed ? req.files.signed[0].filename : null;
+  const satbara = req.files?.satbara ? req.files.satbara[0].filename : null;
+  const ebill = req.files?.ebill ? req.files.ebill[0].filename : null;
+
+  // Start fields and values
+  let updateFields = [
+    "wing = ?", 
+    "floor = ?", 
+    "flatno = ?", 
+    "direction = ?", 
+    "ageofconstruction = ?", 
+    "carpetarea = ?", 
+    "superbuiltup = ?", 
+    "salesprice = ?", 
+    "description = ?", 
+    "ownercontact = ?", 
+    "updated_at = ?"
+  ];
+  
+  const updateValues = [
+    wing,
+    floor,
+    flatno,
+    direction,
+    ageofconstruction,
+    carpetarea,
+    superbuiltup,
+    salesprice,
+    description,
+    ownercontact,
+    currentdate,
+  ];
+
+  // Dynamically add files if uploaded
+  if (owneradhar) {
+    updateFields.push("owneradhar = ?");
+    updateValues.push(owneradhar);
+  }
+  if (ownerpan) {
+    updateFields.push("ownerpan = ?");
+    updateValues.push(ownerpan);
+  }
+  if (schedule) {
+    updateFields.push("schedule = ?");
+    updateValues.push(schedule);
+  }
+  if (signed) {
+    updateFields.push("signed = ?");
+    updateValues.push(signed);
+  }
+  if (satbara) {
+    updateFields.push("satbara = ?");
+    updateValues.push(satbara);
+  }
+  if (ebill) {
+    updateFields.push("ebill = ?");
+    updateValues.push(ebill);
+  }
+
+  const updateSQL = `UPDATE propertiesinfo SET ${updateFields.join(", ")} WHERE propertyinfoid = ?`;
+
+  updateValues.push(Id); 
+
+  db.query(updateSQL, updateValues, (err, result) => {
+    if (err) {
+      console.error("Error updating:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    res.status(200).json({
+      message: "Additional Info updated successfully",
+      affectedRows: result.affectedRows,
+    });
+  });
 };
 
 export const propertyInfo = (req, res) => {
@@ -624,52 +743,3 @@ export const deleteImages = (req, res) => {
   );
 };
 
-export const editAdditionalInfo = (req, res) => {
-  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const Id = parseInt(req.params.id);
-  //console.log(Id);
-  if (isNaN(Id)) {
-    return res.status(400).json({ message: "Invalid Property ID" });
-  }
-  const {
-    propertyid,
-    wing,
-    floor,
-    flatno,
-    direction,
-    ageofconstruction,
-    carpetarea,
-    superbuiltup,
-    salesprice,
-    description,
-  } = req.body;
-
-  const updateSQL = `UPDATE propertiesinfo set wing = ?, floor = ?, flatno = ?, direction = ?, ageofconstruction = ?, carpetarea = ?, superbuiltup = ?, salesprice = ?, description = ?, updated_at = ? where propertyid = ?`;
-
-  db.query(
-    updateSQL,
-    [
-      wing,
-      floor,
-      flatno,
-      direction,
-      ageofconstruction,
-      carpetarea,
-      superbuiltup,
-      salesprice,
-      description,
-      currentdate,
-      propertyid,
-    ],
-    (err, result) => {
-      if (err) {
-        console.error("Error inserting:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-      res.status(201).json({
-        message: "Additional Info added successfully",
-        Id: result.insertId,
-      });
-    }
-  );
-};

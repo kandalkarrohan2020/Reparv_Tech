@@ -17,7 +17,7 @@ import AuctionMembers from "./pages/AuctionMembers.jsx";
 import Properties from "./pages/Properties.jsx";
 import Role from "./pages/Role.jsx";
 import Department from "./pages/Department.jsx";
-import PropertyType from "./pages/PropertyType.jsx";
+//import PropertyType from "./pages/PropertyType.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import Slider from "./pages/Slider.jsx";
 import Testimonial from "./pages/Testimonial.jsx";
@@ -35,7 +35,6 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route path="/overview" element={<Overview />} />
           <Route path="/enquirers" element={<Enquirers />} />
-          <Route path="/propertytypes" element={<PropertyType />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/map" element={<Map />} />
           <Route path="/calender" element={<Calender />} />

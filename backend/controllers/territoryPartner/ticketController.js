@@ -68,7 +68,7 @@ export const getById = (req, res) => {
 };
 
 export const getAdmins = (req, res) => {
-  const sql = "SELECT users.id, users.name FROM users ORDER BY id DESC";
+  const sql = "SELECT users.id, users.name FROM users WHERE role = 'Superadmin' ORDER BY id DESC";
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching Admins:", err);

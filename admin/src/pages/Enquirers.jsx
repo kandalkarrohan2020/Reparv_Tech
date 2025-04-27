@@ -11,7 +11,8 @@ import Loader from "../components/Loader";
 
 const Enquirers = () => {
   const {
-    URI, setLoading,
+    URI,
+    setLoading,
     showAssignSalesForm,
     setShowAssignSalesForm,
     showEnquiryStatusForm,
@@ -21,7 +22,7 @@ const Enquirers = () => {
     showEnquiry,
     setShowEnquiry,
   } = useAuth();
-  
+
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [enquiryId, setEnquiryId] = useState("");
@@ -157,7 +158,7 @@ const Enquirers = () => {
             paymenttype: "",
             dealamount: "",
             remark: "",
-          })
+          });
         } else {
           alert(`Error: ${data.message}`);
         }
@@ -259,8 +260,7 @@ const Enquirers = () => {
       }
     } catch (error) {
       console.error("Error changing status:", error);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -359,7 +359,12 @@ const Enquirers = () => {
       item.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, sortable: false, width:"50px" },
+    {
+      name: "SN",
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: "50px",
+    },
     {
       name: "Intrested Property",
       cell: (row) => (
@@ -417,7 +422,8 @@ const Enquirers = () => {
         >
           {row.assign}
         </span>
-      ), minWidth:"180px"
+      ),
+      minWidth: "180px",
     },
     {
       name: "Action",
@@ -495,7 +501,44 @@ const Enquirers = () => {
         </div>
         <h2 className="text-[16px] font-semibold">Enquiry List</h2>
         <div className="overflow-scroll scrollbar-hide">
-          <DataTable className="scrollbar-hide" columns={columns} data={filteredData} pagination />
+          <DataTable
+            className="scrollbar-hide"
+            columns={columns}
+            data={filteredData}
+            pagination
+            conditionalRowStyles={[
+              {
+                when: row => row.status === "Visit Scheduled",
+                style: {
+                  backgroundColor: "#f0f8ff", // light blue
+                },
+              },
+              {
+                when: row => row.status === "New",
+                style: {
+                  backgroundColor: "#e6ffed", // light green
+                },
+              },
+              {
+                when: row => row.status === "Follow Up",
+                style: {
+                  backgroundColor: "#f5f0ff", // light green
+                },
+              },
+              {
+                when: row => row.status === "Token",
+                style: {
+                  backgroundColor: "#fffbea", // light Yellow
+                },
+              },
+              {
+                when: row => row.status === "Cancelled",
+                style: {
+                  backgroundColor: "#ffe6e6", // light red
+                },
+              },
+            ]}
+          />
         </div>
       </div>
 
@@ -580,7 +623,6 @@ const Enquirers = () => {
                 Assign Sales
               </button>
               <Loader></Loader>
-              
             </div>
           </form>
         </div>
@@ -842,7 +884,7 @@ const Enquirers = () => {
               >
                 Set Status
               </button>
-              <Loader/>
+              <Loader />
             </div>
           </form>
         </div>
@@ -1013,8 +1055,8 @@ const Enquirers = () => {
         </div>
       </div>
 
-       {/* Show Enquiry Info */}
-       <div
+      {/* Show Enquiry Info */}
+      <div
         className={`${
           showEnquiry ? "flex" : "hidden"
         } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}

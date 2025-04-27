@@ -30,7 +30,7 @@ export const getById = (req, res) => {
   const Id = parseInt(req.params.id);
   const sql = `SELECT enquirers.*, territoryenquiry.visitdate AS visitDate,
                territoryenquiry.teid, territoryenquiry.followup, territoryenquiry.status AS territoryStatus 
-               FROM enquirers INNER JOIN territoryenquiry 
+               FROM enquirers LEFT JOIN territoryenquiry 
                ON territoryenquiry.enquirerid = enquirers.enquirersid 
                WHERE enquirersid = ?`;
 

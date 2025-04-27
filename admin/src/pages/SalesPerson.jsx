@@ -304,7 +304,20 @@ const SalesPerson = () => {
     { name: "PAN No", selector: (row) => row.panno, sortable: true , minWidth: "150px" },
     { name: "City", selector: (row) => row.city, sortable: true },
     { name: "Address", selector: (row) => row.address, sortable: true },
-
+    {
+      name: "Payment Status",
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 rounded-md ${
+            row.paymentstatus === "Success"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : "bg-[#FBE9E9] text-[#FF0000]"
+          }`}
+        >
+          {row.paymentstatus}
+        </span>
+      ), minWidth: "150px"
+    },
     {
       name: "Status",
       cell: (row) => (
@@ -940,6 +953,44 @@ const SalesPerson = () => {
             </div>
             <div className="w-full ">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Payment Status
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={salesPerson.paymentstatus}
+                readOnly
+              />
+            </div>
+            <div
+              className={`${salesPerson.paymentid === null ? "hidden" : "block"}`}
+            >
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Payment ID
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={salesPerson.paymentid}
+                readOnly
+              />
+            </div>
+            <div className={`${salesPerson.amount === null ? "hidden" : "block"}`}>
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Registration Amount
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={salesPerson.amount}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Status
               </label>
               <input
@@ -962,7 +1013,6 @@ const SalesPerson = () => {
                 readOnly
               />
             </div>
-            <div></div>
             <div className="w-full ">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Adhaar Image

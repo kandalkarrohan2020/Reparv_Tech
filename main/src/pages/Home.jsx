@@ -4,14 +4,16 @@ import HomePropertyGrid from '../components/home/HomePropertyGrid';
 import VideoSection from '../components/home/VideoSection';
 import StepsSection from '../components/home/StepsSection';
 import VideoReviewSection from '../components/VideoReviewSection';
+import PropertyNavbar from '../components/home/PropertyNavbar';
+import OtherProperties from "../components/OtherProperties";
 
 function Home() {
   
   return (
     <div className="full" >
      <ImageSlider />
-     <HomePropertyGrid/>
-     <VideoSection/>
+     <PropertyNavbar/>
+     <OtherProperties></OtherProperties>
      <StepsSection/>
      <VideoReviewSection/>
     </div>

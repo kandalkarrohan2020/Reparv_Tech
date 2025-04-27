@@ -634,6 +634,7 @@ const Properties = () => {
                 <option value="Plot">New Plot</option>
                 <option value="RowHouse">Row House</option>
                 <option value="FarmHouse">Farm House</option>
+                <option value="Commercial">Commercial</option>
               </select>
             </div>
             <div className="w-full ">
@@ -859,7 +860,7 @@ const Properties = () => {
       >
         <div className="w-[330px] sm:w-[500px] max-h-[700px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Upload Images</h2>
+            <h2 className="text-[16px] font-semibold">Upload Images ( 600px / 360px )</h2>
             <IoMdClose
               onClick={() => {
                 setShowUploadImagesForm(false);

@@ -49,78 +49,83 @@ export const getById = (req, res) => {
 // **Add New **
 export const add = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { fullname, contact, email, address, city, experience, adharno, panno } =
-    req.body;
 
-  if (
-    !fullname ||
-    !contact ||
-    !email ||
-    !address ||
-    !city ||
-    !experience ||
-    !adharno ||
-    !panno
-  ) {
-    return res.status(400).json({ message: "All fields are required" });
+  const {
+    fullname,
+    contact,
+    email,
+    address,
+    city,
+    experience,
+    adharno,
+    panno,
+  } = req.body;
+
+  // Validate required fields
+  if (!fullname || !contact || !email || !city) {
+    return res.status(400).json({ message: "all fields required!" });
   }
-  // Handle uploaded files
+
+  // Handle uploaded files safely
   const adharImageFile = req.files?.["adharImage"]?.[0];
   const panImageFile = req.files?.["panImage"]?.[0];
 
-  const adharImageUrl = adharImageFile
-    ? `/uploads/${adharImageFile.filename}`
-    : null;
+  const adharImageUrl = adharImageFile ? `/uploads/${adharImageFile.filename}` : null;
   const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
 
-  const checkSql = `SELECT * FROM territorypartner WHERE contact = ? OR adharno = ? OR email = ?`;
+  // Check if Territory Partner already exists
+  const checkSql = `SELECT * FROM territorypartner WHERE contact = ? OR email = ?`;
 
-  db.query(checkSql, [contact, adharno, email], (checkErr, checkResult) => {
+  db.query(checkSql, [contact, email], (checkErr, checkResult) => {
     if (checkErr) {
-      console.error("Error checking existing Partner:", checkErr);
-      return res
-        .status(500)
-        .json({ message: "Database error during validation", error: checkErr });
+      console.error("Error checking existing Territory Partner:", checkErr);
+      return res.status(500).json({ message: "Database error during validation", error: checkErr });
     }
 
     if (checkResult.length > 0) {
       return res.status(409).json({
-        message:
-          "Territory Partner already exists with this contact or Aadhaar number",
+        message: "Territory Partner already exists with this Contact or Email.",
       });
     }
-  });
-  const sql = `INSERT INTO territorypartner (fullname, contact, email, address, city, experience, adharno, panno, adharimage, panimage, updated_at, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-  db.query(
-    sql,
-    [
-      fullname,
-      contact,
-      email,
-      address,
-      city,
-      experience,
-      adharno,
-      panno,
-      adharImageUrl,
-      panImageUrl,
-      currentdate,
-      currentdate,
-    ],
-    (err, result) => {
-      if (err) {
-        console.error("Error inserting :", err);
-        return res.status(500).json({ message: "Database error", error: err });
+    // Insert only if no duplicate found
+    const insertSql = `
+      INSERT INTO territorypartner 
+      (fullname, contact, email, address, city, experience, adharno, panno, adharimage, panimage, updated_at, created_at) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+      insertSql,
+      [
+        fullname,
+        contact,
+        email,
+        address,
+        city,
+        experience,
+        adharno,
+        panno,
+        adharImageUrl,
+        panImageUrl,
+        currentdate,
+        currentdate,
+      ],
+      (insertErr, insertResult) => {
+        if (insertErr) {
+          console.error("Error inserting Territory Partner:", insertErr);
+          return res.status(500).json({ message: "Database error during insertion", error: insertErr });
+        }
+
+        res.status(201).json({
+          message: "Territory Partner added successfully",
+          Id: insertResult.insertId,
+        });
       }
-      res.status(201).json({
-        message: "Territory Partner added successfully",
-        Id: result.insertId,
-      });
-    }
-  );
+    );
+  });
 };
+
 
 export const edit = (req, res) => {
   const partnerid = req.params.id;

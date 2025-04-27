@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const JoinOurTeamDropdown = () => {
+const JoinOurTeamDropdown = ({textColour}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSelect = (value) => {
@@ -27,34 +27,34 @@ const JoinOurTeamDropdown = () => {
     <div className="relative inline-block text-left">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="text-gray-800 font-medium hover:text-[#0BB501] hover:font-semibold focus:outline-none"
+        className={`${textColour? "text-white":"text-gray-800"} font-medium hover:text-[#0BB501] hover:font-semibold focus:outline-none`}
       >
         Join Our Team
       </button>
 
       {isOpen && (
-        <div className="absolute font-semibold font-sans tracking-wide z-10 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
-          <ul className=" text-sm text-gray-700">
+        <div className="absolute left-[-30px] md:left-[-20px] font-semibold font-sans tracking-wide z-10 mt-2 w-30 sm:w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+          <ul className=" text-[10px] md:text-sm text-gray-700">
             <li
-              className="px-4 py-2 hover:bg-gray-100 hover:text-[#0BB501] cursor-pointer"
+              className="px-2 md:px-4 py-3 hover:bg-gray-100 hover:text-[#0BB501] cursor-pointer"
               onClick={() => handleSelect("salesPartner")}
             >
               Sales Partner
             </li>
             <li
-              className="px-4 py-2 hover:bg-gray-100 hover:text-[#0BB501] cursor-pointer"
+              className="px-2 md:px-4 py-3 hover:bg-gray-100 hover:text-[#0BB501] cursor-pointer"
               onClick={() => handleSelect("territoryPartner")}
             >
               Territory Partner
             </li>
             <li
-              className="px-4 py-2 hover:bg-gray-100 hover:text-[#0BB501] cursor-pointer"
+              className="px-2 md:px-4 py-3 hover:bg-gray-100 hover:text-[#0BB501] cursor-pointer"
               onClick={() => handleSelect("onboardingPartner")}
             >
               Onboarding Partner
             </li>
             <li
-              className="px-4 py-2 hover:bg-gray-100 hover:text-[#0BB501] cursor-pointer"
+              className="px-2 md:px-4 py-3 hover:bg-gray-100 hover:text-[#0BB501] cursor-pointer"
               onClick={() => handleSelect("projectPartner")}
             >
               Project Partner

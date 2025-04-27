@@ -1,12 +1,12 @@
 import express from "express";
-import {getAll, getById, add, status, del} from "../../controllers/admin/departmentController.js";
+import {getAll, getById, status, del, updateDepartment, addDepartment} from "../../controllers/admin/departmentController.js";
 
 const router = express.Router();
 
 router.get("/", getAll);
 router.get("/:id", getById);
-router.post("/add", add);
-//router.put("/update/:id", update);
+router.post("/add", addDepartment);
+router.put("/edit/:id", updateDepartment);
 router.put("/status/:id", status);
 router.delete("/delete/:id", del);
 

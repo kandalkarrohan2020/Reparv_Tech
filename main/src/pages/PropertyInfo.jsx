@@ -253,7 +253,9 @@ export default function PropertyInfo() {
         </h2>
         <OtherProperties
           propertyTypeId={propertyInfo.propertytypeid}
+          propertyId={id}
           key={propertyInfo.propertytypeid}
+          
         />
       </div>
     </div>

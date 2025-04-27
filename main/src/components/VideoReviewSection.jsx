@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../store/auth";
-
+import { Link, Navigate } from "react-router-dom";
+import { IoPlayCircleOutline } from "react-icons/io5";
+import image from "../assets/joinOurTeam/formImage.svg";
 const VideoReviewSection = () => {
   const { URI } = useAuth();
   const [feedback, setFeedback] = useState([]);
@@ -39,22 +41,24 @@ const VideoReviewSection = () => {
 
 
   return (
-    <div className="w-full max-w-[1400px] flex flex-col gap-2 lg:justify-center lg:items-center mx-auto p-0 sm:p-5 pb-15 md:pb-25 ">
-      <h2 className="text-center text-[20px] sm:text-[28px] md:text-[40px] leading-6 md:leading-15 font-semibold text-[#076300] ">
+    <div className="w-full max-w-[1400px] flex flex-col gap-2 lg:justify-center lg:items-center mx-auto p-0 sm:p-5 pb-5 md:pb-15 ">
+      <h2 className="text-center text-[20px] sm:text-[28px] leading-6 md:leading-15 font-semibold text-[#076300] ">
         See what customers are saying
       </h2>
-      <div className="overflow-scroll scrollbar-hide w-full max-w-[1400px] grid grid-flow-col gap-4 sm:gap-6 my-2 sm:my-4 place-items-center px-2">
+      <div className="overflow-scroll scrollbar-hide w-full max-w-[1050px] grid grid-flow-col gap-4 sm:gap-6 my-2 sm:my-4 place-items-center px-2 cursor-pointer">
         {feedback.map((review) => {
-          const videoId = extractYouTubeId(review.url);
+          //const videoId = extractYouTubeId(review.url);
           return (
-            <div
+            <Link 
+              to={review.url} target="_blank"
               key={review.id}
-              className="w-full min-w-[350px] md:min-w-[437px] bg-white rounded-xl p-4 border border-[#00000033] "
-            >
+              style={{background:`url(${review.image ? review.image : image})`}}
+              className="group relative overflow-hidden w-[237px] h-100 rounded-xl border border-[#00000033] "
+            > {/*
               {videoId ? (
                 <iframe
                   width="100%"
-                  height="250"
+                  height="400"
                   src={`https://www.youtube.com/embed/${videoId}`}
                   title="YouTube video player"
                   frameBorder="0"
@@ -64,12 +68,14 @@ const VideoReviewSection = () => {
                 ></iframe>
               ) : (
                 <p>Invalid video URL</p>
-              )}
-              <div className="mt-2">
-                <p className="font-semibold">{review.client}</p>
-                <p className="text-sm text-gray-600">{review.message}</p>
+              )} */}
+
+              <img src={""} alt="" className="w-full h-full object-cover" />
+              <IoPlayCircleOutline className="absolute top-40 left-[84px] w-16 h-16 text-[#FAFAFB] group-hover:text-[#0BB501] group-active:scale-95"/>
+              <div className="px-2 absolute bottom-8 left-6 border-l-3 text-white border-[#0BB501]">
+                <p className="font-medium">{review.client}</p>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>

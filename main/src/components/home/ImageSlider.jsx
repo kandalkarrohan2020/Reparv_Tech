@@ -5,6 +5,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useAuth } from "../../store/auth";
+import PropertyNavbar from "./PropertyNavbar";
 
 export default function ImageSlider() {
   const { URI } = useAuth();
@@ -33,7 +34,7 @@ export default function ImageSlider() {
   },[]);
 
   return (
-    <div className="relative w-full mx-auto max-w-7xl flex items-center justify-center mb-15 md:mb-25">
+    <div className="relative w-full mx-auto max-w-7xl flex items-center justify-center mb-5">
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={20}
@@ -61,7 +62,10 @@ export default function ImageSlider() {
         ))}
       </Swiper>
 
-      <div className="custom-pagination flex items-center justify-center gap-1 m-5 absolute bottom-[60px] z-10"></div>
+      <div className="custom-pagination hidden sm:flex items-center justify-center gap-1 m-5 absolute bottom-[60px] z-10"></div>
+      <div className = "hidden lg:block absolute w-full z-10 lg:bottom-[-60px] xl:bottom-[-50px]" >
+        <PropertyNavbar />
+      </div>
     </div>
   );
 }

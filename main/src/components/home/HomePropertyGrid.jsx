@@ -22,6 +22,7 @@ export default function HomePropertyGrid() {
     { icon: rowHouseIcon, label: "Row House", to:"/row-house" },
     { icon: leaseIcon, label: "Lease", to:"/lease" },
     { icon: farmHouseIcon, label: "Farm House", to:"/farm-house" },
+    { icon: flatIcon, label: "Commercial", to:"/commercial" },
   
     
   ];

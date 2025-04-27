@@ -35,7 +35,7 @@ export const getById = (req, res) => {
        territoryenquiry.status AS territoryStatus 
        FROM enquirers 
        INNER JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
-       INNER JOIN territoryenquiry ON territoryenquiry.enquirerid = enquirers.enquirersid
+       LEFT JOIN territoryenquiry ON territoryenquiry.enquirerid = enquirers.enquirersid
        WHERE enquirersid = ?`;
 
   db.query(sql, [Id], (err, result) => {

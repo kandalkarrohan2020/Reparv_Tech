@@ -29,6 +29,7 @@ function Layout() {
     setShowPropertyInfo,
     showUploadImagesForm, setShowUploadImagesForm,
     showAdditionalInfoForm, setShowAdditionalInfoForm,
+    showResponseForm, setShowResponseForm,
     showTicket,
     setShowTicket,
     showTicketForm,
@@ -42,6 +43,7 @@ function Layout() {
     { state: showPropertyInfo, setter: setShowPropertyInfo },
     { state: showUploadImagesForm, setter: setShowUploadImagesForm },
     { state: showAdditionalInfoForm, setter: setShowAdditionalInfoForm },
+    { state: showResponseForm, setter: setShowResponseForm },
     { state: showTicketForm, setter: setShowTicketForm },
     { state: showTicket, setter: setShowTicket },
   ];

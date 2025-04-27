@@ -261,7 +261,7 @@ const Ticketing = () => {
     {
       name: "Description",
       selector: (row) => row.details,
-      style: { minWidth: "300px" },
+      minWidth: "300px", maxWidth: "350px",
     },
     {
       name: "Admin",

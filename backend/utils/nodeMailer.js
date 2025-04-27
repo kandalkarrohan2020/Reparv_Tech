@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 const sendEmail = async (email, username, password, role, url) => {
   try {
     const mailOptions = {
-      from: `"Your Company" <${process.env.EMAIL_USER}>`,
+      from: `"Reparv" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: `Your ${role} Account Details`,
       html: `
@@ -28,7 +28,7 @@ const sendEmail = async (email, username, password, role, url) => {
         <p>Please log in and update your password for security.</p>
         <br>
         <p>Best regards,</p>
-        <p><strong>www.reparv.com</strong></p>
+        <p><strong>www.reparv.in</strong></p>
       `,
     };
 

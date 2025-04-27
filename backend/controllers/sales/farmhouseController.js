@@ -37,6 +37,27 @@ export const getAllLocation = (req, res) => {
       res.json(result);
     });
   };
+
+   // ** Fetch All Location By City **
+export const getLocationByCity = (req, res) => {
+  const city = req.params.city;
+  const sql = `
+    SELECT DISTINCT location 
+    FROM properties 
+    WHERE status = 'Active' 
+    AND approve = 'Approved' 
+    AND propertytypeid = 'FarmHouse' 
+    AND city = ?`;
+
+  db.query(sql, [city], (err, result) => {
+    if (err) {
+      console.error("Error fetching:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    res.json(result);
+  });
+};
+
   export const addLike = async (req, res) => {
     const propertyId = req.params.id;
   

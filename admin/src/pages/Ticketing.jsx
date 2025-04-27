@@ -40,6 +40,7 @@ const Ticketing = () => {
   const [selectedGenerator, setSelectedGenerator] = useState(
     "Select Ticket Generator"
   );
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [ticketResponse, setTicketResponse] = useState("");
   const [ticketId, setTicketId] = useState("");
 
@@ -274,6 +275,7 @@ const Ticketing = () => {
       const data = await response.json();
       setNewTicketData(data);
       setTicketResponse(data.response ? data.response : "");
+      setSelectedStatus(data.status);
     } catch (err) {
       console.error("Error fetching :", err);
     }
@@ -293,12 +295,14 @@ const Ticketing = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ ticketResponse }),
+          body: JSON.stringify({ ticketResponse, selectedStatus }),
         }
       );
 
       if (!response.ok) throw new Error("Failed to update ticket response.");
-
+      await fetchData();
+      setSelectedStatus("");
+      setTicketResponse("");
       alert("Response added successfully");
       setShowResponseForm(false);
     } catch (err) {
@@ -352,7 +356,8 @@ const Ticketing = () => {
     {
       name: "Description",
       selector: (row) => row.details,
-      style: { minWidth: "300px" },
+      minWidth: "300px",
+      maxWidth: "350px",
     },
     {
       name: "Ticket Response",
@@ -402,7 +407,8 @@ const Ticketing = () => {
   const hasTicketGenerator = data.some((row) => !!row.ticketadder_name);
 
   const finalColumns = baseColumns.map((col) => {
-    if (col.name === "Ticket Generator") return { ...col, omit: !hasTicketGenerator };
+    if (col.name === "Ticket Generator")
+      return { ...col, omit: !hasTicketGenerator };
     if (col.name === "Admin") return { ...col, omit: !hasAdmin };
     return col;
   });
@@ -539,6 +545,8 @@ const Ticketing = () => {
             <option value="Admin">Admin</option>
             <option value="Sales Person">Sales Person</option>
             <option value="Onboarding Partner">Onboarding Partner</option>
+            <option value="Territory Partner">Territory Partner</option>
+            <option value="Project Partner">Project Partner</option>
           </select>
         </div>
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
@@ -570,6 +578,32 @@ const Ticketing = () => {
             columns={finalColumns}
             data={filteredData}
             pagination
+            conditionalRowStyles={[
+              {
+                when: row => row.status === "Open",
+                style: {
+                  backgroundColor: "#f0f8ff", // light blue
+                },
+              },
+              {
+                when: row => row.status === "Resolved",
+                style: {
+                  backgroundColor: "#e6ffed", // light green
+                },
+              },
+              {
+                when: row => row.status === "In Progress",
+                style: {
+                  backgroundColor: "#fffbea", // light Yellow
+                },
+              },
+              {
+                when: row => row.status === "Pending",
+                style: {
+                  backgroundColor: "#ffe6e6", // light red
+                },
+              },
+            ]}
           />
         </div>
       </div>
@@ -776,6 +810,43 @@ const Ticketing = () => {
                 value={ticketResponse}
                 onChange={(e) => setTicketResponse(e.target.value)}
               />
+            </div>
+
+            <div className="selectTicketStatus min-w-[250px] max-w-[280px] relative inline-block mt-2">
+              <div
+                className={`${
+                  selectedStatus === "Resolved"
+                    ? "bg-[#EAFBF1] text-[#0BB501]"
+                    : selectedStatus === "Open"
+                    ? "bg-[#E9F2FF] text-[#0068FF]"
+                    : selectedStatus === "In Progress"
+                    ? "bg-[#FFF8DD] text-[#FFCA00]"
+                    : selectedStatus === "Pending"
+                    ? "bg-[#FFEAEA] text-[#ff2323]"
+                    : "text-[#000000]"
+                } flex gap-2 items-center justify-between bg-white border border-[#00000033] text-base font-semibold rounded-lg py-3 px-5 focus:outline-none focus:ring-2 focus:ring-[#076300]`}
+              >
+                <span>
+                  {selectedStatus || "Select Ticket Status"}
+                </span>
+                <RiArrowDropDownLine className="w-7 h-7 text-[#000000B2]" />
+              </div>
+              <select
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                value={selectedStatus}
+                onChange={(e) => {
+                  const action = e.target.value;
+                  setSelectedStatus(action);
+                }}
+              >
+                <option disabled value="">
+                  Select Ticket Status
+                </option>
+                <option value="Open">Open</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+              </select>
             </div>
 
             <div className="w-full flex mt-8 md:mt-6 justify-end gap-6">

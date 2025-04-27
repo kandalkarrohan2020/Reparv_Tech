@@ -152,8 +152,10 @@ function Layout() {
               >
                 Contact Us
               </NavLink>
-            
-              <JoinOurTeamDropdown className={`flex gap-1`}></JoinOurTeamDropdown>
+
+              <JoinOurTeamDropdown
+                className={`flex gap-1`}
+              ></JoinOurTeamDropdown>
             </div>
           </div>
         )}
@@ -261,9 +263,7 @@ function Layout() {
 
             <div className="midBody flex flex-col gap-7 text-lg font-medium">
               <h3 className="text-xl font-bold">Become a Professional</h3>
-              <p className="cursor-pointer">
-                <Link to="/join-our-team">Join Our Team</Link>
-              </p>
+              <JoinOurTeamDropdown textColour={"white"}></JoinOurTeamDropdown>
             </div>
 
             <div className="rightBody flex flex-col gap-7">
@@ -299,8 +299,15 @@ function Layout() {
 
           <div className="footerBottom text-lg py-3 leading-6 flex gap-4 md:gap-6 tracking-[0.6%] text-white/60 ">
             <span>@2024 reparv.com All Right Reserved</span>
-            <span>Terms & Conditions</span>
-            <span>Privacy Policy</span>
+            <Link to="/terms-and-conditions" className="cursor-pointer">
+              Terms & Conditions
+            </Link>
+            <Link to="/privacy-policy" className="cursor-pointer">
+              Privacy Policy
+            </Link>
+            <Link to="/refund-policy" className="cursor-pointer">
+              Refund Policy
+            </Link>
           </div>
         </div>
       </div>
@@ -314,7 +321,7 @@ function Layout() {
 
           <div className="footerRight flex flex-col gap-5 text-xs leading-1.5 sm:text-lg font-medium">
             <Link to="/home">Properties</Link>
-            <Link to="/join-our-team">Join Our Team</Link>
+            <JoinOurTeamDropdown textColour={"white"}></JoinOurTeamDropdown>
             <Link to="/about-us">About Us</Link>
             <Link to="/contact-us">Contact Us</Link>
           </div>

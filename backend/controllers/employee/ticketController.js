@@ -36,6 +36,26 @@ export const getAll = (req, res) => {
            LEFT JOIN employees ON tickets.employeeid = employees.id
            WHERE tickets.employeeid = ?
            ORDER BY ticketno DESC`;
+  } else if (ticketGenerator === "Territory Partner") {
+    sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
+           employees.name AS employee_name, employees.uid ,  territorypartner.fullname AS ticketadder_name, territorypartner.contact AS ticketadder_contact
+           FROM tickets 
+           INNER JOIN territorypartner ON territorypartner.adharno = tickets.ticketadder
+           LEFT JOIN users ON tickets.adminid = users.id 
+           LEFT JOIN departments ON tickets.departmentid = departments.departmentid
+           LEFT JOIN employees ON tickets.employeeid = employees.id
+           WHERE tickets.employeeid = ?
+           ORDER BY ticketno DESC`;
+  } else if (ticketGenerator === "Project Partner") {
+    sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
+           employees.name AS employee_name, employees.uid ,  projectpartner.fullname AS ticketadder_name, projectpartner.contact AS ticketadder_contact
+           FROM tickets 
+           INNER JOIN projectpartner ON projectpartner.adharno = tickets.ticketadder
+           LEFT JOIN users ON tickets.adminid = users.id 
+           LEFT JOIN departments ON tickets.departmentid = departments.departmentid
+           LEFT JOIN employees ON tickets.employeeid = employees.id
+           WHERE tickets.employeeid = ?
+           ORDER BY ticketno DESC`;
   } else if (ticketGenerator === "Admin") {
     sql = `SELECT tickets.*, creator.name AS ticketadder_name, creator.contact AS ticketadder_contact, admin.name AS admin_name, admin.contact,
            departments.department, employees.name AS employee_name, employees.uid 
@@ -107,7 +127,7 @@ export const getById = (req, res) => {
 };
 
 export const getAdmins = (req, res) => {
-  const sql = "SELECT users.id, users.name FROM users ORDER BY id DESC";
+  const sql = "SELECT users.id, users.name FROM users WHERE role = 'Superadmin' ORDER BY id DESC";
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching Admins:", err);
@@ -297,6 +317,41 @@ export const update = (req, res) => {
 };
 
 export const addResponse = (req, res) => {
+  const ticketId = req.params.id;
+  const { ticketResponse, selectedStatus } = req.body;
+
+  if (!ticketResponse || ticketResponse.trim() === "") {
+    return res.status(400).json({ message: "Response is required" });
+  }
+  if (!selectedStatus === "") {
+    return res.status(400).json({ message: "Ticket Status is required" });
+  }
+
+  const updateQuery = "UPDATE tickets SET response = ?, status = ? WHERE ticketid = ?";
+
+  db.query(updateQuery, [ticketResponse, selectedStatus, ticketId], (err, result) => {
+    if (err) {
+      console.error("Error updating ticket response:", err);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    const fetchQuery = "SELECT * FROM tickets WHERE ticketid = ?";
+    db.query(fetchQuery, [ticketId], (err, rows) => {
+      if (err) {
+        console.error("Error fetching updated ticket:", err);
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+
+      res.status(200).json(rows[0]);
+    });
+  });
+};
+
+export const addResponse2 = (req, res) => {
   const ticketId = req.params.id;
   const { ticketResponse } = req.body;
 

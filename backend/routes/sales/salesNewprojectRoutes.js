@@ -1,5 +1,5 @@
 import express from "express";
-import {getAll, getAllCity, getAllLocation, addLike} from "../../controllers/sales/newprojectController.js";
+import {getAll, getAllCity, getAllLocation,  addLike} from "../../controllers/sales/newprojectController.js";
 
 const router = express.Router();
 

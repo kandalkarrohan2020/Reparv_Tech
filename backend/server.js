@@ -40,10 +40,14 @@ import farmhouseRoutes from "./routes/frontend/farmhouseRoutes.js";
 import plotRoutes from "./routes/frontend/plotRoutes.js";
 import flatRoutes from "./routes/frontend/flatRoutes.js";
 import rowhouseRoutes from "./routes/frontend/rowhouseRoutes.js";
+import commercialRoutes from "./routes/frontend/commercialRoutes.js";
 import propertyinfoRoutes from "./routes/frontend/propertyinfoRoutes.js";
 import enquiryRoutes from "./routes/frontend/enquiryRoutes.js";
 import sliderImagesRoutes from "./routes/frontend/sliderRoutes.js";
 import testimonialFeedbackRoutes from "./routes/frontend/testimonialRoutes.js";
+
+// Payment Route
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 //employee
 import employeeLoginRoutes from "./routes/employee/employeeLoginRoutes.js";
@@ -68,6 +72,7 @@ import salesFarmhouseRoutes from "./routes/sales/salesFarmhouseRoutes.js";
 import salesPlotRoutes from "./routes/sales/salesPlotRoutes.js";
 import salesFlatRoutes from "./routes/sales/salesFlatRoutes.js";
 import salesRowhouseRoutes from "./routes/sales/salesRowhouseRoutes.js";
+import salesCommercialRoutes from "./routes/sales/commercialRoutes.js";
 import salesPropertyinfoRoutes from "./routes/sales/salesPropertyinfoRoutes.js";
 import salesEnquiryRoutes from "./routes/sales/salesEnquiryRoutes.js";
 import salesCalenderRoutes from "./routes/sales/calenderRoutes.js";
@@ -106,7 +111,9 @@ import territoryPartnerFarmhouseRoutes from "./routes/territoryPartner/farmhouse
 import territoryPartnerPlotRoutes from "./routes/territoryPartner/plotRoutes.js";
 import territoryPartnerFlatRoutes from "./routes/territoryPartner/flatRoutes.js";
 import territoryPartnerRowhouseRoutes from "./routes/territoryPartner/rowhouseRoutes.js";
+import territoryPartnerCommercialRoutes from "./routes/territoryPartner/commercialRoutes.js";
 import territoryPartnerPropertyinfoRoutes from "./routes/territoryPartner/propertyinfoRoutes.js"
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -121,8 +128,8 @@ app.use(
   })
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 // Serve static files from 'uploads' directory
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
@@ -139,6 +146,8 @@ const allowedOrigins = [
   "https://partners.reparv.in",
   "https://sales.reparv.in",
   "https://projectpartner.reparv.in",
+  "https://territory.reparv.in",
+  "https://business.reparv.in",
 ];
 
 app.use(
@@ -244,9 +253,12 @@ app.use("/frontend/farmhouse", farmhouseRoutes);
 app.use("/frontend/plot", plotRoutes);
 app.use("/frontend/flat", flatRoutes);
 app.use("/frontend/rowhouse", rowhouseRoutes);
+app.use("/frontend/commercial", commercialRoutes);
 app.use("/frontend/enquiry", enquiryRoutes);
 app.use("/frontend/slider", sliderImagesRoutes);
 app.use("/frontend/testimonial", testimonialFeedbackRoutes);
+// Payment Call
+app.use("/api/payment", paymentRoutes);
 
 app.use(verifyToken);
 app.use("/admin/profile", profileRoutes);
@@ -297,6 +309,7 @@ app.use("/sales/farmhouse", salesFarmhouseRoutes);
 app.use("/sales/plot", salesPlotRoutes);
 app.use("/sales/flat", salesFlatRoutes);
 app.use("/sales/rowhouse", salesRowhouseRoutes);
+app.use("/sales/commercial", salesCommercialRoutes);
 app.use("/sales/enquiry", salesEnquiryRoutes);
 
 // On Boarding Partner Routes
@@ -334,7 +347,7 @@ app.use("/territory-partner/farmhouse", territoryPartnerFarmhouseRoutes);
 app.use("/territory-partner/plot", territoryPartnerPlotRoutes);
 app.use("/territory-partner/flat", territoryPartnerFlatRoutes);
 app.use("/territory-partner/rowhouse", territoryPartnerRowhouseRoutes);
-
+app.use("/territory-partner/commercial", territoryPartnerCommercialRoutes);
 
 // ✅ Start Server
 app.listen(PORT, () => {

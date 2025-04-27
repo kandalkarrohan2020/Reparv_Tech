@@ -24,7 +24,7 @@ export const getAll = (req, res) => {
            LEFT JOIN users ON tickets.adminid = users.id 
            LEFT JOIN departments ON tickets.departmentid = departments.departmentid
            LEFT JOIN employees ON tickets.employeeid = employees.id
-           ORDER BY ticketno DESC`;
+           ORDER BY created_at DESC`;
   } else if (ticketGenerator === "Onboarding Partner") {
     sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
            employees.name AS employee_name, employees.uid ,  onboardingpartner.fullname AS ticketadder_name, onboardingpartner.contact AS ticketadder_contact
@@ -33,7 +33,7 @@ export const getAll = (req, res) => {
            LEFT JOIN users ON tickets.adminid = users.id 
            LEFT JOIN departments ON tickets.departmentid = departments.departmentid
            LEFT JOIN employees ON tickets.employeeid = employees.id
-           ORDER BY ticketno DESC`;
+           ORDER BY created_at DESC`;
   } else if (ticketGenerator === "Admin") {
     sql = `SELECT tickets.*, creator.name AS ticketadder_name, creator.contact AS ticketadder_contact, admin.name AS admin_name, admin.contact,
            departments.department, employees.name AS employee_name, employees.uid 
@@ -42,7 +42,25 @@ export const getAll = (req, res) => {
            LEFT JOIN users AS admin ON tickets.adminid = admin.id 
            LEFT JOIN departments ON tickets.departmentid = departments.departmentid
            LEFT JOIN employees ON tickets.employeeid = employees.id
-           ORDER BY ticketno DESC`;
+           ORDER BY created_at DESC`;
+  } else if (ticketGenerator === "Territory Partner") {
+    sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
+           employees.name AS employee_name, employees.uid ,  territorypartner.fullname AS ticketadder_name, territorypartner.contact AS ticketadder_contact
+           FROM tickets 
+           INNER JOIN territorypartner ON territorypartner.adharno = tickets.ticketadder
+           LEFT JOIN users ON tickets.adminid = users.id 
+           LEFT JOIN departments ON tickets.departmentid = departments.departmentid
+           LEFT JOIN employees ON tickets.employeeid = employees.id
+           ORDER BY created_at DESC`;
+  } else if (ticketGenerator === "Project Partner") {
+    sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
+           employees.name AS employee_name, employees.uid ,  projectpartner.fullname AS ticketadder_name, projectpartner.contact AS ticketadder_contact
+           FROM tickets 
+           INNER JOIN projectpartner ON projectpartner.adharno = tickets.ticketadder
+           LEFT JOIN users ON tickets.adminid = users.id 
+           LEFT JOIN departments ON tickets.departmentid = departments.departmentid
+           LEFT JOIN employees ON tickets.employeeid = employees.id
+           ORDER BY created_at DESC`;
   } else {
     sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
            employees.name AS employee_name, employees.uid 
@@ -50,7 +68,7 @@ export const getAll = (req, res) => {
            LEFT JOIN users ON tickets.adminid = users.id 
            LEFT JOIN departments ON tickets.departmentid = departments.departmentid
            LEFT JOIN employees ON tickets.employeeid = employees.id
-           ORDER BY ticketno DESC`;
+           ORDER BY created_at DESC`;
   }
 
   db.query(sql, (err, result) => {
@@ -294,15 +312,18 @@ export const update = (req, res) => {
 
 export const addResponse = (req, res) => {
   const ticketId = req.params.id;
-  const { ticketResponse } = req.body;
+  const { ticketResponse, selectedStatus } = req.body;
 
   if (!ticketResponse || ticketResponse.trim() === "") {
     return res.status(400).json({ message: "Response is required" });
   }
+  if (!selectedStatus === "") {
+    return res.status(400).json({ message: "Ticket Status is required" });
+  }
 
-  const updateQuery = "UPDATE tickets SET response = ? WHERE ticketid = ?";
+  const updateQuery = "UPDATE tickets SET response = ?, status = ? WHERE ticketid = ?";
 
-  db.query(updateQuery, [ticketResponse, ticketId], (err, result) => {
+  db.query(updateQuery, [ticketResponse, selectedStatus, ticketId], (err, result) => {
     if (err) {
       console.error("Error updating ticket response:", err);
       return res.status(500).json({ message: "Internal Server Error" });
@@ -323,6 +344,7 @@ export const addResponse = (req, res) => {
     });
   });
 };
+
 // **Delete **
 export const del = (req, res) => {
   const Id = parseInt(req.params.id);

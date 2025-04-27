@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import FormatPrice from "../FormatPrice";
 import { useAuth } from "../../store/auth";
 
-function OtherProperties({ propertyTypeId }) {
+function OtherProperties({ propertyTypeId, propertyId }) {
   const navigate = useNavigate();
   const { URI } = useAuth();
   const [properties, setProperties] = useState([]);
@@ -31,7 +31,8 @@ function OtherProperties({ propertyTypeId }) {
       if (!response.ok) throw new Error("Failed to fetch properties.");
 
       const data = await response.json();
-      setProperties(data);
+      const filtered = data.filter(p => Number(p.propertyid) !== Number(propertyId));
+      setProperties(filtered);
     } catch (err) {
       console.error("Error fetching:", err);
     }

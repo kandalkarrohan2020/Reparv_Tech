@@ -14,10 +14,12 @@ const OnBoardingPartner = () => {
   const {
     showPartnerForm,
     setShowPartnerForm,
-    URI, setLoading,
+    URI,
+    setLoading,
     giveAccess,
     setGiveAccess,
-    showPartner, setShowPartner,
+    showPartner,
+    setShowPartner,
   } = useAuth();
 
   const [datas, setDatas] = useState([]);
@@ -85,8 +87,7 @@ const OnBoardingPartner = () => {
 
   const add = async (e) => {
     e.preventDefault();
-  
-  
+
     const formData = new FormData();
     Object.entries(newPartner).forEach(([key, value]) => {
       formData.append(key, value);
@@ -133,8 +134,7 @@ const OnBoardingPartner = () => {
       }
     } catch (err) {
       console.error("Error saving Partner:", err);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -179,12 +179,11 @@ const OnBoardingPartner = () => {
     }
   };
 
-
   //Delete record
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this Partner?"))
       return;
-   
+
     try {
       setLoading(true);
       const response = await fetch(URI + `/admin/partner/delete/${id}`, {
@@ -204,8 +203,7 @@ const OnBoardingPartner = () => {
       }
     } catch (error) {
       console.error("Error deleting On boarding Partner:", error);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -238,7 +236,6 @@ const OnBoardingPartner = () => {
 
   // Assign login record
   const assignLogin = async (e) => {
-    
     e.preventDefault();
     if (
       !window.confirm(
@@ -246,8 +243,7 @@ const OnBoardingPartner = () => {
       )
     )
       return;
-    
-   
+
     try {
       setLoading(true);
       const response = await fetch(
@@ -275,8 +271,7 @@ const OnBoardingPartner = () => {
       fetchData();
     } catch (error) {
       console.error("Error deleting :", error);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -294,16 +289,60 @@ const OnBoardingPartner = () => {
   );
 
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, width:"50px" },
-    { name: "Full Name", selector: (row) => row.fullname, sortable: true ,minWidth: "150px" },
-    { name: "Contact", selector: (row) => row.contact, sortable: true ,minWidth: "150px" },
-    { name: "Email", selector: (row) => row.email, sortable: true ,sminWidth: "150px" },
+    { name: "SN", selector: (row, index) => index + 1, width: "50px" },
+    {
+      name: "Full Name",
+      selector: (row) => row.fullname,
+      sortable: true,
+      minWidth: "150px",
+    },
+    {
+      name: "Contact",
+      selector: (row) => row.contact,
+      sortable: true,
+      minWidth: "150px",
+    },
+    {
+      name: "Email",
+      selector: (row) => row.email,
+      sortable: true,
+      sminWidth: "150px",
+    },
     { name: "Experience", selector: (row) => row.experience, sortable: true },
-    { name: "Adhar No", selector: (row) => row.adharno, sortable: true , minWidth: "150px" },
-    { name: "PAN No", selector: (row) => row.panno, sortable: true , minWidth: "150px" },
+    {
+      name: "Adhar No",
+      selector: (row) => row.adharno,
+      sortable: true,
+      minWidth: "150px",
+    },
+    {
+      name: "PAN No",
+      selector: (row) => row.panno,
+      sortable: true,
+      minWidth: "150px",
+    },
     { name: "City", selector: (row) => row.city, sortable: true },
-    { name: "Address", selector: (row) => row.address, sortable: true , minWidth: "150px" },
-
+    {
+      name: "Address",
+      selector: (row) => row.address,
+      sortable: true,
+      minWidth: "150px",
+    },
+    {
+      name: "Payment Status",
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 rounded-md ${
+            row.paymentstatus === "Success"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : "bg-[#FBE9E9] text-[#FF0000]"
+          }`}
+        >
+          {row.paymentstatus}
+        </span>
+      ),
+      minWidth: "150px",
+    },
     {
       name: "Status",
       cell: (row) => (
@@ -420,7 +459,12 @@ const OnBoardingPartner = () => {
         </div>
         <h2 className="text-[16px] font-semibold">On Boarding Partner List</h2>
         <div className="overflow-scroll scrollbar-hide">
-          <DataTable className="overflow-scroll scrollbar-hide" columns={columns} data={filteredData} pagination />
+          <DataTable
+            className="overflow-scroll scrollbar-hide"
+            columns={columns}
+            data={filteredData}
+            pagination
+          />
         </div>
       </div>
 
@@ -478,14 +522,14 @@ const OnBoardingPartner = () => {
                 placeholder="Enter Contact Number"
                 value={newPartner.contact}
                 onChange={(e) => {
-                    const input = e.target.value;
-                    if (/^\d{0,10}$/.test(input)) {
-                        // Allows only up to 10 digits
-                        setNewPartner({
-                          ...newPartner,
-                          contact: e.target.value,
-                        });
-                      }
+                  const input = e.target.value;
+                  if (/^\d{0,10}$/.test(input)) {
+                    // Allows only up to 10 digits
+                    setNewPartner({
+                      ...newPartner,
+                      contact: e.target.value,
+                    });
+                  }
                 }}
                 className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -794,167 +838,208 @@ const OnBoardingPartner = () => {
         </div>
       </div>
       {/* Show onBoarding Partner details */}
-            <div
-              className={`${
-                showPartner ? "flex" : "hidden"
-              } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
-            >
-              <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-[16px] font-semibold">OnBoarding Partner Details</h2>
-                  <IoMdClose
-                    onClick={() => {
-                      setShowPartner(false);
-                    }}
-                    className="w-6 h-6 cursor-pointer"
-                  />
-                </div>
-                <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={partner.fullname}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Contact
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={partner.contact}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Email
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={partner.email}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      City
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={partner.city}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Address
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={partner.address}
-                      readOnly
-                    />
-                  </div>
-      
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Adhar No
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={partner.adharno}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Pancard No
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={partner.panno}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Experience
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={partner.experience}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Status
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={partner.status}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Login Status
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={partner.loginstatus}
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      Adhaar Image
-                    </label>
-                    <img
-                      className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                      src={`${URI}${partner.adharimage}`}
-                      alt=""
-                    />
-                  </div>
-      
-                  <div className="w-full ">
-                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                      PanCard Image
-                    </label>
-                    <img
-                      className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                      src={`${URI}${partner.panimage}`}
-                      alt=""
-                    />
-                  </div>
-                </form>
-              </div>
+      <div
+        className={`${
+          showPartner ? "flex" : "hidden"
+        } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
+      >
+        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">
+              OnBoarding Partner Details
+            </h2>
+            <IoMdClose
+              onClick={() => {
+                setShowPartner(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Full Name
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={partner.fullname}
+                readOnly
+              />
             </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Contact
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={partner.contact}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Email
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={partner.email}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                City
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={partner.city}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Address
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={partner.address}
+                readOnly
+              />
+            </div>
+
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Adhar No
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={partner.adharno}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Pancard No
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={partner.panno}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Experience
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={partner.experience}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Payment Status
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={partner.paymentstatus}
+                readOnly
+              />
+            </div>
+            <div
+              className={`${partner.paymentid === null ? "hidden" : "block"}`}
+            >
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Payment ID
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={partner.paymentid}
+                readOnly
+              />
+            </div>
+            <div className={`${partner.amount === null ? "hidden" : "block"}`}>
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Registration Amount
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={partner.amount}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Status
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={partner.status}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Login Status
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={partner.loginstatus}
+                readOnly
+              />
+            </div>
+            <div></div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Adhaar Image
+              </label>
+              <img
+                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
+                src={`${URI}${partner.adharimage}`}
+                alt=""
+              />
+            </div>
+
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                PanCard Image
+              </label>
+              <img
+                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
+                src={`${URI}${partner.panimage}`}
+                alt=""
+              />
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

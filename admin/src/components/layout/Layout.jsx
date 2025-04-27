@@ -184,11 +184,6 @@ function Layout() {
               { to: "/enquirers", icon: enquirersIcon, label: "Enquirers" },
               //{ to: "/customers", icon: customersIcon, label: "Customers" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
-              {
-                to: "/propertytypes",
-                icon: enquirersIcon,
-                label: "Property Types",
-              },
               { to: "/builders", icon: partnerIcon, label: "Builders" },
               {
                 to: "/salespersons",

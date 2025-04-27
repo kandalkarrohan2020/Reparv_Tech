@@ -43,7 +43,7 @@ const Department = () => {
     try {
       setLoading(true);
       const response = await fetch(URI+`/admin/departments/${endpoint}`, {
-        method: action === "update" ? "PUT" : "POST",
+        method: newDepartment.departmentid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newDepartment),
@@ -204,7 +204,7 @@ const Department = () => {
           
         </>
       ) : (
-        <div className="z-[61] roleForm overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] flex fixed">
+        <div className="z-[61] roleForm overflow-scroll scrollbar-hide w-[400px] h-[300px] md:w-[700px] flex fixed">
           <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[16px] font-semibold">Department</h2>

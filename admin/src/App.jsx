@@ -1,7 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
-import Overview from "./pages/Overview.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 import Enquirers from "./pages/Enquirers.jsx";
 import Map from "./pages/Map.jsx";
 import Calender from "./pages/Calender.jsx";
@@ -33,7 +33,7 @@ const App = () => {
       <Routes>
         <Route path="" element={<Login />} />
         <Route path="/" element={<Layout />}>
-          <Route path="/overview" element={<Overview />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/enquirers" element={<Enquirers />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/map" element={<Map />} />

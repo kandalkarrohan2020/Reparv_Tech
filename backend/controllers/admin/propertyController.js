@@ -3,6 +3,19 @@ import moment from "moment";
 import fs from "fs";
 import path from "path";
 
+const calculateEMI = (principal, rate = 9, years = 20) => {
+  const monthlyRate = rate / 12 / 100;
+  const months = years * 12;
+
+  if (monthlyRate === 0) return principal / months;
+
+  const emi =
+    (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) /
+    (Math.pow(1 + monthlyRate, months) - 1);
+
+  return Math.round(emi);
+};
+
 // **Fetch All Properties**
 export const getAll = (req, res) => {
   const propertyLister = req.params.lister;
@@ -66,16 +79,15 @@ export const getById = (req, res) => {
 
   const sql = `
     SELECT 
-      properties.*, propertiesinfo.*,
+      properties.*,
       builders.company_name, 
       onboardingpartner.fullname, 
       onboardingpartner.contact, 
       onboardingpartner.email,
-      onboardingpartner.city
+      onboardingpartner.city AS partnerCity
     FROM properties
     INNER JOIN builders ON builders.builderid = properties.builderid
     LEFT JOIN onboardingpartner ON properties.partnerid = onboardingpartner.partnerid
-    LEFT JOIN propertiesinfo ON properties.propertyid = propertiesinfo.propertyid
     WHERE properties.propertyid = ?
     ORDER BY properties.propertyid DESC;
   `;
@@ -119,39 +131,102 @@ export const getImages = (req, res) => {
   });
 };
 
-// **Add Property**
-export const add = (req, res) => {
+export const addProperty = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const files = req.files;
   const Id = req.body.propertyid ? parseInt(req.body.propertyid) : null;
+
   const {
     builderid,
-    propertytypeid,
-    property_name,
+    propertyCategory,
+    propertyApprovedBy,
+    propertyName,
     address,
     city,
     location,
-    rerano,
-    area,
-    sqft_price,
-    extra,
-    videourl,
+    distanceFromCityCenter,
+    totalSalesPrice,
+    totalOfferPrice,
+    propertyType,
+    builtYear,
+    ownershipType,
+    builtUpArea,
+    carpetArea,
+    parkingAvailability,
+    totalFloors,
+    floorNo,
+    loanAvailability,
+    propertyFacing,
+    reraRegistered,
+    furnishing,
+    waterSupply,
+    powerBackup,
+    propertyFeatures,
+    propertyBenefits,
+    stampDuty,
+    registrationFee,
+    gst,
+    advocateFee,
+    msebWater,
+    maintenance,
+    other,
   } = req.body;
-
-  // Check if an image was uploaded
-  const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
 
   if (
     !builderid ||
-    !propertytypeid ||
-    !property_name ||
+    !propertyCategory ||
+    !propertyApprovedBy ||
+    !propertyName ||
     !address ||
     !city ||
     !location ||
-    !area ||
-    !sqft_price
+    !distanceFromCityCenter ||
+    !totalSalesPrice ||
+    !totalOfferPrice ||
+    !builtYear ||
+    !ownershipType ||
+    !builtUpArea ||
+    !carpetArea ||
+    !parkingAvailability ||
+    !totalFloors ||
+    !floorNo ||
+    !loanAvailability ||
+    !propertyFacing ||
+    !furnishing ||
+    !waterSupply ||
+    !powerBackup ||
+    !propertyFeatures ||
+    !propertyBenefits ||
+    !stampDuty ||
+    !registrationFee ||
+    !gst ||
+    !advocateFee ||
+    !msebWater ||
+    !maintenance ||
+    !other
+    
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
+
+  // calculate EMI On OFFER PRICE
+  const emi = calculateEMI(Number(totalOfferPrice));
+
+  // Prepare image URLs
+  const getImagePaths = (field) =>
+    files[field]
+      ? JSON.stringify(files[field].map((f) => `/uploads/${f.filename}`))
+      : null;
+
+  const frontView = getImagePaths("frontView");
+  const sideView = getImagePaths("sideView");
+  const kitchenView = getImagePaths("kitchenView");
+  const hallView = getImagePaths("hallView");
+  const bedroomView = getImagePaths("bedroomView");
+  const bathroomView = getImagePaths("bathroomView");
+  const balconyView = getImagePaths("balconyView");
+  const nearestLandmark = getImagePaths("nearestLandmark");
+  const developedAmenities = getImagePaths("developedAmenities");
 
   db.query(
     "SELECT * FROM properties WHERE propertyid = ?",
@@ -162,41 +237,79 @@ export const add = (req, res) => {
       if (result.length > 0)
         return res.status(202).json({ message: "Property already exists!" });
 
-      const insertSQL = `INSERT INTO properties (builderid, propertytypeid, property_name, address, city, location, rerano, area, sqft_price, extra, videourl, image, updated_at, created_at) 
-                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const insertSQL = `
+      INSERT INTO properties (
+        builderid, propertyCategory, propertyApprovedBy, propertyName, address, city, location,
+        distanceFromCityCenter, totalSalesPrice, totalOfferPrice, emi, propertyType, builtYear,
+        ownershipType, builtUpArea, carpetArea, parkingAvailability, totalFloors, floorNo,
+        loanAvailability, propertyFacing, reraRegistered, furnishing, waterSupply, powerBackup,
+        propertyFeatures, propertyBenefits, stampDuty, registrationFee, gst, advocateFee, 
+        msebWater, maintenance, other,
+        frontView, sideView, kitchenView, hallView, bedroomView, bathroomView, balconyView,
+        nearestLandmark, developedAmenities,
+        updated_at, created_at
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-      db.query(
-        insertSQL,
-        [
-          builderid,
-          propertytypeid,
-          property_name,
-          address,
-          city,
-          location,
-          rerano,
-          area,
-          sqft_price,
-          extra,
-          videourl,
-          imagePath,
-          currentdate,
-          currentdate,
-        ],
-        (err, result) => {
-          if (err) {
-            console.error("Error inserting property:", err);
-            return res
-              .status(500)
-              .json({ message: "Database error", error: err });
-          }
-          res.status(201).json({
-            message: "Property added successfully",
-            id: result.insertId,
-            imageUrl: imagePath,
-          });
+      const values = [
+        builderid,
+        propertyCategory,
+        propertyApprovedBy,
+        propertyName,
+        address,
+        city,
+        location,
+        distanceFromCityCenter,
+        totalSalesPrice,
+        totalOfferPrice,
+        emi,
+        propertyType,
+        builtYear,
+        ownershipType,
+        builtUpArea,
+        carpetArea,
+        parkingAvailability,
+        totalFloors,
+        floorNo,
+        loanAvailability,
+        propertyFacing,
+        reraRegistered,
+        furnishing,
+        waterSupply,
+        powerBackup,
+        propertyFeatures,
+        propertyBenefits,
+        stampDuty,
+        registrationFee,
+        gst,
+        advocateFee,
+        msebWater,
+        maintenance,
+        other,
+        frontView,
+        sideView,
+        kitchenView,
+        hallView,
+        bedroomView,
+        bathroomView,
+        balconyView,
+        nearestLandmark,
+        developedAmenities,
+        currentdate,
+        currentdate,
+      ];
+
+      db.query(insertSQL, values, (err, result) => {
+        if (err) {
+          console.error("Error inserting property:", err);
+          return res.status(500).json({ message: "Insert failed", error: err });
         }
-      );
+        res.status(201).json({
+          message: "Property added successfully",
+          id: result.insertId,
+        });
+      });
     }
   );
 };
@@ -204,7 +317,8 @@ export const add = (req, res) => {
 // **Update Property**
 export const update = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const Id = req.params.id ? parseInt(req.params.id) : null;
+  const files = req.files;
+  const Id = req.params.id;
 
   if (!Id) {
     return res.status(400).json({ message: "Invalid property ID" });
@@ -212,87 +326,169 @@ export const update = (req, res) => {
 
   const {
     builderid,
-    propertytypeid,
-    property_name,
+    propertyCategory,
+    propertyApprovedBy,
+    propertyName,
     address,
     city,
     location,
-    rerano,
-    area,
-    sqft_price,
-    extra,
-    videourl,
+    distanceFromCityCenter,
+    totalSalesPrice,
+    totalOfferPrice,
+    propertyType,
+    builtYear,
+    ownershipType,
+    builtUpArea,
+    carpetArea,
+    parkingAvailability,
+    totalFloors,
+    floorNo,
+    loanAvailability,
+    propertyFacing,
+    reraRegistered,
+    furnishing,
+    waterSupply,
+    powerBackup,
+    propertyFeatures,
+    propertyBenefits,
+    stampDuty,
+    registrationFee,
+    gst,
+    advocateFee,
+    msebWater,
+    maintenance,
+    other,
   } = req.body;
 
-  // Check if required fields are provided
   if (
     !builderid ||
-    !propertytypeid ||
-    !property_name ||
+    !propertyCategory ||
+    !propertyApprovedBy ||
+    !propertyName ||
     !address ||
     !city ||
     !location ||
-    !area ||
-    !sqft_price
+    !distanceFromCityCenter ||
+    !totalSalesPrice ||
+    !totalOfferPrice || 
+    !builtYear ||
+    !ownershipType ||
+    !builtUpArea ||
+    !carpetArea ||
+    !parkingAvailability ||
+    !totalFloors ||
+    !floorNo ||
+    !loanAvailability ||
+    !propertyFacing ||
+    !furnishing ||
+    !waterSupply ||
+    !powerBackup ||
+    !propertyFeatures ||
+    !propertyBenefits ||
+    !stampDuty ||
+    !registrationFee ||
+    !gst ||
+    !advocateFee ||
+    !msebWater ||
+    !maintenance ||
+    !other
+    
   ) {
-    return res
-      .status(400)
-      .json({ message: "All required fields must be filled" });
+    return res.status(400).json({ message: "All fields are required" });
   }
 
-  // Handle Image Upload (if a new file is uploaded)
-  const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+  // calculate EMI On OFFER PRICE
+  const emi = calculateEMI(Number(totalOfferPrice));
 
-  // Retrieve existing property to check if an image is already present
+  // Prepare image URLs
+  const getImagePaths = (field, existing) =>
+    files && files[field]
+      ? JSON.stringify(files[field].map((f) => `/uploads/${f.filename}`))
+      : existing;
+
+  // Fetch existing property to preserve images if not reuploaded
   db.query(
     "SELECT * FROM properties WHERE propertyid = ?",
     [Id],
     (err, result) => {
-      if (err) {
-        console.error("Database error:", err);
+      if (err)
         return res.status(500).json({ message: "Database error", error: err });
-      }
+
       if (result.length === 0) {
         return res.status(404).json({ message: "Property not found" });
       }
 
-      // Preserve existing image if no new image is uploaded
-      const existingImage = result[0].image;
-      const finalImagePath = imagePath || existingImage;
+      const existing = result[0];
 
       const updateSQL = `
-      UPDATE properties 
-      SET builderid=?, propertytypeid=?, property_name=?, address=?, city=?, location=?, rerano=?, area=?, sqft_price=?, extra=?, videourl=?, image=?, updated_at=? 
-      WHERE propertyid=?`;
+      UPDATE properties SET 
+        builderid=?, propertyCategory=?, propertyApprovedBy=?, propertyName=?, address=?, city=?, location=?,
+        distanceFromCityCenter=?, totalSalesPrice=?, totalOfferPrice=?, emi=?, propertyType=?, builtYear=?, ownershipType=?,
+        builtUpArea=?, carpetArea=?, parkingAvailability=?, totalFloors=?, floorNo=?, loanAvailability=?,
+        propertyFacing=?, reraRegistered=?, furnishing=?, waterSupply=?, powerBackup=?, propertyFeatures=?,
+        propertyBenefits=?, stampDuty=?, registrationFee=?, gst=?, advocateFee=?, 
+        msebWater=?, maintenance=?, other=?,
+        frontView=?, sideView=?, kitchenView=?, hallView=?, bedroomView=?, bathroomView=?, balconyView=?,
+        nearestLandmark=?, developedAmenities=?, updated_at=?
+      WHERE propertyid = ?
+    `;
 
-      db.query(
-        updateSQL,
-        [
-          builderid,
-          propertytypeid,
-          property_name,
-          address,
-          city,
-          location,
-          rerano,
-          area,
-          sqft_price,
-          extra,
-          videourl,
-          finalImagePath, // Use the existing image if no new image is uploaded
-          currentdate,
-          Id,
-        ],
-        (err) => {
-          if (err) {
-            console.error("Error updating property:", err);
-            return res
-              .status(500)
-              .json({ message: "Database error", error: err });
-          }
-          res.status(200).json({ message: "Property updated successfully" });
+      const values = [
+        builderid,
+        propertyCategory,
+        propertyApprovedBy,
+        propertyName,
+        address,
+        city,
+        location,
+        distanceFromCityCenter,
+        totalSalesPrice,
+        totalOfferPrice,
+        emi,
+        propertyType,
+        builtYear,
+        ownershipType,
+        builtUpArea,
+        carpetArea,
+        parkingAvailability,
+        totalFloors,
+        floorNo,
+        loanAvailability,
+        propertyFacing,
+        reraRegistered,
+        furnishing,
+        waterSupply,
+        powerBackup,
+        propertyFeatures,
+        propertyBenefits,
+        stampDuty,
+        registrationFee,
+        gst,
+        advocateFee,
+        msebWater,
+        maintenance,
+        other,
+        getImagePaths("frontView", existing.frontView),
+        getImagePaths("sideView", existing.sideView),
+        getImagePaths("kitchenView", existing.kitchenView),
+        getImagePaths("hallView", existing.hallView),
+        getImagePaths("bedroomView", existing.bedroomView),
+        getImagePaths("bathroomView", existing.bathroomView),
+        getImagePaths("balconyView", existing.balconyView),
+        getImagePaths("nearestLandmark", existing.nearestLandmark),
+        getImagePaths("developedAmenities", existing.developedAmenities),
+        currentdate,
+        Id,
+      ];
+
+      db.query(updateSQL, values, (err) => {
+        if (err) {
+          console.error("Error updating property:", err);
+          return res.status(500).json({ message: "Update failed", error: err });
         }
-      );
+
+        res.status(200).json({ message: "Property updated successfully" });
+      });
     }
   );
 };
@@ -519,7 +715,9 @@ export const additionalInfoAdd = (req, res) => {
   } = req.body;
 
   // Files check
-  const owneradhar = req.files?.owneradhar ? req.files.owneradhar[0].filename : null;
+  const owneradhar = req.files?.owneradhar
+    ? req.files.owneradhar[0].filename
+    : null;
   const ownerpan = req.files?.ownerpan ? req.files.ownerpan[0].filename : null;
   const schedule = req.files?.schedule ? req.files.schedule[0].filename : null;
   const signed = req.files?.signed ? req.files.signed[0].filename : null;
@@ -595,7 +793,9 @@ export const editAdditionalInfo = (req, res) => {
   } = req.body;
 
   // Files check
-  const owneradhar = req.files?.owneradhar ? req.files.owneradhar[0].filename : null;
+  const owneradhar = req.files?.owneradhar
+    ? req.files.owneradhar[0].filename
+    : null;
   const ownerpan = req.files?.ownerpan ? req.files.ownerpan[0].filename : null;
   const schedule = req.files?.schedule ? req.files.schedule[0].filename : null;
   const signed = req.files?.signed ? req.files.signed[0].filename : null;
@@ -604,19 +804,19 @@ export const editAdditionalInfo = (req, res) => {
 
   // Start fields and values
   let updateFields = [
-    "wing = ?", 
-    "floor = ?", 
-    "flatno = ?", 
-    "direction = ?", 
-    "ageofconstruction = ?", 
-    "carpetarea = ?", 
-    "superbuiltup = ?", 
-    "salesprice = ?", 
-    "description = ?", 
-    "ownercontact = ?", 
-    "updated_at = ?"
+    "wing = ?",
+    "floor = ?",
+    "flatno = ?",
+    "direction = ?",
+    "ageofconstruction = ?",
+    "carpetarea = ?",
+    "superbuiltup = ?",
+    "salesprice = ?",
+    "description = ?",
+    "ownercontact = ?",
+    "updated_at = ?",
   ];
-  
+
   const updateValues = [
     wing,
     floor,
@@ -657,9 +857,11 @@ export const editAdditionalInfo = (req, res) => {
     updateValues.push(ebill);
   }
 
-  const updateSQL = `UPDATE propertiesinfo SET ${updateFields.join(", ")} WHERE propertyinfoid = ?`;
+  const updateSQL = `UPDATE propertiesinfo SET ${updateFields.join(
+    ", "
+  )} WHERE propertyinfoid = ?`;
 
-  updateValues.push(Id); 
+  updateValues.push(Id);
 
   db.query(updateSQL, updateValues, (err, result) => {
     if (err) {
@@ -742,4 +944,3 @@ export const deleteImages = (req, res) => {
     }
   );
 };
-

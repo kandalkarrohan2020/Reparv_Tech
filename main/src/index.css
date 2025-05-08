@@ -1,6 +1,7 @@
 *{
   box-sizing: border-box;
   font-family: "Inter", sans-serif;
+  background-color: "#FAFAFA" !important;
 }
 
 @import "tailwindcss";
@@ -39,4 +40,18 @@
 /* scrollbar hide */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* global.css */
+input[type='range'] {
+  -webkit-appearance: none;
+  background: transparent;
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 1rem;
+  width: 1rem;
+  border-radius: 9999px;
+  background-color: #16a34a; /* green-600 */
+  cursor: pointer;
 }

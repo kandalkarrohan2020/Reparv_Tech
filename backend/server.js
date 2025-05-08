@@ -32,16 +32,8 @@ import calenderRoutes from "./routes/admin/calenderRoutes.js";
 
 //fontend
 import allPropertiesRoutes from "./routes/frontend/allPropertiesRoutes.js"
+import propertiesRoutes from "./routes/frontend/propertiesRoutes.js"
 import joinourteamRoutes from "./routes/frontend/joinourteamRoutes.js";
-import newprojectRoutes from "./routes/frontend/newprojectRoutes.js";
-import resaleRoutes from "./routes/frontend/resaleRoutes.js";
-import rentalRoutes from "./routes/frontend/rentalRoutes.js";
-import leaseRoutes from "./routes/frontend/leaseRoutes.js";
-import farmhouseRoutes from "./routes/frontend/farmhouseRoutes.js";
-import plotRoutes from "./routes/frontend/plotRoutes.js";
-import flatRoutes from "./routes/frontend/flatRoutes.js";
-import rowhouseRoutes from "./routes/frontend/rowhouseRoutes.js";
-import commercialRoutes from "./routes/frontend/commercialRoutes.js";
 import propertyinfoRoutes from "./routes/frontend/propertyinfoRoutes.js";
 import enquiryRoutes from "./routes/frontend/enquiryRoutes.js";
 import sliderImagesRoutes from "./routes/frontend/sliderRoutes.js";
@@ -135,9 +127,6 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "http://localhost:5175",
   "https://reparv.onrender.com",
   "https://reparv-tech.onrender.com",
   "https://admin.reparv.in",
@@ -192,15 +181,8 @@ const verifyToken = (req, res, next) => {
     "/project-partner/login",
     "/territory-partner/login",
     "/frontend/properties",
+    "/frontend/all-properties",
     "/frontend/joinourteam",
-    "/frontend/newproject",
-    "/frontend/resale",
-    "/frontend/rental",
-    "/frontend/lease",
-    "/frontend/farmhouse",
-    "/frontend/flat",
-    "/frontend/plot",
-    "/frontend/rowhouse",
     "/frontend/propertyinfo",
     "/frontend/enquiry",
     "/frontend/slider",
@@ -245,18 +227,10 @@ app.get("/get-cookie", (req, res) => {
 app.use("/admin", loginRoutes);
 
 //frontend
-app.use("/frontend/properties", allPropertiesRoutes);
+app.use("/frontend/all-properties", allPropertiesRoutes);
+app.use("/frontend/properties", propertiesRoutes);
 app.use("/frontend/joinourteam", joinourteamRoutes);
 app.use("/frontend/propertyinfo", propertyinfoRoutes);
-app.use("/frontend/newproject", newprojectRoutes);
-app.use("/frontend/resale", resaleRoutes);
-app.use("/frontend/rental", rentalRoutes);
-app.use("/frontend/lease", leaseRoutes);
-app.use("/frontend/farmhouse", farmhouseRoutes);
-app.use("/frontend/plot", plotRoutes);
-app.use("/frontend/flat", flatRoutes);
-app.use("/frontend/rowhouse", rowhouseRoutes);
-app.use("/frontend/commercial", commercialRoutes);
 app.use("/frontend/enquiry", enquiryRoutes);
 app.use("/frontend/slider", sliderImagesRoutes);
 app.use("/frontend/testimonial", testimonialFeedbackRoutes);

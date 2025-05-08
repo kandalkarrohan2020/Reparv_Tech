@@ -3,6 +3,7 @@ import { useAuth } from "../store/auth";
 import { Link, Navigate } from "react-router-dom";
 import { IoPlayCircleOutline } from "react-icons/io5";
 import image from "../assets/joinOurTeam/formImage.svg";
+import cardShadow from "../assets/home/cardShadow.svg";
 const VideoReviewSection = () => {
   const { URI } = useAuth();
   const [feedback, setFeedback] = useState([]);
@@ -45,15 +46,15 @@ const VideoReviewSection = () => {
       <h2 className="text-center text-[20px] sm:text-[28px] leading-6 md:leading-15 font-semibold text-[#076300] ">
         See what customers are saying
       </h2>
-      <div className="overflow-scroll scrollbar-hide w-full max-w-[1050px] grid grid-flow-col gap-4 sm:gap-6 my-2 sm:my-4 place-items-center px-2 cursor-pointer">
+      <div className="overflow-scroll scrollbar-hide w-full max-w-[1050px] grid grid-flow-col gap-4 sm:gap-6 my-2 sm:my-4 place-items-center px-4 cursor-pointer">
         {feedback.map((review) => {
           //const videoId = extractYouTubeId(review.url);
           return (
             <Link 
               to={review.url} target="_blank"
               key={review.id}
-              style={{background:`url(${review.image ? review.image : image})`}}
-              className="group relative overflow-hidden w-[237px] h-100 rounded-xl border border-[#00000033] "
+              style={{background:`url(${review.clientimage ? URI+review.clientimage : image})`, backgroundSize:"cover"}}
+              className="group bg-cover relative overflow-hidden w-[237px] h-100 rounded-xl border border-[#00000033] "
             > {/*
               {videoId ? (
                 <iframe
@@ -70,7 +71,7 @@ const VideoReviewSection = () => {
                 <p>Invalid video URL</p>
               )} */}
 
-              <img src={""} alt="" className="w-full h-full object-cover" />
+              <img src={cardShadow} alt="" className="w-full h-full object-cover" />
               <IoPlayCircleOutline className="absolute top-40 left-[84px] w-16 h-16 text-[#FAFAFB] group-hover:text-[#0BB501] group-active:scale-95"/>
               <div className="px-2 absolute bottom-8 left-6 border-l-3 text-white border-[#0BB501]">
                 <p className="font-medium">{review.client}</p>

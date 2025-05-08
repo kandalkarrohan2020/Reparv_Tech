@@ -9,8 +9,16 @@ import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
 
 const Slider = () => {
-  const { showSliderForm, setShowSliderForm, URI, setLoading } = useAuth();
+  const {
+    showSliderForm,
+    setShowSliderForm,
+    URI,
+    setLoading,
+    showAddMobileImage,
+    setShowAddMobileImage,
+  } = useAuth();
   const [data, setData] = useState([]);
+  const [sliderId, setSliderId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
   // **Fetch Data from API**
@@ -46,7 +54,7 @@ const Slider = () => {
   //Add Images
   const addImages = async (e) => {
     e.preventDefault();
-    
+
     const formData = new FormData();
     if (images && images.length > 0) {
       images.forEach((image) => {
@@ -74,8 +82,55 @@ const Slider = () => {
       await fetchData();
     } catch (err) {
       console.error("Error saving Slider Images:", err);
+    } finally {
+      setLoading(false);
     }
-    finally {
+  };
+
+  //Single Image Upload
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const singleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+    }
+  };
+
+  const removeSingleImage = () => {
+    setSelectedImage(null);
+  };
+
+  //Add  Mobile Screen Images
+  const addMobileImage = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    if (selectedImage) {
+      formData.append("image", selectedImage);
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${URI}/admin/slider/small/addimage/${sliderId}`, {
+        method: "PUT",
+        credentials: "include",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to save property. Status: ${response.status}`);
+      } else {
+        alert("Image Uploaded Successfully!");
+      }
+
+      // Reset after upload
+      setSelectedImage();
+      setShowAddMobileImage(false);
+      await fetchData();
+    } catch (err) {
+      console.error("Error saving small screen slider image:", err);
+    } finally {
       setLoading(false);
     }
   };
@@ -84,7 +139,7 @@ const Slider = () => {
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this Slider Image?"))
       return;
-  
+
     try {
       const response = await fetch(URI + `/admin/slider/delete/${id}`, {
         method: "DELETE",
@@ -101,8 +156,7 @@ const Slider = () => {
       }
     } catch (error) {
       console.error("Error deleting :", error);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -139,20 +193,41 @@ const Slider = () => {
   );
 
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, width:"50px" },
+    { name: "SN", selector: (row, index) => index + 1, width: "50px" },
     {
       name: "Images",
       cell: (row) => (
         <div
-          className={`w-[300px] h-[80px] lg:h-[120px] xl:h-[150px] overflow-hidden flex items-center justify-center`}
+          className={`w-[340px] h-[110px] lg:h-[120px] xl:h-[150px] overflow-hidden flex items-center justify-center`}
         >
           <img
             src={`${URI}/uploads/${row.image}`}
             alt="Image"
-            className="w-[300px] h-[90%] object- cursor-pointer"
+            className="w-[340px] h-[90%] object- cursor-pointer"
           />
         </div>
-      ), minWidth: "300px" 
+      ),
+      maxWidth: "340px",
+    },
+    {
+      name: "Mobile Image",
+      cell: (row) => (
+        <div
+          className={`w-full h-[110px] lg:h-[120px] xl:h-[150px] overflow-hidden flex items-center justify-start`}
+        >
+          <img
+            src={`${URI}/uploads/${row.mobileimage}`}
+            alt="Image"
+            className={`${
+              row.mobileimage == null ? "hidden" : "block"
+            } w-[100px] h-[100px] object- cursor-pointer`}
+          />
+          <span className={`${row.mobileimage == null ? "block" : "hidden"}`}>
+            -- NO IMAGE --
+          </span>
+        </div>
+      ),
+      width: "160px",
     },
     {
       name: "Status",
@@ -166,11 +241,13 @@ const Slider = () => {
         >
           {row.status}
         </span>
-      ), minWidth: "130px" 
+      ),
+      width: "150px",
     },
     {
       name: "Action",
-      cell: (row) => <ActionDropdown row={row} />, minWidth: "120px" 
+      cell: (row) => <ActionDropdown row={row} />,
+      width: "130px",
     },
   ];
 
@@ -179,6 +256,11 @@ const Slider = () => {
 
     const handleActionSelect = (action, id) => {
       switch (action) {
+        case "mobileImage":
+          // Add Mobile Image
+          setSliderId(id);
+          setShowAddMobileImage(true);
+          break;
         case "status":
           status(id);
           break;
@@ -207,6 +289,7 @@ const Slider = () => {
           <option value="" disabled>
             Select Action
           </option>
+          <option value="mobileImage">Add Mobile Image</option>
           <option value="status">Status</option>
           <option value="delete">Delete</option>
         </select>
@@ -250,7 +333,9 @@ const Slider = () => {
       >
         <div className="w-[330px] sm:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Add Slider Images (1450px X 650px)</h2>
+            <h2 className="text-[16px] font-semibold">
+              Add Slider Images (1450px X 650px)
+            </h2>
             <IoMdClose
               onClick={() => {
                 setShowSliderForm(false);
@@ -322,6 +407,84 @@ const Slider = () => {
                 className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
               >
                 Upload Images
+              </button>
+              <Loader></Loader>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div
+        className={`${
+          showAddMobileImage ? "flex" : "hidden"
+        } z-[61] FeedBackForm overflow-scroll scrollbar-hide min-h-[300px] fixed`}
+      >
+        <div className="w-[330px] sm:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">
+              Add Small Screen Image. (390px / 400px)
+            </h2>
+            <IoMdClose
+              onClick={() => {
+                setShowAddMobileImage(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form
+            onSubmit={addMobileImage}
+            className="w-full grid gap-4 place-items-center grid-cols-1"
+          >
+            <div className="w-full">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
+                Upload Small Screen Image
+              </label>
+              <div className="w-full mt-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  required
+                  onChange={singleImageChange}
+                  className="hidden"
+                  id="imageUpload"
+                />
+                <label
+                  htmlFor="imageUpload"
+                  className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
+                >
+                  <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
+                    Upload Image
+                  </span>
+                  <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                    Browse
+                  </div>
+                </label>
+              </div>
+
+              {/* Preview Section */}
+              {selectedImage && (
+                <div className="relative mt-2">
+                  <img
+                    src={URL.createObjectURL(selectedImage)}
+                    alt="Uploaded preview"
+                    className="w-full object-cover rounded-lg border border-gray-300"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeSingleImage}
+                    className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="w-full flex h-10 mt-8 md:mt-6 items-center justify-center gap-6">
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Add Image
               </button>
               <Loader></Loader>
             </div>

@@ -10,6 +10,7 @@ import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
 import { RiArrowDropDownLine } from "react-icons/ri";
+import MultiStepForm from "../components/propertyForm/MultiStepForm";
 
 const Properties = () => {
   const {
@@ -51,19 +52,52 @@ const Properties = () => {
     ownercontact: "",
   });
   const [newProperty, setPropertyData] = useState({
-    image: "",
     builderid: "",
-    propertytypeid: "",
-    property_name: "",
+    propertyCategory: "",
+    propertyApprovedBy: "",
+    propertyName: "",
     address: "",
     city: "",
     location: "",
-    rerano: "",
-    area: "",
-    sqft_price: "",
-    extra: "",
-    videourl: "",
+    distanceFromCityCenter: "",
+    totalSalesPrice: "",
+    totalOfferPrice: "",
+    propertyType: "",
+    builtYear: "",
+    ownershipType: "",
+    builtUpArea: "",
+    carpetArea: "",
+    parkingAvailability: "",
+    totalFloors: "",
+    floorNo: "",
+    loanAvailability: "",
+    propertyFacing: "",
+    reraRegistered: "",
+    furnishing: "",
+    waterSupply: "",
+    powerBackup: "",
+    propertyFeatures: "",
+    propertyBenefits: "",
+    stampDuty: "",
+    registrationFee: "",
+    gst: "",
+    advocateFee: "",
+    msebWater: "",
+    maintenance: "",
+    other: "",
   });
+  const [imageFiles, setImageFiles] = useState({
+    frontView: [],
+    sideView: [],
+    kitchenView: [],
+    hallView: [],
+    bedroomView: [],
+    bathroomView: [],
+    balconyView: [],
+    nearestLandmark: [],
+    developedAmenities: [],
+  });
+
   const [selectedPartner, setSelectedPartner] = useState(
     "Select Property Lister"
   );
@@ -248,72 +282,6 @@ const Properties = () => {
     }
   };
 
-  const add = async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("builderid", newProperty.builderid);
-    formData.append("propertytypeid", newProperty.propertytypeid);
-    formData.append("property_name", newProperty.property_name);
-    formData.append("address", newProperty.address);
-    formData.append("city", newProperty.city);
-    formData.append("location", newProperty.location);
-    formData.append("rerano", newProperty.rerano);
-    formData.append("area", newProperty.area);
-    formData.append("sqft_price", newProperty.sqft_price);
-    formData.append("extra", newProperty.extra);
-    formData.append("videourl", newProperty.videourl);
-    if (selectedImage) {
-      formData.append("image", selectedImage); // Attach the image file
-    }
-
-    const endpoint = newProperty.propertyid
-      ? `edit/${newProperty.propertyid}`
-      : "add";
-
-    try {
-      setLoading(true);
-      const response = await fetch(`${URI}/admin/properties/${endpoint}`, {
-        method: newProperty.propertyid ? "PUT" : "POST",
-        credentials: "include",
-        body: formData, // Use FormData instead of JSON
-      });
-
-      if (response.status === 409) {
-        alert("Property already exists!");
-      } else if (!response.ok) {
-        throw new Error(`Failed to save property. Status: ${response.status}`);
-      } else {
-        alert(
-          newProperty.propertyid
-            ? "Property updated successfully!"
-            : "Property added successfully!"
-        );
-      }
-
-      // Clear form after successful response
-      setPropertyData({
-        builderid: "",
-        propertytypeid: "",
-        property_name: "",
-        address: "",
-        city: "",
-        location: "",
-        rerano: "",
-        area: "",
-        sqft_price: "",
-        extra: "",
-      });
-
-      setShowPropertyForm(false);
-      await fetchData(); // Ensure latest data is fetched
-    } catch (err) {
-      console.error("Error saving property:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   //fetch data on form
   const edit = async (id) => {
     try {
@@ -327,6 +295,7 @@ const Properties = () => {
       if (!response.ok) throw new Error("Failed to fetch property.");
       const data = await response.json();
       setPropertyData(data);
+      console.log(data);
       setShowPropertyForm(true);
     } catch (err) {
       console.error("Error fetching :", err);
@@ -669,12 +638,12 @@ const Properties = () => {
 
   const filteredData = datas.filter(
     (item) =>
-      item.property_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.propertyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.rerano.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   const columns = [
     {
       name: "SN",
@@ -687,7 +656,7 @@ const Properties = () => {
       cell: (row) => (
         <div className="w-[130px] h-14 overflow-hidden flex items-center justify-center">
           <img
-            src={`${URI}${row.image}`}
+            src={`${URI}${JSON.parse(row.frontView) ? [0] : []}`}
             alt="Property"
             onClick={() => view(row.propertyid)}
             className="w-full h-[90%] object-cover cursor-pointer"
@@ -710,14 +679,14 @@ const Properties = () => {
       sortable: true,
       minWidth: "180px",
     },
-    { name: "Type", selector: (row) => row.propertytypeid, sortable: true },
-    { name: "Name", selector: (row) => row.property_name, sortable: true },
+    { name: "Type", selector: (row) => row.propertyCategory, sortable: true },
+    { name: "Name", selector: (row) => row.propertyName, sortable: true },
     { name: "Address", selector: (row) => row.address, sortable: true },
     { name: "City", selector: (row) => row.city, sortable: true },
     { name: "Location", selector: (row) => row.location, sortable: true },
-    { name: "Rera No.", selector: (row) => row.rerano, sortable: true },
-    { name: "Area", selector: (row) => row.area, sortable: true },
-    { name: "Price Sqft", selector: (row) => row.sqft_price, sortable: true },
+    { name: "Rera No.", selector: (row) => row.reraRegistered, sortable: true },
+    { name: "Area", selector: (row) => row.builtUpArea, sortable: true },
+    { name: "Price", selector: (row) => row.totalOfferPrice, sortable: true },
     {
       name: "Status",
       cell: (row) => (
@@ -890,301 +859,15 @@ const Properties = () => {
         </div>
       </div>
 
-      <div
-        className={`${
-          showPropertyForm ? "flex" : "hidden"
-        } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
-      >
-        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Property Details</h2>
-            <IoMdClose
-              onClick={() => {
-                setShowPropertyForm(false);
-              }}
-              className="w-6 h-6 cursor-pointer"
-            />
-          </div>
-          <form
-            onSubmit={add}
-            className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2"
-          >
-            <input
-              type="hidden"
-              value={newProperty.propertyid || ""}
-              onChange={(e) =>
-                setPropertyData({
-                  ...newProperty,
-                  propertyid: e.target.value,
-                })
-              }
-            />
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Builder/Company
-              </label>
-              <select
-                required
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
-                style={{ backgroundImage: "none" }}
-                value={newProperty.builderid}
-                onChange={(e) =>
-                  setPropertyData({
-                    ...newProperty,
-                    builderid: e.target.value,
-                  })
-                }
-              >
-                <option value="">Select Builder/Company</option>
-                {builderData
-                  .filter((builder) => builder.status === "Active") // ✅ Only active types
-                  .map((builder, index) => (
-                    <option key={index} value={builder.builderid}>
-                      {builder.company_name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Property Type
-              </label>
-              <select
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
-                style={{ backgroundImage: "none" }}
-                value={newProperty.propertytypeid}
-                onChange={(e) =>
-                  setPropertyData({
-                    ...newProperty,
-                    propertytypeid: e.target.value,
-                  })
-                }
-              >
-                <option value="">Select Property Type</option>
-                <option value="Flat">New Flat</option>
-                <option value="Plot">New Plot</option>
-                <option value="Rental">Rental</option>
-                <option value="Resale">Resale</option>
-                <option value="RowHouse">Row House</option>
-                <option value="Lease">Lease</option>
-                <option value="FarmHouse">Farm House</option>
-                <option value="Commercial">Commercial</option>
-              </select>
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Property Name
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="Enter Property Name"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newProperty.property_name}
-                onChange={(e) =>
-                  setPropertyData({
-                    ...newProperty,
-                    property_name: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Address
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="Enter Address"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newProperty.address}
-                onChange={(e) =>
-                  setPropertyData({ ...newProperty, address: e.target.value })
-                }
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                City
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="Enter City"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newProperty.city}
-                onChange={(e) =>
-                  setPropertyData({
-                    ...newProperty,
-                    city: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Location
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="Enter Location"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newProperty.location}
-                onChange={(e) =>
-                  setPropertyData({
-                    ...newProperty,
-                    location: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Rera No.
-              </label>
-              <input
-                type="text"
-                placeholder="Enter Rera No."
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newProperty.rerano}
-                onChange={(e) => {
-                  const input = e.target.value.toUpperCase(); // Convert to uppercase
-                  if (/^[A-Z0-9]{0,10}$/.test(input)) {
-                    setPropertyData({ ...newProperty, rerano: input });
-                  }
-                }}
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Area
-              </label>
-              <input
-                type="number"
-                required
-                placeholder="Enter Area in Sq.ft"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newProperty.area}
-                onChange={(e) =>
-                  setPropertyData({ ...newProperty, area: e.target.value })
-                }
-              />
-            </div>
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Square Feet Price
-              </label>
-              <input
-                type="number"
-                required
-                placeholder="Enter Price Per Sqft"
-                className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newProperty.sqft_price}
-                onChange={(e) =>
-                  setPropertyData({
-                    ...newProperty,
-                    sqft_price: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Extra
-              </label>
-              <input
-                type="text"
-                placeholder="Enter Extra Details"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newProperty.extra}
-                onChange={(e) =>
-                  setPropertyData({ ...newProperty, extra: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Video Link
-              </label>
-              <input
-                type="text"
-                placeholder="Enter Video Link"
-                required
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newProperty.videourl}
-                onChange={(e) =>
-                  setPropertyData({ ...newProperty, videourl: e.target.value })
-                }
-              />
-            </div>
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-                Upload Property Image
-              </label>
-              <div className="w-full mt-2">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={singleImageChange}
-                  className="hidden"
-                  id="imageUpload"
-                />
-                <label
-                  htmlFor="imageUpload"
-                  className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-                >
-                  <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                    Upload Image
-                  </span>
-                  <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
-                    Browse
-                  </div>
-                </label>
-              </div>
-
-              {/* Preview Section */}
-              {selectedImage && (
-                <div className="relative mt-2">
-                  <img
-                    src={URL.createObjectURL(selectedImage)}
-                    alt="Uploaded preview"
-                    className="w-full object-cover rounded-lg border border-gray-300"
-                  />
-                  <button
-                    type="button"
-                    onClick={removeSingleImage}
-                    className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-                  >
-                    ✕
-                  </button>
-                </div>
-              )}
-            </div>
-            <div></div>
-            <div className="flex h-10 mt-8 md:mt-6 justify-end gap-6">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowPropertyForm(false);
-                }}
-                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
-              >
-                Save
-              </button>
-              <Loader />
-            </div>
-          </form>
-        </div>
-      </div>
+      {/* Add Property Multi Step Form */}
+      <MultiStepForm
+        fetchData={fetchData}
+        newProperty={newProperty}
+        setPropertyData={setPropertyData}
+        imageFiles={imageFiles}
+        setImageFiles={setImageFiles}
+        builderData={builderData}
+      />
 
       {/* Upload Images Form */}
       <div
@@ -1194,7 +877,9 @@ const Properties = () => {
       >
         <div className="w-[330px] sm:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Upload Images ( 600px / 360px )</h2>
+            <h2 className="text-[16px] font-semibold">
+              Upload Images ( 600px / 360px )
+            </h2>
             <IoMdClose
               onClick={() => {
                 setShowUploadImagesForm(false);
@@ -1925,7 +1610,7 @@ const Properties = () => {
                 type="text"
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.propertytypeid}
+                value={property.propertyCategory}
                 readOnly
               />
             </div>
@@ -1937,7 +1622,7 @@ const Properties = () => {
                 type="text"
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.property_name}
+                value={property.propertyName}
                 readOnly
               />
             </div>
@@ -1979,13 +1664,25 @@ const Properties = () => {
             </div>
             <div className="w-full ">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Distance From City Center
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={property.distanceFromCityCenter}
+                readOnly
+              />
+            </div>
+            <div className={`${property.reraRegistered ? "block" : "hidden"}`}>
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Rera No.
               </label>
               <input
                 type="text"
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.rerano}
+                value={property.reraRegistered}
                 readOnly
               />
             </div>
@@ -1997,34 +1694,35 @@ const Properties = () => {
                 type="number"
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.area}
+                value={property.builtUpArea}
                 readOnly
               />
             </div>
             <div className="w-full">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Square Feet Price
+                Total Sales Price
               </label>
               <input
                 type="number"
                 disabled
                 className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.sqft_price}
+                value={property.totalSalesPrice}
                 readOnly
               />
             </div>
-            <div className="w-full ">
+            <div className="w-full">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Extra
+                Total Offer Price
               </label>
               <input
-                type="text"
+                type="number"
                 disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.extra}
+                className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={property.totalOfferPrice}
                 readOnly
               />
             </div>
+
             <div
               className={`${
                 property.partnerid === null ? "hidden" : "block"
@@ -2289,7 +1987,7 @@ const Properties = () => {
               } w-full `}
             >
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Property Schedule 
+                Property Schedule
               </label>
               <img
                 className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"

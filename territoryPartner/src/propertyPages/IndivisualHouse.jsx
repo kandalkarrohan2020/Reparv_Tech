@@ -6,6 +6,8 @@ import { FaRupeeSign } from "react-icons/fa";
 import { MdOutlineKingBed } from "react-icons/md";
 import { BiBath } from "react-icons/bi";
 import { FaDiamond } from "react-icons/fa6";
+import { CiLocationOn } from "react-icons/ci";
+import cardAssuredTag from "../assets/property/cardAssuredTag.svg";
 import populerTag from "../assets/property/populerTag.svg";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "../store/auth";
@@ -244,79 +246,79 @@ export default function IndivisualHouse() {
             <div
               onClick={() => navigate(`/property-info/${property.propertyid}`)}
               key={property.propertyid}
-              className="group rounded-lg shadow-md bg-white hover:bg-[#076300] overflow-hidden"
+              className="group border border-[#00000033] rounded-lg shadow-md bg-white hover:bg-[#076300] overflow-hidden"
             >
               <img
                 src={`${URI}${property.image}`}
                 alt={property.name}
                 className=" object-cover h-[250px] w-full"
               />
-              <div className="relative p-4">
+              <div className="relative p-4 flex flex-col gap-2">
                 {property.likes > 500 && (
                   <img
                     src={populerTag}
                     className="absolute top-[-15px] left-[-8px]"
                   ></img>
                 )}
-                <div className="w-full py-3 flex items-center justify-between">
-                  <div className="flex flex-col justify-between gap-2 text-xl lg:text-2xl font-extrabold p-2">
-                    <div className="text-[#076300] group-hover:text-white flex items-center justify-start">
-                    <FormatPrice price={property.sqft_price} />
+
+                <div className="w-full flex text-base font-semibold leading-[150%] spacing-[-1%]">
+                  <span className="text-[#000929] group-hover:text-white">
+                    {property.property_name.length > 29
+                      ? `${property.property_name.slice(0, 28)}...`
+                      : property.property_name}
+                  </span>
+                </div>
+
+                <div className="w-full flex flex-col items-center justify-between">
+                  <div className="w-full flex justify-between gap-2 text-base lg:text-xl font-extrabold">
+                    <div className="text-[#076300] group-hover:text-white flex gap-1 items-start justify-center ">
+                      EMI <FormatPrice price={property.sqft_price / 12} />
+                      /m
                     </div>
-                    <h2 className="text-[#000929] group-hover:text-white ml-1">
-                      {property.property_name.length > 18
-                        ? `${property.property_name.slice(0, 18)}...`
-                        : property.property_name}
-                    </h2>
-                  </div>
-                  <div className="flex flex-col gap-1 items-center justify-center p-2">
-                    <div
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        addLike(property.propertyid);
-                        
-                      }}
-                      className={`likeBtn w-12 h-12 flex items-center justify-center border border-[#E8E6F9] rounded-full bg-white ${
-                        property.likes > 0
-                          ? "text-[#076300]"
-                          : "text-[#E8E6F9]"
-                      } `}
-                    >
-                      <FaHeart />
+                    <div className="text-[#076300] group-hover:text-white flex flex-col gap-1 items-start justify-center ">
+                      <FormatPrice price={property.sqft_price} />
+                      <span
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          console.log("Show Other Charges!");
+                        }}
+                        className="text-[#00000066] text-xs font-medium cursor-pointer group-hover:text-white active:scale-95 "
+                      >
+                        +Other Charged
+                      </span>
                     </div>
-                    <span className="text-[#076300] font-semibold group-hover:text-white">
-                      {property.likes}
-                    </span>
                   </div>
                 </div>
 
-                <div className="address text-[10px] md:text-xs lg:text-base font-normal px-3">
-                  <p className="text-[#808080] group-hover:text-[#e2e2e2]">
-                    {property.location.length > 20
-                      ? `${property.location.slice(0, 20)}...`
-                      : property.location}
-                    , {property.city}
-                  </p>
+                <div className="flex justify-between text-xs md:text-sm text-[#00092966] group-hover:text-[#e2e2e2] mt-2 px-4">
+                  <div className="flex items-center justify-start gap-2 ">
+                    <MdOutlineKingBed className="text-[#07630066] group-hover:text-white w-5 h-5" />
+                    3 Beds
+                  </div>
+                  <div className="flex items-center justify-start gap-2 ">
+                    <BiBath className="text-[#07630066] group-hover:text-white w-5 h-5" />
+                    2 Bathrooms
+                  </div>
+
+                  <div className="flex items-center justify-start gap-2 ">
+                    <FaDiamond className="text-[#07630066] group-hover:text-white w-3 h-3" />
+                    {property.area} Sqft
+                  </div>
                 </div>
 
-                <hr className="text-[#F0EFFB] my-3" />
+                <hr className="text-[#F0EFFB] my-2" />
 
-                <div className="flex justify-between text-xs md:text-sm text-[#808080] group-hover:text-[#e2e2e2] mt-2 px-2">
-                  {/*<div className="flex items-center justify-start gap-2">
-                                        {
-                                          //<MdOutlineKingBed className="text-[#076300] group-hover:text-white w-4 h-4" />
-                                        }
-                                        {property.area} Sq.ft Area
-                                      </div>
-                                      <div className="flex items-center justify-start gap-2">
-                                        <BiBath className="text-[#076300] group-hover:text-white w-4 h-4" />
-                                        {property.baths} Bathrooms
-                                      </div>
-                                      */}
-                  <div className="flex items-center justify-start gap-2">
-                    <FaDiamond className="text-[#076300] group-hover:text-white w-3 h-3" />
-                    {property.area} Sq.ft Area
+                <div className="w-full flex gap-2 flex-wrap-reverse justify-between text-xs md:text-sm text-[#808080] group-hover:text-[#e2e2e2]">
+                  <div className="w-1/2 flex gap-1 items-center justify-start address text-[10px] lg:text-xs font-normal">
+                    <CiLocationOn className="text-[#07630066] group-hover:text-white w-5 h-5" />
+                    <p className="text-[#808080] group-hover:text-[#e2e2e2]">
+                      {property.location.length > 14
+                        ? `${property.location.slice(0, 13)}...`
+                        : property.location}
+                      , {property.city}
+                    </p>
                   </div>
+                  <img src={cardAssuredTag} alt="" />
                 </div>
               </div>
             </div>

@@ -17,6 +17,21 @@ const Testimonial = () => {
     message: "",
     url: "",
   });
+
+  //Single Image Upload
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const singleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+    }
+  };
+
+  const removeSingleImage = () => {
+    setSelectedImage(null);
+  };
+
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
@@ -37,7 +52,15 @@ const Testimonial = () => {
 
   const addOrUpdate = async (e) => {
     e.preventDefault();
-   
+    const formData = new FormData();
+    formData.append("client", newFeedback.client);
+    formData.append("message", newFeedback.message);
+    formData.append("url", newFeedback.url);
+
+    if (selectedImage) {
+      formData.append("image", selectedImage);
+    }
+
     const endpoint = newFeedback.id ? `edit/${newFeedback.id}` : "add";
 
     try {
@@ -45,8 +68,7 @@ const Testimonial = () => {
       const response = await fetch(`${URI}/admin/testimonial/${endpoint}`, {
         method: newFeedback.id ? "PUT" : "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newFeedback),
+        body: formData,
       });
 
       if (response.status === 409) {
@@ -164,6 +186,20 @@ const Testimonial = () => {
 
   const columns = [
     { name: "SN", selector: (row, index) => index + 1, width:"50px"},
+    {
+      name: "Client Image",
+      cell: (row) => (
+        <div
+          className={`w-full h-[110px] overflow-hidden flex items-center justify-center`}
+        >
+          <img
+            src={`${URI}${row.clientimage}`}
+            alt="Image"
+            className="w-[55px] h-[90%] object- cursor-pointer"
+          />
+        </div>
+      ), width: "120px" 
+    },
     { name: "Client Name", selector: (row) => row.client, sortable: true ,minWidth: "150px" },
     { name: "Message", selector: (row) => row.message, sortable: true , minWidth: "150px" },
     { name: "Video URL", selector: (row) => row.url, sortable: true , minWidth: "250px" },
@@ -267,7 +303,7 @@ const Testimonial = () => {
       >
         <div className="w-[330px] sm:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Add Testimonial</h2>
+            <h2 className="text-[16px] font-semibold">Add Testimonial. Image Size (237px / 400px)</h2>
             <IoMdClose
               onClick={() => {
                 setShowFeedbackForm(false);
@@ -318,19 +354,62 @@ const Testimonial = () => {
             </div>
             <div className="w-full">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Testimonial Message
+                Testimonial Message (optional)
               </label>
               <textarea
                 rows={2}
                 cols={40}
                 placeholder="Enter Message"
-                required
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={newFeedback.message}
                 onChange={(e) =>
                   setNewFeedback({ ...newFeedback, message: e.target.value })
                 }
               />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
+                Upload Property Image
+              </label>
+              <div className="w-full mt-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  required
+                  onChange={singleImageChange}
+                  className="hidden"
+                  id="imageUpload"
+                />
+                <label
+                  htmlFor="imageUpload"
+                  className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
+                >
+                  <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
+                    Upload Image
+                  </span>
+                  <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                    Browse
+                  </div>
+                </label>
+              </div>
+
+              {/* Preview Section */}
+              {selectedImage && (
+                <div className="relative mt-2">
+                  <img
+                    src={URL.createObjectURL(selectedImage)}
+                    alt="Uploaded preview"
+                    className="w-full object-cover rounded-lg border border-gray-300"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeSingleImage}
+                    className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
             </div>
             <div className="w-full flex h-10 mt-8 md:mt-6 items-center justify-center gap-6">
               <button

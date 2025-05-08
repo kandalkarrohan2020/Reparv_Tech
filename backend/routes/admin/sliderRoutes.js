@@ -6,6 +6,7 @@ import {
   addImages,
   status,
   del,
+  addSmallScreenImage,
 } from "../../controllers/admin/sliderController.js";
 
 const router = express.Router();
@@ -33,6 +34,7 @@ const upload = multer({
 
 router.get("/", getAll);
 router.post("/addimages",upload.array("images[]"), addImages);
+router.put("/small/addimage/:id", upload.single("image"), addSmallScreenImage);
 router.put("/status/:id", status);
 router.delete("/delete/:id", del);
 

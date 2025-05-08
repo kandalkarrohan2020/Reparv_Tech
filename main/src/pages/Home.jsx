@@ -1,21 +1,20 @@
 import React from "react";
+import { useAuth } from "../store/auth";
 import ImageSlider from "../components/home/ImageSlider";
-import HomePropertyGrid from "../components/home/HomePropertyGrid";
-import VideoSection from "../components/home/VideoSection";
 import StepsSection from "../components/home/StepsSection";
 import VideoReviewSection from "../components/VideoReviewSection";
 import PropertyNavbar from "../components/home/PropertyNavbar";
-import OtherProperties from "../components/OtherProperties";
 import HomePropertySection from "../components/home/HomePropertySection";
 
 function Home() {
+  const { selectedCity } = useAuth();
   return (
     <div className="full">
       <ImageSlider />
       <div className="block lg:hidden">
         <PropertyNavbar />
       </div>
-      <HomePropertySection city={"Nagpur"} />
+      <HomePropertySection city={selectedCity} />
       <VideoReviewSection />
       <StepsSection />
     </div>

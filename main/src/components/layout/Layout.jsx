@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import reparvLogo from "../../assets/reparvLogo.svg";
 import footerLogo from "../../assets/footerLogo.svg";
 import { NavLink } from "react-router-dom";
@@ -17,6 +17,13 @@ import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import Loader from "../Loader";
 import JoinOurTeamDropdown from "../JoinOurTeamDropdown";
+import { RiArrowDropDownLine } from "react-icons/ri";
+import { CiLocationOn } from "react-icons/ci";
+import PriceSummery from "../property/PriceSummery";
+import { useInView } from "react-intersection-observer";
+import BenefitsPopup from "../property/BenefitsPopup";
+import SiteVisitPopup from "../property/SiteVisitPopup";
+
 
 function Layout() {
   const {
@@ -26,10 +33,23 @@ function Layout() {
     setShowSuccess,
     URI,
     setLoading,
+    selectedCity,
+    setSelectedCity,
+    showPriceSummery, setShowPriceSummery,
+    showBenefitsPopup, setShowBenefitsPopup,
+    showSiteVisitPopup, setShowSiteVisitPopup,
   } = useAuth();
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  
+  const { ref: footerRef, inView: footerInView } = useInView({ threshold: 0.1 });
+  const [videoInView, setVideoInView] = useState(false);
+  const [otherPropertiesInView, setOtherPropertiesInView] = useState(false);
+  
+  const isIntersecting = footerInView || videoInView;
+  const isScrolling = footerInView || otherPropertiesInView;
+
   const [showSidebar, setShowSidebar] = useState(false);
   const getNavLinkClass = (path) => {
     return location.pathname === path ? "font-semibold text-[#0BB501]" : "";
@@ -94,9 +114,30 @@ function Layout() {
     }
   };
 
+  // *Fetch Data from API*
+  const fetchAllCity = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/properties/city", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch city.");
+
+      const data = await response.json();
+
+      //setAllCity([...data]);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
   return (
     <div className="layout w-full flex flex-col bg-white overflow-hidden ">
-      <div className="navbar z-30 fixed w-full h-15 gap-15 sm:h-22 px-8 lg:px-25 flex items-center justify-between  bg-white shadow-[0px_1px_3px_1px_#00000026]">
+      <div className="navbar z-30 fixed w-full h-15 gap-5 sm:h-22 px-8 lg:px-25 flex items-center justify-between  bg-white shadow-[0px_1px_3px_1px_#00000026]">
         {/* Mobile Sidebar */}
         {showSidebar && (
           <div className="sidebar w-full fixed md:hidden top-0 right-0 z-10 bg-white flex flex-col items-end gap-5 pb-8 shadow-[0px_1px_3px_1px_#00000026]">
@@ -124,15 +165,18 @@ function Layout() {
                 onClick={() => {
                   setShowSidebar(false);
                 }}
-                className={`${getNavLinkClass("/")} ${getNavLinkClass(
-                  "/flat"
-                )} ${getNavLinkClass("/plot")} ${getNavLinkClass(
-                  "/rental"
-                )} ${getNavLinkClass("/farmvilla")} ${getNavLinkClass(
-                  "/lease"
-                )} ${getNavLinkClass("/farm")} ${getNavLinkClass("/property")}`}
+                className={`${getNavLinkClass("/")}`}
               >
                 Home
+              </NavLink>
+              <NavLink
+                onClick={() => {
+                  setShowSidebar(false);
+                }}
+                to="/properties"
+                className={`${getNavLinkClass("/properties")}`}
+              >
+                Properties
               </NavLink>
               <NavLink
                 onClick={() => {
@@ -168,6 +212,28 @@ function Layout() {
             className="w-[90px] md:w-[120px] lg:w-[135px]"
           />
         </div>
+        <div className={`selectCity ${location.pathname != "/about" ? "sm:inline-block" : "hidden"} hidden min-w-[50px] max-w-[180px] relative`}>
+          <div className="flex lg:gap-1 items-center justify-center text-sm font-semibold  text-black lg:p-1 ">
+            <CiLocationOn className="w-5 h-5" />
+            <span className="hidden sm:block md:hidden lg:block ">
+              {selectedCity || "Select City"}
+            </span>
+            <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+          </div>
+          <select
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            value={selectedCity}
+            onChange={(e) => {
+              const action = e.target.value;
+              setSelectedCity(action);
+            }}
+          >
+            <option value="">Select City</option>
+            <option value="Nagpur">Nagpur</option>
+            <option value="Chandrapur">Chandrapur</option>
+            <option value="Wardha">Wardha</option>
+          </select>
+        </div>
         <div className="menu flex items-center justify-between md:hidden">
           <IoMdMenu
             onClick={() => {
@@ -177,18 +243,18 @@ function Layout() {
           />
         </div>
 
-        <div className="navlink hidden md:flex items-center justify-start gap-8 xl:gap-15 text-base leading-[36px] tracking-[0.2em] font-medium text-[#110229]">
+        <div className="navlink hidden md:flex items-center justify-start gap-7 lg:gap-7 xl:gap-15 text-base leading-[36px] tracking-[0.2em] font-medium text-[#110229]">
           <NavLink
             to="/"
-            className={`${getNavLinkClass("/")} ${getNavLinkClass(
-              "/flat"
-            )} ${getNavLinkClass("/plot")} ${getNavLinkClass(
-              "/rental"
-            )} ${getNavLinkClass("/farmvilla")} ${getNavLinkClass(
-              "/lease"
-            )} ${getNavLinkClass("/farm")} ${getNavLinkClass("/property")}`}
+            className={`${getNavLinkClass("/")}`}
           >
             Home
+          </NavLink>
+          <NavLink
+            to="/properties"
+            className={`${getNavLinkClass("/properties")} flex gap-1`}
+          >
+            Properties
           </NavLink>
           <NavLink
             to="/about-us"
@@ -208,13 +274,13 @@ function Layout() {
       </div>
 
       {/* container */}
-      <div className="w-full pt-15 sm:pt-22 bg-white">
-        <Outlet />
+      <div className="w-full pt-15 sm:pt-22 bg-[#FAFAFA]">
+        <Outlet context={{ setVideoInView, isIntersecting, setOtherPropertiesInView, isScrolling}} />
       </div>
 
       {/* footer */}
-      <div className="w-full bg-black">
-        <div className="footer w-full max-w-7xl mx-auto hidden md:flex flex-col gap-8 bg-[#000000] text-white py-15 px-18 lg:px-25">
+      <div ref={footerRef} className="w-full md:block hidden bg-black">
+        <div className="footer w-full max-w-7xl mx-auto  md:flex flex-col gap-8 bg-[#000000] text-white py-15 px-18 lg:px-25">
           <div className="footerTop flex items-center justify-start ">
             <img src={footerLogo} alt="" className="w-[135px]" />
           </div>
@@ -235,22 +301,16 @@ function Layout() {
               <h3 className="text-xl font-bold">Properties</h3>
               <div className="grid grid-cols-2 gap-x-10 text-base">
                 <p className="cursor-pointer pr-4 text-base">
-                  <Link to="/flat">Flat</Link>
+                  <Link to="/flat">New Flat</Link>
                 </p>
                 <p className="cursor-pointer text-base">
-                  <Link to="/plot">Plot</Link>
+                  <Link to="/plot">New Plot</Link>
                 </p>
                 <p className="cursor-pointer text-base">
-                  <Link to="/new-project">New Project</Link>
+                  <Link to="/rental">Rental</Link>
                 </p>
                 <p className="cursor-pointer ">
                   <Link to="/resale">Resale</Link>
-                </p>
-                <p className="cursor-pointer ">
-                  <Link to="/farm-house">Farm House</Link>
-                </p>
-                <p className="cursor-pointer ">
-                  <Link to="/rental">Rental</Link>
                 </p>
                 <p className="cursor-pointer ">
                   <Link to="/row-house">Row House</Link>
@@ -258,10 +318,16 @@ function Layout() {
                 <p className="cursor-pointer ">
                   <Link to="/lease">Lease</Link>
                 </p>
+                <p className="cursor-pointer ">
+                  <Link to="/farm-house">Farm House</Link>
+                </p>
+                <p className="cursor-pointer ">
+                  <Link to="/commercial">Commercial</Link>
+                </p>
               </div>
             </div>
 
-            <div className="midBody flex flex-col gap-7 text-lg font-medium">
+            <div className="midBody flex flex-col gap-7 text-lg font-medium !text-White">
               <h3 className="text-xl font-bold">Become a Professional</h3>
               <JoinOurTeamDropdown textColour={"white"}></JoinOurTeamDropdown>
             </div>
@@ -306,14 +372,14 @@ function Layout() {
               Privacy Policy
             </Link>
             <Link to="/refund-policy" className="cursor-pointer">
-              Refund Policy
+              Cancellation Policy
             </Link>
           </div>
         </div>
       </div>
 
       {/* Mobile footer */}
-      <div className="footer md:hidden w-full flex flex-col items-center justify-start gap-4 bg-[#000000] text-white py-15 px-10">
+      <div className="footer  md:hidden w-full flex flex-col items-center justify-start gap-4 bg-[#000000] text-white py-15 px-10">
         <div className="footerContainer w-full flex items-start justify-between py-2">
           <div className="footerLeft flex items-center justify-start ">
             <img src={footerLogo} alt="" className="w-[135px]" />
@@ -357,14 +423,25 @@ function Layout() {
           </div>
         </div>
 
-        <div className="footerBottom text-xs sm:text-lg py-3 leading-6 flex gap-4 md:gap-6 tracking-[0.6%] text-white/60 ">
+        <div className="footerBottom w-full text-xs sm:text-lg py-3 leading-6 flex flex-col items-center justify-center gap-4 md:gap-6 tracking-[0.6%] text-white/60 ">
           <span>@2024 reparv.com All Right Reserved</span>
+          <div className="flex text-[10px] w-full items-center justify-evenly">
+            <Link to="/terms-and-conditions" className="cursor-pointer">
+              Terms & Conditions
+            </Link>
+            <Link to="/privacy-policy" className="cursor-pointer">
+              Privacy Policy
+            </Link>
+            <Link to="/refund-policy" className="cursor-pointer">
+              Cancellation Policy
+            </Link>
+          </div>
         </div>
       </div>
 
       {/* Inquiry From */}
       {showInquiryForm && (
-        <div className="Container w-full h-screen bg-[#dadada8f] fixed z-50 flex md:items-center md:justify-center">
+        <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
           <div className="InquiryForm overflow-scroll scrollbar-hide bg-white py-8 p-4 sm:p-6 sm:rounded-2xl shadow-lg max-w-3xl w-full ">
             <div className="formHeading w-full flex flex-row items-center justify-between gap-8 sm:p-6 mb-4">
               <h2 className="text-xl sm:text-2xl font-bold text-[#076300] ">
@@ -510,6 +587,21 @@ function Layout() {
       )}
       {/* Show Success Screen */}
       {showSuccess && <SuccessScreen />}
+      {showPriceSummery && (
+        <div onClick={()=>{setShowPriceSummery(false)}} className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
+          <PriceSummery />
+        </div>
+      )}
+      {showSiteVisitPopup && (
+        <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
+          <SiteVisitPopup />
+        </div>
+      )}
+      {showBenefitsPopup && (
+        <div onClick={()=>{setShowBenefitsPopup(false)}} className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
+          <BenefitsPopup />
+        </div>
+      )}
     </div>
   );
 }

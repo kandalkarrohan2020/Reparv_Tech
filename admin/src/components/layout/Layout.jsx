@@ -61,6 +61,7 @@ function Layout() {
     showBuilder, setShowBuilder,
     showPartner, setShowPartner,
     showSalesPerson, setShowSalesPerson,
+    showAddMobileImage, setShowAddMobileImage,
     isLoggedIn,
   } = useAuth();
 
@@ -90,6 +91,7 @@ function Layout() {
     { state: showBuilder, setter: setShowBuilder},
     { state: showSalesPerson, setter: setShowSalesPerson },
     { state: showPartner, setter: setShowPartner},
+    { state: showAddMobileImage, setter: setShowAddMobileImage},
   ];
 
   const getNavLinkClass = (path) => {
@@ -180,7 +182,7 @@ function Layout() {
             />
             {/* Navigation Links */}
             {[
-              { to: "/overview", icon: overviewIcon, label: "Overview" },
+              { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/enquirers", icon: enquirersIcon, label: "Enquirers" },
               //{ to: "/customers", icon: customersIcon, label: "Customers" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },

@@ -11,7 +11,6 @@ import { BiBath } from "react-icons/bi";
 import { FaVectorSquare } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../store/auth";
-import PropertyImageSlider from "../components/property/PropertyImageSlider";
 import OtherProperties from "../components/OtherProperties";
 import propertyPicture from "../assets/property/propertyPicture.svg";
 import FormatPrice from "../components/FormatPrice";

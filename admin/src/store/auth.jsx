@@ -16,8 +16,8 @@ const delTokenInCookie = () => {
     setAccessToken();
     Cookies.remove("accessToken");
 }
-const URI = "http://localhost:3000";
-//const URI = "https://api.reparv.in";
+//const URI = "http://localhost:3000";
+const URI = "https://api.reparv.in";
 
 const [loading, setLoading] = useState(false);
 const [showEplDetailsForm, setShowEplDetailsForm ] = useState(false);
@@ -49,6 +49,7 @@ const [showFeedbackForm, setShowFeedbackForm] = useState(false);
 const [showPartnerForm, setShowPartnerForm ] = useState(false);
 const [showRejectReasonForm, setShowRejectReasonForm ] = useState(false);
 const [showPartner, setShowPartner ] = useState(false);
+const [showAddMobileImage, setShowAddMobileImage ] = useState(false);
 
 
 return <AuthContext.Provider
@@ -85,6 +86,7 @@ return <AuthContext.Provider
         showPartnerForm, setShowPartnerForm,
         showRejectReasonForm, setShowRejectReasonForm,
         showPartner, setShowPartner,
+        showAddMobileImage, setShowAddMobileImage,
     }
 }>
     {children}

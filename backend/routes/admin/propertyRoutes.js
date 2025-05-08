@@ -4,7 +4,7 @@ import {
   getById,
   getImages,
   deleteImages,
-  add,
+  addProperty,
   update,
   status,
   approve,
@@ -44,8 +44,38 @@ router.get("/get/:lister", getAll);
 router.get("/:id", getById);
 router.get("/images/:id", getImages);
 router.delete("/images/delete/:id", deleteImages);
-router.post("/add", upload.single("image"), add);
-router.put("/edit/:id", upload.single("image"), update);
+
+router.post(
+  "/add",
+  upload.fields([
+    { name: "frontView", maxCount: 10 },
+    { name: "nearestLandmark", maxCount: 10 },
+    { name: "developedAmenities", maxCount: 10 },
+    { name: "sideView", maxCount: 10 },
+    { name: "hallView", maxCount: 10 },
+    { name: "kitchenView", maxCount: 10 },
+    { name: "bedroomView", maxCount: 10 },
+    { name: "bathroomView", maxCount: 10 },
+    { name: "balconyView", maxCount: 10 },
+  ]),
+  addProperty
+);
+
+router.put(
+  "/edit/:id",
+  upload.fields([
+    { name: "frontView", maxCount: 10 },
+    { name: "nearestLandmark", maxCount: 10 },
+    { name: "developedAmenities", maxCount: 10 },
+    { name: "sideView", maxCount: 10 },
+    { name: "hallView", maxCount: 10 },
+    { name: "kitchenView", maxCount: 10 },
+    { name: "bedroomView", maxCount: 10 },
+    { name: "bathroomView", maxCount: 10 },
+    { name: "balconyView", maxCount: 10 },
+  ]),
+  update
+);
 router.put("/status/:id", status);
 router.put("/reject/:id", addRejectReason);
 router.put("/approve/:id", approve);

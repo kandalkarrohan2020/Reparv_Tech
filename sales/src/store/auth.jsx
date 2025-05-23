@@ -16,12 +16,13 @@ const delTokenInCookie = () => {
     setAccessToken();
     Cookies.remove("accessToken");
 }
-const URI = "http://localhost:3000";
-//const URI = "https://api.reparv.in";
+//const URI = "http://localhost:3000";
+const URI = "https://api.reparv.in";
 
 const [loading, setLoading] = useState(false);
 const [showPropertyForm, setShowPropertyForm ] = useState(false);
 const [showProfile, setShowProfile ] = useState(false);
+const [showKYC, setShowKYC] = useState(true);
 const [showTicketInfo, setShowTicketInfo ] = useState(false);
 const [showTicketForm, setShowTicketForm ] = useState(false);
 const [isActive, setIsActive ] = useState(false);
@@ -36,12 +37,23 @@ const [showInquiryForm, setShowInquiryForm] = useState(false);
 const [showEnquiry, setShowEnquiry] = useState(false);
 const [showTicket, setShowTicket] = useState(false);
 const [showSuccess, setShowSuccess] = useState(false);
+
+const [priceSummery, setPriceSummery] = useState({});
+const [selectedCity, setSelectedCity] = useState("");
+const [propertyImage, setPropertyImage] = useState("");
+const [propertyType, setPropertyType] = useState("properties");
+const [propertySearch, setPropertySearch] = useState("");
+const [showPriceSummery, setShowPriceSummery] = useState(false);
+const [showBenefitsPopup, setShowBenefitsPopup] = useState(false);
+const [showFilterPopup, setShowFilterPopup] = useState(false);
+const [showSiteVisitPopup, setShowSiteVisitPopup] = useState(false);
 return <AuthContext.Provider
  value={
     {   URI, loading, setLoading,
         isLoggedIn, storeTokenInCookie, delTokenInCookie,
         accessToken, setAccessToken,
         showProfile,setShowProfile,
+        showKYC, setShowKYC,
         showTicketInfo, setShowTicketInfo,
         showTicketForm, setShowTicketForm,
         isActive, setIsActive,
@@ -53,10 +65,21 @@ return <AuthContext.Provider
         showEnquiryStatusForm, setShowEnquiryStatusForm,
         showAssignTerritory, setShowAssignTerritory,
         showPropertyInfo, setShowPropertyInfo,
-        showInquiryForm, setShowInquiryForm,
         showEnquiry, setShowEnquiry,
         showTicket, setShowTicket,
-        showSuccess, setShowSuccess
+        
+
+        priceSummery, setPriceSummery,
+        propertyImage, setPropertyImage,
+        propertyType, setPropertyType,
+        propertySearch, setPropertySearch,
+        selectedCity, setSelectedCity,
+        showInquiryForm, setShowInquiryForm,
+        showSuccess, setShowSuccess,
+        showFilterPopup, setShowFilterPopup,
+        showPriceSummery, setShowPriceSummery,
+        showBenefitsPopup, setShowBenefitsPopup,
+        showSiteVisitPopup, setShowSiteVisitPopup,
     }
 }>
     {children}

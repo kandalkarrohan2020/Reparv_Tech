@@ -49,16 +49,33 @@ export const getById = (req, res) => {
 // **Add New **
 export const add = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { fullname, contact, email, address, city, experience, adharno, panno } = req.body;
+  const {
+    fullname,
+    contact,
+    email,
+    address,
+    state,
+    city,
+    pincode,
+    experience,
+    adharno,
+    panno,
+    bankname,
+    accountholdername,
+    accountnumber,
+    ifsc,
+  } = req.body;
 
-  if (!fullname || !contact || !email || !city) {
+  if (!fullname || !contact || !email) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   const adharImageFile = req.files?.["adharImage"]?.[0];
   const panImageFile = req.files?.["panImage"]?.[0];
 
-  const adharImageUrl = adharImageFile ? `/uploads/${adharImageFile.filename}` : null;
+  const adharImageUrl = adharImageFile
+    ? `/uploads/${adharImageFile.filename}`
+    : null;
   const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
 
   const checkSql = `SELECT * FROM onboardingpartner WHERE contact = ? OR email = ?`;
@@ -66,7 +83,9 @@ export const add = (req, res) => {
   db.query(checkSql, [contact, email], (checkErr, checkResult) => {
     if (checkErr) {
       console.error("Error checking existing Partner:", checkErr);
-      return res.status(500).json({ message: "Database error during validation", error: checkErr });
+      return res
+        .status(500)
+        .json({ message: "Database error during validation", error: checkErr });
     }
 
     if (checkResult.length > 0) {
@@ -76,8 +95,8 @@ export const add = (req, res) => {
     }
 
     // ✅ Only insert if no existing partner
-    const sql = `INSERT INTO onboardingpartner (fullname, contact, email, address, city, experience, adharno, panno, adharimage, panimage, updated_at, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO onboardingpartner (fullname, contact, email, address, state, city, pincode, experience, adharno, panno, bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, updated_at, created_at) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     db.query(
       sql,
@@ -86,10 +105,16 @@ export const add = (req, res) => {
         contact,
         email,
         address,
+        state,
         city,
+        pincode,
         experience,
         adharno,
         panno,
+        bankname,
+        accountholdername,
+        accountnumber,
+        ifsc,
         adharImageUrl,
         panImageUrl,
         currentdate,
@@ -98,7 +123,9 @@ export const add = (req, res) => {
       (err, result) => {
         if (err) {
           console.error("Error inserting:", err);
-          return res.status(500).json({ message: "Database error", error: err });
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
         }
         return res.status(201).json({
           message: "OnBoarding Partner added successfully",
@@ -115,19 +142,24 @@ export const edit = (req, res) => {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { fullname, contact, email, address, city, experience, adharno, panno } =
-    req.body;
+  const {
+    fullname,
+    contact,
+    email,
+    address,
+    state,
+    city,
+    pincode,
+    experience,
+    adharno,
+    panno,
+    bankname,
+    accountholdername,
+    accountnumber,
+    ifsc,
+  } = req.body;
 
-  if (
-    !fullname ||
-    !contact ||
-    !email ||
-    !address ||
-    !city ||
-    !experience ||
-    !adharno ||
-    !panno
-  ) {
+  if (!fullname || !contact || !email) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -140,16 +172,22 @@ export const edit = (req, res) => {
     : null;
   const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
 
-  let updateSql = `UPDATE onboardingpartner SET fullname = ?, contact = ?, email = ?, address = ?, city = ?, experience = ?, adharno = ?, panno = ?, updated_at = ?`;
+  let updateSql = `UPDATE onboardingpartner SET fullname = ?, contact = ?, email = ?, address = ?, state = ?, city = ?, pincode = ?, experience = ?, adharno = ?, panno = ?, bankname = ?, accountholdername = ?, accountnumber = ?, ifsc = ?, updated_at = ?`;
   const updateValues = [
     fullname,
     contact,
     email,
     address,
+    state,
     city,
+    pincode,
     experience,
     adharno,
     panno,
+    bankname,
+    accountholdername,
+    accountnumber,
+    ifsc,
     currentdate,
   ];
 
@@ -208,9 +246,7 @@ export const del = (req, res) => {
               .status(500)
               .json({ message: "Database error", error: err });
           }
-          res
-            .status(200)
-            .json({ message: "Partner deleted successfully" });
+          res.status(200).json({ message: "Partner deleted successfully" });
         }
       );
     }
@@ -277,14 +313,17 @@ export const assignLogin = async (req, res) => {
       (err, result) => {
         if (err) {
           console.error("Database error:", err);
-          return res.status(500).json({ message: "Database error", error: err });
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
         }
         if (result.length === 0) {
           return res.status(404).json({ message: "Partner not found" });
         }
 
-        let loginstatus = result[0].loginstatus === "Active" ? "Inactive" : "Active";
-        const email = result[0].email; 
+        let loginstatus =
+          result[0].loginstatus === "Active" ? "Inactive" : "Active";
+        const email = result[0].email;
 
         db.query(
           "UPDATE onboardingpartner SET loginstatus = ?, username = ?, password = ? WHERE partnerid = ?",
@@ -292,17 +331,30 @@ export const assignLogin = async (req, res) => {
           (err, updateResult) => {
             if (err) {
               console.error("Error updating record:", err);
-              return res.status(500).json({ message: "Database error", error: err });
+              return res
+                .status(500)
+                .json({ message: "Database error", error: err });
             }
 
             // Send email after successful update
-            sendEmail(email, username, password, "Onboarding Partner", "https://partners.reparv.in")
+            sendEmail(
+              email,
+              username,
+              password,
+              "Onboarding Partner",
+              "https://partners.reparv.in"
+            )
               .then(() => {
-                res.status(200).json({ message: "Partner login assigned successfully and email sent." });
+                res.status(200).json({
+                  message:
+                    "Partner login assigned successfully and email sent.",
+                });
               })
               .catch((emailError) => {
                 console.error("Error sending email:", emailError);
-                res.status(500).json({ message: "Login updated but email failed to send." });
+                res
+                  .status(500)
+                  .json({ message: "Login updated but email failed to send." });
               });
           }
         );

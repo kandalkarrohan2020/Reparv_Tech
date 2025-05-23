@@ -12,11 +12,8 @@ export const add = async (req, res) => {
     propertyid,
     fullname,
     phone,
-    email,
-    budget,
-    city,
-    location,
-    message,
+    salesPersonName,
+    salesPersonContact
   } = req.body;
 
   // Validate required fields
@@ -24,25 +21,21 @@ export const add = async (req, res) => {
     !propertyid ||
     !fullname ||
     !phone ||
-    !email ||
-    !budget ||
-    !city ||
-    !location ||
-    !message 
+    !salesPersonName ||
+    !salesPersonContact
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
+  let salesInfo = (salesPersonName +" - "+ salesPersonContact);
+  
   const insertSQL = `INSERT INTO enquirers (
     propertyid,
     salespersonid,
     customer,
     contact,
-    email,
-    budget,
-    city,
-    location,
-    message, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    assign,
+    updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(
     insertSQL,
@@ -51,11 +44,7 @@ export const add = async (req, res) => {
       salesId,
       fullname,
       phone,
-      email,
-      budget,
-      city,
-      location,
-      message,
+      salesInfo,
       currentdate,
       currentdate,
     ],

@@ -58,6 +58,7 @@ router.post("/login", async (req, res) => {
       email: user.email,
       name: user.fullname,
       contact: user.contact,
+      adharId: user.adharno,
       role: "Sales Person",
     };
 

@@ -8,23 +8,12 @@ export const add = async (req, res) => {
     propertyid,
     fullname,
     phone,
-    email,
-    budget,
-    city,
-    location,
-    message,
-  } = req.body; // Removed 'await'
+  } = req.body; 
 
-  // Validate required fields
   if (
     !propertyid ||
     !fullname ||
-    !phone ||
-    !email ||
-    !budget ||
-    !city ||
-    !location ||
-    !message 
+    !phone 
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
@@ -33,11 +22,7 @@ export const add = async (req, res) => {
     propertyid,
     customer,
     contact,
-    email,
-    budget,
-    city,
-    location,
-    message, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    updated_at, created_at) VALUES (?, ?, ?, ?, ?)`;
 
   db.query(
     insertSQL,
@@ -45,11 +30,6 @@ export const add = async (req, res) => {
       propertyid,
       fullname,
       phone,
-      email,
-      budget,
-      city,
-      location,
-      message,
       currentdate,
       currentdate,
     ],

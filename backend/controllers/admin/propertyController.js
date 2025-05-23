@@ -147,6 +147,13 @@ export const addProperty = (req, res) => {
     distanceFromCityCenter,
     totalSalesPrice,
     totalOfferPrice,
+    stampDuty,
+    registrationFee,
+    gst,
+    advocateFee,
+    msebWater,
+    maintenance,
+    other,
     propertyType,
     builtYear,
     ownershipType,
@@ -161,15 +168,22 @@ export const addProperty = (req, res) => {
     furnishing,
     waterSupply,
     powerBackup,
-    propertyFeatures,
-    propertyBenefits,
-    stampDuty,
-    registrationFee,
-    gst,
-    advocateFee,
-    msebWater,
-    maintenance,
-    other,
+    locationFeature,
+    sizeAreaFeature,
+    parkingFeature,
+    terraceFeature,
+    ageOfPropertyFeature,
+    furnishingFeature,
+    amenitiesFeature,
+    propertyStatusFeature,
+    floorNumberFeature,
+    smartHomeFeature,
+    securityBenefit,
+    primeLocationBenefit,
+    rentalIncomeBenefit,
+    qualityBenefit,
+    capitalAppreciationBenefit,
+    ecofriendlyBenefit,
   } = req.body;
 
   if (
@@ -183,6 +197,13 @@ export const addProperty = (req, res) => {
     !distanceFromCityCenter ||
     !totalSalesPrice ||
     !totalOfferPrice ||
+    !stampDuty ||
+    !registrationFee ||
+    !gst ||
+    !advocateFee ||
+    !msebWater ||
+    !maintenance ||
+    !other ||
     !builtYear ||
     !ownershipType ||
     !builtUpArea ||
@@ -195,16 +216,22 @@ export const addProperty = (req, res) => {
     !furnishing ||
     !waterSupply ||
     !powerBackup ||
-    !propertyFeatures ||
-    !propertyBenefits ||
-    !stampDuty ||
-    !registrationFee ||
-    !gst ||
-    !advocateFee ||
-    !msebWater ||
-    !maintenance ||
-    !other
-    
+    !locationFeature ||
+    !sizeAreaFeature ||
+    !parkingFeature ||
+    !terraceFeature ||
+    !ageOfPropertyFeature ||
+    !furnishingFeature ||
+    !amenitiesFeature ||
+    !propertyStatusFeature ||
+    !floorNumberFeature ||
+    !smartHomeFeature ||
+    !securityBenefit ||
+    !primeLocationBenefit ||
+    !rentalIncomeBenefit ||
+    !qualityBenefit ||
+    !capitalAppreciationBenefit ||
+    !ecofriendlyBenefit
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
@@ -240,17 +267,18 @@ export const addProperty = (req, res) => {
       const insertSQL = `
       INSERT INTO properties (
         builderid, propertyCategory, propertyApprovedBy, propertyName, address, city, location,
-        distanceFromCityCenter, totalSalesPrice, totalOfferPrice, emi, propertyType, builtYear,
-        ownershipType, builtUpArea, carpetArea, parkingAvailability, totalFloors, floorNo,
-        loanAvailability, propertyFacing, reraRegistered, furnishing, waterSupply, powerBackup,
-        propertyFeatures, propertyBenefits, stampDuty, registrationFee, gst, advocateFee, 
-        msebWater, maintenance, other,
+        distanceFromCityCenter, totalSalesPrice, totalOfferPrice, emi, stampDuty, registrationFee, gst, advocateFee, 
+        msebWater, maintenance, other, propertyType, builtYear, ownershipType, builtUpArea, carpetArea,
+        parkingAvailability, totalFloors, floorNo, loanAvailability, propertyFacing, reraRegistered, 
+        furnishing, waterSupply, powerBackup, locationFeature, sizeAreaFeature, parkingFeature, terraceFeature,
+        ageOfPropertyFeature, furnishingFeature, amenitiesFeature, propertyStatusFeature, floorNumberFeature, smartHomeFeature,
+        securityBenefit, primeLocationBenefit, rentalIncomeBenefit, qualityBenefit, capitalAppreciationBenefit, ecofriendlyBenefit,
         frontView, sideView, kitchenView, hallView, bedroomView, bathroomView, balconyView,
         nearestLandmark, developedAmenities,
         updated_at, created_at
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const values = [
         builderid,
@@ -264,6 +292,13 @@ export const addProperty = (req, res) => {
         totalSalesPrice,
         totalOfferPrice,
         emi,
+        stampDuty,
+        registrationFee,
+        gst,
+        advocateFee,
+        msebWater,
+        maintenance,
+        other,
         propertyType,
         builtYear,
         ownershipType,
@@ -278,15 +313,22 @@ export const addProperty = (req, res) => {
         furnishing,
         waterSupply,
         powerBackup,
-        propertyFeatures,
-        propertyBenefits,
-        stampDuty,
-        registrationFee,
-        gst,
-        advocateFee,
-        msebWater,
-        maintenance,
-        other,
+        locationFeature,
+        sizeAreaFeature,
+        parkingFeature,
+        terraceFeature,
+        ageOfPropertyFeature,
+        furnishingFeature,
+        amenitiesFeature,
+        propertyStatusFeature,
+        floorNumberFeature,
+        smartHomeFeature,
+        securityBenefit,
+        primeLocationBenefit,
+        rentalIncomeBenefit,
+        qualityBenefit,
+        capitalAppreciationBenefit,
+        ecofriendlyBenefit,
         frontView,
         sideView,
         kitchenView,
@@ -335,6 +377,13 @@ export const update = (req, res) => {
     distanceFromCityCenter,
     totalSalesPrice,
     totalOfferPrice,
+    stampDuty,
+    registrationFee,
+    gst,
+    advocateFee,
+    msebWater,
+    maintenance,
+    other,
     propertyType,
     builtYear,
     ownershipType,
@@ -349,15 +398,22 @@ export const update = (req, res) => {
     furnishing,
     waterSupply,
     powerBackup,
-    propertyFeatures,
-    propertyBenefits,
-    stampDuty,
-    registrationFee,
-    gst,
-    advocateFee,
-    msebWater,
-    maintenance,
-    other,
+    locationFeature,
+    sizeAreaFeature,
+    parkingFeature,
+    terraceFeature,
+    ageOfPropertyFeature,
+    furnishingFeature,
+    amenitiesFeature,
+    propertyStatusFeature,
+    floorNumberFeature,
+    smartHomeFeature,
+    securityBenefit,
+    primeLocationBenefit,
+    rentalIncomeBenefit,
+    qualityBenefit,
+    capitalAppreciationBenefit,
+    ecofriendlyBenefit,
   } = req.body;
 
   if (
@@ -370,7 +426,14 @@ export const update = (req, res) => {
     !location ||
     !distanceFromCityCenter ||
     !totalSalesPrice ||
-    !totalOfferPrice || 
+    !totalOfferPrice ||
+    !stampDuty ||
+    !registrationFee ||
+    !gst ||
+    !advocateFee ||
+    !msebWater ||
+    !maintenance ||
+    !other ||
     !builtYear ||
     !ownershipType ||
     !builtUpArea ||
@@ -383,18 +446,24 @@ export const update = (req, res) => {
     !furnishing ||
     !waterSupply ||
     !powerBackup ||
-    !propertyFeatures ||
-    !propertyBenefits ||
-    !stampDuty ||
-    !registrationFee ||
-    !gst ||
-    !advocateFee ||
-    !msebWater ||
-    !maintenance ||
-    !other
-    
+    !locationFeature ||
+    !sizeAreaFeature ||
+    !parkingFeature ||
+    !terraceFeature ||
+    !ageOfPropertyFeature ||
+    !furnishingFeature ||
+    !amenitiesFeature ||
+    !propertyStatusFeature ||
+    !floorNumberFeature ||
+    !smartHomeFeature ||
+    !securityBenefit ||
+    !primeLocationBenefit ||
+    !rentalIncomeBenefit ||
+    !qualityBenefit ||
+    !capitalAppreciationBenefit ||
+    !ecofriendlyBenefit
   ) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: "All Fields are required" });
   }
 
   // calculate EMI On OFFER PRICE
@@ -423,11 +492,12 @@ export const update = (req, res) => {
       const updateSQL = `
       UPDATE properties SET 
         builderid=?, propertyCategory=?, propertyApprovedBy=?, propertyName=?, address=?, city=?, location=?,
-        distanceFromCityCenter=?, totalSalesPrice=?, totalOfferPrice=?, emi=?, propertyType=?, builtYear=?, ownershipType=?,
+        distanceFromCityCenter=?, totalSalesPrice=?, totalOfferPrice=?, emi=?, stampDuty=?, registrationFee=?, gst=?, advocateFee=?, 
+        msebWater=?, maintenance=?, other=?, propertyType=?, builtYear=?, ownershipType=?,
         builtUpArea=?, carpetArea=?, parkingAvailability=?, totalFloors=?, floorNo=?, loanAvailability=?,
-        propertyFacing=?, reraRegistered=?, furnishing=?, waterSupply=?, powerBackup=?, propertyFeatures=?,
-        propertyBenefits=?, stampDuty=?, registrationFee=?, gst=?, advocateFee=?, 
-        msebWater=?, maintenance=?, other=?,
+        propertyFacing=?, reraRegistered=?, furnishing=?, waterSupply=?, powerBackup=?, locationFeature=?, sizeAreaFeature=?, parkingFeature=?, terraceFeature=?,
+        ageOfPropertyFeature=?, furnishingFeature=?, amenitiesFeature=?, propertyStatusFeature=?, floorNumberFeature=?, smartHomeFeature=?,
+        securityBenefit=?, primeLocationBenefit=?, rentalIncomeBenefit=?, qualityBenefit=?, capitalAppreciationBenefit=?, ecofriendlyBenefit=?,
         frontView=?, sideView=?, kitchenView=?, hallView=?, bedroomView=?, bathroomView=?, balconyView=?,
         nearestLandmark=?, developedAmenities=?, updated_at=?
       WHERE propertyid = ?
@@ -445,6 +515,13 @@ export const update = (req, res) => {
         totalSalesPrice,
         totalOfferPrice,
         emi,
+        stampDuty,
+        registrationFee,
+        gst,
+        advocateFee,
+        msebWater,
+        maintenance,
+        other,
         propertyType,
         builtYear,
         ownershipType,
@@ -459,15 +536,22 @@ export const update = (req, res) => {
         furnishing,
         waterSupply,
         powerBackup,
-        propertyFeatures,
-        propertyBenefits,
-        stampDuty,
-        registrationFee,
-        gst,
-        advocateFee,
-        msebWater,
-        maintenance,
-        other,
+        locationFeature,
+        sizeAreaFeature,
+        parkingFeature,
+        terraceFeature,
+        ageOfPropertyFeature,
+        furnishingFeature,
+        amenitiesFeature,
+        propertyStatusFeature,
+        floorNumberFeature,
+        smartHomeFeature,
+        securityBenefit,
+        primeLocationBenefit,
+        rentalIncomeBenefit,
+        qualityBenefit,
+        capitalAppreciationBenefit,
+        ecofriendlyBenefit,
         getImagePaths("frontView", existing.frontView),
         getImagePaths("sideView", existing.sideView),
         getImagePaths("kitchenView", existing.kitchenView),

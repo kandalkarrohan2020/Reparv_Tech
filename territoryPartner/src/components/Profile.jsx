@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Loader from "./Loader";
 import { IoMdClose } from "react-icons/io";
 import { FaEdit } from "react-icons/fa";
+import{ Link } from "react-router-dom";
 
 const Profile = () => {
   const { showProfile, setShowProfile, setLoading, URI } = useAuth();
@@ -53,7 +54,7 @@ const Profile = () => {
       });
       if (!response.ok)
         throw new Error(`Error ${response.status}: ${response.statusText}`);
-      const data = await response.json();
+      const data = await response.json(); // Ensure it's JSON
       setNewUser(data);
       setUser(data);
     } catch (err) {
@@ -158,7 +159,7 @@ const Profile = () => {
     <div
       className={`ProfileContainer fixed z-30 w-full h-screen bg-[#4242428b] flex items-center justify-end `}
     >
-      <div className="Profile w-full md:w-[384px] h-screen overflow-scroll scrollbar-hide bg-[#F5F5F6] flex flex-col items-center justify-start gap-4 px-8 py-14 ">
+      <div className="Profile w-full md:w-[384px] h-screen overflow-scroll scrollbar-hide bg-[#F5F5F6] flex flex-col items-center justify-start gap-3 px-8 py-14 ">
         <div className="arrow w-[320px] h-[30px] px-3 flex justify-between">
           <FaArrowLeft
             onClick={() => {
@@ -167,11 +168,11 @@ const Profile = () => {
             className="w-6 h-6 cursor-pointer active:scale-95"
           />
         </div>
-        <div className="profileImgContainer w-[320px] h-[325px] bg-[#FFFFFF] flex flex-col items-center justify-center p-5 gap-3 rounded-[20px] shadow-[#0000001A] ">
+        <div className="profileImgContainer w-[320px] h-[300px] bg-[#FFFFFF] flex flex-col items-center justify-center p-5 gap-3 rounded-[20px] shadow-[#0000001A] ">
           <img
             src={`${URI}${user?.userimage}`}
             alt=""
-            className="w-[200px] h-[200px] rounded-[50%]"
+            className="w-[120px] h-[120px] rounded-[50%]"
           />
           <h2 className="text-[18px] leading-5 font-semibold text-[#076300]">
             {user?.fullname}
@@ -180,6 +181,13 @@ const Profile = () => {
             {user?.role}
           </h3>
         </div>
+
+        <Link to="/kyc"
+         className="userOtherDetails cursor-pointer text-[#076300] active:scale-95 w-[320px] h-[40px] bg-[#FFFFFF] hover:bg-[#00760c] hover:text-[#FFFFFF] flex flex-col items-center justify-center p-5 gap-3 rounded-[20px] shadow-[#0000001A] ">
+          <h2 className="text-[16px] leading-5 font-semibold ">
+            KYC Details
+          </h2>
+        </Link>
 
         {/* Upload Profile Image */}
         <div className={` ${showEditProfile ? "flex" : "hidden"}  w-[320px] `}>
@@ -392,7 +400,7 @@ const Profile = () => {
         >
           <div className="w-full flex items-center justify-between gap-4">
             <h2 className="text-[18px] leading-5 font-semibold text-[#00000066] ">
-              Information
+              User Information
             </h2>
             <FaEdit
               onClick={() => {

@@ -13,6 +13,12 @@ import { useAuth } from "../../store/auth";
 import LogoutButton from "../LogoutButton";
 import { FaUserCircle } from "react-icons/fa";
 
+import SuccessScreen from "../property/SuccessScreen";
+import SiteVisitPopup from "../property/SiteVisitPopup";
+import PriceSummery from "../property/PriceSummery";
+import FilterSidebar from "../FilterSidebar";
+import BenefitsPopup from "../property/BenefitsPopup";
+
 function Layout() {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -29,9 +35,20 @@ function Layout() {
     setShowTicketForm,
     showPropertyInfo,
     setShowPropertyInfo,
+    showSuccess,
+    setShowSuccess,
     showEnquiry,
     setShowEnquiry,
     showEnquiryStatusForm, setShowEnquiryStatusForm,
+    showSiteVisitPopup,
+    setShowSiteVisitPopup,
+    setShowBenefitsPopup,
+    showBenefitsPopup,
+    showFilterPopup,
+    setShowFilterPopup,
+    showPriceSummery,
+    setShowPriceSummery,
+
     isLoggedIn,
   } = useAuth();
 
@@ -151,9 +168,9 @@ function Layout() {
             />
             {/* Navigation Links */}
             {[
-              { to: "/overview", icon: overviewIcon, label: "Overview" },
+              { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/enquirers", icon: enquirersIcon, label: "Enquiries" },
-              { to: "/"+propertyPath, icon: enquirersIcon, label: "Properties" },
+              { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
               { to: "/calender", icon: calenderIcon, label: "Calender" },
             ].map(({ to, icon, label }) => (
@@ -196,7 +213,7 @@ function Layout() {
         </div>
       </div>
       {showProfile && <Profile />}
-
+      
       {overlays.map(({ state, setter }, index) =>
         state ? (
           <div
@@ -205,6 +222,52 @@ function Layout() {
             onClick={() => setter(false)}
           ></div>
         ) : null
+      )}
+
+
+      {/* Show Book Site Form Screen */}
+      
+      {showSiteVisitPopup && (
+        <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
+          <div className="w-full flex flex-col items-center justify-end sm:justify-center h-[90vh] absolute bottom-0">
+            <SiteVisitPopup />
+          </div>
+        </div>
+      )}
+      
+      {/* Show Success Screen */}
+      {showSuccess && <SuccessScreen />}
+
+      {showPriceSummery && (
+        <div
+          onClick={() => {
+            setShowPriceSummery(false);
+          }}
+          className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center"
+        >
+          <PriceSummery />
+        </div>
+      )}
+     
+      {showBenefitsPopup && (
+        <div
+          onClick={() => {
+            setShowBenefitsPopup(false);
+          }}
+          className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center"
+        >
+          <div className="w-full flex flex-col items-center justify-end sm:justify-center h-[90vh] absolute bottom-0">
+            <BenefitsPopup />
+          </div>
+        </div>
+      )}
+
+      {showFilterPopup && (
+        <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
+          <div className="w-full flex flex-col items-center justify-end h-[90vh] absolute bottom-0">
+            <FilterSidebar />
+          </div>
+        </div>
       )}
     </div>
   );

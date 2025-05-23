@@ -16,7 +16,7 @@ function HomePropertySection({ city }) {
   const { URI, setPriceSummery, propertySearch, setPropertySearch, setShowPriceSummery } =
     useAuth();
   const [properties, setProperties] = useState([]);
-  const filteredProperties = properties.filter((property) => {
+  const filteredProperties = properties?.filter((property) => {
     const nameMatch = property.propertyName
       .toLowerCase()
       .includes(propertySearch?.toLowerCase());
@@ -71,7 +71,7 @@ function HomePropertySection({ city }) {
           <div
             onClick={() => navigate(`/property-info/${property.propertyid}`)}
             key={property.propertyid}
-            className="w-[350px] group border border-[#00000033] rounded-2xl shadow-md bg-white hover:bg-[#076300] overflow-hidden"
+            className="w-[350px] border border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
           >
             <img
               src={`${URI}${JSON.parse(property.frontView)[0]}`}

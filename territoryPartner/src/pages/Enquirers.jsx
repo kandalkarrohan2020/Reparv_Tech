@@ -193,7 +193,7 @@ const Enquirers = () => {
           className={`w-[140px] h-16 overflow-hidden flex items-center justify-center`}
         >
           <img
-            src={`${URI}${row.image}`}
+            src={`${URI}${JSON.parse(row.frontView)[0]}`}
             alt="Image"
             className="w-full h-[90%] object- cursor-pointer"
             onClick={() => {
@@ -207,34 +207,7 @@ const Enquirers = () => {
     { name: "Visit Date", selector: (row) => row.visitDate, sortable: true },
     { name: "Customer", selector: (row) => row.customer, sortable: true },
     { name: "Contact", selector: (row) => row.contact, sortable: true },
-    {
-      name: "Email",
-      selector: (row) => row.email,
-      sortable: true,
-      minWidth: "200px",
-    },
-    /*
-      name: "Status",
-      cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.status === "New"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : row.status === "Visit Scheduled"
-              ? "bg-[#E9F2FF] text-[#0068FF]"
-              : row.status === "Token"
-              ? "bg-[#FFF8DD] text-[#FFCA00]"
-              : row.status === "Cancelled"
-              ? "bg-[#FFEAEA] text-[#ff2323]"
-              : row.status === "Follow Up"
-              ? "bg-[#F4F0FB] text-[#5D00FF]"
-              : "text-[#000000]"
-          }`}
-        >
-          {row.status}
-        </span>
-      ),
-    },*/
+    
     {
       name: "Status",
       cell: (row) => (

@@ -4,7 +4,7 @@ import moment from "moment";
 // **Fetch All **
 export const getAll = (req, res) => {
   const sql = `
-    SELECT enquirers.*, properties.image,
+    SELECT enquirers.*, properties.frontView,
     territorypartner.fullname AS territoryName,
     territorypartner.contact AS territoryContact
     FROM enquirers 

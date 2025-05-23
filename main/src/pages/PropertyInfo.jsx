@@ -243,6 +243,14 @@ export default function PropertyInfo() {
         className="fixed z-30 w-full sm:w-auto right-0 bottom-0 sm:bottom-15 sm:right-25 md:bottom-25 md:right-35 px-4 py-2 sm:px-10 sm:py-3 bg-[#0BB501] rounded-tl-2xl border-2 border-white sm:border-none rounded-tr-2xl sm:rounded-[32px] text-white text-md sm:text-xl shadow-lg hover:scale-105 active:scale-100 cursor-pointer"
       >
         <p className="text-center font-medium">Inquiry Now</p>
+        <button
+        onClick={() => {
+          setShowInquiryForm(true)
+        }}
+        className=" flex sm:hidden bg-[#0BB501] text-white font-semibold py-3 mt-4 rounded-lg text-lg sm:text-2xl active:scale-95 cursor-pointer"
+      >
+        Book Site Visit Now
+      </button>
       </div>
 
       {/* Other Properties Section */}

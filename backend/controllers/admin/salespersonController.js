@@ -55,24 +55,38 @@ export const add = (req, res) => {
     contact,
     email,
     address,
+    state,
     city,
+    pincode,
     experience,
     rerano,
     adharno,
     panno,
+    bankname,
+    accountholdername,
+    accountnumber,
+    ifsc,
   } = req.body;
 
   // Validate required fields
-  if (!fullname || !contact || !email || !city) {
-    return res.status(400).json({ message: "all fields required!" });
+  if (!fullname || !contact || !email) {
+    return res
+      .status(400)
+      .json({ message: "FullName, Contact and Email Required!" });
   }
 
   // Handle uploaded files safely
   const adharImageFile = req.files?.["adharImage"]?.[0];
   const panImageFile = req.files?.["panImage"]?.[0];
+  const reraImageFile = req.files?.["reraImage"]?.[0];
 
-  const adharImageUrl = adharImageFile ? `/uploads/${adharImageFile.filename}` : null;
+  const adharImageUrl = adharImageFile
+    ? `/uploads/${adharImageFile.filename}`
+    : null;
   const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
+  const reraImageUrl = reraImageFile
+    ? `/uploads/${reraImageFile.filename}`
+    : null;
 
   // First check if salesperson already exists
   const checkSql = `SELECT * FROM salespersons WHERE contact = ? OR email = ?`;
@@ -80,7 +94,9 @@ export const add = (req, res) => {
   db.query(checkSql, [contact, email], (checkErr, checkResult) => {
     if (checkErr) {
       console.error("Error checking existing salesperson:", checkErr);
-      return res.status(500).json({ message: "Database error during validation", error: checkErr });
+      return res
+        .status(500)
+        .json({ message: "Database error during validation", error: checkErr });
     }
 
     if (checkResult.length > 0) {
@@ -92,8 +108,9 @@ export const add = (req, res) => {
     // Insert new salesperson only if no duplicate found
     const insertSql = `
       INSERT INTO salespersons 
-      (fullname, contact, email, address, city, experience, rerano, adharno, panno, adharimage, panimage, updated_at, created_at) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (fullname, contact, email, address, state, city, pincode, experience, rerano, adharno, panno, 
+      bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, reraimage, updated_at, created_at) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.query(
@@ -103,20 +120,29 @@ export const add = (req, res) => {
         contact,
         email,
         address,
+        state,
         city,
+        pincode,
         experience,
         rerano,
         adharno,
         panno,
+        bankname,
+        accountholdername,
+        accountnumber,
+        ifsc,
         adharImageUrl,
         panImageUrl,
+        reraImageUrl,
         currentdate,
         currentdate,
       ],
       (insertErr, insertResult) => {
         if (insertErr) {
           console.error("Error inserting Sales Person:", insertErr);
-          return res.status(500).json({ message: "Database error", error: insertErr });
+          return res
+            .status(500)
+            .json({ message: "Database error", error: insertErr });
         }
 
         res.status(201).json({
@@ -135,43 +161,55 @@ export const edit = (req, res) => {
     contact,
     email,
     address,
+    state,
     city,
+    pincode,
     experience,
     rerano,
     adharno,
     panno,
+    bankname,
+    accountholdername,
+    accountnumber,
+    ifsc,
   } = req.body;
   const salespersonsid = req.params.id;
 
-  if (
-    !fullname ||
-    !contact ||
-    !email ||
-    !city
-  ) {
+  if (!fullname || !contact || !email) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   // Handle uploaded files
   const adharImageFile = req.files?.["adharImage"]?.[0];
   const panImageFile = req.files?.["panImage"]?.[0];
+  const reraImageFile = req.files?.["reraImage"]?.[0];
 
   const adharImageUrl = adharImageFile
     ? `/uploads/${adharImageFile.filename}`
     : null;
   const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
+  const reraImageUrl = reraImageFile
+    ? `/uploads/${reraImageFile.filename}`
+    : null;
 
-  let updateSql = `UPDATE salespersons SET fullname = ?, contact = ?, email = ?, address = ?, city = ?, experience = ?, rerano = ?, adharno = ?, panno = ?, updated_at = ?`;
+  let updateSql = `UPDATE salespersons SET fullname = ?, contact = ?, email = ?, address = ?, state = ?, city = ?, pincode = ?, experience = ?, 
+  rerano = ?, adharno = ?, panno = ?, bankname = ?, accountholdername = ?, accountnumber = ?, ifsc = ?, updated_at = ?`;
   const updateValues = [
     fullname,
     contact,
     email,
     address,
+    state,
     city,
+    pincode,
     experience,
     rerano,
     adharno,
     panno,
+    bankname,
+    accountholdername,
+    accountnumber,
+    ifsc,
     currentdate,
   ];
 
@@ -183,6 +221,11 @@ export const edit = (req, res) => {
   if (panImageUrl) {
     updateSql += `, panimage = ?`;
     updateValues.push(panImageUrl);
+  }
+
+  if (reraImageUrl) {
+    updateSql += `, reraimage = ?`;
+    updateValues.push(reraImageUrl);
   }
 
   updateSql += ` WHERE salespersonsid = ?`;
@@ -328,7 +371,13 @@ export const assignLogin = async (req, res) => {
             }
 
             // Send email after successful update
-            sendEmail(email, username, password, "Sales Person", "https://sales.reparv.in");
+            sendEmail(
+              email,
+              username,
+              password,
+              "Sales Person",
+              "https://sales.reparv.in"
+            );
 
             res
               .status(200)

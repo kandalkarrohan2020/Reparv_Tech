@@ -372,11 +372,11 @@ const Enquirers = () => {
           className={`w-full h-16 overflow-hidden flex items-center justify-center`}
         >
           <img
-            src={`${URI}${row.image}`}
+            src={`${URI}${JSON.parse(row.frontView)[0]}`}
             alt="Image"
             className="w-full h-[90%] object- cursor-pointer"
             onClick={() => {
-              showProperty(row.propertyid);
+              window.open("https://www.reparv.in/property-info/"+row.propertyid, "_blank");
             }}
           />
         </div>
@@ -384,10 +384,7 @@ const Enquirers = () => {
     },
     { name: "Customer", selector: (row) => row.customer, sortable: true },
     { name: "Contact", selector: (row) => row.contact, sortable: true },
-    { name: "Email", selector: (row) => row.email, sortable: true },
-    { name: "Location", selector: (row) => row.location, sortable: true },
-    { name: "Budget", selector: (row) => row.budget, sortable: true },
-
+    
     {
       name: "Status",
       cell: (row) => (
@@ -778,7 +775,7 @@ const Enquirers = () => {
               } w-full`}
             >
               <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-                Upload Property Image
+                Upload Payment ScreenShot
               </label>
               <div className="w-full mt-2">
                 <input

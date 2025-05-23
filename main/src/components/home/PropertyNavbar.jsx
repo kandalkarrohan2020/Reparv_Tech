@@ -14,8 +14,6 @@ import commercialFlatIcon from "../../assets/home/commercialFlatIcon.svg";
 import commercialPlotIcon from "../../assets/home/commercialPlotIcon.svg";
 import industrialSpaceIcon from "../../assets/home/industrialSpaceIcon.svg";
 
-import showMoreIcon from "../../assets/home/showMoreIcon.jpg";
-import showLessIcon from "../../assets/home/showLessIcon.png";
 import { IoSearchSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../store/auth";
@@ -56,7 +54,7 @@ const PropertyNavbar = () => {
   ];
 
   return (
-    <div className="w-full max-w-[950px] mx-auto sm:mb-6 lg:mb-0 bg-white z-10 sm:rounded-3xl sm:shadow-[0px_4px_4px_0px_rgba(0,0,0,0.08)] p-4 sm:px-15 sm:py-6 flex flex-col gap-6 items-center">
+    <div className="w-full max-w-[1000px] mx-auto sm:mb-6 lg:mb-0 bg-white z-10 sm:rounded-3xl sm:shadow-[0px_4px_4px_0px_rgba(0,0,0,0.08)] p-4 sm:px-15 sm:py-6 flex flex-col gap-6 items-center">
       {/* Property Types */}
       <div className="w-full grid place-items-center grid-cols-4 md:grid-cols-7 gap-3 sm:gap-8">
         {propertyTypes.map((property, index) => (

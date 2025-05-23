@@ -49,19 +49,41 @@ export const getById = (req, res) => {
 // **Add New **
 export const add = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { fullname, contact, email, address, city, experience, adharno, panno } = req.body;
+  const {
+    fullname,
+    contact,
+    email,
+    address,
+    state,
+    city,
+    pincode,
+    experience,
+    adharno,
+    panno,
+    rerano,
+    bankname,
+    accountholdername,
+    accountnumber,
+    ifsc,
+  } = req.body;
 
   // Validate required fields
-  if (!fullname || !contact || !email || !city) {
+  if (!fullname || !contact || !email) {
     return res.status(400).json({ message: "all fields required!" });
   }
 
   // Handle uploaded files safely
   const adharImageFile = req.files?.["adharImage"]?.[0];
   const panImageFile = req.files?.["panImage"]?.[0];
+  const reraImageFile = req.files?.["reraImage"]?.[0];
 
-  const adharImageUrl = adharImageFile ? `/uploads/${adharImageFile.filename}` : null;
+  const adharImageUrl = adharImageFile
+    ? `/uploads/${adharImageFile.filename}`
+    : null;
   const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
+  const reraImageUrl = reraImageFile
+    ? `/uploads/${reraImageFile.filename}`
+    : null;
 
   // First check if partner already exists
   const checkSql = `SELECT * FROM projectpartner WHERE contact = ? OR email = ?`;
@@ -69,7 +91,9 @@ export const add = (req, res) => {
   db.query(checkSql, [contact, email], (checkErr, checkResult) => {
     if (checkErr) {
       console.error("Error checking existing Project Partner:", checkErr);
-      return res.status(500).json({ message: "Database error during validation", error: checkErr });
+      return res
+        .status(500)
+        .json({ message: "Database error during validation", error: checkErr });
     }
 
     if (checkResult.length > 0) {
@@ -81,8 +105,8 @@ export const add = (req, res) => {
     // Insert new partner only if no duplicate found
     const insertSql = `
       INSERT INTO projectpartner 
-      (fullname, contact, email, address, city, experience, adharno, panno, adharimage, panimage, updated_at, created_at) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (fullname, contact, email, address, state, city, pincode, experience, adharno, panno, rerano, bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, reraimage, updated_at, created_at) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.query(
@@ -92,19 +116,29 @@ export const add = (req, res) => {
         contact,
         email,
         address,
+        state,
         city,
+        pincode,
         experience,
         adharno,
         panno,
+        rerano,
+        bankname,
+        accountholdername,
+        accountnumber,
+        ifsc,
         adharImageUrl,
         panImageUrl,
+        reraImageUrl,
         currentdate,
         currentdate,
       ],
       (insertErr, insertResult) => {
         if (insertErr) {
           console.error("Error inserting Project Partner:", insertErr);
-          return res.status(500).json({ message: "Database error", error: insertErr });
+          return res
+            .status(500)
+            .json({ message: "Database error", error: insertErr });
         }
 
         res.status(201).json({
@@ -122,41 +156,58 @@ export const edit = (req, res) => {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { fullname, contact, email, address, city, experience, adharno, panno } =
-    req.body;
+  const {
+    fullname,
+    contact,
+    email,
+    address,
+    state,
+    city,
+    pincode,
+    experience,
+    adharno,
+    panno,
+    rerano,
+    bankname,
+    accountholdername,
+    accountnumber,
+    ifsc,
+  } = req.body;
 
-  if (
-    !fullname ||
-    !contact ||
-    !email ||
-    !address ||
-    !city ||
-    !experience ||
-    !adharno ||
-    !panno
-  ) {
+  if (!fullname || !contact || !email) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   // Handle uploaded files
   const adharImageFile = req.files?.["adharImage"]?.[0];
   const panImageFile = req.files?.["panImage"]?.[0];
+  const reraImageFile = req.files?.["reraImage"]?.[0];
 
   const adharImageUrl = adharImageFile
     ? `/uploads/${adharImageFile.filename}`
     : null;
   const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
+  const reraImageUrl = reraImageFile
+    ? `/uploads/${reraImageFile.filename}`
+    : null;
 
-  let updateSql = `UPDATE projectpartner SET fullname = ?, contact = ?, email = ?, address = ?, city = ?, experience = ?, adharno = ?, panno = ?, updated_at = ?`;
+  let updateSql = `UPDATE projectpartner SET fullname = ?, contact = ?, email = ?, address = ?, state = ?, city = ?, pincode = ?, experience = ?, adharno = ?, panno = ?, rerano = ?, bankname = ?, accountholdername = ?, accountnumber = ?, ifsc = ?, updated_at = ?`;
   const updateValues = [
     fullname,
     contact,
     email,
     address,
+    state,
     city,
+    pincode,
     experience,
     adharno,
     panno,
+    rerano,
+    bankname,
+    accountholdername,
+    accountnumber,
+    ifsc,
     currentdate,
   ];
 
@@ -168,6 +219,11 @@ export const edit = (req, res) => {
   if (panImageUrl) {
     updateSql += `, panimage = ?`;
     updateValues.push(panImageUrl);
+  }
+
+  if (reraImageUrl) {
+    updateSql += `, reraimage = ?`;
+    updateValues.push(reraImageUrl);
   }
 
   updateSql += ` WHERE id = ?`;
@@ -193,35 +249,23 @@ export const del = (req, res) => {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
 
-  db.query(
-    "SELECT * FROM projectpartner WHERE id = ?",
-    [Id],
-    (err, result) => {
+  db.query("SELECT * FROM projectpartner WHERE id = ?", [Id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Project Partner not found" });
+    }
+
+    db.query("DELETE FROM projectpartner WHERE id = ?", [Id], (err) => {
       if (err) {
-        console.error("Database error:", err);
+        console.error("Error deleting :", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
-      if (result.length === 0) {
-        return res.status(404).json({ message: "Project Partner not found" });
-      }
-
-      db.query(
-        "DELETE FROM projectpartner WHERE id = ?",
-        [Id],
-        (err) => {
-          if (err) {
-            console.error("Error deleting :", err);
-            return res
-              .status(500)
-              .json({ message: "Database error", error: err });
-          }
-          res
-            .status(200)
-            .json({ message: "Project Partner deleted successfully" });
-        }
-      );
-    }
-  );
+      res.status(200).json({ message: "Project Partner deleted successfully" });
+    });
+  });
 };
 
 //**Change status */
@@ -232,39 +276,35 @@ export const status = (req, res) => {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
 
-  db.query(
-    "SELECT * FROM projectpartner WHERE id = ?",
-    [Id],
-    (err, result) => {
-      if (err) {
-        console.error("Database error:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-
-      let status = "";
-      if (result[0].status === "Active") {
-        status = "Inactive";
-      } else {
-        status = "Active";
-      }
-      console.log(status);
-      db.query(
-        "UPDATE projectpartner SET status = ? WHERE id = ?",
-        [status, Id],
-        (err, result) => {
-          if (err) {
-            console.error("Error deleting :", err);
-            return res
-              .status(500)
-              .json({ message: "Database error", error: err });
-          }
-          res
-            .status(200)
-            .json({ message: "Project Partner status change successfully" });
-        }
-      );
+  db.query("SELECT * FROM projectpartner WHERE id = ?", [Id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database error", error: err });
     }
-  );
+
+    let status = "";
+    if (result[0].status === "Active") {
+      status = "Inactive";
+    } else {
+      status = "Active";
+    }
+    console.log(status);
+    db.query(
+      "UPDATE projectpartner SET status = ? WHERE id = ?",
+      [status, Id],
+      (err, result) => {
+        if (err) {
+          console.error("Error deleting :", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+        res
+          .status(200)
+          .json({ message: "Project Partner status change successfully" });
+      }
+    );
+  });
 };
 
 export const assignLogin = async (req, res) => {
@@ -284,14 +324,17 @@ export const assignLogin = async (req, res) => {
       (err, result) => {
         if (err) {
           console.error("Database error:", err);
-          return res.status(500).json({ message: "Database error", error: err });
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
         }
         if (result.length === 0) {
           return res.status(404).json({ message: "Projet Partner not found" });
         }
 
-        let loginstatus = result[0].loginstatus === "Active" ? "Inactive" : "Active";
-        const email = result[0].email; 
+        let loginstatus =
+          result[0].loginstatus === "Active" ? "Inactive" : "Active";
+        const email = result[0].email;
 
         db.query(
           "UPDATE projectpartner SET loginstatus = ?, username = ?, password = ? WHERE id = ?",
@@ -299,17 +342,30 @@ export const assignLogin = async (req, res) => {
           (err, updateResult) => {
             if (err) {
               console.error("Error updating record:", err);
-              return res.status(500).json({ message: "Database error", error: err });
+              return res
+                .status(500)
+                .json({ message: "Database error", error: err });
             }
 
             // Send email after successful update
-            sendEmail(email, username, password, "Project Partner", "https://projectpartner.reparv.in")
+            sendEmail(
+              email,
+              username,
+              password,
+              "Project Partner",
+              "https://projectpartner.reparv.in"
+            )
               .then(() => {
-                res.status(200).json({ message: "Project Partner login assigned successfully and email sent." });
+                res.status(200).json({
+                  message:
+                    "Project Partner login assigned successfully and email sent.",
+                });
               })
               .catch((emailError) => {
                 console.error("Error sending email:", emailError);
-                res.status(500).json({ message: "Login updated but email failed to send." });
+                res
+                  .status(500)
+                  .json({ message: "Login updated but email failed to send." });
               });
           }
         );

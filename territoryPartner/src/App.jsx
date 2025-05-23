@@ -9,16 +9,9 @@ import Properties from "./pages/Properties.jsx";
 import Ticketing from "./pages/Ticketing.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
-
-import Flat from "./propertyPages/Flat.jsx";
-import Plot from "./propertyPages/Plot.jsx";
-import Rental from "./propertyPages/Rental.jsx";
-import Resale from "./propertyPages/Resale.jsx";
-import Lease from "./propertyPages/Lease.jsx";
-import RowHouse from "./propertyPages/RowHouse.jsx";
-import FarmHouse from "./propertyPages/FarmHouse.jsx";
-import Commercial from "./propertyPages/Commercial.jsx";
-import PropertyInfo from "./propertyPages/PropertyInfo.jsx";
+import Property from "./propertyPages/Properties.jsx";
+import PropertyDetails from "./propertyPages/PropertyDetails.jsx";
+import KYC from "./pages/KYC.jsx";
 
 
 const App = () => {
@@ -27,21 +20,16 @@ const App = () => {
       <ScrollToTop />
       <Routes>
         <Route path="" element={<Login />} />
+        <Route path="/kyc" element={<KYC />} />
         <Route path="/" element={<Layout />}>
-          <Route path="/overview" element={<Overview />} />
+          <Route path="/dashboard" element={<Overview />} />
           <Route path="/enquirers" element={<Enquirers />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/tickets" element={<Ticketing />} />
           <Route path="/calender" element={<CalendarScheduler/>} />
-          <Route path="/flat" element={<Flat />} />
-          <Route path="/rental" element={<Rental/>} />
-          <Route path="/lease" element={<Lease/>} />
-          <Route path="/row-house" element={<RowHouse/>} />
-          <Route path="/plot" element={<Plot/>} />
-          <Route path="/resale" element={<Resale/>} />
-          <Route path="/farm-house" element={<FarmHouse/>} />
-          <Route path="/commercial" element={<Commercial/>} />
-          <Route path="/property-info/:id" element={<PropertyInfo />} />
+          
+          <Route path="/property" element={<Property />} />
+          <Route path="/property-info/:id" element={<PropertyDetails />} />
           <Route path="*" element={<ErrorPage />}></Route>
         </Route>
       </Routes>

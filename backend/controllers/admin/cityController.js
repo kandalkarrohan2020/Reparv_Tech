@@ -2,8 +2,8 @@ import db from "../../config/dbconnect.js";
 
 // **Fetch city by state ID`
 export const getById = (req, res) => {
-  const Id = parseInt(req.params.id);
-  const sql = "SELECT * FROM cities WHERE stateid = ? ORDER BY city";
+  const Id = req.params.id;
+  const sql = "SELECT * FROM cities WHERE stateId = ? ORDER BY city";
 
   db.query(sql, [Id], (err, result) => {
     if (err) {
@@ -13,6 +13,6 @@ export const getById = (req, res) => {
     if (result.length === 0) {
       return res.status(404).json({ message: "City not found" });
     }
-    res.json(result[0]);
+    res.json(result);
   });
 };

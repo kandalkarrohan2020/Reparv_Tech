@@ -54,7 +54,6 @@ const Profile = () => {
       if (!response.ok)
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       const data = await response.json(); // Ensure it's JSON
-      console.log(data);
       setNewUser(data);
       setUser(data);
     } catch (err) {

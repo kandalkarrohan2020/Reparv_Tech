@@ -13,6 +13,7 @@ import Marketing from "./pages/Marketing.jsx";
 import Login from "./pages/Login.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
+import KYC from "./pages/KYC.jsx";
 
 
 const App = () => {
@@ -21,8 +22,9 @@ const App = () => {
       <ScrollToTop />
       <Routes>
         <Route path="" element={<Login />} />
+        <Route path="/kyc" element={<KYC />} />
         <Route path="/" element={<Layout />}>
-          <Route path="/overview" element={<Overview />} />
+          <Route path="/dashboard" element={<Overview />} />
           <Route path="/builders" element={<Builders />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/map" element={<Map />} />

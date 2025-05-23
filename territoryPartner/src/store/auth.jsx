@@ -35,6 +35,16 @@ const [showInquiryForm, setShowInquiryForm] = useState(false);
 const [showEnquiry, setShowEnquiry] = useState(false);
 const [showTicket, setShowTicket] = useState(false);
 const [showPropertyInfo, setShowPropertyInfo] = useState(false);
+const [showSuccess, setShowSuccess] = useState(false);
+const [priceSummery, setPriceSummery] = useState({});
+const [selectedCity, setSelectedCity] = useState(user?.city);
+const [propertyImage, setPropertyImage] = useState("");
+const [propertyType, setPropertyType] = useState("properties");
+const [propertySearch, setPropertySearch] = useState("");
+const [showPriceSummery, setShowPriceSummery] = useState(false);
+const [showBenefitsPopup, setShowBenefitsPopup] = useState(false);
+const [showFilterPopup, setShowFilterPopup] = useState(false);
+const [showSiteVisitPopup, setShowSiteVisitPopup] = useState(false);
 return <AuthContext.Provider
  value={
     {   URI, loading, setLoading,
@@ -54,6 +64,17 @@ return <AuthContext.Provider
         showAdditionalInfoForm, setShowAdditionalInfoForm,
         showTicket, setShowTicket,
         showPropertyInfo, setShowPropertyInfo,
+
+        priceSummery, setPriceSummery,
+        propertyImage, setPropertyImage,
+        propertyType, setPropertyType,
+        propertySearch, setPropertySearch,
+        selectedCity, setSelectedCity,
+        showSuccess, setShowSuccess,
+        showFilterPopup, setShowFilterPopup,
+        showPriceSummery, setShowPriceSummery,
+        showBenefitsPopup, setShowBenefitsPopup,
+        showSiteVisitPopup, setShowSiteVisitPopup,
     }
 }>
     {children}

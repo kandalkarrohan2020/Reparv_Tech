@@ -63,7 +63,7 @@ function OtherProperties({ propertyCategory, propertyId }) {
         <div
           onClick={() => navigate(`/property-info/${property.propertyid}`)}
           key={property.propertyid}
-          className="group w-[350px] sm:w-[375px] border border-[#00000033] rounded-2xl shadow-md bg-white hover:bg-[#076300] overflow-hidden"
+          className="w-[350px] sm:w-[375px] border border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
         >
           <img
             src={`${URI}${JSON.parse(property.frontView)[0]}`}

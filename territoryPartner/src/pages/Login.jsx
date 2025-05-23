@@ -15,6 +15,7 @@ function Login() {
     storeTokenInCookie,
     URI,
     setLoading,
+    setSelectedCity,
   } = useAuth();
   
   const [isPasswordShow, setIsPasswordShow] = useState(false);
@@ -45,10 +46,10 @@ function Login() {
       );
 
       if (response.data.token) {
-        console.log("Login Successful", response.data);
+        setSelectedCity(response.data.user.city);
         localStorage.setItem("user", JSON.stringify(response.data.user));
         storeTokenInCookie(response.data.token);
-        navigate("/overview", { replace: true }); 
+        navigate("/dashboard", { replace: true }); 
       } else {
         setErrorMessage("Invalid login credentials.");
       }

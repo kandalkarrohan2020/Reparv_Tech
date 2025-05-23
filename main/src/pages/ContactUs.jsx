@@ -76,7 +76,7 @@ const ContactUs = () => {
       <div className="w-full sm:w-[558px] my-5 md:my-10 flex gap-3 flex-col bg-white p-6 rounded-lg border border-[#00000033] ">
         <h3 className="font-medium text-sm sm:text-base">Main Headquarters</h3>
         <p className="font-semibold text-xl leading-7 ">
-          3rd Floor, Anjaneya Nagari, Wardha Road, Near Kothari Hospital, Nagpur
+          3rd Floor, Anjania Niwas, Wardha Road, Near Kothari Hospital, Nagpur
           - 440015
         </p>
         <div className="w-full flex gap-3 flex-wrap-reverse flex-row justify-between">

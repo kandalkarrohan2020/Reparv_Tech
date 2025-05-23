@@ -8,8 +8,10 @@ import { FiMoreVertical } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import { useAuth } from "../store/auth";
 import Loader from "../components/Loader";
+import {useNavigate} from "react-router-dom";
 
 const Enquirers = () => {
+  const navigate = useNavigate();
   const {
     URI,
     showEnquiryStatusForm,
@@ -396,11 +398,12 @@ const Enquirers = () => {
           className={`w-[140px] h-16 overflow-hidden flex items-center justify-center`}
         >
           <img
-            src={`${URI}${row.image}`}
+            src={`${URI}${JSON.parse(row.frontView)[0]}`}
             alt="Image"
             className="w-full h-[90%] object- cursor-pointer"
             onClick={() => {
-              showProperty(row.propertyid);
+              //showProperty(row.propertyid);
+              navigate("/property-info/"+row.propertyid);
             }}
           />
         </div>
@@ -409,9 +412,6 @@ const Enquirers = () => {
     },
     { name: "Customer", selector: (row) => row.customer, sortable: true },
     { name: "Contact", selector: (row) => row.contact, sortable: true },
-    { name: "Email", selector: (row) => row.email, sortable: true },
-    { name: "Location", selector: (row) => row.location, sortable: true },
-    { name: "Budget", selector: (row) => row.budget, sortable: true },
     {
       name: "Territory Partner",
       cell: (row) => (
@@ -1099,66 +1099,6 @@ const Enquirers = () => {
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={enquiry.contact}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Email
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={enquiry.email}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                budget
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={enquiry.budget}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                City
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={enquiry.city}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Location
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={enquiry.location}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Message
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={enquiry.message}
                 readOnly
               />
             </div>

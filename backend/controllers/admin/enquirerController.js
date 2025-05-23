@@ -4,7 +4,7 @@ import moment from "moment";
 // **Fetch All **
 export const getAll = (req, res) => {
   const sql =
-    "SELECT enquirers.*, properties.image FROM enquirers INNER JOIN properties ON enquirers.propertyid = properties.propertyid WHERE properties.status = 'active' AND properties.approve = 'Approved' ORDER BY enquirers.enquirersid DESC";
+    "SELECT enquirers.*, properties.frontView FROM enquirers INNER JOIN properties ON enquirers.propertyid = properties.propertyid WHERE properties.status = 'active' AND properties.approve = 'Approved' ORDER BY enquirers.enquirersid DESC";
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching :", err);

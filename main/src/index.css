@@ -1,7 +1,7 @@
 *{
   box-sizing: border-box;
   font-family: "Inter", sans-serif;
-  background-color: "#FAFAFA" !important;
+  background-color: "#FAFAFA";
 }
 
 @import "tailwindcss";
@@ -54,4 +54,26 @@ input[type='range']::-webkit-slider-thumb {
   border-radius: 9999px;
   background-color: #16a34a; /* green-600 */
   cursor: pointer;
+}
+
+
+
+/*Swipper Clases*/
+
+.swiper-button-prev::after, .swiper-button-next::after {
+  display: none;
+}
+
+.swiper-pagination-bullet.custom-bullet {
+  width: 8px;
+  height: 8px;
+  background-color: #9ca3af; /* gray-400 */
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+.swiper-pagination-bullet-active.custom-bullet {
+  width: 12px;
+  height: 12px;
+  background-color: #15803d;
 }

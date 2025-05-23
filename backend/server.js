@@ -8,14 +8,15 @@ import "dotenv/config";
 
 import loginRoutes from "./routes/admin/loginRoutes.js";
 import profileRoutes from "./routes/admin/profileRoutes.js";
+import dashboardRoutes from "./routes/admin/dashboardRoutes.js";
 import employeeRoutes from "./routes/admin/employeeRoutes.js";
 import builderRoutes from "./routes/admin/builderRoutes.js";
 import propertyRoutes from "./routes/admin/propertyRoutes.js";
 import customerRoutes from "./routes/admin/customerRoutes.js";
 import roleRoutes from "./routes/admin/roleRoutes.js";
 import departmentRoutes from "./routes/admin/departmentRoutes.js";
-//import stateRoutes from "./routes/admin/stateRoutes.js";
-//import cityRoutes from "./routes/admin/cityRoutes.js";
+import stateRoutes from "./routes/admin/stateRoutes.js";
+import cityRoutes from "./routes/admin/cityRoutes.js";
 import salespersonRoutes from "./routes/admin/salespersonRoutes.js";
 import partnerRoutes from "./routes/admin/partnerRoutes.js";
 import projectPartnerRoutes from "./routes/admin/projectPartnerRoutes.js";
@@ -45,6 +46,7 @@ import paymentRoutes from "./routes/paymentRoutes.js";
 //employee
 import employeeLoginRoutes from "./routes/employee/employeeLoginRoutes.js";
 import employeeProfileRoutes from "./routes/employee/employeeProfileRoutes.js";
+import employeeDashboardRoutes from "./routes/employee/dashboardRoutes.js";
 import employeeBuildersRoutes from "./routes/employee/employeeBuildersRoutes.js";
 import employeePropertyRoutes from "./routes/employee/employeePropertyRoutes.js";
 import employeeTicketRoutes from "./routes/employee/employeeTicketRoutes.js";
@@ -53,27 +55,17 @@ import employeeEnquirersRoutes from "./routes/employee/employeeEnquirersRoutes.j
 //sales
 import salesLoginRoutes from "./routes/sales/salesLoginRoutes.js";
 import salesProfileRoutes from "./routes/sales/salesProfileRoutes.js";
-//import salesOverviewRoutes from "./routes/sales/salesOverviewRoutes.js";
-import salesPropertyRoutes from "./routes/sales/salesPropertyRoutes.js";
+import salesDashboardRoutes from "./routes/sales/dashboardRoutes.js";
+//import salesPropertyRoutes from "./routes/sales/salesPropertyRoutes.js";
 import salesTicketRoutes from "./routes/sales/salesTicketRoutes.js";
 import salesEnquirersRoutes from "./routes/sales/salesEnquirerRoutes.js";
-import salesNewprojectRoutes from "./routes/sales/salesNewprojectRoutes.js";
-import salesResaleRoutes from "./routes/sales/salesResaleRoutes.js";
-import salesRentalRoutes from "./routes/sales/salesRentalRoutes.js";
-import salesLeaseRoutes from "./routes/sales/salesLeaseRoutes.js";
-import salesFarmhouseRoutes from "./routes/sales/salesFarmhouseRoutes.js";
-import salesPlotRoutes from "./routes/sales/salesPlotRoutes.js";
-import salesFlatRoutes from "./routes/sales/salesFlatRoutes.js";
-import salesRowhouseRoutes from "./routes/sales/salesRowhouseRoutes.js";
-import salesCommercialRoutes from "./routes/sales/commercialRoutes.js";
-import salesPropertyinfoRoutes from "./routes/sales/salesPropertyinfoRoutes.js";
 import salesEnquiryRoutes from "./routes/sales/salesEnquiryRoutes.js";
 import salesCalenderRoutes from "./routes/sales/calenderRoutes.js";
 
 // import onBarding Partner Routes
 import partnerLoginRoutes from "./routes/onboardingPartner/partnerLoginRoutes.js";
 import partnerProfileRoutes from "./routes/onboardingPartner/partnerProfileRoutes.js";
-//import partnerOverviewRoutes from "./routes/onboardingPartner/partnerOverviewRoutes.js";
+import partnerDashboardRoutes from "./routes/onboardingPartner/dashboardRoutes.js";
 import partnerPropertyRoutes from "./routes/onboardingPartner/partnerPropertyRoutes.js";
 import partnerBuilderRoutes from "./routes/onboardingPartner/partnerBuilderRoutes.js";
 import partnerTicketRoutes from "./routes/onboardingPartner/partnerTicketRoutes.js";
@@ -81,7 +73,7 @@ import partnerTicketRoutes from "./routes/onboardingPartner/partnerTicketRoutes.
 // import Project Partner Routes
 import projectPartnerLoginRoutes from "./routes/projectPartner/loginRoutes.js";
 import projectPartnerProfileRoutes from "./routes/projectPartner/profileRoutes.js";
-//import projectPartnerOverviewRoutes from "./routes/projectPartner/overviewRoutes.js";
+import projectPartnerDashboardRoutes from "./routes/projectPartner/dashboardRoutes.js";
 import projectPartnerPropertyRoutes from "./routes/projectPartner/propertyRoutes.js";
 import projectPartnerBuilderRoutes from "./routes/projectPartner/builderRoutes.js";
 import projectPartnerTicketRoutes from "./routes/projectPartner/ticketRoutes.js";
@@ -89,23 +81,15 @@ import projectPartnerTicketRoutes from "./routes/projectPartner/ticketRoutes.js"
 // import Territory Partner Routes
 import territoryPartnerLoginRoutes from "./routes/territoryPartner/loginRoutes.js";
 import territoryPartnerProfileRoutes from "./routes/territoryPartner/profileRoutes.js";
-//import territoryPartnerOverviewRoutes from "./routes/projectPartner/overviewRoutes.js";
-import territoryPartnerPropertyRoutes from "./routes/territoryPartner/propertyRoutes.js";
+import territoryPartnerDashboardRoutes from "./routes/territoryPartner/dashboardRoutes.js";
+//import territoryPartnerPropertyRoutes from "./routes/territoryPartner/propertyRoutes.js";
 import territoryPartnerBuilderRoutes from "./routes/territoryPartner/builderRoutes.js";
 import territoryPartnerTicketRoutes from "./routes/territoryPartner/ticketRoutes.js";
 import territoryPartnerEnquirersRoutes from "./routes/territoryPartner/enquirerRoutes.js";
 import territoryPartnerCalenderRoutes from "./routes/territoryPartner/calenderRoutes.js";
 
-import territoryPartnerNewProjectRoutes from "./routes/territoryPartner/newprojectRoutes.js";
-import territoryPartnerResaleRoutes from "./routes/territoryPartner/resaleRoutes.js";
-import territoryPartnerRentalRoutes from "./routes/territoryPartner/rentalRoutes.js";
-import territoryPartnerLeaseRoutes from "./routes/territoryPartner/leaseRoutes.js";
-import territoryPartnerFarmhouseRoutes from "./routes/territoryPartner/farmhouseRoutes.js";
-import territoryPartnerPlotRoutes from "./routes/territoryPartner/plotRoutes.js";
-import territoryPartnerFlatRoutes from "./routes/territoryPartner/flatRoutes.js";
-import territoryPartnerRowhouseRoutes from "./routes/territoryPartner/rowhouseRoutes.js";
-import territoryPartnerCommercialRoutes from "./routes/territoryPartner/commercialRoutes.js";
-import territoryPartnerPropertyinfoRoutes from "./routes/territoryPartner/propertyinfoRoutes.js"
+import territoryPartnerPropertiesRoutes from "./routes/territoryPartner/propertiesRoutes.js"
+
 
 
 const app = express();
@@ -127,8 +111,10 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 const allowedOrigins = [
-  "https://reparv.onrender.com",
-  "https://reparv-tech.onrender.com",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+  "http://localhost:5176",
   "https://admin.reparv.in",
   "https://reparv.in",
   "https://www.reparv.in",
@@ -180,6 +166,12 @@ const verifyToken = (req, res, next) => {
     "/partner/login",
     "/project-partner/login",
     "/territory-partner/login",
+    "/admin/salespersons/add",
+    "/admin/partner/add",
+    "/admin/projectpartner/add",
+    "/admin/territorypartner/add",
+    "/api/payment/create-order",
+    "/api/payment/verify-payment",
     "/frontend/properties",
     "/frontend/all-properties",
     "/frontend/joinourteam",
@@ -239,14 +231,15 @@ app.use("/api/payment", paymentRoutes);
 
 app.use(verifyToken);
 app.use("/admin/profile", profileRoutes);
+app.use("/admin/dashboard", dashboardRoutes);
 app.use("/admin/employees", employeeRoutes);
 app.use("/admin/properties", propertyRoutes);
 app.use("/admin/builders", builderRoutes);
 app.use("/admin/customers", customerRoutes);
 app.use("/admin/roles", roleRoutes);
 app.use("/admin/departments", departmentRoutes);
-//app.use("/admin/states", stateRoutes);
-//app.use("/admin/cities", cityRoutes);
+app.use("/admin/states", stateRoutes);
+app.use("/admin/cities", cityRoutes);
 app.use("/admin/salespersons", salespersonRoutes);
 app.use("/admin/partner", partnerRoutes);
 app.use("/admin/projectpartner", projectPartnerRoutes);
@@ -263,6 +256,7 @@ app.use("/admin/calender", calenderRoutes);
 //Employee Routes
 app.use("/employee", employeeLoginRoutes);
 app.use("/employee/profile", employeeProfileRoutes);
+app.use("/employee/dashboard", employeeDashboardRoutes);
 app.use("/employee/builders", employeeBuildersRoutes);
 app.use("/employee/properties", employeePropertyRoutes);
 app.use("/employee/enquirers", employeeEnquirersRoutes);
@@ -272,27 +266,16 @@ app.use("/employee/tickets", employeeTicketRoutes);
 app.use("/sales", salesLoginRoutes);
 app.use("/sales/profile", salesProfileRoutes);
 app.use("/sales/enquirers", salesEnquirersRoutes);
-//app.use("/sales/overview", salesOverviewRoutes);
-app.use("/sales/properties", salesPropertyRoutes);
+app.use("/sales/dashboard", salesDashboardRoutes);
+//app.use("/sales/properties", salesPropertyRoutes);
 app.use("/sales/tickets",salesTicketRoutes);
 app.use("/sales/calender", salesCalenderRoutes);
-
-app.use("/sales/propertyinfo", salesPropertyinfoRoutes);
-app.use("/sales/newproject", salesNewprojectRoutes);
-app.use("/sales/resale", salesResaleRoutes);
-app.use("/sales/rental", salesRentalRoutes);
-app.use("/sales/lease", salesLeaseRoutes);
-app.use("/sales/farmhouse", salesFarmhouseRoutes);
-app.use("/sales/plot", salesPlotRoutes);
-app.use("/sales/flat", salesFlatRoutes);
-app.use("/sales/rowhouse", salesRowhouseRoutes);
-app.use("/sales/commercial", salesCommercialRoutes);
 app.use("/sales/enquiry", salesEnquiryRoutes);
 
 // On Boarding Partner Routes
 app.use("/partner", partnerLoginRoutes);
 app.use("/partner/profile", partnerProfileRoutes);
-//app.use("/partner/overview", partnerOverviewRoutes);
+app.use("/partner/dashboard", partnerDashboardRoutes);
 app.use("/partner/properties", partnerPropertyRoutes);
 app.use("/partner/builders", partnerBuilderRoutes);
 app.use("/partner/tickets",partnerTicketRoutes);
@@ -300,31 +283,24 @@ app.use("/partner/tickets",partnerTicketRoutes);
 // Project Partner Routes
 app.use("/project-partner", projectPartnerLoginRoutes);
 app.use("/project-partner/profile", projectPartnerProfileRoutes);
-//app.use("/project-partner/overview", projectPartnerOverviewRoutes);
+app.use("/project-partner/dashboard", projectPartnerDashboardRoutes);
 app.use("/project-partner/properties", projectPartnerPropertyRoutes);
 app.use("/project-partner/builders", projectPartnerBuilderRoutes);
 app.use("/project-partner/tickets", projectPartnerTicketRoutes);
 
-// Project Partner Routes
+// Territory Partner Routes
 app.use("/territory-partner", territoryPartnerLoginRoutes);
 app.use("/territory-partner/profile", territoryPartnerProfileRoutes);
-//app.use("/territory-partner/overview", territoryPartnerOverviewRoutes);
-app.use("/territory-partner/properties", territoryPartnerPropertyRoutes);
+app.use("/territory-partner/dashboard", territoryPartnerDashboardRoutes);
+//app.use("/territory-partner/properties", territoryPartnerPropertyRoutes);
 app.use("/territory-partner/builders", territoryPartnerBuilderRoutes);
 app.use("/territory-partner/tickets", territoryPartnerTicketRoutes);
 app.use("/territory-partner/enquirers", territoryPartnerEnquirersRoutes);
-app.use("/sales/calender", territoryPartnerCalenderRoutes);
+//app.use("/sales/calender", territoryPartnerCalenderRoutes);
 // Property Pages Routes
-app.use("/territory-partner/propertyinfo", territoryPartnerPropertyinfoRoutes);
-app.use("/territory-partner/newproject", territoryPartnerNewProjectRoutes);
-app.use("/territory-partner/resale", territoryPartnerResaleRoutes);
-app.use("/territory-partner/rental", territoryPartnerRentalRoutes);
-app.use("/territory-partner/lease", territoryPartnerLeaseRoutes);
-app.use("/territory-partner/farmhouse", territoryPartnerFarmhouseRoutes);
-app.use("/territory-partner/plot", territoryPartnerPlotRoutes);
-app.use("/territory-partner/flat", territoryPartnerFlatRoutes);
-app.use("/territory-partner/rowhouse", territoryPartnerRowhouseRoutes);
-app.use("/territory-partner/commercial", territoryPartnerCommercialRoutes);
+app.use("/territory-partner/properties", territoryPartnerPropertiesRoutes);
+
+
 
 // ✅ Start Server
 app.listen(PORT, () => {

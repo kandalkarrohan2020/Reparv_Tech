@@ -54,9 +54,6 @@ const VideoSection = () => {
 
   return (
     <div className="flex flex-col items-center pb-15 md:pb-25 p-8">
-      <h2 className="text-[20px] sm:text-[28px] md:text-[40px] leading-6 md:leading-15 font-semibold text-[#076300] mb-4">
-        Why Choose Reparv?
-      </h2>
       <div className="relative w-[350px] h-[200px] sm:w-[500px] sm:h-[280px] md:w-[579px] md:h-[340px] lg:w-[779px] lg:h-[440px] max-w-4xl rounded-xl shadow-[0px_4px_8px_0px_#0000001A] overflow-hidden">
         {/* Thumbnail */}
         {!showVideo && (

@@ -13,7 +13,7 @@ import { CiLocationOn } from "react-icons/ci";
 export default function ImageSlider() {
   const { URI, selectedCity, setSelectedCity, propertySearch, setPropertySearch  } = useAuth();
   const [sliderImages, setSliderImages] = useState([]);
-  const [mobileImage, setMobileImage] = useState({});
+  const [mobileImage, setMobileImage] = useState([]);
   
   // **Fetch Data from API**
   const getSliderImages = async () => {
@@ -33,31 +33,13 @@ export default function ImageSlider() {
     }
   };
 
-  // **Fetch Data from API**
-  const getMobileImage = async () => {
-    try {
-      const response = await fetch(URI + "/frontend/slider/mobile/image", {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch slider Images.");
-      const data = await response.json();
-      setMobileImage(data);
-    } catch (err) {
-      console.error("Error fetching :", err);
-    }
-  };
-
+  
   useEffect(()=>{
     getSliderImages(); 
-    getMobileImage();
   },[]);
 
   return (
-    <div className="relative w-full mx-auto max-w-7xl flex items-center justify-center mb-5">
+    <div className="relative w-full mx-auto max-w-[1650px] flex items-center justify-center mb-5">
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={20}
@@ -74,7 +56,7 @@ export default function ImageSlider() {
         grabCursor={true}
         className="shadow-lg overflow-scroll scrollbar-hide sm:overflow-hidden"
       >
-        {sliderImages.map((img, index) => (
+        {sliderImages?.map((img, index) => (
           <SwiperSlide key={index}>
             <img
               src={URI+"/uploads/"+img.image}
@@ -82,7 +64,7 @@ export default function ImageSlider() {
               className="hidden sm:block w-full h-auto object-cover"
             />
             <img
-              src={URI+"/uploads/"+mobileImage.mobileimage}
+              src={URI+"/uploads/"+img?.mobileimage}
               alt={`Slide ${index + 1}`}
               className={`block sm:hidden w-full h-auto object-cover`}
             />
@@ -105,10 +87,10 @@ export default function ImageSlider() {
         </div>
         {/* Mobile City Selector */}
         <div className="selectCity min-w-[100px] max-w-[180px] relative inline-block">
-          <div className="flex gap-1 items-center justify-center text-xs font-semibold  text-white p-1 ">
+          <div className="flex gap-1 items-center justify-center text-sm font-semibold  text-black p-1 ">
             <CiLocationOn className="w-5 h-5" />
             <span>{selectedCity || "Select City"}</span>
-            <RiArrowDropDownLine className="w-6 h-6 text-white" />
+            <RiArrowDropDownLine className="w-6 h-6 text-black" />
           </div>
           <select
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"

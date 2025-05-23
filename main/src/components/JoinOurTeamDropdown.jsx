@@ -1,22 +1,33 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { IoMdArrowDropdown } from "react-icons/io";
+import { useLocation } from "react-router-dom";
 
-const JoinOurTeamDropdown = ({textColour}) => {
+const JoinOurTeamDropdown = ({ textColour }) => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [selected, setSelected] = useState("Join Our Team");
+  const location = useLocation();
 
   const handleSelect = (value) => {
-    setIsOpen(false); // close dropdown
+    setIsOpen(false);
     switch (value) {
-      case "salesPartner":
-        window.open("https://reparv.com/", "_blank");
+      case "Sales Partner":
+        //window.open("https://reparv.com/", "_blank");
+        navigate("sales-partner");
+        setSelected("Sales Partner");
         break;
-      case "territoryPartner":
-        window.open("https://reparv.com/territorypartner", "_blank");
+      case "Territory Partner":
+        navigate("territory-partner");
+        setSelected("Territory Partner");
         break;
-      case "onboardingPartner":
-        window.open("https://reparv.com/onboardingpartner", "_blank");
+      case "Onboarding Partner":
+        navigate("onboarding-partner");
+        setSelected("Onboarding Partner");
         break;
-      case "projectPartner":
-        window.open("https://reparv.com/projectpartner", "_blank");
+      case "Project Partner":
+        navigate("project-partner");
+        setSelected("Project Partner");
         break;
       default:
         break;
@@ -27,9 +38,16 @@ const JoinOurTeamDropdown = ({textColour}) => {
     <div className="relative inline-block text-left">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`${textColour? "text-white":"text-gray-800"} font-medium hover:text-[#0BB501] hover:font-semibold focus:outline-none`}
+        className={`${textColour && "text-white"} ${
+          selected !== "Join Our Team" && location.pathname === "/sales-partner" ||
+          selected !== "Join Our Team" && location.pathname === "/territory-partner" || 
+          selected !== "Join Our Team" && location.pathname === "/project-partner" ||
+          selected !== "Join Our Team" && location.pathname === "/onboarding-partner"
+          ? "text-[#0BB501]"
+          : "text-gray-800"
+        } flex gap-1 items-center justify-center font-medium hover:text-[#0BB501] hover:font-semibold focus:outline-none`}
       >
-        Join Our Team
+        {selected} <IoMdArrowDropdown className="w-6 h-6 hidden sm:block" />
       </button>
 
       {isOpen && (
@@ -37,27 +55,27 @@ const JoinOurTeamDropdown = ({textColour}) => {
           <ul className=" text-[10px] md:text-sm text-gray-700">
             <li
               className="px-2 md:px-4 py-3 hover:bg-gray-100 hover:text-[#0BB501] cursor-pointer"
-              onClick={() => handleSelect("salesPartner")}
+              onClick={() => handleSelect("Sales Partner")}
             >
               Sales Partner
             </li>
             <li
               className="px-2 md:px-4 py-3 hover:bg-gray-100 hover:text-[#0BB501] cursor-pointer"
-              onClick={() => handleSelect("territoryPartner")}
+              onClick={() => handleSelect("Project Partner")}
+            >
+              Project Partner
+            </li>
+            <li
+              className="px-2 md:px-4 py-3 hover:bg-gray-100 hover:text-[#0BB501] cursor-pointer"
+              onClick={() => handleSelect("Territory Partner")}
             >
               Territory Partner
             </li>
             <li
               className="px-2 md:px-4 py-3 hover:bg-gray-100 hover:text-[#0BB501] cursor-pointer"
-              onClick={() => handleSelect("onboardingPartner")}
+              onClick={() => handleSelect("Onboarding Partner")}
             >
               Onboarding Partner
-            </li>
-            <li
-              className="px-2 md:px-4 py-3 hover:bg-gray-100 hover:text-[#0BB501] cursor-pointer"
-              onClick={() => handleSelect("projectPartner")}
-            >
-              Project Partner
             </li>
           </ul>
         </div>

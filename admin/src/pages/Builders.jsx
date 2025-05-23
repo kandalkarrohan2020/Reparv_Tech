@@ -31,7 +31,6 @@ const Builders = () => {
   const [password, setPassword] = useState("");
   const [selectedLister, setSelectedLister] = useState("Select Builder Lister");
   const [newBuilder, setNewBuilder] = useState({
-    builderid: "",
     company_name: "",
     contact_person: "",
     contact: "",

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
 import StepThree from "./StepThree";
@@ -16,6 +16,7 @@ const MultiStepForm = ({
 }) => {
   const { URI, setLoading, showPropertyForm, setShowPropertyForm } = useAuth();
   const [step, setStep] = useState(1);
+  const [nextButton, setNextButton] = useState(false);
 
   const steps = ["Property Details", "Overview Details", "Add Images"];
 
@@ -85,6 +86,7 @@ const MultiStepForm = ({
 
       // Clear form after successful response
       setPropertyData({
+        propertyid: "",
         builderid: "",
         propertyCategory: "",
         propertyApprovedBy: "",
@@ -95,6 +97,13 @@ const MultiStepForm = ({
         distanceFromCityCenter: "",
         totalSalesPrice: "",
         totalOfferPrice: "",
+        stampDuty: "",
+        registrationFee: "",
+        gst: "",
+        advocateFee: "",
+        msebWater: "",
+        maintenance: "",
+        other: "",
         propertyType: "",
         builtYear: "",
         ownershipType: "",
@@ -109,25 +118,51 @@ const MultiStepForm = ({
         furnishing: "",
         waterSupply: "",
         powerBackup: "",
-        propertyFeatures: "",
-        propertyBenefits: "",
-        stampDuty:"",
-        registrationFee:"",
-        gst:"",
-        advocateFee:"",
-        msebWater:"",
-        maintenance:"",
-        other:"",
+        locationFeature: "",
+        sizeAreaFeature: "",
+        parkingFeature: "",
+        terraceFeature: "",
+        ageOfPropertyFeature: "",
+        furnishingFeature: "",
+        amenitiesFeature: "",
+        propertyStatusFeature: "",
+        floorNumberFeature: "",
+        smartHomeFeature: "",
+        securityBenefit: "",
+        primeLocationBenefit: "",
+        rentalIncomeBenefit: "",
+        qualityBenefit: "",
+        capitalAppreciationBenefit: "",
+        ecofriendlyBenefit: "",
       });
       setStep(1);
       setShowPropertyForm(false);
-      await fetchData(); 
+      await fetchData();
     } catch (err) {
       console.error("Error saving property:", err);
+      if (err.response?.data?.error) {
+        alert("Upload failed: " + err.response.data.error);
+      } else {
+        alert("Unexpected Error");
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  const checkButton = () => {
+    if (step === 1 && newProperty.other != "") {
+      setNextButton(true);
+    } else if (step === 2 && newProperty.ecofriendlyBenefit != "") {
+      setNextButton(true);
+    } else {
+      setNextButton(false);
+    }
+  };
+
+  useEffect(() => {
+    checkButton();
+  }, [newProperty]);
 
   return (
     <div
@@ -215,20 +250,24 @@ const MultiStepForm = ({
             {step < 3 ? (
               <button
                 type="button"
-                onClick={nextStep}
-                className="px-6 py-2 text-white bg-blue-600 rounded active:scale-[0.98]"
+                onClick={nextButton == true && nextStep}
+                className={`${
+                  nextButton == true
+                    ? "active:scale-[0.98] bg-blue-600"
+                    : "bg-blue-400"
+                } px-6 py-2 text-white  rounded `}
               >
                 Next
               </button>
             ) : (
               <>
-              <button
-                type="submit"
-                className="px-6 py-2 text-white bg-green-600 rounded active:scale-[0.98]"
-              >
-                Save
-              </button>
-              <Loader></Loader>
+                <button
+                  type="submit"
+                  className="px-6 py-2 text-white bg-green-600 rounded active:scale-[0.98]"
+                >
+                  Save
+                </button>
+                <Loader></Loader>
               </>
             )}
           </div>

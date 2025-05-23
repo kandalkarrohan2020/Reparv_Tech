@@ -142,7 +142,7 @@ function Layout() {
             />
             {/* Navigation Links */}
             {[
-              { to: "/overview", icon: overviewIcon, label: "Overview" },
+              { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/builders", icon: partnerIcon, label: "Builders" },
               { to: "/customers", icon: customersIcon, label: "Customers" },

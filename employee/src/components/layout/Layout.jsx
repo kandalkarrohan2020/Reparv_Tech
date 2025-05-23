@@ -136,7 +136,7 @@ function Layout() {
             />
             {/* Navigation Links */}
             {[
-              { to: "/overview", icon: overviewIcon, label: "Overview" },
+              { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/builders", icon: partnerIcon, label: "Builders" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },

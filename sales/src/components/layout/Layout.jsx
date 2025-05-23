@@ -15,6 +15,11 @@ import { FaUserCircle } from "react-icons/fa";
 import SuccessScreen from "../property/SuccessScreen";
 import { useParams } from "react-router-dom";
 import { RxCross2 } from "react-icons/rx";
+import SiteVisitPopup from "../property/SiteVisitPopup";
+import PriceSummery from "../property/PriceSummery";
+import FilterSidebar from "../FilterSidebar";
+import BenefitsPopup from "../property/BenefitsPopup";
+import KYC from "../userVerification/KYC";
 
 function Layout() {
   const { id } = useParams();
@@ -23,8 +28,10 @@ function Layout() {
   const [isShortBar, setIsShortbar] = useState(false);
   const [heading, setHeading] = useState(localStorage.getItem("head"));
   const {
-    showProfile, URI,
+    showProfile,
+    URI,
     setShowProfile,
+    showKYC, setShowKYC,
     showPropertyForm,
     setShowPropertyForm,
     showUploadImagesForm,
@@ -48,64 +55,15 @@ function Layout() {
     showSuccess,
     setShowSuccess,
     isLoggedIn,
+    showSiteVisitPopup,
+    setShowSiteVisitPopup,
+    setShowBenefitsPopup,
+    showBenefitsPopup,
+    showFilterPopup,
+    setShowFilterPopup,
+    showPriceSummery,
+    setShowPriceSummery,
   } = useAuth();
-
-  useEffect(() => {
-    setFormData({ ...formData, propertyid: id });
-  }, [showInquiryForm]);
-
-  //Inquiry Form Data
-  const [formData, setFormData] = useState({
-    propertyid: id,
-    fullname: "",
-    phone: "",
-    email: "",
-    budget: "",
-    city: "",
-    location: "",
-    message: "",
-  });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await fetch(`${URI}/sales/enquiry/add`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json", // Tell server it's JSON
-        },
-        body: JSON.stringify(formData), // Convert object to JSON
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to save property. Status: ${response.status}`);
-      } else {
-        setShowSuccess(true);
-        setShowInquiryForm(false);
-      }
-
-      // Clear form after success
-      setFormData({
-        ...formData,
-        propertyid: id,
-        fullname: "",
-        phone: "",
-        email: "",
-        budget: "",
-        city: "",
-        location: "",
-        message: "",
-      });
-    } catch (err) {
-      console.error("Error saving enquiry:", err);
-    }
-  };
 
   const overlays = [
     { state: showPropertyForm, setter: setShowPropertyForm },
@@ -115,9 +73,8 @@ function Layout() {
     { state: showAssignTerritory, setter: setShowAssignTerritory },
     { state: showTicketForm, setter: setShowTicketForm },
     { state: showTicket, setter: setShowTicket },
-    { state: showEnquiry, setter: setShowEnquiry},
+    { state: showEnquiry, setter: setShowEnquiry },
     { state: showPropertyInfo, setter: setShowPropertyInfo },
-   
   ];
 
   const getNavLinkClass = (path) => {
@@ -208,7 +165,7 @@ function Layout() {
             />
             {/* Navigation Links */}
             {[
-              { to: "/overview", icon: overviewIcon, label: "Overview" },
+              { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/enquirers", icon: enquirersIcon, label: "Enquirers" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
@@ -264,153 +221,50 @@ function Layout() {
         ) : null
       )}
 
-      {/* Inquiry From */}
-      {showInquiryForm && (
-        <div className="Container w-full h-screen bg-[#dadada8f] fixed z-[62] flex md:items-center md:justify-center">
-          <div className="InquiryForm overflow-scroll scrollbar-hide bg-white py-8 p-4 sm:p-6 sm:rounded-2xl shadow-lg max-w-3xl w-full ">
-            <div className="formHeading w-full flex flex-row items-center justify-between gap-8 sm:p-6 mb-4">
-              <h2 className="text-xl sm:text-2xl font-bold text-[#076300] ">
-                Find Your Dream Property – Get in Touch!
-              </h2>
-              <RxCross2
-                onClick={() => {
-                  setShowInquiryForm(false);
-                }}
-                className="w-7 h-7 cursor-pointer hover:text-[#076300] active:scale-95"
-              />
-            </div>
+      {/* Show Book Site Form Screen */}
 
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
-                  <label htmlFor="fullName" className="ml-1">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    name="fullname"
-                    id="fullName"
-                    placeholder="Enter Full Name"
-                    value={formData.fullname}
-                    onChange={handleChange}
-                    className="w-full font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
-                    required
-                  />
-                </div>
-                <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
-                  <label htmlFor="fullName" className="ml-1">
-                    Enter Phone Number
-                  </label>
-                  <input
-                    type="text"
-                    name="phone"
-                    id="phone"
-                    placeholder="Enter Phone Number"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
-                  <label htmlFor="email" className="ml-1">
-                    Enter Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    placeholder="Enter your Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
-                    required
-                  />
-                </div>
-
-                <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
-                  <label htmlFor="budget" className="ml-1">
-                    Enter Your Budget
-                  </label>
-                  <input
-                    type="text"
-                    name="budget"
-                    id="budget"
-                    placeholder="Enter Budget"
-                    value={formData.budget}
-                    onChange={handleChange}
-                    className="w-full font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
-                    required
-                  />
-                </div>
-
-                <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
-                  <label htmlFor="city" className="ml-1">
-                    Select City
-                  </label>
-                  <select
-                    name="city"
-                    id="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    className="w-full font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
-                    required
-                  >
-                    <option value="">Select City</option>
-                    <option value="Nagpur">Nagpur</option>
-                    <option value="Chandrapur">Chandrapur</option>
-                    <option value="Wardha">Wardha</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
-                  <label htmlFor="location" className="ml-1">
-                    Select Location
-                  </label>
-                  <input
-                    type="text"
-                    name="location"
-                    id="location"
-                    placeholder="Enter Location"
-                    value={formData.location}
-                    onChange={handleChange}
-                    className="w-full font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
-                <label htmlFor="message" className="ml-1">
-                  Message
-                </label>
-                <textarea
-                  name="message"
-                  id="message"
-                  placeholder="Enter your Message here.."
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="w-full font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
-                  rows="4"
-                ></textarea>
-              </div>
-              <div className="w-full flex items-center justify-center pb-5">
-                <button
-                  type="Submit"
-                  //onClick={handleSubmit}
-                  className="w-40 h-12 bg-[#0BB501] text-white text-base rounded-md hover:bg-green-700 active:scale-95"
-                >
-                  Submit
-                </button>
-              </div>
-            </form>
+      {showSiteVisitPopup && (
+        <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
+          <div className="w-full flex flex-col items-center justify-end sm:justify-center h-[90vh] absolute bottom-0">
+            <SiteVisitPopup />
           </div>
         </div>
       )}
+
       {/* Show Success Screen */}
       {showSuccess && <SuccessScreen />}
+
+      {showPriceSummery && (
+        <div
+          onClick={() => {
+            setShowPriceSummery(false);
+          }}
+          className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center"
+        >
+          <PriceSummery />
+        </div>
+      )}
+
+      {showBenefitsPopup && (
+        <div
+          onClick={() => {
+            setShowBenefitsPopup(false);
+          }}
+          className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center"
+        >
+          <div className="w-full flex flex-col items-center justify-end sm:justify-center h-[90vh] absolute bottom-0">
+            <BenefitsPopup />
+          </div>
+        </div>
+      )}
+
+      {showFilterPopup && (
+        <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
+          <div className="w-full flex flex-col items-center justify-end h-[90vh] absolute bottom-0">
+            <FilterSidebar />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

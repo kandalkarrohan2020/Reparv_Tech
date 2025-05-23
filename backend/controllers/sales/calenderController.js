@@ -7,7 +7,7 @@ export const getAll = (req, res) => {
                       propertyfollowup.remark,
                       propertyfollowup.status, 
                       propertyfollowup.changestatus,
-                      properties.property_name,
+                      properties.propertyName,
                       enquirers.customer,
                       enquirers.contact,
                       salespersons.fullname

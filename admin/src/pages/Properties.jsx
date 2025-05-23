@@ -62,6 +62,13 @@ const Properties = () => {
     distanceFromCityCenter: "",
     totalSalesPrice: "",
     totalOfferPrice: "",
+    stampDuty: "",
+    registrationFee: "",
+    gst: "",
+    advocateFee: "",
+    msebWater: "",
+    maintenance: "",
+    other: "",
     propertyType: "",
     builtYear: "",
     ownershipType: "",
@@ -76,15 +83,22 @@ const Properties = () => {
     furnishing: "",
     waterSupply: "",
     powerBackup: "",
-    propertyFeatures: "",
-    propertyBenefits: "",
-    stampDuty: "",
-    registrationFee: "",
-    gst: "",
-    advocateFee: "",
-    msebWater: "",
-    maintenance: "",
-    other: "",
+    locationFeature:"",
+    sizeAreaFeature:"",
+    parkingFeature:"",
+    terraceFeature:"",
+    ageOfPropertyFeature:"",
+    furnishingFeature:"",
+    amenitiesFeature:"",
+    propertyStatusFeature:"",
+    floorNumberFeature:"",
+    smartHomeFeature:"",
+    securityBenefit:"",
+    primeLocationBenefit:"",
+    rentalIncomeBenefit:"",
+    qualityBenefit:"",
+    capitalAppreciationBenefit:"",
+    ecofriendlyBenefit:"",
   });
   const [imageFiles, setImageFiles] = useState({
     frontView: [],
@@ -256,7 +270,6 @@ const Properties = () => {
       if (!response.ok) throw new Error("Failed to fetch properties.");
       const data = await response.json();
       setDatas(data);
-      console.log(data);
     } catch (err) {
       console.error("Error fetching :", err);
     } finally {
@@ -653,16 +666,31 @@ const Properties = () => {
     },
     {
       name: "Image",
-      cell: (row) => (
-        <div className="w-[130px] h-14 overflow-hidden flex items-center justify-center">
-          <img
-            src={`${URI}${JSON.parse(row.frontView) ? [0] : []}`}
-            alt="Property"
-            onClick={() => view(row.propertyid)}
-            className="w-full h-[90%] object-cover cursor-pointer"
-          />
-        </div>
-      ),
+      cell: (row) => {
+        let imageSrc = "default.jpg";
+
+        try {
+          const parsed = JSON.parse(row.frontView);
+          if (Array.isArray(parsed) && parsed[0]) {
+            imageSrc = `${URI}${parsed[0]}`;
+          }
+        } catch (e) {
+          console.warn("Invalid or null frontView:", row.frontView);
+        }
+
+        return (
+          <div className="w-[130px] h-14 overflow-hidden flex items-center justify-center">
+            <img
+              src={imageSrc}
+              alt="Property"
+              onClick={() => {
+                window.open("https://www.reparv.in/property-info/"+row.propertyid, "_blank");
+              }}
+              className="w-full h-[90%] object-cover cursor-pointer"
+            />
+          </div>
+        );
+      },
       width: "130px",
     },
     { name: "Builder", selector: (row) => row.company_name, sortable: true },
@@ -679,7 +707,7 @@ const Properties = () => {
       sortable: true,
       minWidth: "180px",
     },
-    { name: "Type", selector: (row) => row.propertyCategory, sortable: true },
+    { name: "Category", selector: (row) => row.propertyCategory, sortable: true },
     { name: "Name", selector: (row) => row.propertyName, sortable: true },
     { name: "Address", selector: (row) => row.address, sortable: true },
     { name: "City", selector: (row) => row.city, sortable: true },
@@ -754,20 +782,12 @@ const Properties = () => {
         case "delete":
           del(propertyid);
           break;
-        case "add_images":
-          openImages(propertyid);
-          fetchImages(propertyid);
-          break;
         case "approve":
           approve(propertyid);
           break;
         case "rejectReason":
           setPropertyKey(propertyid);
           setShowRejectReasonForm(true);
-          break;
-        case "additionalinfo":
-          setPropertyType(propertyType);
-          openAdditionalInfo(propertyid);
           break;
         default:
           console.log("Invalid action");
@@ -794,8 +814,6 @@ const Properties = () => {
           <option value="view">View</option>
           <option value="status">Status</option>
           <option value="update">Update</option>
-          <option value="add_images">Add Images</option>
-          <option value="additionalinfo">Additional Info</option>
           <option value="approve">Approve</option>
           <option value="rejectReason">Reject Reason</option>
           <option value="delete">Delete</option>

@@ -4,9 +4,10 @@ import { FaCheck } from "react-icons/fa6";
 import { Range } from "react-range";
 import { useAuth } from "../store/auth";
 import { usePropertyFilter } from "../store/propertyFilter";
+import { RxCross2 } from "react-icons/rx";
 
 export default function FilterSidebar() {
-  const { URI, propertyType, setPropertyType, selectedCity, setSelectedCity } =
+  const { URI, propertyType, setPropertyType, selectedCity, setSelectedCity, setShowFilterPopup } =
     useAuth();
   const {
     filteredLocations,
@@ -37,16 +38,16 @@ export default function FilterSidebar() {
 
   const [locations, setLocations] = useState([]);
   const [selectedLocations, setSelectedLocations] = useState([]);
-  const [budgetRange, setBudgetRange] = useState([10000, 500000]);
+  const [budgetRange, setBudgetRange] = useState([minBudget, maxBudget]);
 
   const [showLocations, setShowLocations] = useState(true);
   const [showTypes, setShowTypes] = useState(true);
   const [showBudget, setShowBudget] = useState(true);
-  
-  const MIN = 10000;
-  const MAX = 500000;
+
+  const MIN = 5000;
+  const MAX = 1000000;
   const STEP = 10000;
-  
+
   const toggleSelection = (value, setFn, list) => {
     if (list.includes(value)) {
       setFn(list.filter((item) => item !== value));
@@ -105,9 +106,21 @@ export default function FilterSidebar() {
   }, [selectedType]);
 
   return (
-    <div className="w-full bg-[#FAFAFA] space-y-6">
+    <div className="w-full p-5 sm:p-0 rounded-tl-2xl rounded-tr-2xl sm:rounded-0 bg-[#FAFAFA] space-y-6">
       {/* Property Types */}
       <div>
+        <div
+          className="flex sm:hidden justify-end items-center cursor-pointer pb-4"
+          onClick={() => setShowTypes(!showTypes)}
+        >
+          <RxCross2
+            onClick={() => {
+              setShowFilterPopup(false);
+            }}
+            className="w-5 h-5 sm:w-7 p-1 sm:h-7 rounded-sm bg-gray-100 cursor-pointer hover:text-[#076300] active:scale-95"
+          />
+        </div>
+
         <div
           className="flex justify-between items-center cursor-pointer"
           onClick={() => setShowTypes(!showTypes)}
@@ -140,7 +153,7 @@ export default function FilterSidebar() {
                 >
                   {selectedType === type && <FaCheck className="text-white" />}
                 </span>
-                <span className="text-xs">{type}</span>
+                <span className="text-sm sm:text-xs">{type}</span>
               </label>
             ))}
           </div>
@@ -186,7 +199,7 @@ export default function FilterSidebar() {
                     <FaCheck className="text-white" />
                   )}
                 </span>
-                <span className="text-xs">{loc}</span>
+                <span className="text-sm sm:text-xs">{loc}</span>
               </label>
             ))}
           </div>
@@ -204,8 +217,8 @@ export default function FilterSidebar() {
         </div>
 
         {showBudget && (
-          <div className="mt-4 px-4">
-            <Range
+          <div className="mt-2">
+            {/*<Range
               values={budgetRange}
               step={STEP}
               min={MIN}
@@ -218,7 +231,7 @@ export default function FilterSidebar() {
                   style={{ ...props.style }}
                 >
                   <div
-                    className="absolute h-2 bg-[#076300] rounded"
+                    className="absolute max-w-full h-2 bg-[#076300] rounded"
                     style={{
                       left: `${((budgetRange[0] - MIN) / (MAX - MIN)) * 100}%`,
                       width: `${
@@ -239,10 +252,10 @@ export default function FilterSidebar() {
                   />
                 );
               }}
-            />
+            />*/}
             <div className="w-full flex items-center justify-between gap-4 mt-5 text-sm text-gray-700">
               <div className="flex flex-col">
-                <span className="ml-1 text-black text-xs font-semibold">
+                <span className="ml-1 mb-1 text-black text-xs font-semibold">
                   {" "}
                   Min{" "}
                 </span>
@@ -252,11 +265,11 @@ export default function FilterSidebar() {
                   onChange={(e) =>
                     setBudgetRange([Number(e.target.value), budgetRange[1]])
                   }
-                  className="w-22 border text-xs border-gray-300 rounded-lg px-2 py-1"
+                  className="w-30 sm:w-25 border text-sm sm:text-xs border-gray-300 rounded-lg px-4 py-2 sm:px-2 sm:py-1"
                 />
               </div>
               <div className="flex flex-col">
-                <span className="ml-1 text-black text-xs font-semibold">
+                <span className="ml-1 mb-1 text-black text-xs font-semibold">
                   {" "}
                   Max
                 </span>
@@ -266,7 +279,7 @@ export default function FilterSidebar() {
                   onChange={(e) =>
                     setBudgetRange([budgetRange[0], Number(e.target.value)])
                   }
-                  className="w-22 border text-xs border-gray-300 rounded-lg px-2 py-1"
+                  className="w-30 sm:w-25 border text-sm sm:text-xs border-gray-300 rounded-lg px-4 py-2 sm:px-2 sm:py-1"
                 />
               </div>
             </div>
@@ -275,7 +288,7 @@ export default function FilterSidebar() {
       </div>
 
       {/* Buttons */}
-      <div className="flex space-x-4 pt-2">
+      <div className="flex space-x-4 pt-2 mb-8 sm:mb-2">
         <button
           onClick={resetFilters}
           className="flex-1 bg-gray-200 text-gray-700 py-2 rounded"
@@ -288,6 +301,7 @@ export default function FilterSidebar() {
             setFilteredLocations([...selectedLocations]);
             setMinBudget(budgetRange[0]);
             setMaxBudget(budgetRange[1]);
+            setShowFilterPopup(false);
           }}
           className="flex-1 bg-[#0BB501] text-white py-2 rounded cursor-pointer"
         >

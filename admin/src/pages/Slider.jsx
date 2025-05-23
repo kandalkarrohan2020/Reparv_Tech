@@ -334,7 +334,7 @@ const Slider = () => {
         <div className="w-[330px] sm:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">
-              Add Slider Images (1450px X 650px)
+              Add Slider Images (1440px X 540px)
             </h2>
             <IoMdClose
               onClick={() => {

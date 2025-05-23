@@ -42,7 +42,7 @@ router.get("/:id", getById);
 router.get("/property/city/:id", getPropertyCity);
 router.get("/territorypartner/active/:city", getTerritoryPartners);
 router.post("/assign/to/partner/:id", assignEnquiry);
-router.get("/status/:id", status);
+router.put("/status/:id", status);
 router.post("/visitscheduled/:id", visitScheduled);
 router.post("/followup/:id", followUp);
 router.post("/cancelled/:id", cancelled);

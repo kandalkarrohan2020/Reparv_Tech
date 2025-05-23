@@ -7,7 +7,7 @@ import PropertyImageGallery from "../components/property/PropertyImageGallery";
 import PropertyBookingCard from "../components/property/PropertyBookingCard";
 import PropertyOverview from "../components/property/PropertyOverview";
 import PropertyFeatures from "../components/property/PropertyFeatures";
-import EMICalculator from "../components/property/EmiCalculator";
+import EMICalculator from "../components/property/EMICalculator";
 import OtherProperties from "../components/OtherProperties";
 import { useOutletContext } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
@@ -17,11 +17,11 @@ function PropertyDetails() {
   const { ref: videoRef, inView: otherPropertiesInView } = useInView({
     threshold: 0.1,
   });
-  
+
   const { id } = useParams();
   const [propertyInfo, setPropertyInfo] = useState({});
   const [propertyImages, setPropertyImages] = useState([]);
-  const { setShowInquiryForm, URI } = useAuth();
+  const { setShowSiteVisitPopup, URI, setPropertyImage } = useAuth();
 
   // Fetch Property Info
   const fetchData = async () => {
@@ -68,28 +68,45 @@ function PropertyDetails() {
   }, [otherPropertiesInView]);
 
   return (
-    <div className="w-full max-w-7xl flex flex-col p-4 mx-auto">
+    <div className="w-full max-w-7xl flex flex-col sm:p-4 mx-auto">
       <div className="flex w-full">
-        <div className="leftSection w-[50%] flex flex-col gap-10">
+        <div className="leftSection w-full md:w-[50%] flex flex-col gap-5 sm:gap-10">
           <PropertyImageGallery property={propertyInfo} />
+          <div className=" block md:hidden">
+            <PropertyBookingCard propertyInfo={propertyInfo} />
+          </div>
           <PropertyOverview propertyInfo={propertyInfo} />
-          <PropertyFeatures propertyFeatures={propertyInfo.propertyFeatures} propertyBenefits={propertyInfo.propertyBenefits} />
+          <PropertyFeatures propertyInfo={propertyInfo} />
           <EMICalculator totalAmount={propertyInfo.totalOfferPrice}/>
         </div>
         <div
           className={`${
             isScrolling ? "absolute " : "fixed"
-          } bookingSection left-[50%] w-[50%] max-w-[540px] flex px-6 pb-6 z-10`}
+          } bookingSection hidden md:flex left-[50%] w-[50%] max-w-[540px] px-6 pb-6 z-10`}
         >
           <PropertyBookingCard propertyInfo={propertyInfo} />
         </div>
       </div>
 
-    
+      {/* Property Booking Inquiry Button */}
+      <div
+        className="fixed z-30 w-full sm:w-auto right-0 bottom-0 sm:hidden p-4 rounded-2xl text-white text-md shadow-lg "
+      >
+        <button
+          onClick={() => {
+            setShowSiteVisitPopup(true);
+            setPropertyImages(JSON.parse(propertyInfo.frontView)[0]);
+          }}
+          className="w-full flex items-center justify-center sm:hidden rounded-md bg-[#0BB501] text-white font-semibold py-3 text-base active:scale-95 cursor-pointer"
+        >
+          Book Site Visit Now
+        </button>
+      </div>
+
       {/* Other Properties Section */}
       <div
         ref={videoRef}
-        className={` w-full flex flex-col pt-10 sm:pt-13 sm:p-5`}
+        className={` w-full flex flex-col px-5 pt-10 sm:pt-13 sm:p-5`}
       >
         <h2 className="text-lg md:text-3xl mx-auto text-black font-semibold mb-4">
           Explore Similar Properties

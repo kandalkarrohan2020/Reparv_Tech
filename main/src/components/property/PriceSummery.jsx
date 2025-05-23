@@ -33,7 +33,7 @@ const PriceSummery = () => {
     other;
 
   return (
-    <div className="max-w-3xl overflow-scroll scrollbar-hide mx-auto h-[75vh] bg-white rounded-xl shadow-xl p-6 space-y-4">
+    <div className="absolute bottom-0 sm:top-25 max-w-3xl overflow-scroll scrollbar-hide mx-auto h-[90vh] sm:h-[75vh] bg-white rounded-tl-2xl rounded-tr-2xl sm:rounded-xl shadow-xl p-6 space-y-4">
       {/* Header */}
       <div className="flex items-start justify-between gap-5 ">
         <div className="flex flex-col gap-2">
@@ -47,7 +47,7 @@ const PriceSummery = () => {
           onClick={() => {
             setShowPriceSummery(false);
           }}
-          className="w-7 h-7 cursor-pointer hover:text-[#076300] active:scale-95"
+          className="w-5 h-5 sm:w-7 sm:h-7 cursor-pointer hover:text-[#076300] active:scale-95"
         />
       </div>
 

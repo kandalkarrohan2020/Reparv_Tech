@@ -22,7 +22,7 @@ const CalendarScheduler = () => {
     try {
       const response = await fetch(URI + "/sales/calender/meetings", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -204,7 +204,7 @@ const CalendarScheduler = () => {
                   </div>
                   <div className="flex flex-col items-center justify-center gap-2">
                     <span className="text-xs text-gray-500">Project Name</span>
-                    <p className="font-semibold">{meeting.property_name}</p>
+                    <p className="font-semibold">{meeting.propertyName}</p>
                   </div>
                   <div className="flex flex-col items-center justify-center">
                     <span className="text-xs text-gray-500 mb-2">

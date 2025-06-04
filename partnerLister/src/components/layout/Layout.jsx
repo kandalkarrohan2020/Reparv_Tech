@@ -1,16 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import reparvMainLogo from "../../assets/layout/reparvMainLogo.svg";
-import calenderIcon from "../../assets/layout/calenderIcon.svg";
-import customersIcon from "../../assets/layout/customersIcon.svg";
-import enquirersIcon from "../../assets/layout/enquirersIcon.svg";
-import mapIcon from "../../assets/layout/mapIcon.svg";
-import materialIcon from "../../assets/layout/materialIcon.svg";
 import overviewIcon from "../../assets/layout/overviewIcon.svg";
 import partnerIcon from "../../assets/layout/partnerIcon.svg";
-import employeeIcon from "../../assets/layout/employeeIcon.svg";
-import ticketingIcon from "../../assets/layout/ticketingIcon.svg";
-import marketingIcon from "../../assets/layout/marketingIcon.svg";
 import { Outlet } from "react-router-dom";
 import { IoMenu } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
@@ -33,6 +25,7 @@ function Layout() {
     setShowSalesForm,
     showAssignSalesForm, setShowAssignSalesForm,
     showPartnerForm, setShowPartnerForm,
+    showPaymentIdForm, setShowPaymentIdForm,
     showPartner, setShowPartner,
     showSalesPerson, setShowSalesPerson,
     isLoggedIn,
@@ -45,6 +38,7 @@ function Layout() {
     { state: showPartnerForm, setter: setShowPartnerForm },
     { state: showSalesPerson, setter: setShowSalesPerson },
     { state: showPartner, setter: setShowPartner},
+    { state: showPaymentIdForm, setter: setShowPaymentIdForm},
   ];
 
   const getNavLinkClass = (path) => {
@@ -135,6 +129,11 @@ function Layout() {
             />
             {/* Navigation Links */}
             {[
+               {
+                to: "/dashboard",
+                icon: overviewIcon,
+                label: "Dashboard",
+              },
               {
                 to: "/salespersons",
                 icon: partnerIcon,

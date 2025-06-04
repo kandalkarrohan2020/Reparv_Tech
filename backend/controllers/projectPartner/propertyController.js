@@ -2,6 +2,7 @@ import db from "../../config/dbconnect.js";
 import moment from "moment";
 import fs from "fs";
 import path from "path";
+import { convertImagesToWebp } from "../../utils/convertImagesToWebp.js";
 
 const calculateEMI = (principal, rate = 9, years = 20) => {
   const monthlyRate = rate / 12 / 100;
@@ -80,9 +81,9 @@ export const getImages = (req, res) => {
 
 
 
-export const addProperty = (req, res) => {
+export const addProperty = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const files = req.files;
+  const files = await convertImagesToWebp(req.files);
   const partnerId = req.user.id;
   if(!partnerId) {
     return res.status(401).json({ message: "Unauthorized Access"});
@@ -95,7 +96,9 @@ export const addProperty = (req, res) => {
     propertyApprovedBy,
     propertyName,
     address,
+    state,
     city,
+    pincode,
     location,
     distanceFromCityCenter,
     totalSalesPrice,
@@ -145,7 +148,9 @@ export const addProperty = (req, res) => {
     !propertyApprovedBy ||
     !propertyName ||
     !address ||
+    !state ||
     !city ||
+    !pincode ||
     !location ||
     !distanceFromCityCenter ||
     !totalSalesPrice ||
@@ -219,7 +224,7 @@ export const addProperty = (req, res) => {
 
       const insertSQL = `
       INSERT INTO properties ( projectpartnerid,
-        builderid, propertyCategory, propertyApprovedBy, propertyName, address, city, location,
+        builderid, propertyCategory, propertyApprovedBy, propertyName, address, state, city, pincode, location,
         distanceFromCityCenter, totalSalesPrice, totalOfferPrice, emi, stampDuty, registrationFee, gst, advocateFee, 
         msebWater, maintenance, other, propertyType, builtYear, ownershipType, builtUpArea, carpetArea,
         parkingAvailability, totalFloors, floorNo, loanAvailability, propertyFacing, reraRegistered, 
@@ -230,7 +235,7 @@ export const addProperty = (req, res) => {
         nearestLandmark, developedAmenities,
         updated_at, created_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const values = [
@@ -240,7 +245,9 @@ export const addProperty = (req, res) => {
         propertyApprovedBy,
         propertyName,
         address,
+        state,
         city,
+        pincode,
         location,
         distanceFromCityCenter,
         totalSalesPrice,
@@ -311,9 +318,9 @@ export const addProperty = (req, res) => {
 };
 
 // **Update Property**
-export const update = (req, res) => {
+export const update = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const files = req.files;
+  const files = await convertImagesToWebp(req.files);
   const partnerId = req.user.id;
   if (!partnerId) {
     return res.status(400).json({ message: "Unauthorized Access" });
@@ -331,7 +338,9 @@ export const update = (req, res) => {
     propertyApprovedBy,
     propertyName,
     address,
+    state,
     city,
+    pincode,
     location,
     distanceFromCityCenter,
     totalSalesPrice,
@@ -381,7 +390,9 @@ export const update = (req, res) => {
     !propertyApprovedBy ||
     !propertyName ||
     !address ||
+    !state ||
     !city ||
+    !pincode ||
     !location ||
     !distanceFromCityCenter ||
     !totalSalesPrice ||
@@ -457,7 +468,7 @@ export const update = (req, res) => {
 
       const updateSQL = `
       UPDATE properties SET rejectreason=NULL, approve=?,
-        builderid=?, propertyCategory=?, propertyApprovedBy=?, propertyName=?, address=?, city=?, location=?,
+        builderid=?, propertyCategory=?, propertyApprovedBy=?, propertyName=?, address=?, state=?, city=?, pincode=?, location=?,
         distanceFromCityCenter=?, totalSalesPrice=?, totalOfferPrice=?, emi=?, stampDuty=?, registrationFee=?, gst=?, advocateFee=?, 
         msebWater=?, maintenance=?, other=?, propertyType=?, builtYear=?, ownershipType=?,
         builtUpArea=?, carpetArea=?, parkingAvailability=?, totalFloors=?, floorNo=?, loanAvailability=?,
@@ -476,7 +487,9 @@ export const update = (req, res) => {
         propertyApprovedBy,
         propertyName,
         address,
+        state,
         city,
+        pincode,
         location,
         distanceFromCityCenter,
         totalSalesPrice,

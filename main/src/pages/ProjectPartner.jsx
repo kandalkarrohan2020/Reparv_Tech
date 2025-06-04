@@ -44,7 +44,7 @@ function ProjectPartner() {
               </div>
             </div>
             <div className="right w-full md:w-1/2 pt-2 xl:pt-10">
-              <VideoSection />
+              <VideoSection videoFor="project partner"/>
             </div>
           </div>
           <div className="absolute bottom-[-110px] 2xl:bottom-[-80px] hidden xl:flex registerForm w-full max-w-[1050px] mx-auto">

@@ -44,8 +44,8 @@ function Layout() {
     setShowAssignTerritory,
     showPropertyInfo,
     setShowPropertyInfo,
-    showInquiryForm,
-    setShowInquiryForm,
+    showEnquiryForm,
+    setShowEnquiryForm,
     showTicket,
     setShowTicket,
     showTicketForm,
@@ -74,6 +74,7 @@ function Layout() {
     { state: showTicketForm, setter: setShowTicketForm },
     { state: showTicket, setter: setShowTicket },
     { state: showEnquiry, setter: setShowEnquiry },
+    { state: showEnquiryForm, setter: setShowEnquiryForm },
     { state: showPropertyInfo, setter: setShowPropertyInfo },
   ];
 

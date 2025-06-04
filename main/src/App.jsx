@@ -46,7 +46,7 @@ function App() {
             path="/terms-and-conditions"
             element={<TermsAndConditions />}
           />
-          <Route path="/refund-policy" element={<RefundPolicy />} />
+          <Route path="/cancellation-policy" element={<RefundPolicy />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog-details" element={<BlogDetails />} />
         </Route>

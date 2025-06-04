@@ -92,12 +92,6 @@ function Overview() {
             icon: card4,
           },
           {
-            label: "No of Enquiry",
-            value: overviewCountData?.totalEnquiry || "00",
-            //icon: card4,
-            to: "/enquirers",
-          },
-          {
             label: "Properties",
             value: overviewCountData?.totalProperty || "00",
             //icon: card4,

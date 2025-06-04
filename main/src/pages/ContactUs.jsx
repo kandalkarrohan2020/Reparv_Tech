@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   FaEnvelope,
-  FaPhone,
+  FaPhoneAlt,
   FaMapMarkerAlt,
   FaFacebookF,
   FaLinkedinIn,
@@ -84,7 +84,7 @@ const ContactUs = () => {
             <FaEnvelope /> <span>hello@reparv.com</span>
           </button>
           <button className="flex items-center text-xs space-x-2 bg-black text-white px-4 py-3 rounded-4xl">
-            <FaPhone /> <span>+91 801 0881 965</span>
+            <FaPhoneAlt /> <span>+91 801 0881 965</span>
           </button>
           <button className="flex items-center text-xs space-x-2 bg-black text-white px-4 py-3 rounded-4xl">
             <FaMapMarkerAlt /> <span>Nagpur</span>

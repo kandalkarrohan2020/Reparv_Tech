@@ -13,6 +13,7 @@ const MultiStepForm = ({
   imageFiles,
   setImageFiles,
   builderData,
+  states, cities,
 }) => {
   const { URI, setLoading, showPropertyForm, setShowPropertyForm } = useAuth();
   const [step, setStep] = useState(1);
@@ -92,7 +93,9 @@ const MultiStepForm = ({
         propertyApprovedBy: "",
         propertyName: "",
         address: "",
+        state:"",
         city: "",
+        pincode:"",
         location: "",
         distanceFromCityCenter: "",
         totalSalesPrice: "",
@@ -220,6 +223,8 @@ const MultiStepForm = ({
               newProperty={newProperty}
               setPropertyData={setPropertyData}
               builderData={builderData}
+              states={states}
+              cities={cities}
             />
           )}
           {step === 2 && (

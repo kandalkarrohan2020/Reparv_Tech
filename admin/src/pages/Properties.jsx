@@ -11,8 +11,11 @@ import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import MultiStepForm from "../components/propertyForm/MultiStepForm";
+import { useLocation } from "react-router-dom";
+import propertyPicture from "../assets/propertyPicture.svg";
 
 const Properties = () => {
+  const location = useLocation();
   const {
     setShowPropertyForm,
     showPropertyForm,
@@ -34,22 +37,14 @@ const Properties = () => {
   const [property, setProperty] = useState({});
   const [propertyKey, setPropertyKey] = useState("");
   const [rejectReason, setRejectReason] = useState("");
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
   const [builderData, setBuilderData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [propertyImages, setPropertyImages] = useState([]);
+  const [file, setFile] = useState(null);
   const [newAddInfo, setNewAddInfo] = useState({
-    propertyinfoid: "",
     propertyid: "",
-    wing: "",
-    floor: "",
-    flatno: "",
-    direction: "",
-    ageofconstruction: "",
-    carpetarea: "",
-    superbuiltup: "",
-    salesprice: "",
-    description: "",
-    ownercontact: "",
   });
   const [newProperty, setPropertyData] = useState({
     builderid: "",
@@ -57,7 +52,9 @@ const Properties = () => {
     propertyApprovedBy: "",
     propertyName: "",
     address: "",
+    state: "",
     city: "",
+    pincode: "",
     location: "",
     distanceFromCityCenter: "",
     totalSalesPrice: "",
@@ -83,22 +80,22 @@ const Properties = () => {
     furnishing: "",
     waterSupply: "",
     powerBackup: "",
-    locationFeature:"",
-    sizeAreaFeature:"",
-    parkingFeature:"",
-    terraceFeature:"",
-    ageOfPropertyFeature:"",
-    furnishingFeature:"",
-    amenitiesFeature:"",
-    propertyStatusFeature:"",
-    floorNumberFeature:"",
-    smartHomeFeature:"",
-    securityBenefit:"",
-    primeLocationBenefit:"",
-    rentalIncomeBenefit:"",
-    qualityBenefit:"",
-    capitalAppreciationBenefit:"",
-    ecofriendlyBenefit:"",
+    locationFeature: "",
+    sizeAreaFeature: "",
+    parkingFeature: "",
+    terraceFeature: "",
+    ageOfPropertyFeature: "",
+    furnishingFeature: "",
+    amenitiesFeature: "",
+    propertyStatusFeature: "",
+    floorNumberFeature: "",
+    smartHomeFeature: "",
+    securityBenefit: "",
+    primeLocationBenefit: "",
+    rentalIncomeBenefit: "",
+    qualityBenefit: "",
+    capitalAppreciationBenefit: "",
+    ecofriendlyBenefit: "",
   });
   const [imageFiles, setImageFiles] = useState({
     frontView: [],
@@ -216,6 +213,46 @@ const Properties = () => {
     setSelectedEBillImage(null);
   };
 
+  // **Fetch States from API**
+  const fetchStates = async () => {
+    try {
+      const response = await fetch(URI + "/admin/states", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch States.");
+      const data = await response.json();
+      setStates(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // **Fetch States from API**
+  const fetchCities = async () => {
+    try {
+      const response = await fetch(
+        `${URI}/admin/cities/${newProperty?.state}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch cities.");
+      const data = await response.json();
+      console.log(data);
+      setCities(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
   //Fetch Builder
   const fetchBuilder = async () => {
     try {
@@ -261,7 +298,7 @@ const Properties = () => {
         `${URI}/admin/properties/get/${selectedPartner}`,
         {
           method: "GET",
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include", //  Ensures cookies are sent
           headers: {
             "Content-Type": "application/json",
           },
@@ -274,24 +311,6 @@ const Properties = () => {
       console.error("Error fetching :", err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const view = async (id) => {
-    try {
-      const response = await fetch(URI + `/admin/properties/${id}`, {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch property.");
-      const data = await response.json();
-      setProperty(data);
-      setShowPropertyInfo(true);
-    } catch (err) {
-      console.error("Error fetching :", err);
     }
   };
 
@@ -439,7 +458,7 @@ const Properties = () => {
     try {
       const response = await fetch(`${URI}/admin/properties/images/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -472,24 +491,6 @@ const Properties = () => {
       await fetchImages(propertyid);
     } catch (error) {
       console.error("Error deleting image:", error);
-    }
-  };
-
-  const openImages = async (id) => {
-    try {
-      const response = await fetch(URI + `/admin/properties/${id}`, {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch property.");
-      const data = await response.json();
-      setPropertyId(data.propertyid);
-      setShowUploadImagesForm(true);
-    } catch (err) {
-      console.error("Error fetching :", err);
     }
   };
 
@@ -532,26 +533,42 @@ const Properties = () => {
     }
   };
 
-  //additional info
-  const openAdditionalInfo = async (id) => {
+  // Add Additional Info as a CSV File
+  const addCsv = async (e) => {
+    e.preventDefault();
+
+    if (!file) {
+      alert("Please select a CSV file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("csv", file);
+    formData.append("propertyid", propertyKey);
+
     try {
       const response = await fetch(
-        URI + `/admin/properties/propertyinfo/${id}`,
+        `${URI}/admin/properties/additionalinfo/csv/add`,
         {
-          method: "GET",
-          credentials: "include", // ✅ Ensures cookies are sent
-          headers: {
-            "Content-Type": "application/json",
-          },
+          method: "POST",
+          credentials: "include",
+          body: formData,
         }
       );
-      if (!response.ok) throw new Error("Failed to fetch property.");
-      const data = await response.json();
 
-      setNewAddInfo(data);
-      setShowAdditionalInfoForm(true);
-    } catch (err) {
-      console.error("Error fetching :", err);
+      const data = await response.json();
+      if (!response.ok) {
+        console.error("Server responded with an error:", data);
+        alert(data.message || "CSV upload failed due to a server error.");
+        return;
+      }
+
+      alert(data.message || "CSV uploaded successfully.");
+      setShowAdditionalInfoForm(false);
+      setFile(null); // Clear selected file
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("An unexpected error occurred while uploading the CSV file.");
     }
   };
 
@@ -646,8 +663,15 @@ const Properties = () => {
 
   useEffect(() => {
     fetchData();
+    fetchStates();
     fetchBuilder();
   }, []);
+
+  useEffect(() => {
+    if (newProperty.state != "") {
+      fetchCities();
+    }
+  }, [newProperty.state]);
 
   const filteredData = datas.filter(
     (item) =>
@@ -667,7 +691,7 @@ const Properties = () => {
     {
       name: "Image",
       cell: (row) => {
-        let imageSrc = "default.jpg";
+        let imageSrc = propertyPicture;
 
         try {
           const parsed = JSON.parse(row.frontView);
@@ -684,7 +708,10 @@ const Properties = () => {
               src={imageSrc}
               alt="Property"
               onClick={() => {
-                window.open("https://www.reparv.in/property-info/"+row.propertyid, "_blank");
+                window.open(
+                  "https://www.reparv.in/property-info/" + row.propertyid,
+                  "_blank"
+                );
               }}
               className="w-full h-[90%] object-cover cursor-pointer"
             />
@@ -693,7 +720,12 @@ const Properties = () => {
       },
       width: "130px",
     },
-    { name: "Builder", selector: (row) => row.company_name, sortable: true },
+    {
+      name: "Builder",
+      selector: (row) => row.company_name,
+      sortable: true,
+      minWidth: "150px",
+    },
     {
       name: "Property Lister",
       cell: (row) => (
@@ -707,14 +739,45 @@ const Properties = () => {
       sortable: true,
       minWidth: "180px",
     },
-    { name: "Category", selector: (row) => row.propertyCategory, sortable: true },
-    { name: "Name", selector: (row) => row.propertyName, sortable: true },
-    { name: "Address", selector: (row) => row.address, sortable: true },
-    { name: "City", selector: (row) => row.city, sortable: true },
-    { name: "Location", selector: (row) => row.location, sortable: true },
-    { name: "Rera No.", selector: (row) => row.reraRegistered, sortable: true },
-    { name: "Area", selector: (row) => row.builtUpArea, sortable: true },
-    { name: "Price", selector: (row) => row.totalOfferPrice, sortable: true },
+    {
+      name: "Category",
+      selector: (row) => row.propertyCategory,
+      minWidth: "150px",
+    },
+    {
+      name: "Property Name",
+      selector: (row) => row.propertyName,
+      sortable: true,
+      minWidth: "150px",
+    },
+    {
+      name: "State",
+      selector: (row) => row.state,
+      sortable: true,
+      minWidth: "200px",
+    },
+    {
+      name: "City",
+      selector: (row) => row.city,
+      sortable: true,
+      width: "150px",
+    },
+    { name: "Pin Code", selector: (row) => row.pincode, width: "120px" },
+    { name: "Location", selector: (row) => row.location, width: "150px" },
+    { name: "Address", selector: (row) => row.address, width: "250px" },
+    { name: "Rera No.", selector: (row) => row.reraRegistered, width: "150px" },
+    {
+      name: "Area",
+      selector: (row) => row.builtUpArea,
+      sortable: true,
+      width: "120px",
+    },
+    {
+      name: "Price",
+      selector: (row) => row.totalOfferPrice,
+      sortable: true,
+      width: "150px",
+    },
     {
       name: "Status",
       cell: (row) => (
@@ -771,7 +834,10 @@ const Properties = () => {
     const handleActionSelect = (action, propertyid, propertyType) => {
       switch (action) {
         case "view":
-          view(propertyid);
+          window.open(
+            "https://www.reparv.in/property-info/" + propertyid,
+            "_blank"
+          );
           break;
         case "status":
           status(propertyid);
@@ -788,6 +854,10 @@ const Properties = () => {
         case "rejectReason":
           setPropertyKey(propertyid);
           setShowRejectReasonForm(true);
+          break;
+        case "additionalinfo":
+          setPropertyKey(propertyid);
+          setShowAdditionalInfoForm(true);
           break;
         default:
           console.log("Invalid action");
@@ -815,6 +885,14 @@ const Properties = () => {
           <option value="status">Status</option>
           <option value="update">Update</option>
           <option value="approve">Approve</option>
+          {row.propertyCategory === "NewFlat" ||
+          row.propertyCategory === "NewPlot" ||
+          row.propertyCategory === "CommercialFlat" ||
+          row.propertyCategory === "CommercialPlot" ? (
+            <option value="additionalinfo">Additional Info</option>
+          ) : (
+            <></>
+          )}
           <option value="rejectReason">Reject Reason</option>
           <option value="delete">Delete</option>
         </select>
@@ -885,6 +963,8 @@ const Properties = () => {
         imageFiles={imageFiles}
         setImageFiles={setImageFiles}
         builderData={builderData}
+        states={states}
+        cities={cities}
       />
 
       {/* Upload Images Form */}
@@ -1010,34 +1090,22 @@ const Properties = () => {
       <div
         className={`${
           showAdditionalInfoForm ? "flex" : "hidden"
-        } z-[61] overflow-scroll scrollbar-hide w-[400px] h-[75vh] md:w-[700px] fixed`}
+        } z-[61] overflow-scroll scrollbar-hide w-[400px] min-h-[250px] max:h-[75vh] md:w-[450px] fixed`}
       >
-        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-[350px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Additional Info</h2>
+            <h2 className="text-[16px] font-semibold">
+              Additional Information
+            </h2>
             <IoMdClose
               onClick={() => {
                 setShowAdditionalInfoForm(false);
-                // Clear form only after a successful response
-                setNewAddInfo({
-                  propertyid: "",
-                  wing: "",
-                  floor: "",
-                  flatno: "",
-                  direction: "",
-                  ageofconstruction: "",
-                  carpetarea: "",
-                  superbuiltup: "",
-                  salesprice: "",
-                  description: "",
-                  ownercontact: "",
-                });
               }}
               className="w-6 h-6 cursor-pointer"
             />
           </div>
-          <form onSubmit={additionalInfo}>
-            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
+          <form onSubmit={addCsv}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1">
               <input
                 type="hidden"
                 value={newAddInfo.propertyid || ""}
@@ -1049,479 +1117,35 @@ const Properties = () => {
                 }
               />
 
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Wing
-                </label>
+              <div className="w-full mt-2">
                 <input
-                  type="text"
+                  type="file"
                   required
-                  placeholder="Enter Wing"
-                  value={newAddInfo.wing}
-                  onChange={(e) =>
-                    setNewAddInfo({ ...newAddInfo, wing: e.target.value })
-                  }
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  accept=".csv"
+                  multiple
+                  onChange={(e) => setFile(e.target.files[0])}
+                  className="hidden"
+                  id="csvFile"
                 />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Floor
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter Floor"
-                  value={newAddInfo.floor}
-                  onChange={(e) =>
-                    setNewAddInfo({ ...newAddInfo, floor: e.target.value })
-                  }
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Flat No.
-                </label>
-                <input
-                  type="number"
-                  placeholder="Enter Flat No"
-                  value={newAddInfo.flatno}
-                  onChange={(e) =>
-                    setNewAddInfo({ ...newAddInfo, flatno: e.target.value })
-                  }
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Direction
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter Direction"
-                  value={newAddInfo.direction}
-                  onChange={(e) =>
-                    setNewAddInfo({ ...newAddInfo, direction: e.target.value })
-                  }
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Age of Construction
-                </label>
-                <input
-                  type="number"
-                  placeholder="Enter Construction Age"
-                  value={newAddInfo.ageofconstruction}
-                  onChange={(e) =>
-                    setNewAddInfo({
-                      ...newAddInfo,
-                      ageofconstruction: e.target.value,
-                    })
-                  }
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Carpet Area
-                </label>
-                <input
-                  type="number"
-                  placeholder="Enter Carpet Area"
-                  value={newAddInfo.carpetarea}
-                  onChange={(e) =>
-                    setNewAddInfo({ ...newAddInfo, carpetarea: e.target.value })
-                  }
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Super Builtup
-                </label>
-                <input
-                  type="number"
-                  placeholder="Enter Builtup"
-                  value={newAddInfo.superbuiltup}
-                  onChange={(e) =>
-                    setNewAddInfo({
-                      ...newAddInfo,
-                      superbuiltup: e.target.value,
-                    })
-                  }
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Sales Price
-                </label>
-                <input
-                  type="number"
-                  placeholder="Enter Sales Price"
-                  value={newAddInfo.salesprice}
-                  onChange={(e) =>
-                    setNewAddInfo({ ...newAddInfo, salesprice: e.target.value })
-                  }
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Description
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter Description"
-                  value={newAddInfo.description}
-                  onChange={(e) =>
-                    setNewAddInfo({
-                      ...newAddInfo,
-                      description: e.target.value,
-                    })
-                  }
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div
-                className={`${
-                  propertyType === "Resale" ? "block" : "hidden"
-                } w-full`}
-              >
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Owner Contact Number
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter Contact Number"
-                  value={newAddInfo.ownercontact}
-                  onChange={(e) => {
-                    const input = e.target.value;
-                    if (/^\d{0,10}$/.test(input)) {
-                      // Allows only up to 10 digits
-                      setNewAddInfo({ ...newAddInfo, ownercontact: input });
-                    }
-                  }}
-                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div
-                className={`${
-                  propertyType === "Resale" ? "block" : "hidden"
-                } w-full`}
-              >
-                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-                  Upload Owner Adhar
-                </label>
-                <div className="w-full mt-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={ownerAdharImageChange}
-                    className="hidden"
-                    id="ownerAdharImage"
-                  />
-                  <label
-                    htmlFor="ownerAdharImage"
-                    className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-                  >
-                    <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                      Upload Image
-                    </span>
-                    <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
-                      Browse
-                    </div>
-                  </label>
-                </div>
-
-                {/* Preview Section */}
-                {selectedOwnerAdharImage && (
-                  <div className="relative mt-2">
-                    <img
-                      src={URL.createObjectURL(selectedOwnerAdharImage)}
-                      alt="Uploaded preview"
-                      className="w-full object-cover rounded-lg border border-gray-300"
-                    />
-                    <button
-                      type="button"
-                      onClick={removeOwnerAdharImage}
-                      className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-                    >
-                      ✕
-                    </button>
+                <label
+                  htmlFor="csvFile"
+                  className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
+                >
+                  <span className="m-3 p-2 overflow-hidden text-[16px] font-medium text-[#00000066]">
+                    {file ? file.name : "Upload File"}
+                  </span>
+                  <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                    Browse
                   </div>
-                )}
-              </div>
-
-              <div
-                className={`${
-                  propertyType === "Resale" ? "block" : "hidden"
-                } w-full`}
-              >
-                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-                  Upload PanCard of Owner
                 </label>
-                <div className="w-full mt-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={ownerPanImageChange}
-                    className="hidden"
-                    id="ownerPanImage"
-                  />
-                  <label
-                    htmlFor="ownerPanImage"
-                    className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-                  >
-                    <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                      Upload Image
-                    </span>
-                    <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
-                      Browse
-                    </div>
-                  </label>
-                </div>
-
-                {/* Preview Section */}
-                {selectedOwnerPanImage && (
-                  <div className="relative mt-2">
-                    <img
-                      src={URL.createObjectURL(selectedOwnerPanImage)}
-                      alt="Uploaded preview"
-                      className="w-full object-cover rounded-lg border border-gray-300"
-                    />
-                    <button
-                      type="button"
-                      onClick={removeOwnerPanImage}
-                      className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div
-                className={`${
-                  propertyType === "Resale" ? "block" : "hidden"
-                } w-full`}
-              >
-                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-                  Upload Photo of Scheduled Property
-                </label>
-                <div className="w-full mt-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={scheduledPropertyImageChange}
-                    className="hidden"
-                    id="scheduledPropertyImageUpload"
-                  />
-                  <label
-                    htmlFor="scheduledPropertyImageUpload"
-                    className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-                  >
-                    <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                      Upload Image
-                    </span>
-                    <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
-                      Browse
-                    </div>
-                  </label>
-                </div>
-
-                {/* Preview Section */}
-                {selectedScheduledPropertyImage && (
-                  <div className="relative mt-2">
-                    <img
-                      src={URL.createObjectURL(selectedScheduledPropertyImage)}
-                      alt="Uploaded preview"
-                      className="w-full object-cover rounded-lg border border-gray-300"
-                    />
-                    <button
-                      type="button"
-                      onClick={removeScheduledPropertyImage}
-                      className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )}
-              </div>
-              <div
-                className={`${
-                  propertyType === "Resale" ? "block" : "hidden"
-                } w-full`}
-              >
-                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-                  Upload Photo of Signed Documents
-                </label>
-                <div className="w-full mt-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={signedDocumentImageChange}
-                    className="hidden"
-                    id="signedDocumentImageUpload"
-                  />
-                  <label
-                    htmlFor="signedDocumentImageUpload"
-                    className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-                  >
-                    <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                      Upload Image
-                    </span>
-                    <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
-                      Browse
-                    </div>
-                  </label>
-                </div>
-
-                {/* Preview Section */}
-                {selectedSignedDocumentImage && (
-                  <div className="relative mt-2">
-                    <img
-                      src={URL.createObjectURL(selectedSignedDocumentImage)}
-                      alt="Uploaded preview"
-                      className="w-full object-cover rounded-lg border border-gray-300"
-                    />
-                    <button
-                      type="button"
-                      onClick={removeSignedDocumentImage}
-                      className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )}
-              </div>
-              <div
-                className={`${
-                  propertyType === "Resale" ? "block" : "hidden"
-                } w-full`}
-              >
-                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-                  Upload Latest 7/12 | Property Card
-                </label>
-                <div className="w-full mt-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={satBaraImageChange}
-                    className="hidden"
-                    id="satBaraImageUpload"
-                  />
-                  <label
-                    htmlFor="satBaraImageUpload"
-                    className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-                  >
-                    <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                      Upload Image
-                    </span>
-                    <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
-                      Browse
-                    </div>
-                  </label>
-                </div>
-
-                {/* Preview Section */}
-                {selectedSatBaraImage && (
-                  <div className="relative mt-2">
-                    <img
-                      src={URL.createObjectURL(selectedSatBaraImage)}
-                      alt="Uploaded preview"
-                      className="w-full object-cover rounded-lg border border-gray-300"
-                    />
-                    <button
-                      type="button"
-                      onClick={removeSatBaraImage}
-                      className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )}
-              </div>
-              <div
-                className={`${
-                  propertyType === "Resale" ? "block" : "hidden"
-                } w-full`}
-              >
-                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-                  Upload Latest Electricity Bill.
-                </label>
-                <div className="w-full mt-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={eBillImageChange}
-                    className="hidden"
-                    id="eBillImageChange"
-                  />
-                  <label
-                    htmlFor="eBillImageChange"
-                    className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-                  >
-                    <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                      Upload Image
-                    </span>
-                    <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
-                      Browse
-                    </div>
-                  </label>
-                </div>
-
-                {/* Preview Section */}
-                {selectedEBillImage && (
-                  <div className="relative mt-2">
-                    <img
-                      src={URL.createObjectURL(selectedEBillImage)}
-                      alt="Uploaded preview"
-                      className="w-full object-cover rounded-lg border border-gray-300"
-                    />
-                    <button
-                      type="button"
-                      onClick={removeEBillImage}
-                      className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
-            <div className="flex mt-8 md:mt-6 justify-end gap-6">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowAdditionalInfoForm(false);
-                  setNewAddInfo({
-                    propertyid: "",
-                    wing: "",
-                    floor: "",
-                    flatno: "",
-                    direction: "",
-                    ageofconstruction: "",
-                    carpetarea: "",
-                    superbuiltup: "",
-                    salesprice: "",
-                    description: "",
-                    ownercontact: "",
-                  });
-                }}
-                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
-              >
-                Cancel
-              </button>
+            <div className="flex mt-8 md:mt-6 justify-center gap-6">
               <button
                 type="submit"
                 className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
               >
-                Add Info
+                Add CSV File
               </button>
               <Loader />
             </div>
@@ -1588,510 +1212,6 @@ const Properties = () => {
               <Loader></Loader>
             </div>
           </form>
-        </div>
-      </div>
-
-      {/* Show Property Info */}
-      <div
-        className={`${
-          showPropertyInfo ? "flex" : "hidden"
-        } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
-      >
-        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Property Details</h2>
-            <IoMdClose
-              onClick={() => {
-                setShowPropertyInfo(false);
-              }}
-              className="w-6 h-6 cursor-pointer"
-            />
-          </div>
-          <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Builder/Company
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.company_name}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Property Type
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.propertyCategory}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Property Name
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.propertyName}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Address
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.address}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                City
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.city}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Location
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.location}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Distance From City Center
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.distanceFromCityCenter}
-                readOnly
-              />
-            </div>
-            <div className={`${property.reraRegistered ? "block" : "hidden"}`}>
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Rera No.
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.reraRegistered}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Area
-              </label>
-              <input
-                type="number"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.builtUpArea}
-                readOnly
-              />
-            </div>
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Total Sales Price
-              </label>
-              <input
-                type="number"
-                disabled
-                className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.totalSalesPrice}
-                readOnly
-              />
-            </div>
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Total Offer Price
-              </label>
-              <input
-                type="number"
-                disabled
-                className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.totalOfferPrice}
-                readOnly
-              />
-            </div>
-
-            <div
-              className={`${
-                property.partnerid === null ? "hidden" : "block"
-              } w-full`}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                OnBoarding Partner Name
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.fullname}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.partnerid === null ? "hidden" : "block"
-              } w-full`}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                OnBoarding Partner Contact
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.contact}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.partnerid === null ? "hidden" : "block"
-              } w-full`}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                OnBoarding Partner Email
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.email}
-                readOnly
-              />
-            </div>
-
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Status
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.status}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Approve Status
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.approve}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.wing == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Wing
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.wing}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.floor == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Floor
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.floor}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.flatno == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Flat No
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.flatno}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.direction == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Direction
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.direction}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.ageofconstruction == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Age of Construction
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.ageofconstruction}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.carpetarea == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Carpet Area
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.carpetarea}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.superbuiltup == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Super Builtup
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.superbuiltup}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.salesprice == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Sales Price
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.salesprice}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.ownercontact == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Owner Contact Number
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.ownercontact}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Property Image
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}${property.image}`}
-                alt=""
-              />
-            </div>
-
-            <div
-              className={`${
-                property.owneradhar == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Owner Adhar
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}/uploads/${property.owneradhar}`}
-                alt=""
-              />
-            </div>
-
-            <div
-              className={`${
-                property.ownerpan == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Owner Pan
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}/uploads/${property.ownerpan}`}
-                alt=""
-              />
-            </div>
-
-            <div
-              className={`${
-                property.schedule == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Property Schedule
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}/uploads/${property.schedule}`}
-                alt=""
-              />
-            </div>
-
-            <div
-              className={`${
-                property.signed == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Signed Documents
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}/uploads/${property.signed}`}
-                alt=""
-              />
-            </div>
-
-            <div
-              className={`${
-                property.satbara == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Latest 7/12
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}/uploads/${property.satbara}`}
-                alt=""
-              />
-            </div>
-
-            <div
-              className={`${
-                property.ebill == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Electricity Bill
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}/uploads/${property.ebill}`}
-                alt=""
-              />
-            </div>
-          </form>
-
-          <div
-            className={`${
-              property.description == null ? "hidden" : "block"
-            } w-full mt-3`}
-          >
-            <label className="block text-sm leading-4 text-[#00000066] font-medium">
-              Description
-            </label>
-            <textarea
-              rows={3}
-              disabled
-              readOnly
-              className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-[#f9f9f9]"
-              value={property.description}
-            />
-          </div>
-          <div
-            className={`${
-              property.rejectreason == null ? "hidden" : "block"
-            } w-full mt-3`}
-          >
-            <label className="block text-sm leading-4 text-[#00000066] font-medium">
-              Property Reject Reason
-            </label>
-            <textarea
-              rows={3}
-              disabled
-              readOnly
-              className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-[#f9f9f9]"
-              value={property.rejectreason}
-            />
-          </div>
         </div>
       </div>
     </div>

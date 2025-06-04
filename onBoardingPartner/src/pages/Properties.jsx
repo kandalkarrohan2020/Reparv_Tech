@@ -5,30 +5,19 @@ import { useAuth } from "../store/auth";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import FilterData from "../components/FilterData";
 import AddButton from "../components/AddButton";
-import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
-import Loader from "../components/Loader";
 import MultiStepForm from "../components/propertyForm/MultiStepForm";
 
 const Properties = () => {
   const {
     setShowPropertyForm,
-    showPropertyForm,
-    showUploadImagesForm,
-    setShowUploadImagesForm,
-    showAdditionalInfoForm,
-    setShowAdditionalInfoForm,
-    showPropertyInfo,
-    setShowPropertyInfo,
     URI,
-    setLoading,
   } = useAuth();
   const [datas, setDatas] = useState([]);
-  const [propertyTypeData, setPropertyTypeData] = useState([]);
-  const [propertyType, setPropertyType] = useState("");
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
   const [builderData, setBuilderData] = useState([]);
-  const [property, setProperty] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
 
   const [newProperty, setPropertyData] = useState({
@@ -37,7 +26,9 @@ const Properties = () => {
     propertyApprovedBy: "",
     propertyName: "",
     address: "",
+    state: "",
     city: "",
+    pincode: "",
     location: "",
     distanceFromCityCenter: "",
     totalSalesPrice: "",
@@ -92,6 +83,46 @@ const Properties = () => {
     nearestLandmark: [],
     developedAmenities: [],
   });
+
+  // **Fetch States from API**
+  const fetchStates = async () => {
+    try {
+      const response = await fetch(URI + "/admin/states", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch States.");
+      const data = await response.json();
+      setStates(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // **Fetch States from API**
+  const fetchCities = async () => {
+    try {
+      const response = await fetch(
+        `${URI}/admin/cities/${newProperty?.state}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch cities.");
+      const data = await response.json();
+      console.log(data);
+      setCities(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
 
   //Fetch Builder
   const fetchBuilder = async () => {
@@ -148,29 +179,17 @@ const Properties = () => {
     }
   };
 
-  //fetch data on form
-  const viewProperty = async (id) => {
-    try {
-      const response = await fetch(URI + `/partner/properties/${id}`, {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch property.");
-      const data = await response.json();
-      setProperty(data);
-      setShowPropertyInfo(true);
-    } catch (err) {
-      console.error("Error fetching :", err);
-    }
-  };
-
   useEffect(() => {
     fetchData();
+    fetchStates();
     fetchBuilder();
   }, []);
+
+  useEffect(() => {
+    if (newProperty.state != "") {
+      fetchCities();
+    }
+  }, [newProperty.state]);
 
   const filteredData = datas.filter(
     (item) =>
@@ -204,7 +223,12 @@ const Properties = () => {
             <img
               src={imageSrc}
               alt="Property"
-              onClick={() => view(row.propertyid)}
+              onClick={() => {
+                window.open(
+                  "https://www.reparv.in/property-info/" + row.propertyid,
+                  "_blank"
+                );
+              }}
               className="w-full h-[90%] object-cover cursor-pointer"
             />
           </div>
@@ -221,7 +245,19 @@ const Properties = () => {
     },
     { name: "Type", selector: (row) => row.propertyCategory, sortable: true },
     { name: "Address", selector: (row) => row.address, sortable: true },
-    { name: "city", selector: (row) => row.city, sortable: true },
+    {
+      name: "State",
+      selector: (row) => row.state,
+      sortable: true,
+      width: "120px",
+    },
+    {
+      name: "City",
+      selector: (row) => row.city,
+      sortable: true,
+      width: "120px",
+    },
+    { name: "Pin Code", selector: (row) => row.pincode, width: "120px" },
     { name: "Location", selector: (row) => row.location, sortable: true },
     {
       name: "Rera No.",
@@ -269,7 +305,7 @@ const Properties = () => {
     const handleActionSelect = (action, propertyid, propertyType) => {
       switch (action) {
         case "view":
-          viewProperty(propertyid);
+          window.open("https://www.reparv.in/property-info/"+propertyid, "_blank");
           break;
         case "update":
           edit(propertyid);
@@ -336,7 +372,7 @@ const Properties = () => {
           />
         </div>
       </div>
-      
+
       {/* Add Property Multi Step Form */}
       <MultiStepForm
         fetchData={fetchData}
@@ -345,498 +381,9 @@ const Properties = () => {
         imageFiles={imageFiles}
         setImageFiles={setImageFiles}
         builderData={builderData}
+        states={states}
+        cities={cities}
       />
-
-      {/* Show Property Info */}
-      <div
-        className={`${
-          showPropertyInfo ? "flex" : "hidden"
-        } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
-      >
-        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Property Details</h2>
-            <IoMdClose
-              onClick={() => {
-                setShowPropertyInfo(false);
-              }}
-              className="w-6 h-6 cursor-pointer"
-            />
-          </div>
-          <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Builder/Company
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.company_name}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Property Type
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.propertytypeid}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Property Name
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.property_name}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Address
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.address}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                City
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.city}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Location
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.location}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Rera No.
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.rerano}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Area
-              </label>
-              <input
-                type="number"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.area}
-                readOnly
-              />
-            </div>
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Square Feet Price
-              </label>
-              <input
-                type="number"
-                disabled
-                className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.sqft_price}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Extra
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.extra}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.partnerid === null ? "hidden" : "block"
-              } w-full`}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                OnBoarding Partner Name
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.fullname}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.partnerid === null ? "hidden" : "block"
-              } w-full`}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                OnBoarding Partner Contact
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.contact}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.partnerid === null ? "hidden" : "block"
-              } w-full`}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                OnBoarding Partner Email
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.email}
-                readOnly
-              />
-            </div>
-
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Status
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.status}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Approve Status
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.approve}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.wing == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Wing
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.wing}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.floor == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Floor
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.floor}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.flatno == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Flat No
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.flatno}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.direction == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Direction
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.direction}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.ageofconstruction == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Age of Construction
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.ageofconstruction}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.carpetarea == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Carpet Area
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.carpetarea}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.superbuiltup == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Super Builtup
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.superbuiltup}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.salesprice == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Sales Price
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.salesprice}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                property.ownercontact == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Owner Contact Number
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.ownercontact}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Property Image
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}${property.image}`}
-                alt=""
-              />
-            </div>
-
-            <div
-              className={`${
-                property.owneradhar == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Owner Adhar
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}/uploads/${property.owneradhar}`}
-                alt=""
-              />
-            </div>
-
-            <div
-              className={`${
-                property.ownerpan == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Owner Pan
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}/uploads/${property.ownerpan}`}
-                alt=""
-              />
-            </div>
-
-            <div
-              className={`${
-                property.schedule == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Property Schedule
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}/uploads/${property.schedule}`}
-                alt=""
-              />
-            </div>
-
-            <div
-              className={`${
-                property.signed == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Signed Documents
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}/uploads/${property.signed}`}
-                alt=""
-              />
-            </div>
-
-            <div
-              className={`${
-                property.satbara == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Latest 7/12
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}/uploads/${property.satbara}`}
-                alt=""
-              />
-            </div>
-
-            <div
-              className={`${
-                property.ebill == null ? "hidden" : "block"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Electricity Bill
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}/uploads/${property.ebill}`}
-                alt=""
-              />
-            </div>
-          </form>
-
-          <div
-            className={`${
-              property.description == null ? "hidden" : "block"
-            } w-full mt-3`}
-          >
-            <label className="block text-sm leading-4 text-[#00000066] font-medium">
-              Description
-            </label>
-            <textarea
-              rows={3}
-              disabled
-              readOnly
-              className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-[#f9f9f9]"
-              value={property.description}
-            />
-          </div>
-          <div
-            className={`${
-              property.rejectreason == null ? "hidden" : "block"
-            } w-full mt-3`}
-          >
-            <label className="block text-sm leading-4 text-[#00000066] font-medium">
-              Property Reject Reason
-            </label>
-            <textarea
-              rows={3}
-              disabled
-              readOnly
-              className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-[#f9f9f9]"
-              value={property.rejectreason}
-            />
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

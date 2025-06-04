@@ -8,13 +8,12 @@ export const getAll = (req, res) => {
     territorypartner.fullname AS territoryName,
     territorypartner.contact AS territoryContact
     FROM enquirers 
-    INNER JOIN properties 
+    LEFT JOIN properties 
     ON enquirers.propertyid = properties.propertyid
     LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
     WHERE enquirers.salespersonid = ? 
-    AND properties.status = 'Active' 
-    AND properties.approve = 'Approved' 
-    ORDER BY enquirers.enquirersid DESC`; // Ensure correct column name
+    
+    ORDER BY enquirers.enquirersid DESC`; 
 
 db.query(sql, [req.user.id], (err, results) => {
   if (err) {
@@ -34,7 +33,7 @@ export const getById = (req, res) => {
        territoryenquiry.followup AS territoryFollowUp,
        territoryenquiry.status AS territoryStatus 
        FROM enquirers 
-       INNER JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
+       LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
        LEFT JOIN territoryenquiry ON territoryenquiry.enquirerid = enquirers.enquirersid
        WHERE enquirersid = ?`;
 
@@ -110,8 +109,8 @@ export const assignEnquiry = async (req, res) => {
       }
 
       db.query(
-        "INSERT INTO territoryenquiry SET territorypartnerid = ?, enquirerid = ?, visitdate = ?, updated_at = ?, created_at = ?",
-        [territorypartnerid, Id, territorypartnerdate, currentdate, currentdate ],
+        "UPDATE enquirers SET territorypartnerid = ?, visitdate = ?, updated_at = ?, created_at = ? WHERE enquirersid = ?",
+        [territorypartnerid, territorypartnerdate, currentdate, currentdate, Id ],
         (err, result) => {
           if (err) {
             console.error("Error assigning to territory partner :", err);

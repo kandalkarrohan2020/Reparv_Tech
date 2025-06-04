@@ -5,91 +5,94 @@ import { useAuth } from "../store/auth";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import FilterData from "../components/FilterData";
 import AddButton from "../components/AddButton";
-import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
-import Loader from "../components/Loader";
 import MultiStepForm from "../components/propertyForm/MultiStepForm";
+import propertyPicture from "../assets/propertyPicture.svg";
+import Loader from "../components/Loader";
+import { IoMdClose } from "react-icons/io";
 
 const Properties = () => {
   const {
     setShowPropertyForm,
-    showPropertyForm,
-    showUploadImagesForm,
-    setShowUploadImagesForm,
+    URI,
     showAdditionalInfoForm,
     setShowAdditionalInfoForm,
-    showPropertyInfo, setShowPropertyInfo,
-    URI,
-    setLoading,
   } = useAuth();
   const [datas, setDatas] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [propertyKey, setPropertyKey] = useState("");
   const [builderData, setBuilderData] = useState([]);
-  const [property, setProperty] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
+  const [file, setFile] = useState(null);
+  const [newAddInfo, setNewAddInfo] = useState({
+    propertyid: "",
+  });
 
   const [newProperty, setPropertyData] = useState({
-      builderid: "",
-      propertyCategory: "",
-      propertyApprovedBy: "",
-      propertyName: "",
-      address: "",
-      city: "",
-      location: "",
-      distanceFromCityCenter: "",
-      totalSalesPrice: "",
-      totalOfferPrice: "",
-      stampDuty: "",
-      registrationFee: "",
-      gst: "",
-      advocateFee: "",
-      msebWater: "",
-      maintenance: "",
-      other: "",
-      propertyType: "",
-      builtYear: "",
-      ownershipType: "",
-      builtUpArea: "",
-      carpetArea: "",
-      parkingAvailability: "",
-      totalFloors: "",
-      floorNo: "",
-      loanAvailability: "",
-      propertyFacing: "",
-      reraRegistered: "",
-      furnishing: "",
-      waterSupply: "",
-      powerBackup: "",
-      locationFeature:"",
-      sizeAreaFeature:"",
-      parkingFeature:"",
-      terraceFeature:"",
-      ageOfPropertyFeature:"",
-      furnishingFeature:"",
-      amenitiesFeature:"",
-      propertyStatusFeature:"",
-      floorNumberFeature:"",
-      smartHomeFeature:"",
-      securityBenefit:"",
-      primeLocationBenefit:"",
-      rentalIncomeBenefit:"",
-      qualityBenefit:"",
-      capitalAppreciationBenefit:"",
-      ecofriendlyBenefit:"",
-    });
+    builderid: "",
+    propertyCategory: "",
+    propertyApprovedBy: "",
+    propertyName: "",
+    address: "",
+    state: "",
+    city: "",
+    pincode: "",
+    location: "",
+    distanceFromCityCenter: "",
+    totalSalesPrice: "",
+    totalOfferPrice: "",
+    stampDuty: "",
+    registrationFee: "",
+    gst: "",
+    advocateFee: "",
+    msebWater: "",
+    maintenance: "",
+    other: "",
+    propertyType: "",
+    builtYear: "",
+    ownershipType: "",
+    builtUpArea: "",
+    carpetArea: "",
+    parkingAvailability: "",
+    totalFloors: "",
+    floorNo: "",
+    loanAvailability: "",
+    propertyFacing: "",
+    reraRegistered: "",
+    furnishing: "",
+    waterSupply: "",
+    powerBackup: "",
+    locationFeature: "",
+    sizeAreaFeature: "",
+    parkingFeature: "",
+    terraceFeature: "",
+    ageOfPropertyFeature: "",
+    furnishingFeature: "",
+    amenitiesFeature: "",
+    propertyStatusFeature: "",
+    floorNumberFeature: "",
+    smartHomeFeature: "",
+    securityBenefit: "",
+    primeLocationBenefit: "",
+    rentalIncomeBenefit: "",
+    qualityBenefit: "",
+    capitalAppreciationBenefit: "",
+    ecofriendlyBenefit: "",
+  });
 
-    const [imageFiles, setImageFiles] = useState({
-      frontView: [],
-      sideView: [],
-      kitchenView: [],
-      hallView: [],
-      bedroomView: [],
-      bathroomView: [],
-      balconyView: [],
-      nearestLandmark: [],
-      developedAmenities: [],
-    });
-  
+  const [imageFiles, setImageFiles] = useState({
+    frontView: [],
+    sideView: [],
+    kitchenView: [],
+    hallView: [],
+    bedroomView: [],
+    bathroomView: [],
+    balconyView: [],
+    nearestLandmark: [],
+    developedAmenities: [],
+  });
 
   //Single Image Upload
   const [selectedImage, setSelectedImage] = useState(null);
@@ -103,6 +106,46 @@ const Properties = () => {
 
   const removeSingleImage = () => {
     setSelectedImage(null);
+  };
+
+  // **Fetch States from API**
+  const fetchStates = async () => {
+    try {
+      const response = await fetch(URI + "/admin/states", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch States.");
+      const data = await response.json();
+      setStates(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // **Fetch States from API**
+  const fetchCities = async () => {
+    try {
+      const response = await fetch(
+        `${URI}/admin/cities/${newProperty?.state}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch cities.");
+      const data = await response.json();
+      console.log(data);
+      setCities(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
   };
 
   //Fetch Builder
@@ -128,7 +171,7 @@ const Properties = () => {
     try {
       const response = await fetch(URI + "/employee/propertytypes/active", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -147,7 +190,7 @@ const Properties = () => {
     try {
       const response = await fetch(URI + "/employee/properties", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -165,7 +208,7 @@ const Properties = () => {
     try {
       const response = await fetch(URI + `/employee/properties/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -179,22 +222,42 @@ const Properties = () => {
     }
   };
 
-  //fetch data on form
-  const viewProperty = async (id) => {
+  // Add Additional Info as a CSV File
+  const addCsv = async (e) => {
+    e.preventDefault();
+
+    if (!file) {
+      alert("Please select a CSV file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("csv", file);
+    formData.append("propertyid", propertyKey);
+
     try {
-      const response = await fetch(URI + `/employee/properties/${id}`, {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch property.");
+      const response = await fetch(
+        `${URI}/admin/properties/additionalinfo/csv/add`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        }
+      );
+
       const data = await response.json();
-      setProperty(data);
-      setShowPropertyInfo(true);
-    } catch (err) {
-      console.error("Error fetching :", err);
+      if (!response.ok) {
+        console.error("Server responded with an error:", data);
+        alert(data.message || "CSV upload failed due to a server error.");
+        return;
+      }
+
+      alert(data.message || "CSV uploaded successfully.");
+      setShowAdditionalInfoForm(false);
+      setFile(null); // Clear selected file
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("An unexpected error occurred while uploading the CSV file.");
     }
   };
 
@@ -211,68 +274,17 @@ const Properties = () => {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
-  const fetchImages = async (id) => {
-    try {
-      const response = await fetch(`${URI}/employee/properties/images/${id}`, {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch Images.");
-      const data = await response.json();
-      setPropertyImages(data);
-    } catch (err) {
-      console.error("Error fetching :", err);
-    }
-  };
-
-  // delete Image from Database
-  const deleteImages = async (id, propertyid) => {
-    try {
-      const response = await fetch(
-        `${URI}/employee/properties/images/delete/${id}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to delete image: ${response.statusText}`);
-      }
-      await fetchImages(propertyid);
-    } catch (error) {
-      console.error("Error deleting image:", error);
-    }
-  };
-
-  const openImages = async (id) => {
-    try {
-      const response = await fetch(URI + `/employee/properties/${id}`, {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch property.");
-      const data = await response.json();
-      setPropertyId(data.propertyid);
-      setShowUploadImagesForm(true);
-    } catch (err) {
-      console.error("Error fetching :", err);
-    }
-  };
-
   useEffect(() => {
     fetchData();
+    fetchStates();
     fetchBuilder();
   }, []);
+
+  useEffect(() => {
+    if (newProperty.state != "") {
+      fetchCities();
+    }
+  }, [newProperty.state]);
 
   const filteredData = datas.filter(
     (item) =>
@@ -281,11 +293,16 @@ const Properties = () => {
       item.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, sortable: false, width:"50px" },
+    {
+      name: "SN",
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: "50px",
+    },
     {
       name: "Image",
       cell: (row) => {
-        let imageSrc = "default.jpg";
+        let imageSrc = propertyPicture;
 
         try {
           const parsed = JSON.parse(row.frontView);
@@ -301,7 +318,12 @@ const Properties = () => {
             <img
               src={imageSrc}
               alt="Property"
-              onClick={() => view(row.propertyid)}
+              onClick={() => {
+                window.open(
+                  "https://www.reparv.in/property-info/" + row.propertyid,
+                  "_blank"
+                );
+              }}
               className="w-full h-[90%] object-cover cursor-pointer"
             />
           </div>
@@ -309,15 +331,42 @@ const Properties = () => {
       },
       width: "130px",
     },
-    { name: "Name", selector: (row) => row.propertyName, sortable: true },
-    { name: "Builder", selector: (row) => row.company_name, sortable: true, minWidth: "100px" },
-    { name: "Type", selector: (row) => row.propertyCategory, sortable: true },
-    { name: "Address", selector: (row) => row.address, sortable: true },
-    { name: "city", selector: (row) => row.city, sortable: true },
-    { name: "Location", selector: (row) => row.location, sortable: true },
-    { name: "Rera No.", selector: (row) => row.reraRegistered, sortable: true, minWidth: "130px" },
-    { name: "Area", selector: (row) => row.area, sortable: true },
-    { name: "Price Sqft", selector: (row) => row.totalOfferPrice, sortable: true },
+    { name: "Property Name", selector: (row) => row.propertyName, sortable: true, minWidth: "160px", },
+    {
+      name: "Builder",
+      selector: (row) => row.company_name,
+      sortable: true,
+      minWidth: "150px",
+    },
+    { name: "Type", selector: (row) => row.propertyCategory,  minWidth: "150px", },
+    { name: "Address", selector: (row) => row.address,  minWidth: "200px", },
+    {
+      name: "State",
+      selector: (row) => row.state,
+      sortable: true,
+      minWidth: "150px",
+    },
+    {
+      name: "City",
+      selector: (row) => row.city,
+      sortable: true,
+      minWidth: "150px",
+    },
+    { name: "Pin Code", selector: (row) => row.pincode, width: "120px" },
+    { name: "Location", selector: (row) => row.location,  minWidth: "150px",  },
+    {
+      name: "Rera No.",
+      selector: (row) => row.reraRegistered,
+      sortable: true,
+      minWidth: "150px",
+    },
+    { name: "Area", selector: (row) => row.builtUpArea,  minWidth: "150px", },
+    {
+      name: "Price Sqft",
+      selector: (row) => row.totalOfferPrice,
+      sortable: true,
+      minWidth: "150px",
+    },
     {
       name: "Approve",
       cell: (row) => (
@@ -325,7 +374,7 @@ const Properties = () => {
           className={`px-2 py-1 rounded-md ${
             row.approve === "Approved"
               ? "bg-[#EAFBF1] text-[#0BB501]"
-              : row.approve === "Rejected" 
+              : row.approve === "Rejected"
               ? "bg-[#FBE9E9] text-[#FF0000]"
               : "bg-[#E9F2FF] text-[#0068FF]"
           }`}
@@ -335,7 +384,11 @@ const Properties = () => {
       ),
       minWidth: "150px",
     },
-    { name: "Reject Reason", selector: (row) => row.rejectreason || "-- No Reason --", minWidth:"150px" },
+    {
+      name: "Reject Reason",
+      selector: (row) => row.rejectreason || "-- No Reason --",
+      minWidth: "150px",
+    },
     {
       name: "Action",
       cell: (row) => <ActionDropdown row={row} />,
@@ -348,10 +401,17 @@ const Properties = () => {
     const handleActionSelect = (action, propertyid) => {
       switch (action) {
         case "view":
-          viewProperty(propertyid);
+          window.open(
+            "https://www.reparv.in/property-info/" + propertyid,
+            "_blank"
+          );
           break;
         case "update":
           edit(propertyid);
+          break;
+        case "additionalinfo":
+          setPropertyKey(propertyid);
+          setShowAdditionalInfoForm(true);
           break;
         default:
           console.log("Invalid action");
@@ -377,6 +437,14 @@ const Properties = () => {
           </option>
           <option value="view">View</option>
           <option value="update">Update</option>
+          {row.propertyCategory === "NewFlat" ||
+          row.propertyCategory === "NewPlot" ||
+          row.propertyCategory === "CommercialFlat" ||
+          row.propertyCategory === "CommercialPlot" ? (
+            <option value="additionalinfo">Additional Info</option>
+          ) : (
+            <></>
+          )}
         </select>
       </div>
     );
@@ -424,192 +492,74 @@ const Properties = () => {
         imageFiles={imageFiles}
         setImageFiles={setImageFiles}
         builderData={builderData}
+        states={states}
+        cities={cities}
       />
 
-      {/* Show Property Info */}
+      {/* Aditional information Form */}
       <div
         className={`${
-          showPropertyInfo ? "flex" : "hidden"
-        } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
+          showAdditionalInfoForm ? "flex" : "hidden"
+        } z-[61] overflow-scroll scrollbar-hide w-[400px] min-h-[250px] max:h-[75vh] md:w-[450px] fixed`}
       >
-        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-[350px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Property Details</h2>
+            <h2 className="text-[16px] font-semibold">
+              Additional Information
+            </h2>
             <IoMdClose
               onClick={() => {
-                setShowPropertyInfo(false);
+                setShowAdditionalInfoForm(false);
               }}
               className="w-6 h-6 cursor-pointer"
             />
           </div>
-          <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Builder/Company
-              </label>
+          <form onSubmit={addCsv}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1">
               <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.company_name}
-                readOnly
+                type="hidden"
+                value={newAddInfo.propertyid || ""}
+                onChange={(e) =>
+                  setNewAddInfo({
+                    ...newAddInfo,
+                    propertyid: e.target.value,
+                  })
+                }
               />
+
+              <div className="w-full mt-2">
+                <input
+                  type="file"
+                  required
+                  accept=".csv"
+                  multiple
+                  onChange={(e) => setFile(e.target.files[0])}
+                  className="hidden"
+                  id="csvFile"
+                />
+                <label
+                  htmlFor="csvFile"
+                  className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
+                >
+                  <span className="m-3 p-2 overflow-hidden text-[16px] font-medium text-[#00000066]">
+                    {file ? file.name : "Upload File"}
+                  </span>
+                  <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                    Browse
+                  </div>
+                </label>
+              </div>
             </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Property Type
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.propertytypeid}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Property Name
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.property_name}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Address
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.address}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                City
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.city}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Location
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.location}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Rera No.
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.rerano}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Area
-              </label>
-              <input
-                type="number"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.area}
-                readOnly
-              />
-            </div>
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Square Feet Price
-              </label>
-              <input
-                type="number"
-                disabled
-                className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.sqft_price}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Extra
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.extra}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Status
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.status}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Approve Status
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={property.approve}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Property Image
-              </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}${property.image}`}
-                alt=""
-              />
+            <div className="flex mt-8 md:mt-6 justify-center gap-6">
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Add CSV File
+              </button>
+              <Loader />
             </div>
           </form>
-          <div className={`${property.rejectreason == null ? "hidden" : "block"} w-full mt-3`}>
-            <label className="block text-sm leading-4 text-[#00000066] font-medium">
-              Property Reject Reason
-            </label>
-            <textarea
-              rows={3}
-              disabled
-              readOnly
-              className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-[#f9f9f9]"
-              value={property.rejectreason}
-            />
-          </div>
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ import {
   status,
   del,
   assignLogin,
+  updatePaymentId,
 } from "../../controllers/admin/partnerController.js";
 
 const router = express.Router();
@@ -56,6 +57,7 @@ router.put(
     edit
   );
 router.put("/status/:id", status);
+router.put("/update/paymentid/:id", updatePaymentId);
 router.put("/assignlogin/:id", assignLogin);
 router.delete("/delete/:id", del);
 

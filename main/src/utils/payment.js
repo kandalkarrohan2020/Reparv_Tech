@@ -1,4 +1,3 @@
-import { data } from "react-router-dom";
 const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
 const api = import.meta.env.VITE_BACKEND_URL;
 
@@ -9,10 +8,9 @@ export const handlePayment = async (
   amount,
   userId,
   databaseT,
-  updatedId
+  updatedId,
+  setSuccessScreen
 ) => {
-  //console.log(currentData, amount, userId, databaseT, updatedId, "ff");
-
   // Step 1: Create Razorpay Order
   const res = await fetch(`${api}/api/payment/create-order`, {
     method: "POST",
@@ -48,16 +46,19 @@ export const handlePayment = async (
           student_id: newPartner.email, // use unique field as student ID
           amount,
           role: page,
-          url: url
+          url: url,
         }),
       });
 
       const result = await verifyRes.json();
 
       if (result.success) {
-        console.log(result);
-
-        alert("Payment Successful!");
+        //console.log(result);
+        setSuccessScreen({
+          show: true,
+          label: "Payment Successful!",
+          description: "Check Your Email for Username or Password",
+        });
       } else {
         alert("Payment verification failed!");
       }

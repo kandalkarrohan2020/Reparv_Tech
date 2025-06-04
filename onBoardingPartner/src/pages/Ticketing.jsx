@@ -254,8 +254,50 @@ const Ticketing = () => {
   );
 
   const baseColumns = [
-    { name: "SN", selector: (row, index) => index + 1, width: "50px" },
-    { name: "Ticket No", selector: (row) => row.ticketno, width: "120px" },
+    {
+      name: "SN",
+      cell: (row, index) => (
+        <span
+          className={`px-2 py-1 rounded-md ${
+            row.status === "Resolved"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : row.status === "Open"
+              ? "bg-[#E9F2FF] text-[#0068FF]"
+              : row.status === "In Progress"
+              ? "bg-[#FFF8DD] text-[#FFCA00]"
+              : row.status === "Pending"
+              ? "bg-[#FFEAEA] text-[#ff2323]"
+              : "text-[#000000]"
+          }`}
+        >
+          {index + 1}
+        </span>
+      ),
+      sortable: false,
+      width: "80px",
+    },
+    {
+      name: "Ticket No",
+      cell: (row, index) => (
+        <span
+          className={`px-2 py-1 rounded-md ${
+            row.status === "Resolved"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : row.status === "Open"
+              ? "bg-[#E9F2FF] text-[#0068FF]"
+              : row.status === "In Progress"
+              ? "bg-[#FFF8DD] text-[#FFCA00]"
+              : row.status === "Pending"
+              ? "bg-[#FFEAEA] text-[#ff2323]"
+              : "text-[#000000]"
+          }`}
+        >
+          {row.ticketno}
+        </span>
+      ),
+      sortable: false,
+      width: "120px",
+    },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
 
     { name: "Issue", selector: (row) => row.issue, width: "160px" },

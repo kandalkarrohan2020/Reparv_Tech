@@ -4,7 +4,7 @@ import { useAuth } from "../../store/auth.jsx";
 import { handlePayment } from "../../utils/payment.js";
 
 function RegisterForm() {
-  const { URI } = useAuth();
+  const { URI, setSuccessScreen } = useAuth();
   const registrationPrice = 4999;
   const [newPartner, setNewPartner] = useState({
     fullname: "",
@@ -48,27 +48,37 @@ function RegisterForm() {
 
       if (response.ok) {
         const res = await response.json();
-        alert("Data Send SuccessFully!");
-        try {
-          await handlePayment(
-            newPartner,
-            "Territory Partner",
-            "https://territory.reparv.in",
-            registrationPrice,
-            res.Id,
-            "territorypartner",
-            "id"
-          );
-          // If payment is successful, reset the form
-          setNewPartner({
-            fullname: "",
-            contact: "",
-            email: "",
-          });
-        } catch (paymentError) {
-          console.error("Payment Error:", paymentError.message);
-          alert("Payment failed. Please contact support.");
-        }
+
+        setSuccessScreen({
+          show: true,
+          label: "Your Data Send SuccessFully",
+          description: `Pay Rs ${registrationPrice} for Join as a Territory Partner`,
+        });
+
+        setTimeout(async () => {
+          try {
+            await handlePayment(
+              newPartner,
+              "Territory Partner",
+              "https://territory.reparv.in",
+              registrationPrice,
+              res.Id,
+              "territorypartner",
+              "id",
+              setSuccessScreen
+            );
+
+            // If payment is successful, reset the form
+            setNewPartner({
+              fullname: "",
+              contact: "",
+              email: "",
+            });
+          } catch (paymentError) {
+            console.error("Payment Error:", paymentError.message);
+            alert("Payment failed. Please contact support.");
+          }
+        }, 1500); // 1500 milliseconds = 1.5 second
       } else {
         const errorRes = await response.json();
         console.error("Submission Error:", errorRes);

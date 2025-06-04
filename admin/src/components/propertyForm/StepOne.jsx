@@ -1,6 +1,6 @@
 import React from "react";
 
-const StepOne = ({ newProperty, setPropertyData, builderData }) => {
+const StepOne = ({ newProperty, setPropertyData, builderData, states, cities }) => {
   return (
     <div className="bg-white h-[55vh] overflow-scroll scrollbar-x-hidden p-2">
       <h2 className="text-base font-semibold mb-4">Step 1: Property Details</h2>
@@ -9,7 +9,7 @@ const StepOne = ({ newProperty, setPropertyData, builderData }) => {
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Builder/Company <span className="text-red-600">*</span>
           </label>
-          <select
+          <select 
             required
             className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
             style={{ backgroundImage: "none" }}
@@ -116,15 +116,39 @@ const StepOne = ({ newProperty, setPropertyData, builderData }) => {
             }
           />
         </div>
-        <div className="w-full ">
+
+        {/* State Select Input */}
+        <div className="w-full">
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
-            City <span className="text-red-600">*</span>
+            Select State <span className="text-red-600">*</span>
           </label>
-          <input
-            type="text"
+          <select
             required
-            placeholder="Enter City"
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+            style={{ backgroundImage: "none" }}
+            value={newProperty.state}
+            onChange={(e) =>
+              setPropertyData({ ...newProperty, state: e.target.value })
+            }
+          >
+            <option value="">Select Your State</option>
+            {states?.map((state, index) => (
+              <option key={index} value={state.state}>
+                {state.state}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* City Select Input */}
+        <div className="w-full">
+          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+            Select City <span className="text-red-600">*</span>
+          </label>
+          <select
+            required
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+            style={{ backgroundImage: "none" }}
             value={newProperty.city}
             onChange={(e) =>
               setPropertyData({
@@ -132,8 +156,35 @@ const StepOne = ({ newProperty, setPropertyData, builderData }) => {
                 city: e.target.value,
               })
             }
+          >
+            <option value="">Select Your City</option>
+            {cities?.map((city, index) => (
+              <option key={index} value={city.city}>
+                {city.city}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="w-full">
+          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+            Pin-Code <span className="text-red-600">*</span>
+          </label>
+          <input
+            type="number"
+            required
+            placeholder="Enter Pin-Code"
+            value={newProperty.pincode}
+            onChange={(e) => {
+              const input = e.target.value;
+              if (/^\d{0,6}$/.test(input)) {
+                setPropertyData({ ...newProperty, pincode: input });
+              }
+            }}
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501]"
           />
         </div>
+
         <div className="w-full ">
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Location <span className="text-red-600">*</span>
@@ -209,7 +260,9 @@ const StepOne = ({ newProperty, setPropertyData, builderData }) => {
         </div>
       </div>
 
-      <h2 className="text-base font-semibold mt-6 mb-4">Step 2: Other Charges</h2>
+      <h2 className="text-base font-semibold mt-6 mb-4">
+        Step 2: Other Charges
+      </h2>
       <div className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         <div className="w-full">
           <label className="block text-sm leading-4 text-[#00000066] font-medium">

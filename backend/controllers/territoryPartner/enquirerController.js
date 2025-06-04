@@ -4,25 +4,22 @@ import moment from "moment";
 // **Fetch All **
 export const getAll = (req, res) => {
   const sql = `SELECT enquirers.*, 
-    properties.frontView, 
-    territoryenquiry.visitdate AS visitDate,
-    territoryenquiry.status AS territoryStatus,
-    territoryenquiry.teid
+    properties.frontView
     FROM enquirers 
-    INNER JOIN properties 
+    LEFT JOIN properties 
     ON enquirers.propertyid = properties.propertyid 
-    INNER JOIN territoryenquiry ON territoryenquiry.enquirerid = enquirers.enquirersid
-    WHERE territoryenquiry.territorypartnerid = ? 
-    ORDER BY territoryenquiry.teid DESC
+    WHERE enquirers.territorypartnerid = ? 
+    ORDER BY enquirersid DESC
     `;
-
-db.query(sql, [req.user.id], (err, results) => {
-  if (err) {
-    console.error("Database Query Error:", err);
-    return res.status(500).json({ message: "Database query error", error: err });
-  }
-  res.json(results);
-});
+  db.query(sql, [req.user.id], (err, results) => {
+    if (err) {
+      console.error("Database Query Error:", err);
+      return res
+        .status(500)
+        .json({ message: "Database query error", error: err });
+    }
+    res.json(results);
+  });
 };
 
 // **Fetch Single by ID**
@@ -47,54 +44,54 @@ export const getById = (req, res) => {
 };
 
 export const acceptEnquiry = (req, res) => {
-  const partnerId = req.user.id;
+  const partnerId = req.user?.id;
+
   if (!partnerId) {
-    return res.status(400).json({ message: "Unauthorized! Please Login Again." });
-  }
-  const enquiryId = parseInt(req.params.id);
-  if (isNaN(enquiryId)) {
-    return res.status(400).json({ message: "Invalid Enquiry ID" });
-  }
-  const { teid } = req.body;
-  if(!teid){
-    return res.status(400).json({ message: "Invalid Territory Enquiry ID" });
+    return res
+      .status(401)
+      .json({ message: "Unauthorized! Please login again." });
   }
 
+  const enquiryId = parseInt(req.params.id);
+  if (isNaN(enquiryId)) {
+    return res.status(400).json({ message: "Invalid Enquiry ID." });
+  }
+
+  // Check if enquiry exists
   db.query(
     "SELECT * FROM enquirers WHERE enquirersid = ?",
     [enquiryId],
-    (err, result) => {
+    (err, results) => {
       if (err) {
-        console.error("Database error:", err);
+        console.error("Database error while checking enquiry:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
 
-      db.query(
-        "UPDATE enquirers SET status = 'Visit Scheduled', territorypartnerid = ? WHERE enquirersid = ?",
-        [partnerId, enquiryId],
-        (err, result) => {
-          if (err) {
-            console.error("Error :", err);
-            return res
-              .status(500)
-              .json({ message: "Database error", error: err });
-          }
-        }
-      );
+      if (results.length === 0) {
+        return res.status(404).json({ message: "Enquiry not found." });
+      }
 
+      // Update enquiry status
       db.query(
-        "UPDATE territoryenquiry SET status = 'Accepted' WHERE teid = ?",
-        [teid],
-        (err, result) => {
-          if (err) {
-            console.error("Error :", err);
+        `UPDATE enquirers 
+         SET status = 'Visit Scheduled', territorystatus = 'Accepted', territorypartnerid = ? 
+         WHERE enquirersid = ?`,
+        [partnerId, enquiryId],
+        (updateErr, updateResult) => {
+          if (updateErr) {
+            console.error("Error updating enquiry:", updateErr);
             return res
               .status(500)
-              .json({ message: "Database error", error: err });
+              .json({ message: "Failed to accept enquiry", error: updateErr });
           }
-          res
-            .status(200)
-            .json({ message: "Enquiry status change successfully" });
+
+          return res.status(200).json({
+            message: "Enquiry accepted successfully.",
+            enquiryId,
+            territoryPartnerId: partnerId,
+            territorystatus: "Accepted",
+            status: "Visit Scheduled",
+          });
         }
       );
     }
@@ -103,35 +100,45 @@ export const acceptEnquiry = (req, res) => {
 
 export const rejectEnquiry = (req, res) => {
   const enquiryId = parseInt(req.params.id);
+
   if (isNaN(enquiryId)) {
-    return res.status(400).json({ message: "Invalid Enquiry ID" });
+    return res.status(400).json({ message: "Invalid Enquiry ID." });
   }
-  const { teid } = req.body;
-  if(!teid){
-    return res.status(400).json({ message: "Invalid Territory Enquiry ID" });
-  }
+
+  // Check if enquiry exists
   db.query(
     "SELECT * FROM enquirers WHERE enquirersid = ?",
     [enquiryId],
-    (err, result) => {
+    (err, results) => {
       if (err) {
-        console.error("Database error:", err);
+        console.error("Database error while checking enquiry:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
 
+      if (results.length === 0) {
+        return res.status(404).json({ message: "Enquiry not found." });
+      }
+
+      // Update to rejected
       db.query(
-        "UPDATE territoryenquiry SET status = 'Rejected' WHERE teid = ?",
-        [teid],
-        (err, result) => {
-          if (err) {
-            console.error("Error :", err);
-            return res
-              .status(500)
-              .json({ message: "Database error", error: err });
+        `UPDATE enquirers 
+         SET territorystatus = 'Rejected', territorypartnerid = NULL 
+         WHERE enquirersid = ?`,
+        [enquiryId],
+        (updateErr, updateResult) => {
+          if (updateErr) {
+            console.error("Error updating enquiry:", updateErr);
+            return res.status(500).json({
+              message: "Failed to reject enquiry",
+              error: updateErr,
+            });
           }
-          res
-            .status(200)
-            .json({ message: "Enquiry status change successfully" });
+
+          return res.status(200).json({
+            message: "Enquiry rejected successfully.",
+            enquiryId,
+            territorystatus: "Rejected",
+          });
         }
       );
     }
@@ -189,26 +196,40 @@ export const followUp = (req, res) => {
     return res.status(400).json({ message: "Invalid Enquiry ID" });
   }
 
-  db.query("SELECT * FROM enquirers WHERE enquirersid = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Enquiry not found" });
-    }
-
-    const updateSQL = `UPDATE territoryenquiry SET followup = ? WHERE teid = ?`;
-
-    db.query(updateSQL, [followUpRemark, territoryId], (err, insertResult) => {
+  db.query(
+    "SELECT * FROM enquirers WHERE enquirersid = ?",
+    [Id],
+    (err, result) => {
       if (err) {
-        console.error("Error inserting visit:", err);
+        console.error("Database error:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
 
-      res.status(201).json({ message: "Follow Up remark added successfully", Id: insertResult.insertId });
-    });
-  });
-};
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Enquiry not found" });
+      }
 
+      const updateSQL = `UPDATE territoryenquiry SET followup = ? WHERE teid = ?`;
+
+      db.query(
+        updateSQL,
+        [followUpRemark, territoryId],
+        (err, insertResult) => {
+          if (err) {
+            console.error("Error inserting visit:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+
+          res
+            .status(201)
+            .json({
+              message: "Follow Up remark added successfully",
+              Id: insertResult.insertId,
+            });
+        }
+      );
+    }
+  );
+};

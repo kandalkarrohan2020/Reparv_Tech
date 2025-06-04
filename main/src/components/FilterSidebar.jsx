@@ -32,7 +32,7 @@ export default function FilterSidebar() {
     "FarmLand",
     "FarmHouse",
     "CommercialFlat",
-    "CommercialFlat",
+    "CommercialPlot",
     "IndustrialSpace",
   ];
 
@@ -130,7 +130,7 @@ export default function FilterSidebar() {
         </div>
 
         {showTypes && (
-          <div className="space-y-2 mt-2 max-h-30 overflow-y-auto scrollbar-hide">
+          <div className="space-y-2 mt-2 max-h-50 sm:max-h-30 overflow-y-auto scrollbar-hide">
             {propertyTypes.map((type, i) => (
               <label
                 key={i}
@@ -170,7 +170,7 @@ export default function FilterSidebar() {
           {showLocations ? <FaChevronUp /> : <FaChevronDown />}
         </div>
         {showLocations && (
-          <div className="space-y-2 mt-2 max-h-35 overflow-y-auto scrollbar-hide ">
+          <div className="space-y-2 mt-2 max-h-40 sm:max-h-35 overflow-y-auto scrollbar-hide ">
             {locations.map((loc, i) => (
               <label
                 key={i}

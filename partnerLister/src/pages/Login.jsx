@@ -47,7 +47,7 @@ function Login() {
       if (response.data.token) {
         console.log("Login Successful", response.data);
         storeTokenInCookie(response.data.token);
-        navigate("/salespersons", { replace: true }); 
+        navigate("/dashboard", { replace: true }); 
       } else {
         setErrorMessage("Invalid login credentials.");
       }

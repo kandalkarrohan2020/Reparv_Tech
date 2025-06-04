@@ -3,10 +3,12 @@ import { IoPlayCircleOutline } from "react-icons/io5";
 import videoThumb from "../assets/joinOurTeam/salesPartner/videoThumb.svg";
 import { useAuth } from "../store/auth";
 
-const VideoSection = () => {
+const VideoSection = ({videoFor = "reparv"}) => {
   const { URI } = useAuth();
   const [showVideo, setShowVideo] = useState(false);
   const [videoLink, setVideoLink] = useState("");
+  
+  const [thumbnail, setThumbnail] = useState(videoThumb);
 
   const formatYouTubeEmbedUrl = (url) => {
     const regex =
@@ -32,13 +34,16 @@ const VideoSection = () => {
 
       const data = await response.json();
       const reparvFeedback = data.filter(
-        (item) => item.client.toLowerCase() === "reparv"
+        (item) => item.client.toLowerCase() === videoFor.toLowerCase()
       );
 
       if (reparvFeedback.length > 0 && reparvFeedback[0].url) {
         const videoURL = formatYouTubeEmbedUrl(reparvFeedback[0].url);
         if (videoURL) {
           setVideoLink(videoURL);
+          if( reparvFeedback[0].clientimage && reparvFeedback[0].clientimage !== "null") {
+            setThumbnail(`${URI}${reparvFeedback[0]?.clientimage}`);
+          }
         } else {
           alert("Invalid YouTube URL");
         }
@@ -56,7 +61,7 @@ const VideoSection = () => {
 
   return (
     <div className="w-full h-full flex flex-col items-center">
-      <div className="relative w-full max-w-4xl rounded-xl shadow-[0px_4px_8px_0px_#0000001A] overflow-hidden">
+      <div className="relative w-full max-w-4xl flex items-center justify-center rounded-xl shadow-[0px_4px_8px_0px_#0000001A] overflow-hidden">
         {/* Thumbnail */}
         {!showVideo && (
           <img

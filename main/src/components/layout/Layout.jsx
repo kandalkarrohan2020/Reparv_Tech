@@ -28,6 +28,8 @@ function Layout() {
   const {
     showSuccess,
     URI,
+    successScreen, 
+    setSuccessScreen,
     selectedCity,
     setSelectedCity,
     showPriceSummery,
@@ -103,7 +105,7 @@ function Layout() {
               </div>
             </div>
 
-            <div className="w-full flex flex-col gap-5 px-10 tracking-[0.2em] font-medium text-[#110229]">
+            <div className="w-full flex flex-col gap-3 px-10 font-medium text-[#110229]">
               <NavLink
                 to="/"
                 onClick={() => {
@@ -140,43 +142,7 @@ function Layout() {
               >
                 Contact Us
               </NavLink>
-              <NavLink
-                onClick={() => {
-                  setShowSidebar(false);
-                }}
-                to="/sales-partner"
-                className={`${getNavLinkClass("/sales-partner")}`}
-              >
-                Sales Partner
-              </NavLink>
-              <NavLink
-                onClick={() => {
-                  setShowSidebar(false);
-                }}
-                to="/project-partner"
-                className={`${getNavLinkClass("/project-partner")}`}
-              >
-                Project Partner
-              </NavLink>
-
-              <NavLink
-                onClick={() => {
-                  setShowSidebar(false);
-                }}
-                to="/territory-partner"
-                className={`${getNavLinkClass("/territory-partner")}`}
-              >
-                Territory Partner
-              </NavLink>
-              <NavLink
-                onClick={() => {
-                  setShowSidebar(false);
-                }}
-                to="/onboarding-partner"
-                className={`${getNavLinkClass("/onboarding-partner")}`}
-              >
-                Onboarding Partner
-              </NavLink>
+              
             </div>
           </div>
         )}
@@ -346,7 +312,7 @@ function Layout() {
             <Link to="/privacy-policy" className="cursor-pointer">
               Privacy Policy
             </Link>
-            <Link to="/refund-policy" className="cursor-pointer">
+            <Link to="/cancellation-policy" className="cursor-pointer">
               Cancellation Policy
             </Link>
           </div>
@@ -408,7 +374,7 @@ function Layout() {
             <Link to="/privacy-policy" className="cursor-pointer">
               Privacy Policy
             </Link>
-            <Link to="/refund-policy" className="cursor-pointer">
+            <Link to="/cancellation-policy" className="cursor-pointer">
               Cancellation Policy
             </Link>
           </div>
@@ -426,7 +392,7 @@ function Layout() {
       )}
 
       {/* Show Success Screen */}
-      {showSuccess && <SuccessScreen />}
+      {successScreen?.show && <SuccessScreen />}
 
       {showPriceSummery && (
         <div

@@ -8,6 +8,7 @@ import ProjectPartner from "./pages/projectPartner.jsx";
 import TerritoryPartner from "./pages/TerritoryPartner.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
       <Routes>
         <Route path="" element={<Login />} />
         <Route path="/" element={<Layout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/salespersons" element={<SalesPerson />} />
           <Route path="/onboardingpartner" element={<OnBoardingPartner />} />
           <Route path="/projectpartner" element={<ProjectPartner />} />

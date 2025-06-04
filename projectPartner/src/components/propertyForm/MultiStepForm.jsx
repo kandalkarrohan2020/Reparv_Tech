@@ -13,6 +13,8 @@ const MultiStepForm = ({
   imageFiles,
   setImageFiles,
   builderData,
+  states,
+  cities,
 }) => {
   const { URI, setLoading, showPropertyForm, setShowPropertyForm } = useAuth();
   const [step, setStep] = useState(1);
@@ -66,11 +68,14 @@ const MultiStepForm = ({
 
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/project-partner/properties/${endpoint}`, {
-        method: newProperty.propertyid ? "PUT" : "POST",
-        credentials: "include",
-        body: formData, // Use FormData instead of JSON
-      });
+      const response = await fetch(
+        `${URI}/project-partner/properties/${endpoint}`,
+        {
+          method: newProperty.propertyid ? "PUT" : "POST",
+          credentials: "include",
+          body: formData, // Use FormData instead of JSON
+        }
+      );
 
       if (response.status === 409) {
         alert("Property already exists!");
@@ -86,13 +91,15 @@ const MultiStepForm = ({
 
       // Clear form after successful response
       setPropertyData({
-        partnerid:"",
+        partnerid: "",
         builderid: "",
         propertyCategory: "",
         propertyApprovedBy: "",
         propertyName: "",
         address: "",
+        state: "",
         city: "",
+        pincode: "",
         location: "",
         distanceFromCityCenter: "",
         totalSalesPrice: "",
@@ -220,6 +227,8 @@ const MultiStepForm = ({
               newProperty={newProperty}
               setPropertyData={setPropertyData}
               builderData={builderData}
+              states={states}
+              cities={cities}
             />
           )}
           {step === 2 && (

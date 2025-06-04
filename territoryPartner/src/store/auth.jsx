@@ -31,6 +31,7 @@ const [showUploadImagesForm, setShowUploadImagesForm] = useState(false);
 const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
 const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
+const [showEnquiryForm, setShowEnquiryForm] = useState(false);
 const [showInquiryForm, setShowInquiryForm] = useState(false);
 const [showEnquiry, setShowEnquiry] = useState(false);
 const [showTicket, setShowTicket] = useState(false);
@@ -59,6 +60,7 @@ return <AuthContext.Provider
         showEnquiryStatusForm, setShowEnquiryStatusForm,
         showInquiryForm, setShowInquiryForm,
         showEnquiry, setShowEnquiry,
+        showEnquiryForm, setShowEnquiryForm,
         user, setUser,
         showUploadImagesForm, setShowUploadImagesForm,
         showAdditionalInfoForm, setShowAdditionalInfoForm,

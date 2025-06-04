@@ -11,6 +11,7 @@ import {
   cancelled,
   followUp,
   token,
+  getRemarkList,
 } from "../../controllers/admin/enquirerController.js";
 
 const router = express.Router();
@@ -26,7 +27,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // ✅ Limit file size (5MB)
+  limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size (5MB)
   fileFilter: (req, file, cb) => {
     const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
     if (!allowedTypes.includes(file.mimetype)) {
@@ -36,8 +37,10 @@ const upload = multer({
   },
 });
 
-router.get("/", getAll);
+//router.get("/", getAll);
+router.get("/get/:source", getAll);
 router.get("/:id", getById);
+router.get("/remark/list/:id", getRemarkList);
 router.put("/status/:id", status);
 router.put("/assign/:id", assignEnquiry);
 router.post("/visitscheduled/:id", visitScheduled);

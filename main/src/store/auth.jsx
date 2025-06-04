@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { MdDescription } from "react-icons/md";
 
 export const AuthContext = createContext();
 
@@ -6,13 +7,17 @@ export const AuthProvider = ({children}) => {
 
 const [loading, setLoading] = useState(false);
 const [isActive, setIsActive] = useState(false);
+const [successScreen, setSuccessScreen] = useState({
+    show: false,
+    label: "Thank You For Registering!",
+    description: "Our Representative will call you shortly",
+});
 const [priceSummery, setPriceSummery] = useState({});
 const [selectedCity, setSelectedCity] = useState("Nagpur");
 const [propertyImage, setPropertyImage] = useState("");
 const [propertyType, setPropertyType] = useState("properties");
 const [propertySearch, setPropertySearch] = useState("");
 const [showInquiryForm, setShowInquiryForm] = useState(false);
-const [showSuccess, setShowSuccess] = useState(false);
 const [showPriceSummery, setShowPriceSummery] = useState(false);
 const [showBenefitsPopup, setShowBenefitsPopup] = useState(false);
 const [showFilterPopup, setShowFilterPopup] = useState(false);
@@ -25,13 +30,13 @@ return <AuthContext.Provider
  value={
     {  
         isActive, setIsActive,
+        successScreen, setSuccessScreen,
         priceSummery, setPriceSummery,
         propertyImage, setPropertyImage,
         propertyType, setPropertyType,
         propertySearch, setPropertySearch,
         selectedCity, setSelectedCity,
         showInquiryForm, setShowInquiryForm,
-        showSuccess, setShowSuccess,
         showFilterPopup, setShowFilterPopup,
         showPriceSummery, setShowPriceSummery,
         showBenefitsPopup, setShowBenefitsPopup,

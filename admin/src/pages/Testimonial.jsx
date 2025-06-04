@@ -369,7 +369,7 @@ const Testimonial = () => {
             </div>
             <div className="w-full">
               <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-                Upload Property Image
+                Upload Client Image
               </label>
               <div className="w-full mt-2">
                 <input

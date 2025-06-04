@@ -14,6 +14,8 @@ import {
   additionalInfoAdd,
   propertyInfo,
   addRejectReason,
+  addCsvFile,
+  fetchAdditionalInfo,
 } from "../../controllers/admin/propertyController.js";
 import multer from "multer";
 import path from "path";
@@ -121,5 +123,35 @@ router.put(
   ]),
   editAdditionalInfo
 );
+
+// multer for Uopload Property Additional Information
+const uploadForCsv = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ["text/csv", "application/vnd.ms-excel"];
+    if (!allowedTypes.includes(file.mimetype)) {
+      return cb(new Error("Only CSV files are allowed"));
+    }
+    cb(null, true);
+  },
+});
+
+const uploadCsvMiddleware = (req, res, next) => {
+  uploadForCsv.single("csv")(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      // Multer-specific error (e.g. file too large)
+      return res.status(400).json({ message: err.message });
+    } else if (err) {
+      // Other errors
+      return res.status(400).json({ message: err.message });
+    }
+    next();
+  });
+};
+
+// Fetch & Upload CSV File
+router.get("/additionalinfo/get/:id", fetchAdditionalInfo );
+router.post("/additionalinfo/csv/add", uploadCsvMiddleware, addCsvFile );
 
 export default router;

@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 export default function SiteVisitPopup() {
   const {
     URI,
+    user,
     setLoading,
     setShowSiteVisitPopup,
     propertyImage,
@@ -16,13 +17,16 @@ export default function SiteVisitPopup() {
   } = useAuth();
   const { id } = useParams();
   const location = useLocation();
+
   //Inquiry Form Data
   const [formData, setFormData] = useState({
     propertyid: id,
     fullname: "",
     phone: "",
+    territoryName: user.name,
+    territoryContact: user.contact,
   });
-
+  console.log(user);
   useEffect(() => {
     setFormData({ ...formData, propertyid: id });
   }, []);
@@ -31,7 +35,7 @@ export default function SiteVisitPopup() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await fetch(`${URI}/frontend/enquiry/add`, {
+      const response = await fetch(`${URI}/territory-partner/enquiry/add`, {
         method: "POST",
         credentials: "include",
         headers: {

@@ -22,7 +22,7 @@ const CalendarScheduler = () => {
     try {
       const response = await fetch(URI + "/admin/calender/meetings", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },

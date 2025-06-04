@@ -23,6 +23,7 @@ import projectPartnerRoutes from "./routes/admin/projectPartnerRoutes.js";
 import territoryPartnerRoutes from "./routes/admin/territoryPartnerRoutes.js";
 import propertytypeRoutes from "./routes/admin/propertytypeRoutes.js";
 import enquirerRoutes from "./routes/admin/enquirerRoutes.js";
+import addEnquiryRoutes from "./routes/admin/enquiryRoutes.js";
 import auctionmembersRoutes from "./routes/admin/auctionmemberRoutes.js";
 import ticketRoutes from "./routes/admin/ticketRoutes.js";
 import sliderRoutes from "./routes/admin/sliderRoutes.js";
@@ -86,6 +87,7 @@ import territoryPartnerDashboardRoutes from "./routes/territoryPartner/dashboard
 import territoryPartnerBuilderRoutes from "./routes/territoryPartner/builderRoutes.js";
 import territoryPartnerTicketRoutes from "./routes/territoryPartner/ticketRoutes.js";
 import territoryPartnerEnquirersRoutes from "./routes/territoryPartner/enquirerRoutes.js";
+import territoryPartnerEnquiryRoutes from "./routes/territoryPartner/enquiryRoutes.js";
 import territoryPartnerCalenderRoutes from "./routes/territoryPartner/calenderRoutes.js";
 
 import territoryPartnerPropertiesRoutes from "./routes/territoryPartner/propertiesRoutes.js"
@@ -95,7 +97,7 @@ import territoryPartnerPropertiesRoutes from "./routes/territoryPartner/properti
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ✅ Configure Session
+// Configure Session
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "your_secret_key",
@@ -120,6 +122,7 @@ const allowedOrigins = [
   "https://www.reparv.in",
   "https://employee.reparv.in",
   "https://partners.reparv.in",
+  "https://onboarding.reparv.in",
   "https://sales.reparv.in",
   "https://projectpartner.reparv.in",
   "https://territory.reparv.in",
@@ -181,7 +184,7 @@ const verifyToken = (req, res, next) => {
     "/frontend/testimonial",
   ];
 
-  // ✅ Allow public routes to pass through
+  //  Allow public routes to pass through
   if (publicRoutes.some((route) => req.path.startsWith(route))) {
     return next();
   }
@@ -195,7 +198,7 @@ const verifyToken = (req, res, next) => {
 
   try {
     req.user = jwt.verify(token, process.env.JWT_SECRET);
-    return next(); // ✅ Continue to protected route
+    return next(); //  Continue to protected route
   } catch (error) {
     console.error("JWT Verification Failed:", error); // Log error
     return res.status(403).json({ message: "Invalid or expired token." });
@@ -210,11 +213,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("/get-cookie", (req, res) => {
-  console.log("Cookies:", req.cookies); // ✅ Print cookies in terminal
-  res.json({ cookies: req.cookies }); // ✅ Send cookie data in response
+  console.log("Cookies:", req.cookies); //  Print cookies in terminal
+  res.json({ cookies: req.cookies }); // Send cookie data in response
 });
 
-// ✅ Use Login & Auth Routes
+// Use Login & Auth Routes
 
 app.use("/admin", loginRoutes);
 
@@ -233,7 +236,7 @@ app.use(verifyToken);
 app.use("/admin/profile", profileRoutes);
 app.use("/admin/dashboard", dashboardRoutes);
 app.use("/admin/employees", employeeRoutes);
-app.use("/admin/properties", propertyRoutes);
+app.use("/admin/properties", verifyToken, propertyRoutes);
 app.use("/admin/builders", builderRoutes);
 app.use("/admin/customers", customerRoutes);
 app.use("/admin/roles", roleRoutes);
@@ -246,6 +249,8 @@ app.use("/admin/projectpartner", projectPartnerRoutes);
 app.use("/admin/territorypartner", territoryPartnerRoutes);
 app.use("/admin/propertytypes", propertytypeRoutes);
 app.use("/admin/enquirers", enquirerRoutes);
+// CSV File add Enquiries Route
+app.use("/admin/enquiries", verifyToken, addEnquiryRoutes);
 app.use("/admin/auctionmembers", auctionmembersRoutes);
 app.use("/admin/tickets", ticketRoutes);
 app.use("/admin/slider", sliderRoutes);
@@ -296,13 +301,14 @@ app.use("/territory-partner/dashboard", territoryPartnerDashboardRoutes);
 app.use("/territory-partner/builders", territoryPartnerBuilderRoutes);
 app.use("/territory-partner/tickets", territoryPartnerTicketRoutes);
 app.use("/territory-partner/enquirers", territoryPartnerEnquirersRoutes);
+app.use("/territory-partner/enquiry", territoryPartnerEnquiryRoutes);
 //app.use("/sales/calender", territoryPartnerCalenderRoutes);
 // Property Pages Routes
 app.use("/territory-partner/properties", territoryPartnerPropertiesRoutes);
 
 
 
-// ✅ Start Server
+//  Start Server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

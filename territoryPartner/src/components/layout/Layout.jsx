@@ -40,6 +40,7 @@ function Layout() {
     showEnquiry,
     setShowEnquiry,
     showEnquiryStatusForm, setShowEnquiryStatusForm,
+    showEnquiryForm, setShowEnquiryForm,
     showSiteVisitPopup,
     setShowSiteVisitPopup,
     setShowBenefitsPopup,
@@ -57,6 +58,7 @@ function Layout() {
     { state: showTicket, setter: setShowTicket },
     { state: showEnquiry, setter: setShowEnquiry },
     { state: showPropertyInfo, setter: setShowPropertyInfo },
+    { state: showEnquiryForm, setter: setShowEnquiryForm },
     { state: showEnquiryStatusForm, setter: setShowEnquiryStatusForm },
   ];
 

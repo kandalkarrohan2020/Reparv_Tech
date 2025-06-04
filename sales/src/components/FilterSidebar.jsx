@@ -38,7 +38,7 @@ export default function FilterSidebar() {
     "FarmLand",
     "FarmHouse",
     "CommercialFlat",
-    "CommercialFlat",
+    "CommercialPlot",
     "IndustrialSpace",
   ];
 

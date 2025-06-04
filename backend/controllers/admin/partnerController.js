@@ -94,9 +94,9 @@ export const add = (req, res) => {
       });
     }
 
-    // ✅ Only insert if no existing partner
+    // Only insert if no existing partner
     const sql = `INSERT INTO onboardingpartner (fullname, contact, email, address, state, city, pincode, experience, adharno, panno, bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, updated_at, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     db.query(
       sql,
@@ -296,6 +296,130 @@ export const status = (req, res) => {
   );
 };
 
+// Update Payment ID and Send Email
+export const updatePaymentId = async (req, res) => {
+  try {
+    const partnerid = req.params.id;
+    if (!partnerid) {
+      return res.status(400).json({ message: "Invalid Partner ID" });
+    }
+
+    const { amount, paymentid } = req.body;
+    if (!amount || !paymentid) {
+      return res
+        .status(400)
+        .json({ message: "Amount and Payment ID are required" });
+    }
+
+    // Get partner details
+    db.query(
+      "SELECT * FROM onboardingpartner WHERE partnerid = ?",
+      [partnerid],
+      async (err, result) => {
+        if (err) {
+          console.error("Database error:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+
+        if (result.length === 0) {
+          return res.status(404).json({ message: "Partner not found" });
+        }
+
+        const email = result[0].email;
+
+        const extractNameFromEmail = (email) => {
+          if (!email) return "";
+          const namePart = email.split("@")[0];
+          const lettersOnly = namePart.match(/[a-zA-Z]+/);
+          if (!lettersOnly) return "";
+          const name = lettersOnly[0].toLowerCase();
+          return name.charAt(0).toUpperCase() + name.slice(1);
+        };
+
+        const username = extractNameFromEmail(email);
+
+        const generatePassword = () => {
+          const chars =
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+          let password = "";
+          for (let i = 0; i < 8; i++) {
+            password += chars.charAt(Math.floor(Math.random() * chars.length));
+          }
+          return password;
+        };
+
+        const password = generatePassword();
+        let hashedPassword;
+
+        try {
+          hashedPassword = await bcrypt.hash(password, 10);
+        } catch (hashErr) {
+          console.error("Error hashing password:", hashErr);
+          return res.status(500).json({ message: "Failed to hash password" });
+        }
+
+        const updateSql = `
+          UPDATE onboardingpartner 
+          SET amount = ?, paymentid = ?, username = ?, password = ?, paymentstatus = "Success", loginstatus = "Active" 
+          WHERE partnerid = ?
+        `;
+        const updateValues = [
+          amount,
+          paymentid,
+          username,
+          hashedPassword,
+          partnerid,
+        ];
+
+        db.query(updateSql, updateValues, async (updateErr, updateResult) => {
+          if (updateErr) {
+            console.error("Error updating Payment ID:", updateErr);
+            return res.status(500).json({
+              message: "Database error during update",
+              error: updateErr,
+            });
+          }
+
+          try {
+            await sendEmail(
+              email,
+              username,
+              password,
+              "Onboarding Partner",
+              "https://onboarding.reparv.in"
+            );
+            return res.status(200).json({
+              message: "Payment ID updated and email sent successfully.",
+              partner: {
+                partnerid,
+                username,
+                email,
+              },
+            });
+          } catch (emailError) {
+            console.error("Error sending email:", emailError);
+            return res.status(500).json({
+              message: "Payment ID updated but failed to send email.",
+              partner: {
+                partnerid,
+                username,
+                email,
+              },
+            });
+          }
+        });
+      }
+    );
+  } catch (err) {
+    console.error("Unexpected server error:", err);
+    return res
+      .status(500)
+      .json({ message: "Unexpected server error", error: err });
+  }
+};
+
 export const assignLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -342,7 +466,7 @@ export const assignLogin = async (req, res) => {
               username,
               password,
               "Onboarding Partner",
-              "https://partners.reparv.in"
+              "https://onboarding.reparv.in"
             )
               .then(() => {
                 res.status(200).json({

@@ -13,15 +13,23 @@ const VideoReviewSection = () => {
     try {
       const response = await fetch(URI + "/frontend/testimonial", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
       });
       if (!response.ok) throw new Error("Failed to fetch testimonials.");
       const data = await response.json();
+      
+      const excludedClients = [
+        "reparv",
+        "sales partner",
+        "territory partner",
+        "project partner",
+        "onboarding partner"
+      ];
       const reparvFeedback = data.filter(
-        (item) => item.client.toLowerCase() !== "reparv"
+        (item) => !excludedClients.includes(item.client.toLowerCase())
       );
       setFeedback(reparvFeedback);
     } catch (err) {

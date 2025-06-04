@@ -18,6 +18,7 @@ export const createOrder = async (req, res) => {
     amount: amount * 100,
     currency: "INR",
     receipt: `receipt_${Date.now()}`,
+    payment_capture: 1  
   };
 
   try {

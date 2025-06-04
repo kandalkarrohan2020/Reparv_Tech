@@ -4,7 +4,7 @@ import { useAuth } from "../../store/auth";
 import { handlePayment } from "../../utils/payment.js";
 
 function RegisterForm() {
-  const { URI } = useAuth();
+  const { URI, setSuccessScreen } = useAuth();
   const registrationPrice = 599;
   const [newPartner, setNewPartner] = useState({
     fullname: "",
@@ -29,11 +29,12 @@ function RegisterForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const scriptLoaded = await loadRazorpayScript();
-
+  
     if (!scriptLoaded) {
       alert("Failed to load Razorpay. Please check your internet.");
       return;
     }
+  
     try {
       const response = await fetch(`${URI}/admin/salespersons/add`, {
         method: "POST",
@@ -43,30 +44,42 @@ function RegisterForm() {
         },
         body: JSON.stringify(newPartner),
       });
-
+  
       if (response.ok) {
         const res = await response.json();
-        alert("Data Send SuccessFully!");
-        try {
-          await handlePayment(
-            newPartner,
-            "Sales Partner",
-            "https://sales.reparv.in",
-            registrationPrice,
-            res.Id,
-            "salespersons",
-            "salespersonsid"
-          );
-          // If payment is successful, reset the form
-          setNewPartner({
-            fullname: "",
-            contact: "",
-            email: "",
-          });
-        } catch (paymentError) {
-          console.error("Payment Error:", paymentError.message);
-          alert("Payment failed. Please contact support.");
-        }
+  
+        setSuccessScreen({
+          show: true,
+          label: "Your Data Send SuccessFully",
+          description: `Pay Rs ${registrationPrice} for Join as a Sales Partner`,
+        });
+  
+        // Delay payment handling by 1 second
+        setTimeout(async () => {
+          try {
+            await handlePayment(
+              newPartner,
+              "Sales Partner",
+              "https://sales.reparv.in",
+              registrationPrice,
+              res.Id,
+              "salespersons",
+              "salespersonsid",
+              setSuccessScreen
+            );
+  
+            // Reset form after successful payment
+            setNewPartner({
+              fullname: "",
+              contact: "",
+              email: "",
+            });
+          } catch (paymentError) {
+            console.error("Payment Error:", paymentError.message);
+            alert("Payment failed. Please contact support.");
+          }
+        }, 1500); // 1500 milliseconds = 1.5 second
+  
       } else {
         const errorRes = await response.json();
         console.error("Submission Error:", errorRes);

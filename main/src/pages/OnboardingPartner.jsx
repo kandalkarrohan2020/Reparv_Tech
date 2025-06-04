@@ -47,7 +47,7 @@ function OnboardingPartner() {
               </div>
             </div>
             <div className="right w-full md:w-1/2 pt-2 xl:pt-10">
-              <VideoSection />
+              <VideoSection videoFor="onboarding partner"/>
             </div>
           </div>
           <div className="absolute bottom-[-150px] 2xl:bottom-[-90px] hidden xl:flex registerForm w-full max-w-[1050px] mx-auto">

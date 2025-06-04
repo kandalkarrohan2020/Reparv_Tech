@@ -1,6 +1,6 @@
 import React from "react";
 import salesBackImage from "../assets/joinOurTeam/salesPartner/salesBack.svg";
-import salesMobileBackImage from "../assets/joinOurTeam/salesPartner/salesMobileBack.svg";
+import salesMobileBackImage from "../assets/joinOurTeam/salesPartner/salesMobileBack.png";
 import WhyJoinReparv from "../components/salesPartner/WhyJoinReparv";
 import RegisterForm from "../components/salesPartner/registerForm";
 import StepSection from "../components/salesPartner/StepSection";

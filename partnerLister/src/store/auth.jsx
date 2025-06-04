@@ -23,6 +23,7 @@ const [loading, setLoading] = useState(false);
 const [showSalesForm, setShowSalesForm ] = useState(false);
 const [showSalesPerson, setShowSalesPerson ] = useState(false);
 const [showProfile, setShowProfile ] = useState(false);
+const [showPaymentIdForm, setShowPaymentIdForm ] = useState(false);
 const [action, setAction ] = useState("Save Details");
 const [isActive, setIsActive] = useState("Builders");
 const [giveAccess, setGiveAccess] = useState(false);
@@ -41,6 +42,7 @@ return <AuthContext.Provider
         showSalesPerson, setShowSalesPerson ,
         isActive, setIsActive,
         giveAccess, setGiveAccess,
+        showPaymentIdForm, setShowPaymentIdForm,
         showAssignSalesForm, setShowAssignSalesForm,
         showPartnerForm, setShowPartnerForm ,
         showPartner, setShowPartner,

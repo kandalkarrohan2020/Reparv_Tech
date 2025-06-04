@@ -29,7 +29,7 @@ export default function WhoIsTerritoryPartner() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-18 items-center mx-auto">
         {/* Left Side - Image */}
         <div className="w-full h-full flex justify-center">
-          <VideoSection />
+          <VideoSection videoFor="territory partner"/>
         </div>
 
         {/* Right Side - Text */}

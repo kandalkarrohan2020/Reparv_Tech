@@ -13,15 +13,17 @@ export const getAll = (req, res) => {
     LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
     WHERE enquirers.salespersonid = ? 
     
-    ORDER BY enquirers.enquirersid DESC`; 
+    ORDER BY enquirers.enquirersid DESC`;
 
-db.query(sql, [req.user.id], (err, results) => {
-  if (err) {
-    console.error("Database Query Error:", err);
-    return res.status(500).json({ message: "Database query error", error: err });
-  }
-  res.json(results);
-});
+  db.query(sql, [req.user.id], (err, results) => {
+    if (err) {
+      console.error("Database Query Error:", err);
+      return res
+        .status(500)
+        .json({ message: "Database query error", error: err });
+    }
+    res.json(results);
+  });
 };
 
 // **Fetch Single by ID**
@@ -55,7 +57,7 @@ export const getPropertyCity = (req, res) => {
   if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Enquiry ID" });
   }
-  
+
   const sql = `SELECT properties.city FROM enquirers 
                INNER JOIN properties 
                ON enquirers.propertyid = properties.propertyid
@@ -74,7 +76,8 @@ export const getPropertyCity = (req, res) => {
 export const getTerritoryPartners = (req, res) => {
   const propertyCity = req.params.city;
 
-  const sql = "SELECT * FROM territorypartner WHERE status = 'Active' AND territorypartner.city = ? ORDER BY id DESC";
+  const sql =
+    "SELECT * FROM territorypartner WHERE status = 'Active' AND territorypartner.city = ? ORDER BY id DESC";
   db.query(sql, [propertyCity], (err, result) => {
     if (err) {
       console.error("Error fetching:", err);
@@ -110,25 +113,28 @@ export const assignEnquiry = async (req, res) => {
 
       db.query(
         "UPDATE enquirers SET territorypartnerid = ?, visitdate = ?, updated_at = ?, created_at = ? WHERE enquirersid = ?",
-        [territorypartnerid, territorypartnerdate, currentdate, currentdate, Id ],
+        [
+          territorypartnerid,
+          territorypartnerdate,
+          currentdate,
+          currentdate,
+          Id,
+        ],
         (err, result) => {
           if (err) {
             console.error("Error assigning to territory partner :", err);
-            return res 
+            return res
               .status(500)
               .json({ message: "Database error", error: err });
           }
-          res
-            .status(200)
-            .json({
-              message: "Enquiry assigned successfully to Territory Partner",
-            });
+          res.status(200).json({
+            message: "Enquiry assigned successfully to Territory Partner",
+          });
         }
       );
     }
   );
 };
-
 
 /* Change status */
 export const status = (req, res) => {
@@ -174,10 +180,12 @@ export const status = (req, res) => {
 
 export const visitScheduled = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { visitDate, visitRemark } = req.body;
+  const { visitDate, visitRemark, enquiryStatus } = req.body;
 
-  if (!visitDate || !visitRemark) {
-    return res.status(400).json({ message: "Please add visit date and remark!" });
+  if (!visitDate || !visitRemark || !enquiryStatus) {
+    return res
+      .status(400)
+      .json({ message: "Please add visit date and remark!" });
   }
 
   const Id = parseInt(req.params.id);
@@ -185,39 +193,54 @@ export const visitScheduled = (req, res) => {
     return res.status(400).json({ message: "Invalid Enquiry ID" });
   }
 
-  db.query("SELECT * FROM enquirers WHERE enquirersid = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Enquirer not found" });
-    }
-
-    const insertSQL = `
-      INSERT INTO propertyfollowup (enquirerid, visitdate, remark, updated_at, created_at)
-      VALUES (?, ?, ?, ?, ?)`;
-
-    db.query(insertSQL, [Id, visitDate, visitRemark, currentdate, currentdate], (err, insertResult) => {
+  db.query(
+    "SELECT * FROM enquirers WHERE enquirersid = ?",
+    [Id],
+    (err, result) => {
       if (err) {
-        console.error("Error inserting visit:", err);
+        console.error("Database error:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
 
-      res.status(201).json({ message: "Visit added successfully", Id: insertResult.insertId });
-    });
-  });
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Enquirer not found" });
+      }
+
+      const insertSQL = `
+      INSERT INTO propertyfollowup (enquirerid, visitdate, remark, status, updated_at, created_at)
+      VALUES (?, ?, ?, ?, ?, ?)`;
+
+      db.query(
+        insertSQL,
+        [Id, visitDate, visitRemark, enquiryStatus, currentdate, currentdate],
+        (err, insertResult) => {
+          if (err) {
+            console.error("Error inserting visit:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+
+          res.status(201).json({
+            message: "Visit added successfully",
+            Id: insertResult.insertId,
+          });
+        }
+      );
+    }
+  );
 };
 
 export const token = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { paymenttype, remark, dealamount } = req.body;
-  
+  const { paymenttype, remark, dealamount, enquiryStatus } = req.body;
+
   const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
 
-  if (!paymenttype || !remark || !dealamount ) {
-    return res.status(400).json({ message: "Please add visit date and remark!" });
+  if (!paymenttype || !remark || !dealamount || !enquiryStatus) {
+    return res
+      .status(400)
+      .json({ message: "Please add visit date and remark!" });
   }
 
   const Id = parseInt(req.params.id);
@@ -225,36 +248,58 @@ export const token = (req, res) => {
     return res.status(400).json({ message: "Invalid Enquiry ID" });
   }
 
-  db.query("SELECT * FROM enquirers WHERE enquirersid = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Enquirer not found" });
-    }
-
-    const insertSQL = `
-      INSERT INTO propertyfollowup (enquirerid, paymenttype, remark, dealamount, paymentimage, updated_at, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`;
-
-    db.query(insertSQL, [Id, paymenttype, remark, dealamount, imagePath, currentdate, currentdate], (err, insertResult) => {
+  db.query(
+    "SELECT * FROM enquirers WHERE enquirersid = ?",
+    [Id],
+    (err, result) => {
       if (err) {
-        console.error("Error inserting visit:", err);
+        console.error("Database error:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
 
-      res.status(201).json({ message: "Token added successfully", Id: insertResult.insertId });
-    });
-  });
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Enquirer not found" });
+      }
+
+      const insertSQL = `
+      INSERT INTO propertyfollowup (enquirerid, paymenttype, remark, dealamount, status, paymentimage, updated_at, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+      db.query(
+        insertSQL,
+        [
+          Id,
+          paymenttype,
+          remark,
+          dealamount,
+          enquiryStatus,
+          imagePath,
+          currentdate,
+          currentdate,
+        ],
+        (err, insertResult) => {
+          if (err) {
+            console.error("Error inserting visit:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+
+          res.status(201).json({
+            message: "Token added successfully",
+            Id: insertResult.insertId,
+          });
+        }
+      );
+    }
+  );
 };
 
 export const followUp = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { followUpRemark } = req.body;
+  const { followUpRemark, enquiryStatus } = req.body;
 
-  if (!followUpRemark) {
+  if (!followUpRemark || !enquiryStatus) {
     return res.status(400).json({ message: "Please add remark!" });
   }
 
@@ -263,36 +308,49 @@ export const followUp = (req, res) => {
     return res.status(400).json({ message: "Invalid Enquiry ID" });
   }
 
-  db.query("SELECT * FROM enquirers WHERE enquirersid = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Enquiry not found" });
-    }
-
-    const insertSQL = `
-      INSERT INTO propertyfollowup (enquirerid, remark, updated_at, created_at)
-      VALUES (?, ?, ?, ?)`;
-
-    db.query(insertSQL, [Id, followUpRemark, currentdate, currentdate], (err, insertResult) => {
+  db.query(
+    "SELECT * FROM enquirers WHERE enquirersid = ?",
+    [Id],
+    (err, result) => {
       if (err) {
-        console.error("Error inserting visit:", err);
+        console.error("Database error:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
 
-      res.status(201).json({ message: "Follow Up remark added successfully", Id: insertResult.insertId });
-    });
-  });
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Enquiry not found" });
+      }
+
+      const insertSQL = `
+      INSERT INTO propertyfollowup (enquirerid, remark, status, updated_at, created_at)
+      VALUES (?, ?, ?, ?, ?)`;
+
+      db.query(
+        insertSQL,
+        [Id, followUpRemark, enquiryStatus, currentdate, currentdate],
+        (err, insertResult) => {
+          if (err) {
+            console.error("Error inserting visit:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+
+          res.status(201).json({
+            message: "Follow Up remark added successfully",
+            Id: insertResult.insertId,
+          });
+        }
+      );
+    }
+  );
 };
 
 export const cancelled = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { cancelledRemark } = req.body;
+  const { cancelledRemark, enquiryStatus } = req.body;
 
-  if (!cancelledRemark) {
+  if (!cancelledRemark || !enquiryStatus) {
     return res.status(400).json({ message: "Please add remark!" });
   }
 
@@ -301,29 +359,55 @@ export const cancelled = (req, res) => {
     return res.status(400).json({ message: "Invalid Enquiry ID" });
   }
 
-  db.query("SELECT * FROM enquirers WHERE enquirersid = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Enquiry not found" });
-    }
-
-    const insertSQL = `
-      INSERT INTO propertyfollowup (enquirerid, remark, updated_at, created_at)
-      VALUES (?, ?, ?, ?)`;
-
-    db.query(insertSQL, [Id, cancelledRemark, currentdate, currentdate], (err, insertResult) => {
+  db.query(
+    "SELECT * FROM enquirers WHERE enquirersid = ?",
+    [Id],
+    (err, result) => {
       if (err) {
-        console.error("Error while Add Remark:", err);
+        console.error("Database error:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
 
-      res.status(201).json({ message: "Remark added successfully", Id: insertResult.insertId });
-    });
-  });
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Enquiry not found" });
+      }
+
+      const insertSQL = `
+      INSERT INTO propertyfollowup (enquirerid, remark, status, updated_at, created_at)
+      VALUES (?, ?, ?, ?, ?)`;
+
+      db.query(
+        insertSQL,
+        [Id, cancelledRemark, enquiryStatus, currentdate, currentdate],
+        (err, insertResult) => {
+          if (err) {
+            console.error("Error while Add Remark:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+
+          res.status(201).json({
+            message: "Remark added successfully",
+            Id: insertResult.insertId,
+          });
+        }
+      );
+    }
+  );
 };
 
+//Filters for Enquiry
+export const getByStatus = (req, res) => {
+  const status = req.params.id;
+  const sql = `SELECT * FROM enquirers WHERE status = ? `;
 
+  db.query(sql, [status], (err, results) => {
+    if (err) {
+      console.error("Error fetching new enquiries:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    res.json(results); // Send the list of enquiries with status
+  });
+};

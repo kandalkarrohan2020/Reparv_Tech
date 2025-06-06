@@ -12,6 +12,7 @@ import {
   getTerritoryPartners,
   assignEnquiry,
   getPropertyCity,
+  getByStatus,
 } from "../../controllers/sales/enquirerController.js";
 
 const router = express.Router();
@@ -46,6 +47,8 @@ router.put("/status/:id", status);
 router.post("/visitscheduled/:id", visitScheduled);
 router.post("/followup/:id", followUp);
 router.post("/cancelled/:id", cancelled);
-router.post("/token/:id",upload.single("paymentimage"), token);
+router.post("/token/:id", upload.single("paymentimage"), token);
+//filter
+router.get("/enquirybystatus/:id", getByStatus);
 
 export default router;

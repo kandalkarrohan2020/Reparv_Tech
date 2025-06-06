@@ -11,6 +11,7 @@ import Loader from "../components/Loader";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import AddButton from "../components/AddButton";
 import propertyPicture from "../assets/propertyPicture.svg";
+import FormatPrice from "../components/FormatPrice";
 
 const Enquirers = () => {
   const {
@@ -26,13 +27,20 @@ const Enquirers = () => {
     setShowEnquiry,
     showEnquiryForm,
     setShowEnquiryForm,
+    showEnquiryUpdateForm,
+    setShowEnquiryUpdateForm,
+    showEnquirerPropertyForm,
+    setShowEnquirerPropertyForm,
   } = useAuth();
 
   const [datas, setDatas] = useState([]);
   const [remarkList, setRemarkList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [enquiryId, setEnquiryId] = useState("");
+  const [propertyId, setPropertyId] = useState("");
   const [file, setFile] = useState(null);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
   const [property, setProperty] = useState({});
   const [enquiry, setEnquiry] = useState({});
   const [enquiryStatus, setEnquiryStatus] = useState("");
@@ -53,7 +61,19 @@ const Enquirers = () => {
   });
 
   const [selectedSource, setSelectedSource] = useState("Select Enquiry Source");
+  const [propertyList, setPropertyList] = useState([]);
 
+  const [newEnquiry, setNewEnquiry] = useState({
+    customer: "",
+    contact: "",
+    minbudget: "",
+    maxbudget: "",
+    category: "",
+    state: "",
+    city: "",
+    location: "",
+    message: "",
+  });
   //Single Image Upload
   const [selectedImage, setSelectedImage] = useState(null);
 
@@ -66,6 +86,43 @@ const Enquirers = () => {
 
   const removeSingleImage = () => {
     setSelectedImage(null);
+  };
+
+  // **Fetch States from API**
+  const fetchStates = async () => {
+    try {
+      const response = await fetch(URI + "/admin/states", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch States.");
+      const data = await response.json();
+      setStates(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // **Fetch States from API**
+  const fetchCities = async () => {
+    try {
+      const response = await fetch(`${URI}/admin/cities/${newEnquiry?.state}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch cities.");
+      const data = await response.json();
+      console.log(data);
+      setCities(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
   };
 
   //Fetch Data
@@ -110,6 +167,62 @@ const Enquirers = () => {
     }
   };
 
+  // **Fetch Data from API**
+  const fetchPropertyList = async (id) => {
+    try {
+      const response = await fetch(
+        URI + "/admin/enquirers/property/list/" + id,
+        {
+          method: "GET",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok)
+        throw new Error("Failed to fetch enquirers property list.");
+      const list = await response.json();
+      setPropertyList(list);
+      setShowEnquirerPropertyForm(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  const updatePropertyToEnquiry = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      const response = await fetch(
+        URI + `/admin/enquirers/property/update/${enquiryId}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ propertyId }),
+        }
+      );
+      const data = await response.json();
+      console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      setPropertyId("");
+      setShowEnquirerPropertyForm(false);
+      fetchData();
+    } catch (error) {
+      console.error("Error Updating Property to Enquiry :", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   //Fetch Sales Persons List
   const fetchSalesPersonList = async () => {
     try {
@@ -146,7 +259,7 @@ const Enquirers = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ visitDate, visitRemark }),
+            body: JSON.stringify({ visitDate, visitRemark, enquiryStatus }),
           }
         );
         const data = await response.json();
@@ -171,6 +284,7 @@ const Enquirers = () => {
       formData.append("paymenttype", token.paymenttype);
       formData.append("remark", token.remark);
       formData.append("dealamount", token.dealamount);
+      formData.append("enquiryStatus", enquiryStatus);
       if (selectedImage) {
         formData.append("paymentimage", selectedImage);
       }
@@ -215,7 +329,7 @@ const Enquirers = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ followUpRemark }),
+            body: JSON.stringify({ followUpRemark, enquiryStatus }),
           }
         );
         const data = await response.json();
@@ -245,7 +359,7 @@ const Enquirers = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ cancelledRemark }),
+            body: JSON.stringify({ cancelledRemark, enquiryStatus }),
           }
         );
         const data = await response.json();
@@ -360,6 +474,75 @@ const Enquirers = () => {
     }
   };
 
+  const updateEnquiry = async (e) => {
+    e.preventDefault();
+
+    const endpoint = newEnquiry.enquirersid
+      ? `update/enquiry/${newEnquiry.enquirersid}`
+      : "add/enquiry";
+    try {
+      setLoading(true);
+      const response = await fetch(`${URI}/sales/enquiry/${endpoint}`, {
+        method: newEnquiry.enquirersid ? "PUT" : "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newEnquiry),
+      });
+
+      if (response.status === 409) {
+        alert("Enquiry already exists!");
+      } else if (!response.ok) {
+        throw new Error(`Failed to save enquiry. Status: ${response.status}`);
+      } else {
+        alert(
+          newEnquiry.enquirersid
+            ? "Enquiry updated successfully!"
+            : "Enquiry added successfully!"
+        );
+      }
+
+      // Clear form only after successful fetch
+      setNewEnquiry({
+        customer: "",
+        contact: "",
+        minbudget: "",
+        maxbudget: "",
+        category: "",
+        state: "",
+        city: "",
+        location: "",
+        message: "",
+      });
+
+      setShowEnquiryUpdateForm(false);
+
+      await fetchData();
+    } catch (err) {
+      console.error("Error saving enquiry:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //fetch data on form
+  const edit = async (id) => {
+    try {
+      const response = await fetch(`${URI}/sales/enquirers/${id}`, {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch ticket.");
+      const data = await response.json();
+      setNewEnquiry(data);
+      setShowEnquiryUpdateForm(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
   // Add Additional Info as a CSV File
   const addCsv = async (e) => {
     e.preventDefault();
@@ -421,8 +604,15 @@ const Enquirers = () => {
 
   useEffect(() => {
     fetchData();
+    fetchStates();
     fetchSalesPersonList();
   }, []);
+
+  useEffect(() => {
+    if (newEnquiry.state != "") {
+      fetchCities();
+    }
+  }, [newEnquiry.state]);
 
   const filteredData = datas?.filter(
     (item) =>
@@ -564,9 +754,16 @@ const Enquirers = () => {
           setEnquiryId(id);
           setShowEnquiryStatusForm(true);
           break;
+        case "property":
+          setEnquiryId(id);
+          fetchPropertyList(id);
+          break;
         case "assign":
           setEnquiryId(id);
           setShowAssignSalesForm(true);
+          break;
+        case "update":
+          edit(id);
           break;
         case "delete":
           deleteEnquiry(id);
@@ -595,7 +792,12 @@ const Enquirers = () => {
           </option>
           <option value="view">View</option>
           <option value="status">Status</option>
+          {row.source !== "Onsite" && <option value="update">Update</option>}
+          {row.source !== "Onsite" && (
+            <option value="property">Property</option>
+          )}
           <option value="assign">Assign</option>
+
           <option value="delete">Delete</option>
         </select>
       </div>
@@ -703,6 +905,264 @@ const Enquirers = () => {
                 Add CSV File
               </button>
               <Loader />
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* Update Enquiry Form */}
+      <div
+        className={` ${
+          !showEnquiryUpdateForm && "hidden"
+        }  z-[61] overflow-scroll scrollbar-hide h-[75vh] flex fixed`}
+      >
+        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-10 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">Enquiry Details</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowEnquiryUpdateForm(false);
+                setNewEnquiry({
+                  customer: "",
+                  contact: "",
+                  minbudget: "",
+                  maxbudget: "",
+                  category: "",
+                  state: "",
+                  city: "",
+                  location: "",
+                  message: "",
+                });
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={updateEnquiry}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
+              <input
+                type="hidden"
+                value={newEnquiry.enquirersid || ""}
+                onChange={(e) => {
+                  setPartnerId(e.target.value);
+                }}
+              />
+              <div className="w-full ">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Full Name <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter Full Name"
+                  value={newEnquiry.customer}
+                  onChange={(e) => {
+                    setNewEnquiry({
+                      ...newEnquiry,
+                      customer: e.target.value,
+                    });
+                  }}
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Contact Number <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter Contact Number"
+                  value={newEnquiry.contact}
+                  onChange={(e) => {
+                    const input = e.target.value;
+                    if (/^\d{0,10}$/.test(input)) {
+                      // Allows only up to 10 digits
+                      setNewEnquiry({
+                        ...newEnquiry,
+                        contact: e.target.value,
+                      });
+                    }
+                  }}
+                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="w-full ">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Min-Budget <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="number"
+                  required
+                  placeholder="Enter Your Budget"
+                  value={newEnquiry.minbudget}
+                  onChange={(e) => {
+                    setNewEnquiry({
+                      ...newEnquiry,
+                      minbudget: e.target.value,
+                    });
+                  }}
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="w-full ">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Max-Budget <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="number"
+                  required
+                  placeholder="Enter Your Budget"
+                  value={newEnquiry.maxbudget}
+                  onChange={(e) => {
+                    setNewEnquiry({
+                      ...newEnquiry,
+                      maxbudget: e.target.value,
+                    });
+                  }}
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Property Category <span className="text-red-600">*</span>
+                </label>
+                <select
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={newEnquiry.category}
+                  onChange={(e) =>
+                    setNewEnquiry({
+                      ...newEnquiry,
+                      category: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Select Property Category</option>
+                  <option value="NewFlat">New Flat</option>
+                  <option value="NewPlot">New Plot</option>
+                  <option value="RentalFlat">Rental Flat</option>
+                  <option value="RentalShop">Rental Shop</option>
+                  <option value="RentalOffice">Rental Office</option>
+                  <option value="Resale">Resale</option>
+                  <option value="RowHouse">Row House</option>
+                  <option value="Lease">Lease</option>
+                  <option value="FarmLand">Farm Land</option>
+                  <option value="FarmHouse">Farm House</option>
+                  <option value="CommercialFlat">Commercial Flat</option>
+                  <option value="CommercialPlot">Commercial Plot</option>
+                  <option value="IndustrialSpace">Industrial Space</option>
+                </select>
+              </div>
+
+              {/* State Select Input */}
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Select State <span className="text-red-600">*</span>
+                </label>
+                <select
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={newEnquiry.state}
+                  onChange={(e) =>
+                    setNewEnquiry({
+                      ...newEnquiry,
+                      state: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Select Your State</option>
+                  {states?.map((state, index) => (
+                    <option key={index} value={state.state}>
+                      {state.state}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* City Select Input */}
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Select City <span className="text-red-600">*</span>
+                </label>
+                <select
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={newEnquiry.city}
+                  onChange={(e) =>
+                    setNewEnquiry({
+                      ...newEnquiry,
+                      city: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Select Your City</option>
+                  {cities?.map((city, index) => (
+                    <option key={index} value={city.city}>
+                      {city.city}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="w-full ">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Location <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter Location"
+                  value={newEnquiry.location}
+                  onChange={(e) => {
+                    setNewEnquiry({
+                      ...newEnquiry,
+                      location: e.target.value,
+                    });
+                  }}
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-3  mt-[10px] text-sm text-[#00000066] font-medium ">
+              <label htmlFor="message" className="ml-1">
+                Message <span className="text-red-600">*</span>
+              </label>
+              <textarea
+                name="message"
+                id="message"
+                placeholder="Enter your Message here.."
+                value={newEnquiry.message}
+                onChange={(e) => {
+                  setNewEnquiry({
+                    ...newEnquiry,
+                    message: e.target.value,
+                  });
+                }}
+                className="w-full text-black text-base font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
+                rows="2"
+              ></textarea>
+            </div>
+
+            <div className="flex h-10 mt-8 md:mt-6 justify-center sm:justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEnquiryUpdateForm(false);
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Save Enquiry
+              </button>
+              <Loader></Loader>
             </div>
           </form>
         </div>
@@ -1056,6 +1516,82 @@ const Enquirers = () => {
         </div>
       </div>
 
+      {/* ADD Property in Enquiry */}
+      <div
+        className={` ${
+          !showEnquirerPropertyForm && "hidden"
+        } z-[61] overflow-scroll scrollbar-hide flex fixed`}
+      >
+        <div className="w-[330px] h-[350px] sm:w-[600px] sm:h-[300px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[300px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">
+              Update Property to Enquiry
+            </h2>
+            <IoMdClose
+              onClick={() => {
+                setShowEnquirerPropertyForm(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={updatePropertyToEnquiry}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1">
+              <input
+                type="hidden"
+                value={enquiryId}
+                onChange={(e) => {
+                  setEnquiryId(e.target.value);
+                }}
+              />
+
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Select Property
+                </label>
+                <select
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={propertyId}
+                  onChange={(e) => {
+                    setPropertyId(e.target.value);
+                  }}
+                >
+                  <option value="">Select Property</option>
+                  {propertyList?.map((property, index) => {
+                    return (
+                      <option key={index} value={property.propertyid}>
+                        {property.propertyName} | {property.builtUpArea}
+                        {" sqft"} |{" "}
+                        <FormatPrice price={property.totalOfferPrice} />
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEnquirerPropertyForm(false);
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Update Property
+              </button>
+              <Loader></Loader>
+            </div>
+          </form>
+        </div>
+      </div>
+
       {/* Show Enquiry Info */}
       <div
         className={`${
@@ -1098,15 +1634,45 @@ const Enquirers = () => {
                   readOnly
                 />
               </div>
-              <div className="w-full ">
+              <div
+                className={`${enquiry.minbudget ? "block" : "hidden"} w-full `}
+              >
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  budget
+                  Min-Budget
                 </label>
                 <input
                   type="text"
                   disabled
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={enquiry.budget}
+                  value={enquiry.minbudget}
+                  readOnly
+                />
+              </div>
+              <div
+                className={`${enquiry.maxbudget ? "block" : "hidden"} w-full `}
+              >
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Max-Budget
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={enquiry.maxbudget}
+                  readOnly
+                />
+              </div>
+              <div
+                className={`${enquiry.category ? "block" : "hidden"} w-full `}
+              >
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Property Category
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={enquiry.category}
                   readOnly
                 />
               </div>
@@ -1192,15 +1758,32 @@ const Enquirers = () => {
                 {remarkList.length > 0 ? (
                   remarkList.map((remark, index) => (
                     <div key={index} className="w-full">
-                      <label className="block mt-2 text-sm leading-4 text-[#00000066] font-medium">
-                        {new Date(remark?.created_at).toLocaleDateString(
-                          "en-GB",
-                          {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          }
-                        )}
+                      <label className="block mt-4 text-sm leading-4 text-[#00000066] font-medium">
+                        <span
+                          className={`px-2 py-1 rounded-md ${
+                            remark?.status === "New"
+                              ? "bg-[#EAFBF1] text-[#0BB501]"
+                              : remark?.status === "Visit Scheduled"
+                              ? "bg-[#E9F2FF] text-[#0068FF]"
+                              : remark?.status === "Token"
+                              ? "bg-[#FFF8DD] text-[#FFCA00]"
+                              : remark?.status === "Cancelled"
+                              ? "bg-[#FFEAEA] text-[#ff2323]"
+                              : remark?.status === "Follow Up"
+                              ? "bg-[#F4F0FB] text-[#5D00FF]"
+                              : "text-[#000000]"
+                          }`}
+                        >
+                          {new Date(remark?.created_at).toLocaleDateString(
+                            "en-GB",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )}
+                          {" - "} {remark?.status}
+                        </span>
                       </label>
                       <input
                         type="text"

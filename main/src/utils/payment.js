@@ -56,8 +56,8 @@ export const handlePayment = async (
         //console.log(result);
         setSuccessScreen({
           show: true,
-          label: "Payment Successful!",
-          description: "Check Your Email for Username or Password",
+          label: "Thank You for Joining Reparv",
+          description: "Username and Password Send On Your Email",
         });
       } else {
         alert("Payment verification failed!");

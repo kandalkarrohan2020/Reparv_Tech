@@ -40,6 +40,7 @@ function Layout() {
     showEnquiry,
     setShowEnquiry,
     showEnquiryStatusForm, setShowEnquiryStatusForm,
+    showEnquirerPropertyForm, setShowEnquirerPropertyForm,
     showEnquiryForm, setShowEnquiryForm,
     showSiteVisitPopup,
     setShowSiteVisitPopup,
@@ -60,6 +61,7 @@ function Layout() {
     { state: showPropertyInfo, setter: setShowPropertyInfo },
     { state: showEnquiryForm, setter: setShowEnquiryForm },
     { state: showEnquiryStatusForm, setter: setShowEnquiryStatusForm },
+    { state: showEnquirerPropertyForm, setter: setShowEnquirerPropertyForm },
   ];
 
   const getNavLinkClass = (path) => {

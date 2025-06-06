@@ -19,7 +19,7 @@ const AuctionMembers = () => {
     try {
       const response = await fetch(URI+"/admin/auctionmember",{
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },

@@ -192,7 +192,7 @@ function Layout() {
           />
         </div>
 
-        <div className="navlink hidden md:flex items-center justify-start gap-7 lg:gap-7 xl:gap-15 text-base leading-[36px] tracking-[0.2em] font-medium text-[#110229]">
+        <div className="navlink hidden md:flex items-center justify-start gap-8 lg:gap-12 xl:gap-18 text-base leading-[36px] tracking-[0.2em] font-medium text-[#110229]">
           <NavLink to="/" className={`${getNavLinkClass("/")}`}>
             Home
           </NavLink>
@@ -215,7 +215,7 @@ function Layout() {
             Contact Us
           </NavLink>
 
-          <JoinOurTeamDropdown className={`flex gap-1`}></JoinOurTeamDropdown>
+          {/*<JoinOurTeamDropdown className={`flex gap-1`}></JoinOurTeamDropdown>*/}
         </div>
       </div>
 

@@ -20,7 +20,7 @@ export default function ImageSlider() {
     try {
       const response = await fetch(URI + "/frontend/slider", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -39,39 +39,8 @@ export default function ImageSlider() {
   },[]);
 
   return (
-    <div className="relative w-full mx-auto max-w-[1650px] flex items-center justify-center mb-5">
-      <Swiper
-        modules={[Navigation, Pagination, Autoplay]}
-        spaceBetween={20}
-        slidesPerView={1}
-        pagination={{
-          clickable: true,
-          el: ".custom-pagination",
-        }}
-        autoplay={{ delay: 3000, disableOnInteraction: false }}
-        loop
-        touchEventsTarget="wrapper"
-        touchRatio={1}
-        simulateTouch={true}
-        grabCursor={true}
-        className="shadow-lg overflow-scroll scrollbar-hide sm:overflow-hidden"
-      >
-        {sliderImages?.map((img, index) => (
-          <SwiperSlide key={index}>
-            <img
-              src={URI+"/uploads/"+img.image}
-              alt={`Slide ${index + 1}`}
-              className="hidden sm:block w-full h-auto object-cover"
-            />
-            <img
-              src={URI+"/uploads/"+img?.mobileimage}
-              alt={`Slide ${index + 1}`}
-              className={`block sm:hidden w-full h-auto object-cover`}
-            />
-          </SwiperSlide>
-        ))}
-      </Swiper>
-      <div className="w-full absolute top-3 z-10 flex sm:hidden items-center justify-between gap-2 px-4 pt-3 pb-2">
+    <div className="w-full mx-auto max-w-[1650px] flex flex-col items-center justify-center mb-5">
+      <div className="w-full flex sm:hidden items-center justify-between gap-2 px-4 pt-3 pb-2">
         {/* Mobile Search */}
         <div className="relative min-w-[140px] max-w-[250px] bg-white rounded-md ">
           <span className="absolute inset-y-0 left-2 md:left-6 flex items-center text-gray-400">
@@ -107,6 +76,38 @@ export default function ImageSlider() {
           </select>
         </div>
       </div>
+      <Swiper
+        modules={[Navigation, Pagination, Autoplay]}
+        spaceBetween={20}
+        slidesPerView={1}
+        pagination={{
+          clickable: true,
+          el: ".custom-pagination",
+        }}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
+        loop
+        touchEventsTarget="wrapper"
+        touchRatio={1}
+        simulateTouch={true}
+        grabCursor={true}
+        className="w-full shadow-lg overflow-scroll scrollbar-hide sm:overflow-hidden"
+      >
+        {sliderImages?.map((img, index) => (
+          <SwiperSlide key={index}>
+            <img
+              src={URI+"/uploads/"+img.image}
+              alt={`Slide ${index + 1}`}
+              className="hidden sm:block w-full h-auto object-cover"
+            />
+            <img
+              src={URI+"/uploads/"+img?.mobileimage}
+              alt={`Slide ${index + 1}`}
+              className={`block sm:hidden w-full h-auto object-cover`}
+            />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+      
       <div className="custom-pagination hidden sm:flex items-center justify-center gap-1 m-5 absolute bottom-[60px] z-10"></div>
       <div className = "hidden lg:block absolute w-full z-10 lg:bottom-[-60px] xl:bottom-[-50px]" >
         <PropertyNavbar />

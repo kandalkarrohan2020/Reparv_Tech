@@ -20,7 +20,8 @@ export const getById = (req, res) => {
   if (isNaN(Id))
     return res.status(400).json({ message: "Invalid Property ID" });
 
-  const sql = "SELECT properties.*, builders.company_name FROM properties inner join builders on builders.builderid = properties.builderid WHERE propertyid = ?";
+  const sql =
+    "SELECT properties.*, builders.company_name FROM properties inner join builders on builders.builderid = properties.builderid WHERE propertyid = ?";
   db.query(sql, [Id], (err, result) => {
     if (err) {
       console.error("Error fetching property:", err);
@@ -49,9 +50,29 @@ export const fetchAdditionalInfo = (req, res) => {
     }
 
     if (result.length === 0) {
-      return res.status(404).json({ message: "Property Additional Information not found" });
+      return res
+        .status(404)
+        .json({ message: "Property Additional Information not found" });
     }
 
     res.json(result); // Return only the first property
+  });
+};
+
+//update propertyinfo status available Or Notavailable
+export const updateStatus = (req, res) => {
+  const id = parseInt(req.params.id);
+  const sql = `
+  UPDATE propertiesinfo SET status = ? WHERE propertyinfoid = ?
+  `;
+  const val = "not_available";
+  db.query(sql, [val, id], (err, result) => {
+    if (err) {
+      console.error("Error deleting :", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    res
+      .status(200)
+      .json({ message: "Property Info Status change successfully" });
   });
 };

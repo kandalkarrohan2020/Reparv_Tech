@@ -16,8 +16,8 @@ const delTokenInCookie = () => {
     setAccessToken();
     Cookies.remove("accessToken");
 }
-const URI = "http://localhost:3000";
-//const URI = "https://api.reparv.in";
+//const URI = "http://localhost:3000";
+const URI = "https://api.reparv.in";
 
 const [loading, setLoading] = useState(false);
 const [showEplDetailsForm, setShowEplDetailsForm ] = useState(false);
@@ -44,8 +44,10 @@ const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
 const [showAssignSalesForm, setShowAssignSalesForm] = useState(false);
 const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
 const [showEnquiryForm, setShowEnquiryForm] = useState(false);
+const [showEnquiryUpdateForm, setShowEnquiryUpdateForm] = useState(false);
 const [showEnquiry, setShowEnquiry] = useState(false);
 const [showPropertyInfo, setShowPropertyInfo] = useState(false);
+const [showEnquirerPropertyForm, setShowEnquirerPropertyForm] = useState(false);
 const [showSliderForm, setShowSliderForm] = useState(false);
 const [showFeedbackForm, setShowFeedbackForm] = useState(false);
 const [showPartnerForm, setShowPartnerForm ] = useState(false);
@@ -83,8 +85,10 @@ return <AuthContext.Provider
         showAssignSalesForm, setShowAssignSalesForm,
         showEnquiryStatusForm, setShowEnquiryStatusForm,
         showEnquiryForm, setShowEnquiryForm,
+        showEnquiryUpdateForm, setShowEnquiryUpdateForm,
         showEnquiry, setShowEnquiry,
         showPropertyInfo, setShowPropertyInfo,
+        showEnquirerPropertyForm, setShowEnquirerPropertyForm,
         showSliderForm, setShowSliderForm,
         showFeedbackForm, setShowFeedbackForm,
         showPartnerForm, setShowPartnerForm,

@@ -51,6 +51,7 @@ function Layout() {
     showAdditionalInfoForm, setShowAdditionalInfoForm,
     showAssignSalesForm, setShowAssignSalesForm,
     showEnquiryForm, setShowEnquiryForm,
+    showEnquiryUpdateForm, setShowEnquiryUpdateForm,
     showEnquiryStatusForm, setShowEnquiryStatusForm,
     showPropertyInfo, setShowPropertyInfo,
     showSliderForm, setShowSliderForm,
@@ -65,6 +66,7 @@ function Layout() {
     showPartner, setShowPartner,
     showSalesPerson, setShowSalesPerson,
     showAddMobileImage, setShowAddMobileImage,
+    showEnquirerPropertyForm, setShowEnquirerPropertyForm,
     isLoggedIn,
   } = useAuth();
 
@@ -82,6 +84,7 @@ function Layout() {
     { state: showAssignSalesForm, setter: setShowAssignSalesForm },
     { state: showAdditionalInfoForm, setter: setShowAdditionalInfoForm },
     { state: showEnquiryForm, setter: setShowEnquiryForm },
+    { state: showEnquiryUpdateForm, setter: setShowEnquiryUpdateForm },
     { state: showEnquiryStatusForm, setter: setShowEnquiryStatusForm },
     { state: showRejectReasonForm, setter: setShowRejectReasonForm },
     { state: showPropertyInfo, setter: setShowPropertyInfo },
@@ -97,6 +100,8 @@ function Layout() {
     { state: showPartner, setter: setShowPartner},
     { state: showAddMobileImage, setter: setShowAddMobileImage},
     { state: showPaymentIdForm, setter: setShowPaymentIdForm },
+    { state: showEnquirerPropertyForm, setter: setShowEnquirerPropertyForm },
+    
   ];
 
   const getNavLinkClass = (path) => {

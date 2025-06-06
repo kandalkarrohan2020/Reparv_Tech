@@ -31,7 +31,8 @@ function Layout() {
     showProfile,
     URI,
     setShowProfile,
-    showKYC, setShowKYC,
+    showKYC,
+    setShowKYC,
     showPropertyForm,
     setShowPropertyForm,
     showUploadImagesForm,
@@ -63,6 +64,8 @@ function Layout() {
     setShowFilterPopup,
     showPriceSummery,
     setShowPriceSummery,
+    showEnquirerPropertyForm,
+    setShowEnquirerPropertyForm,
   } = useAuth();
 
   const overlays = [
@@ -76,6 +79,7 @@ function Layout() {
     { state: showEnquiry, setter: setShowEnquiry },
     { state: showEnquiryForm, setter: setShowEnquiryForm },
     { state: showPropertyInfo, setter: setShowPropertyInfo },
+    { state: showEnquirerPropertyForm, setter: setShowEnquirerPropertyForm },
   ];
 
   const getNavLinkClass = (path) => {

@@ -21,7 +21,7 @@ function SalesPartner() {
           alt=""
           className="w-full block sm:hidden mx-auto"
         />
-        <div className="hidden lg:block registerForm w-full max-w-[1050px] mx-auto absolute bottom-4 ">
+        <div className="hidden lg:block registerForm w-full max-w-[1050px] mx-auto absolute bottom-0 ">
           <RegisterForm />
         </div>
       </div>

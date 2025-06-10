@@ -111,7 +111,7 @@ function Layout() {
           />
         </div>
 
-        <div className="navlink hidden md:flex items-center justify-start gap-7 lg:gap-7 xl:gap-15 text-base leading-[36px] tracking-[0.2em] font-medium text-[#110229]">
+        <div className="navlink hidden md:flex items-center justify-start gap-7 lg:gap-7 xl:gap-15 text-base leading-[22px] tracking-[0.1em] font-medium text-[#110229]">
           <NavLink to="/sales-partner" className={`${getNavLinkClass("/sales-partner")} ${getNavLinkClass("/")}`}>
             Sales Partner
           </NavLink>

@@ -418,44 +418,62 @@ export const update = async (req, res) => {
 
 export const del = (req, res) => {
   const Id = parseInt(req.params.id);
-  if (isNaN(Id))
+  if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Property ID" });
+  }
 
+  const imageFields = [
+    "frontView", "sideView", "kitchenView", "hallView", "bedroomView",
+    "bathroomView", "balconyView", "nearestLandmark", "developedAmenities",
+  ];
+
+  // Fetch all image paths from DB
   db.query(
-    "SELECT image FROM properties WHERE propertyid = ?",
+    `SELECT ${imageFields.join(", ")} FROM properties WHERE propertyid = ?`,
     [Id],
     (err, result) => {
       if (err) {
         console.error("Database error:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
+
       if (result.length === 0) {
         return res.status(404).json({ message: "Property not found" });
       }
 
-      const imagePath = result[0].image; // Get the image path from the database
-      if (imagePath) {
-        const filePath = path.join(process.cwd(), imagePath); // Full path to the file
+      const property = result[0];
 
-        // Delete the image file from the uploads folder
-        fs.unlink(filePath, (err) => {
-          if (err && err.code !== "ENOENT") {
-            console.error("Error deleting image:", err);
+      // Loop through image fields and delete each image
+      imageFields.forEach((field) => {
+        if (property[field]) {
+          try {
+            const paths = JSON.parse(property[field]);
+            if (Array.isArray(paths)) {
+              paths.forEach((imgPath) => {
+                const fullPath = path.join(process.cwd(), imgPath);
+                fs.unlink(fullPath, (err) => {
+                  if (err && err.code !== "ENOENT") {
+                    console.error(`Error deleting ${imgPath}:`, err);
+                  }
+                });
+              });
+            }
+          } catch (e) {
+            console.error(`Failed to parse ${field}:`, e);
           }
-        });
-      }
+        }
+      });
 
-      // Now delete the property from the database
+      // Delete the property from DB
       db.query("DELETE FROM properties WHERE propertyid = ?", [Id], (err) => {
         if (err) {
           console.error("Error deleting property:", err);
-          return res
-            .status(500)
-            .json({ message: "Database error", error: err });
+          return res.status(500).json({ message: "Database error", error: err });
         }
-        res
-          .status(200)
-          .json({ message: "Property and image deleted successfully" });
+
+        res.status(200).json({
+          message: "Property and associated images deleted successfully",
+        });
       });
     }
   );

@@ -5,7 +5,7 @@ import db from "../../config/dbconnect.js";
 
 const router = express.Router();
 
-// ✅ User Login Route (Supports Email or Username)
+//  User Login Route (Supports Email or Username)
 router.post("/login", async (req, res) => {
   try {
     const { emailOrUsername, password } = req.body;
@@ -18,12 +18,12 @@ router.post("/login", async (req, res) => {
       return res.status(500).json({ message: "Server misconfiguration: JWT secret is missing." });
     }
 
-    // ✅ Query for both email and username
+    //  Query for both email and username
     const user = await new Promise((resolve, reject) => {
       db.query(
         `SELECT * FROM onboardingpartner 
          WHERE (username = ? OR email = ?) 
-         AND status='Active'`,
+         AND loginstatus = 'Active'`,
         [emailOrUsername, emailOrUsername], // Check both email & username
         (err, results) => {
           if (err) {

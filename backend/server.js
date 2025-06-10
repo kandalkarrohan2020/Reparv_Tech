@@ -194,9 +194,7 @@ const verifyToken = (req, res, next) => {
     "/frontend/slider",
     "/frontend/testimonial",
     //i addedd
-    "/sales/enquirers",
     "/api/booking",
-    "/sales/properties",
     //salesPerson APP Routes
     "/salesapp/api/login",
     "/sales/flat",
@@ -205,7 +203,6 @@ const verifyToken = (req, res, next) => {
     "/salesapp/tickets",
     "/salesapp/post",
     "/salesapp/user",
-    "/sales/profile",
     "/salesapp/client",
     //Territory App
     "/territoryapp/user",

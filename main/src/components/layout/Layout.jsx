@@ -28,7 +28,7 @@ function Layout() {
   const {
     showSuccess,
     URI,
-    successScreen, 
+    successScreen,
     setSuccessScreen,
     selectedCity,
     setSelectedCity,
@@ -142,7 +142,6 @@ function Layout() {
               >
                 Contact Us
               </NavLink>
-              
             </div>
           </div>
         )}
@@ -158,9 +157,8 @@ function Layout() {
           </Link>
         </div>
         <div
-          className={`selectCity ${
-            location.pathname != "/about" ? "sm:inline-block" : "hidden"
-          } hidden min-w-[50px] max-w-[180px] relative`}
+          className={`selectCity ${location.pathname != "/about" ? "sm:inline-block" : "hidden"
+            } hidden min-w-[50px] max-w-[180px] relative`}
         >
           <div className="flex lg:gap-1 items-center justify-center text-base font-semibold  text-black lg:p-1 ">
             <CiLocationOn className="w-5 h-5" />
@@ -259,17 +257,28 @@ function Layout() {
 
             <div className="midBody flex flex-col gap-5 text-lg font-medium !text-White">
               <h3 className="text-xl font-bold">Become a Professional</h3>
-              <p className="cursor-pointer">
-                <Link to="/sales-partner">Sales Partner</Link>
+              <p
+                className="cursor-pointer"
+                onClick={() => {
+                  window.open("https://partners.reparv.in/sales-partner", "_blank");
+                }}
+              >
+                Sales Partner
               </p>
-              <p className="cursor-pointer">
-                <Link to="/project-partner">Project Partner</Link>
+              <p className="cursor-pointer" onClick={() => {
+                window.open("https://partners.reparv.in/project-partner", "_blank");
+              }}>
+                Project Partner
               </p>
-              <p className="cursor-pointer">
-                <Link to="/territory-partner">Territory Partner</Link>
+              <p className="cursor-pointer" onClick={() => {
+                window.open("https://partners.reparv.in/territory-partner", "_blank");
+              }}>
+                Territory Partner
               </p>
-              <p className="cursor-pointer">
-                <Link to="/onboarding-partner">Onboarding Partner</Link>
+              <p className="cursor-pointer" onClick={() => {
+                window.open("https://partners.reparv.in/onboarding-partner", "_blank");
+              }}>
+                Onboarding Partner
               </p>
             </div>
 
@@ -323,7 +332,9 @@ function Layout() {
       <div className="footer  md:hidden w-full flex flex-col items-center justify-start gap-4 bg-[#000000] text-white py-15 px-10">
         <div className="footerContainer w-full flex items-start justify-between py-2">
           <div className="footerLeft flex items-center justify-start ">
-            <Link to="/"><img src={footerLogo} alt="" className="w-[135px]" /></Link>
+            <Link to="/">
+              <img src={footerLogo} alt="" className="w-[135px]" />
+            </Link>
           </div>
 
           <div className="footerRight flex flex-col gap-5 text-xs leading-1.5 sm:text-lg font-medium">

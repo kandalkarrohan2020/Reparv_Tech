@@ -12,8 +12,8 @@ function OnboardingPartner() {
   return (
     <div className="w-full">
       {/* Sales Top BackGround */}
-      <div className="w-full flex flex-col xl:pb-35 2xl:pb-20 items-center justify-center backImage relative">
-        <div className="relative w-full min-h-120 max-h-200 sm:min-h-160 sm:max-h-200 md:min-h-80 md:max-h-200 flex items-center justify-center">
+      <div className="w-full flex flex-col xl:pb-20 2xl:pb-10 items-center justify-center backImage relative">
+        <div className="relative w-full min-h-80 max-h-200 sm:min-h-150 sm:max-h-200 md:min-h-70 md:max-h-200 flex items-center justify-center">
           <img
             src={partnerBackImage}
             alt=""
@@ -49,7 +49,7 @@ function OnboardingPartner() {
               <VideoSection videoFor="onboarding partner" />
             </div>
           </div>
-          <div className="absolute bottom-[-150px] 2xl:bottom-[-90px] hidden xl:flex registerForm w-full max-w-[1050px] mx-auto">
+          <div className="absolute bottom-[-100px] 2xl:bottom-[-50px] hidden xl:flex registerForm w-full max-w-[1050px] mx-auto">
             <RegisterForm />
           </div>
         </div>

@@ -20,8 +20,8 @@ const App = () => {
           <Route path="/dashboard" element={<Overview />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/tickets" element={<Ticketing />} />
-          <Route path="*" element={<ErrorPage />}></Route>
         </Route>
+        <Route path="*" element={<ErrorPage />}></Route>
       </Routes>
     </BrowserRouter>
   );

@@ -16,7 +16,7 @@ export const convertImagesToWebp = async (files) => {
 
       try {
         await sharp(originalPath)
-          .webp({ quality: 80 })
+          .webp({ quality: 50 })
           .toFile(newPath);
 
         fs.unlinkSync(originalPath); // remove original

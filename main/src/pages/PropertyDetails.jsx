@@ -11,6 +11,7 @@ import EMICalculator from "../components/property/EMICalculator";
 import OtherProperties from "../components/OtherProperties";
 import { useOutletContext } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
+import SEO from "../components/SEO";
 
 function PropertyDetails() {
   const { setOtherPropertiesInView, isScrolling } = useOutletContext();
@@ -68,6 +69,11 @@ function PropertyDetails() {
   }, [otherPropertiesInView]);
 
   return (
+    <>
+      <SEO
+        title={propertyInfo.seoTittle || ""}
+        description={propertyInfo.seoDescription || ""}
+      />
     <div className="w-full max-w-7xl flex flex-col sm:p-4 mx-auto">
       <div className="flex w-full">
         <div className="leftSection w-full md:w-[50%] flex flex-col gap-5 sm:gap-10">
@@ -118,6 +124,7 @@ function PropertyDetails() {
         />
       </div>
     </div>
+    </>
   );
 }
 

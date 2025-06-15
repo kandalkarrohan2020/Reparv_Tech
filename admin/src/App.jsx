@@ -25,6 +25,7 @@ import ScrollToTop from "./components/ScrollToTop.jsx";
 import OnBoardingPartner from "./pages/OnBoardingPartner.jsx";
 import ProjectPartner from "./pages/projectPartner.jsx";
 import TerritoryPartner from "./pages/TerritoryPartner.jsx";
+import GuestUser from "./pages/guestUser.jsx";
 
 const App = () => {
   return (
@@ -39,6 +40,7 @@ const App = () => {
           <Route path="/map" element={<Map />} />
           <Route path="/calender" element={<Calender />} />
           <Route path="/customers" element={<Customers />} />
+          <Route path="/guest-users" element={<GuestUser />} />
           <Route path="/builders" element={<Builders />} />
           <Route path="/salespersons" element={<SalesPerson />} />
           <Route path="/onboardingpartner" element={<OnBoardingPartner />} />
@@ -53,8 +55,8 @@ const App = () => {
           <Route path="/testimonial" element={<Testimonial/>} />
           <Route path="/raw-materials" element={<RawMaterials />} />
           <Route path="/marketing" element={<Marketing />} />
-          <Route path="*" element={<ErrorPage />}></Route>
         </Route>
+        <Route path="*" element={<ErrorPage />}></Route>
       </Routes>
     </BrowserRouter>
   );

@@ -1,4 +1,5 @@
 import db from "../../config/dbconnect.js";
+
 export const bookProperty = (req, res) => {
   const { enquiryid, propertyinfoid, amount, paymentid } = req.body;
 
@@ -7,8 +8,8 @@ export const bookProperty = (req, res) => {
   }
 
   const sql = `
-      INSERT INTO bookings (enquirersid, propertyinfoid,amount, paymentid)
-      VALUES (?,?, ?, ?)
+      INSERT INTO bookings (enquirersid, propertyinfoid, amount, paymentid)
+      VALUES (?, ?, ?, ?)
     `;
 
   db.query(

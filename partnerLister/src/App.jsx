@@ -22,8 +22,8 @@ const App = () => {
           <Route path="/onboardingpartner" element={<OnBoardingPartner />} />
           <Route path="/projectpartner" element={<ProjectPartner />} />
           <Route path="/territorypartner" element={<TerritoryPartner />} />
-          <Route path="*" element={<ErrorPage />}></Route>
         </Route>
+        <Route path="*" element={<ErrorPage />}></Route>
       </Routes>
     </BrowserRouter>
   );

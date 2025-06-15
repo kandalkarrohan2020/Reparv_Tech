@@ -27,7 +27,13 @@ export const getAll = (req, res) => {
       console.error("Error fetching properties:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    res.json(result);
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json(formatted);
   });
 };
 
@@ -53,7 +59,7 @@ export const getById = (req, res) => {
   });
 };
 
-// get all images 
+// get all images
 export const getImages = (req, res) => {
   const partnerId = req.user.id;
   if (!partnerId) {
@@ -61,7 +67,7 @@ export const getImages = (req, res) => {
   }
 
   const Id = parseInt(req.params.id);
-  if (isNaN(Id)){
+  if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Property ID" });
   }
 
@@ -76,16 +82,14 @@ export const getImages = (req, res) => {
     }
     res.json(result);
   });
-
-}
-
+};
 
 export const addProperty = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-   const files = await convertImagesToWebp(req.files);
+  const files = await convertImagesToWebp(req.files);
   const partnerId = req.user.id;
-  if(!partnerId) {
-    return res.status(401).json({ message: "Unauthorized Access"});
+  if (!partnerId) {
+    return res.status(401).json({ message: "Unauthorized Access" });
   }
   const Id = req.body.propertyid ? parseInt(req.body.propertyid) : null;
 
@@ -455,10 +459,13 @@ export const update = async (req, res) => {
       }
 
       let approve;
-      if(result[0].approve === "Rejected" || result[0].approve === "Not Approved"){
+      if (
+        result[0].approve === "Rejected" ||
+        result[0].approve === "Not Approved"
+      ) {
         approve = "Not Approved";
       } else {
-        approve = "Approved"
+        approve = "Approved";
       }
 
       const existing = result[0];
@@ -605,7 +612,9 @@ export const additionalInfoAdd = (req, res) => {
   } = req.body;
 
   // Files check
-  const owneradhar = req.files?.owneradhar ? req.files.owneradhar[0].filename : null;
+  const owneradhar = req.files?.owneradhar
+    ? req.files.owneradhar[0].filename
+    : null;
   const ownerpan = req.files?.ownerpan ? req.files.ownerpan[0].filename : null;
   const schedule = req.files?.schedule ? req.files.schedule[0].filename : null;
   const signed = req.files?.signed ? req.files.signed[0].filename : null;
@@ -681,7 +690,9 @@ export const editAdditionalInfo = (req, res) => {
   } = req.body;
 
   // Files check
-  const owneradhar = req.files?.owneradhar ? req.files.owneradhar[0].filename : null;
+  const owneradhar = req.files?.owneradhar
+    ? req.files.owneradhar[0].filename
+    : null;
   const ownerpan = req.files?.ownerpan ? req.files.ownerpan[0].filename : null;
   const schedule = req.files?.schedule ? req.files.schedule[0].filename : null;
   const signed = req.files?.signed ? req.files.signed[0].filename : null;
@@ -690,19 +701,19 @@ export const editAdditionalInfo = (req, res) => {
 
   // Start fields and values
   let updateFields = [
-    "wing = ?", 
-    "floor = ?", 
-    "flatno = ?", 
-    "direction = ?", 
-    "ageofconstruction = ?", 
-    "carpetarea = ?", 
-    "superbuiltup = ?", 
-    "salesprice = ?", 
-    "description = ?", 
-    "ownercontact = ?", 
-    "updated_at = ?"
+    "wing = ?",
+    "floor = ?",
+    "flatno = ?",
+    "direction = ?",
+    "ageofconstruction = ?",
+    "carpetarea = ?",
+    "superbuiltup = ?",
+    "salesprice = ?",
+    "description = ?",
+    "ownercontact = ?",
+    "updated_at = ?",
   ];
-  
+
   const updateValues = [
     wing,
     floor,
@@ -743,9 +754,11 @@ export const editAdditionalInfo = (req, res) => {
     updateValues.push(ebill);
   }
 
-  const updateSQL = `UPDATE propertiesinfo SET ${updateFields.join(", ")} WHERE propertyinfoid = ?`;
+  const updateSQL = `UPDATE propertiesinfo SET ${updateFields.join(
+    ", "
+  )} WHERE propertyinfoid = ?`;
 
-  updateValues.push(Id); 
+  updateValues.push(Id);
 
   db.query(updateSQL, updateValues, (err, result) => {
     if (err) {
@@ -766,39 +779,49 @@ export const deleteImages = (req, res) => {
   }
 
   // First, fetch the image path from the database
-  db.query("SELECT image FROM propertiesimages WHERE imageid = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Error fetching image:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-    
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Image not found" });
-    }
+  db.query(
+    "SELECT image FROM propertiesimages WHERE imageid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Error fetching image:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
 
-    const imagePath = result[0].image; // Get the image path
-    if (imagePath) {
-      const filePath = path.join(process.cwd(), imagePath); // Full path to the file
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Image not found" });
+      }
 
-      // Delete the image file from the uploads folder
-      fs.unlink(filePath, (err) => {
-        if (err && err.code !== "ENOENT") {
-          console.error("Error deleting image:", err);
-        }
+      const imagePath = result[0].image; // Get the image path
+      if (imagePath) {
+        const filePath = path.join(process.cwd(), imagePath); // Full path to the file
 
-        // Now delete the record from the database
-        db.query("DELETE FROM propertiesimages WHERE imageid = ?", [Id], (err) => {
-          if (err) {
-            console.error("Error deleting Image:", err);
-            return res.status(500).json({ message: "Database error", error: err });
+        // Delete the image file from the uploads folder
+        fs.unlink(filePath, (err) => {
+          if (err && err.code !== "ENOENT") {
+            console.error("Error deleting image:", err);
           }
-          res.status(200).json({ message: "Image deleted successfully" });
+
+          // Now delete the record from the database
+          db.query(
+            "DELETE FROM propertiesimages WHERE imageid = ?",
+            [Id],
+            (err) => {
+              if (err) {
+                console.error("Error deleting Image:", err);
+                return res
+                  .status(500)
+                  .json({ message: "Database error", error: err });
+              }
+              res.status(200).json({ message: "Image deleted successfully" });
+            }
+          );
         });
-      });
-    } else {
-      res.status(404).json({ message: "Image path not found" });
+      } else {
+        res.status(404).json({ message: "Image path not found" });
+      }
     }
-  });
+  );
 };
 
 export const propertyInfo = (req, res) => {

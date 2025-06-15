@@ -10,7 +10,13 @@ export const getAll = (req, res) => {
       console.error("Error fetching properties:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    res.json(result);
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json(formatted);
   });
 };
 

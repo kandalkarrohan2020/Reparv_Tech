@@ -30,6 +30,7 @@ const [giveAccess, setGiveAccess] = useState(false);
 const [showAssignSalesForm, setShowAssignSalesForm] = useState(false);
 const [showPartnerForm, setShowPartnerForm ] = useState(false);
 const [showPartner, setShowPartner ] = useState(false);
+const [showFollowUpList, setShowFollowUpList] = useState(false);
 
 return <AuthContext.Provider
  value={
@@ -46,6 +47,7 @@ return <AuthContext.Provider
         showAssignSalesForm, setShowAssignSalesForm,
         showPartnerForm, setShowPartnerForm ,
         showPartner, setShowPartner,
+        showFollowUpList, setShowFollowUpList
     }
 }>
     {children}

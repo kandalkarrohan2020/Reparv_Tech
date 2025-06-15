@@ -8,13 +8,20 @@ import VideoSection from "../components/VideoSection";
 import MarketRealityGrid from "../components/projectPartner/MarketRealityGrid";
 import SolutionReparvGrid from "../components/projectPartner/SolutionReparvGrid";
 import BottomGrid from "../components/projectPartner/BottomGrid";
+import SEO from "../components/SEO";
 
 function ProjectPartner() {
   return (
+    <>
+      <SEO
+        title={"Join as a Project Partner with Reparv – Grow & Earn More"}
+        description={"Collaborate with Reparv to scale your real estate success. Developers, agents & consultants – boost visibility, sales & profit. Partner with us today!"}
+        keywords={""}
+      />
     <div className="w-full">
       {/* Sales Top BackGround */}
-      <div className="w-full flex flex-col xl:pb-35 2xl:pb-25 items-center justify-center backImage relative">
-        <div className="relative w-full min-h-120 max-h-200 sm:min-h-160 sm:max-h-200 md:min-h-80 md:max-h-200 flex items-center justify-center">
+      <div className="w-full flex flex-col xl:pb-60 2xl:pb-35 items-center justify-center backImage relative">
+        <div className="relative w-full min-h-120 max-h-170 sm:min-h-170 sm:max-h-200 md:min-h-70 md:max-h-200 flex items-center justify-center">
           <img
             src={projectPartnerBackImage}
             alt=""
@@ -47,7 +54,7 @@ function ProjectPartner() {
               <VideoSection videoFor="project partner"/>
             </div>
           </div>
-          <div className="absolute bottom-[-110px] 2xl:bottom-[-80px] hidden xl:flex registerForm w-full max-w-[1050px] mx-auto">
+          <div className="absolute bottom-[-230px] 2xl:bottom-[-140px] hidden xl:flex registerForm w-full max-w-[1050px] mx-auto">
             <RegisterForm />
           </div>
         </div>
@@ -116,6 +123,7 @@ function ProjectPartner() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

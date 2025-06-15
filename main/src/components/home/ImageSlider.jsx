@@ -39,7 +39,7 @@ export default function ImageSlider() {
   },[]);
 
   return (
-    <div className="w-full mx-auto max-w-[1650px] flex flex-col items-center justify-center mb-5">
+    <div className="relative w-full mx-auto max-w-[1650px] flex flex-col items-center justify-center mb-5">
       <div className="w-full flex sm:hidden items-center justify-between gap-2 px-4 pt-3 pb-2">
         {/* Mobile Search */}
         <div className="relative min-w-[140px] max-w-[250px] bg-white rounded-md ">

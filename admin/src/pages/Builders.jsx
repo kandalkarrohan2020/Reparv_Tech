@@ -270,6 +270,7 @@ const Builders = () => {
       sortable: false,
       width: "50px",
     },
+    { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
       name: "Company Name",
       selector: (row) => row.company_name,

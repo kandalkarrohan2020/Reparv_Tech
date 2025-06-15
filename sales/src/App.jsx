@@ -31,8 +31,9 @@ const App = () => {
 
           <Route path="/property" element={<Property />} />
           <Route path="/property-info/:id" element={<PropertyDetails />} />
-          <Route path="*" element={<ErrorPage />}></Route>
+          
         </Route>
+        <Route path="*" element={<ErrorPage />}></Route>
       </Routes>
     </BrowserRouter>
   );

@@ -22,6 +22,8 @@ const SalesPerson = () => {
     setLoading,
     showSalesPerson,
     setShowSalesPerson,
+    showFollowUpList,
+    setShowFollowUpList,
   } = useAuth();
 
   const [datas, setDatas] = useState([]);
@@ -34,12 +36,16 @@ const SalesPerson = () => {
     fullname: "",
     contact: "",
     email: "",
+    intrest: "",
   });
 
   const [payment, setPayment] = useState({
     amount: "",
     paymentid: "",
   });
+
+  const [followUp, setFollowUp] = useState("");
+  const [followUpList, setFollowUpList] = useState([]);
 
   // **Fetch Data from API**
   const fetchData = async () => {
@@ -92,6 +98,7 @@ const SalesPerson = () => {
           fullname: "",
           contact: "",
           email: "",
+          intrest: "",
         });
 
         setShowSalesForm(false);
@@ -205,11 +212,11 @@ const SalesPerson = () => {
   // Update Payment ID
   const updatePaymentId = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
-      setLoading(true);
       const response = await fetch(
-        URI + `/admin/salespersons/update/paymentid/${salesPersonId}`,
+        `${URI}/admin/salespersons/update/paymentid/${salesPersonId}`,
         {
           method: "PUT",
           headers: {
@@ -219,19 +226,70 @@ const SalesPerson = () => {
           body: JSON.stringify(payment),
         }
       );
+
       const data = await response.json();
-      console.log(response);
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
+      alert(`Success: ${data.message}`);
+      setSalesPersonId(null);
+      setShowPaymentIdForm(false);
+      fetchData();
+    } catch (error) {
+      console.error("Error updating payment ID:", error);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch Follow Up List
+  const fetchFollowUpList = async (id) => {
+    try {
+      const response = await fetch(URI + `/admin/salespersons/followup/list/${id}`, {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch follow up list.");
+      const data = await response.json();
+      setFollowUpList(data);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  // ADD Follow Up
+  const addFollowUp = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      const response = await fetch(
+        URI + `/admin/salespersons/followup/add/${salesPersonId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ followUp }),
+        }
+      );
+      const data = await response.json();
+      setFollowUp("");
       if (response.ok) {
         alert(`Success: ${data.message}`);
       } else {
         alert(`Error: ${data.message}`);
       }
-      setSalesPersonId(null);
-
-      setShowPaymentIdForm(false);
-      fetchData();
+      fetchFollowUpList(salesPersonId);
     } catch (error) {
-      console.error("Error deleting :", error);
+      console.error("Error adding FollowUp :", error);
     } finally {
       setLoading(false);
     }
@@ -293,6 +351,7 @@ const SalesPerson = () => {
 
   const columns = [
     { name: "SN", selector: (row, index) => index + 1, width: "50px" },
+    { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
       name: "Full Name",
       selector: (row) => row.fullname,
@@ -378,6 +437,11 @@ const SalesPerson = () => {
           setSalesPersonId(id);
           setShowPaymentIdForm(true);
           break;
+        case "followup":
+          setSalesPersonId(id);
+          fetchFollowUpList(id);
+          setShowFollowUpList(true);
+          break;
         case "delete":
           del(id);
           break;
@@ -411,6 +475,7 @@ const SalesPerson = () => {
           <option value="status">Status</option>
           <option value="update">Update</option>
           <option value="payment">Payment</option>
+          <option value="followup">Follow Up</option>
           <option value="assignlogin">Assign Login</option>
           <option value="delete">Delete</option>
         </select>
@@ -536,6 +601,25 @@ const SalesPerson = () => {
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              <div className="w-full ">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Why are You Intrested ?{" "}
+                  <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter Your Intrest to Join Reparv"
+                  value={newSalesPerson.intrest}
+                  onChange={(e) => {
+                    setNewSalesPerson({
+                      ...newSalesPerson,
+                      intrest: e.target.value,
+                    });
+                  }}
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             </div>
             <div className="flex h-10 mt-8 md:mt-6 justify-end gap-6">
               <button
@@ -628,6 +712,81 @@ const SalesPerson = () => {
         </div>
       </div>
 
+      {/* Update Payment Id Form */}
+      <div
+        className={` ${
+          !showFollowUpList && "hidden"
+        }  z-[61] overflow-scroll scrollbar-hide flex fixed`}
+      >
+        <div className="w-[330px] sm:w-[600px]  overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] h-[75vh] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">Partner Follow Up</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowFollowUpList(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={addFollowUp}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1">
+              <div className="w-full">
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter Follow Up"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={followUp}
+                  onChange={(e) => {
+                    setFollowUp(e.target.value);
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex h-10 mt-8 md:mt-4 justify-center sm:justify-end gap-6">
+              <button
+                type="submit"
+                className="w-full px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Add Follow Up
+              </button>
+              <Loader></Loader>
+            </div>
+          </form>
+          {/* Show Follow Up List */}
+          <div className="w-full mt-4">
+            <div className="mt-2 flex flex-col gap-2">
+              {followUpList.length > 0 ? (
+                followUpList.map((followUp, index) => (
+                  <div key={index} className="w-full">
+                    <label className="block mt-2 text-sm leading-4 text-[#00000066] font-medium">
+                      <span className={`px-2 py-1 rounded-md`}>
+                        {followUp?.created_at}
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      className="w-full mt-[6px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={followUp.followUp}
+                      readOnly
+                    />
+                  </div>
+                ))
+              ) : (
+                <input
+                  type="text"
+                  disabled
+                  className="w-full text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value="No Follow Up Found"
+                  readOnly
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Give Access Form */}
       <div
         className={` ${
@@ -711,6 +870,18 @@ const SalesPerson = () => {
                 setShowSalesPerson(false);
               }}
               className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <div className="w-full ">
+            <label className="block text-sm leading-4 text-[#00000066] font-medium">
+              Why Intrested to Join Reparv
+            </label>
+            <input
+              type="text"
+              disabled
+              className="w-full my-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={partner.intrest}
+              readOnly
             />
           </div>
           <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">

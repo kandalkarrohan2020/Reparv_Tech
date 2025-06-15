@@ -21,6 +21,7 @@ import salespersonRoutes from "./routes/admin/salespersonRoutes.js";
 import partnerRoutes from "./routes/admin/partnerRoutes.js";
 import projectPartnerRoutes from "./routes/admin/projectPartnerRoutes.js";
 import territoryPartnerRoutes from "./routes/admin/territoryPartnerRoutes.js";
+import guestUserRoutes from "./routes/admin/guestUserRoutes.js";
 import propertytypeRoutes from "./routes/admin/propertytypeRoutes.js";
 import enquirerRoutes from "./routes/admin/enquirerRoutes.js";
 import addEnquiryRoutes from "./routes/admin/enquiryRoutes.js";
@@ -43,6 +44,13 @@ import testimonialFeedbackRoutes from "./routes/frontend/testimonialRoutes.js";
 
 // Payment Route
 import paymentRoutes from "./routes/paymentRoutes.js";
+
+// Guest User Routes
+import guestUserLoginRoutes from "./routes/guestUser/userRoutes.js";
+import guestUserProfileRoutes from "./routes/guestUser/profileRoutes.js";
+import guestUserDashboardRoutes from "./routes/guestUser/dashboardRoutes.js";
+import guestUserPropertyRoutes from "./routes/guestUser/propertyRoutes.js";
+import guestUserBuilderRoutes from "./routes/guestUser/builderRoutes.js";
 
 //employee
 import employeeLoginRoutes from "./routes/employee/employeeLoginRoutes.js";
@@ -131,6 +139,7 @@ const allowedOrigins = [
   "https://admin.reparv.in",
   "https://reparv.in",
   "https://www.reparv.in",
+  "https://users.reparv.in",
   "https://employee.reparv.in",
   "https://partners.reparv.in",
   "https://onboarding.reparv.in",
@@ -180,6 +189,8 @@ const verifyToken = (req, res, next) => {
     "/partner/login",
     "/project-partner/login",
     "/territory-partner/login",
+    "/guest-user/register",
+    "/guest-user/login",
     "/admin/salespersons/add",
     "/admin/partner/add",
     "/admin/projectpartner/add",
@@ -194,9 +205,7 @@ const verifyToken = (req, res, next) => {
     "/frontend/slider",
     "/frontend/testimonial",
     //i addedd
-    "/sales/enquirers",
     "/api/booking",
-    "/sales/properties",
     //salesPerson APP Routes
     "/salesapp/api/login",
     "/sales/flat",
@@ -205,7 +214,6 @@ const verifyToken = (req, res, next) => {
     "/salesapp/tickets",
     "/salesapp/post",
     "/salesapp/user",
-    "/sales/profile",
     "/salesapp/client",
     //Territory App
     "/territoryapp/user",
@@ -276,6 +284,7 @@ app.use("/admin/salespersons", salespersonRoutes);
 app.use("/admin/partner", partnerRoutes);
 app.use("/admin/projectpartner", projectPartnerRoutes);
 app.use("/admin/territorypartner", territoryPartnerRoutes);
+app.use("/admin/guestuser", guestUserRoutes);
 app.use("/admin/propertytypes", propertytypeRoutes);
 app.use("/admin/enquirers", enquirerRoutes);
 // CSV File add Enquiries Route
@@ -286,6 +295,14 @@ app.use("/admin/slider", sliderRoutes);
 app.use("/admin/testimonial", testimonialRoutes);
 app.use("/admin/calender", calenderRoutes);
 // app.use("/admin/marketing", marketingRoutes);
+
+// Guest User Routes
+app.use("/guest-user", guestUserLoginRoutes);
+app.use("/guest-user/profile", guestUserProfileRoutes);
+app.use("/guest-user/dashboard", guestUserDashboardRoutes);
+app.use("/guest-user/builders", guestUserBuilderRoutes);
+app.use("/guest-user/properties", guestUserPropertyRoutes);
+
 
 //Employee Routes
 app.use("/employee", employeeLoginRoutes);

@@ -277,6 +277,7 @@ const Employee = () => {
 
   const columns = [
     { name: "SN", selector: (row, index) => index + 1, width:"50px" },
+    { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     { name: "Name", selector: (row) => row.name, sortable: true , minWidth: "150px" },
     { name: "UID", selector: (row) => row.uid, sortable: true , minWidth: "140px" },
     { name: "Contact", selector: (row) => row.contact, sortable: true , minWidth: "120px" },

@@ -3,6 +3,13 @@ import moment from "moment";
 
 // **Fetch All **
 export const getAll = (req, res) => {
+  console.log("userId: " + req.user.id);
+  const Id = req.user.id;
+  if (!Id) {
+    console.log("Invalid User Id: " + Id);
+    return res.status(400).json({ message: "Invalid User Id" });
+  }
+
   const sql = `
     SELECT enquirers.*, properties.frontView,
     territorypartner.fullname AS territoryName,
@@ -12,17 +19,22 @@ export const getAll = (req, res) => {
     ON enquirers.propertyid = properties.propertyid
     LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
     WHERE enquirers.salespersonid = ? 
-    
     ORDER BY enquirers.enquirersid DESC`;
 
-  db.query(sql, [req.user.id], (err, results) => {
+  db.query(sql, [Id], (err, results) => {
     if (err) {
       console.error("Database Query Error:", err);
       return res
         .status(500)
         .json({ message: "Database query error", error: err });
     }
-    res.json(results);
+    const formatted = results.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json(formatted);
   });
 };
 

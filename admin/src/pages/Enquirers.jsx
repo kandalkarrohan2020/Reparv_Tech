@@ -679,6 +679,7 @@ const Enquirers = () => {
       omit: false,
       width: "130px",
     },
+    { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
       name: "Customer",
       selector: (row) => row.customer,
@@ -695,7 +696,6 @@ const Enquirers = () => {
       selector: (row) => row.contact,
       minWidth: "150px",
     },
-
     {
       name: "Status",
       cell: (row) => (

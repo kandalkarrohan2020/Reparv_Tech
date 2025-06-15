@@ -11,6 +11,8 @@ import {
   del,
   assignLogin,
   updatePaymentId,
+  fetchFollowUpList,
+  addFollowUp,
 } from "../../controllers/admin/territoryPartnerController.js";
 
 const router = express.Router();
@@ -58,6 +60,8 @@ router.put(
   );
 router.put("/status/:id", status);
 router.put("/update/paymentid/:id", updatePaymentId);
+router.get("/followup/list/:id", fetchFollowUpList);
+router.post("/followup/add/:id", addFollowUp);
 router.put("/assignlogin/:id", assignLogin);
 router.delete("/delete/:id", del);
 

@@ -10,6 +10,7 @@ function RegisterForm() {
     fullname: "",
     contact: "",
     email: "",
+    intrest: "",
   });
 
   const loadRazorpayScript = () => {
@@ -46,11 +47,11 @@ function RegisterForm() {
 
       if (response.ok) {
         const res = await response.json();
-                
+
         setSuccessScreen({
           show: true,
           label: "Your Data Send SuccessFully",
-          description: `Pay Rs ${registrationPrice} for Join as a Onboarding Partner`
+          description: `Pay Rs ${registrationPrice} for Join as a Onboarding Partner`,
         });
 
         try {
@@ -62,14 +63,15 @@ function RegisterForm() {
             res.Id,
             "onboardingpartner",
             "partnerid",
-            setSuccessScreen,
+            setSuccessScreen
           );
-         
+
           // If payment is successful, reset the form
           setNewPartner({
             fullname: "",
             contact: "",
             email: "",
+            intrest: "",
           });
         } catch (paymentError) {
           console.error("Payment Error:", paymentError.message);
@@ -143,6 +145,19 @@ function RegisterForm() {
             className="w-full lg:w-[300px] bg-white text-sm sm:text-[16px] font-medium px-4 py-3 sm:p-4 border border-[#00000033] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0BB501] "
           />
         </div>
+        <input
+          type="text"
+          required
+          placeholder="Why are You Intrested To Join Reparv ?"
+          value={newPartner.intrest}
+          onChange={(e) => {
+            setNewPartner({
+              ...newPartner,
+              intrest: e.target.value,
+            });
+          }}
+          className="w-full bg-white text-sm sm:text-[16px] font-medium px-4 py-3 sm:p-4 border border-[#00000033] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0BB501] "
+        />
         <button
           type="submit"
           className="w-full sm:w-[450px] text-base sm:text-xl font-semibold sm:max-w-[400px] h-11 sm:h-13 text-white bg-[#0BB501] rounded-lg cursor-pointer active:scale-95 "

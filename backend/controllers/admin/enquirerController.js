@@ -35,7 +35,13 @@ export const getAll = (req, res) => {
       console.error("Error fetching Enquirers:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    res.json(result);
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json(formatted);
   });
 };
 
@@ -73,13 +79,7 @@ export const getPropertyList = (req, res) => {
 
     const enquiry = enquiryResults[0];
 
-    const {
-      minbudget,
-      maxbudget,
-      category,
-      state,
-      city
-    } = enquiry;
+    const { minbudget, maxbudget, category, state, city } = enquiry;
 
     // Step 2: Get matching properties using filters from enquiry
     const propertySql = `
@@ -97,7 +97,9 @@ export const getPropertyList = (req, res) => {
       (err, propertyResults) => {
         if (err) {
           console.error("Error fetching properties:", err);
-          return res.status(500).json({ message: "Database error", error: err });
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
         }
 
         res.json(propertyResults);
@@ -203,7 +205,7 @@ export const assignEnquiry = async (req, res) => {
   );
 };
 
-export const updateEnquirerProperty= async (req, res) => {
+export const updateEnquirerProperty = async (req, res) => {
   const enquiryId = parseInt(req.params.id);
   if (isNaN(enquiryId)) {
     return res.status(400).json({ message: "Invalid Enquiry ID" });
@@ -213,7 +215,7 @@ export const updateEnquirerProperty= async (req, res) => {
   if (!propertyId) {
     return res.status(400).json({ message: "Property Id Required" });
   }
-  
+
   db.query(
     "SELECT * FROM enquirers WHERE enquirersid = ?",
     [enquiryId],
@@ -225,7 +227,7 @@ export const updateEnquirerProperty= async (req, res) => {
       if (result.length === 0) {
         return res.status(404).json({ message: "Enquiry not found" });
       }
-      
+
       db.query(
         "UPDATE enquirers SET propertyid = ? WHERE enquirersid = ?",
         [propertyId, enquiryId],
@@ -323,12 +325,10 @@ export const visitScheduled = (req, res) => {
               .json({ message: "Database error", error: err });
           }
 
-          res
-            .status(201)
-            .json({
-              message: "Visit added successfully",
-              Id: insertResult.insertId,
-            });
+          res.status(201).json({
+            message: "Visit added successfully",
+            Id: insertResult.insertId,
+          });
         }
       );
     }
@@ -389,12 +389,10 @@ export const token = (req, res) => {
               .json({ message: "Database error", error: err });
           }
 
-          res
-            .status(201)
-            .json({
-              message: "Token added successfully",
-              Id: insertResult.insertId,
-            });
+          res.status(201).json({
+            message: "Token added successfully",
+            Id: insertResult.insertId,
+          });
         }
       );
     }
@@ -442,12 +440,10 @@ export const followUp = (req, res) => {
               .json({ message: "Database error", error: err });
           }
 
-          res
-            .status(201)
-            .json({
-              message: "Follow Up remark added successfully",
-              Id: insertResult.insertId,
-            });
+          res.status(201).json({
+            message: "Follow Up remark added successfully",
+            Id: insertResult.insertId,
+          });
         }
       );
     }
@@ -495,12 +491,10 @@ export const cancelled = (req, res) => {
               .json({ message: "Database error", error: err });
           }
 
-          res
-            .status(201)
-            .json({
-              message: "Remark added successfully",
-              Id: insertResult.insertId,
-            });
+          res.status(201).json({
+            message: "Remark added successfully",
+            Id: insertResult.insertId,
+          });
         }
       );
     }

@@ -22,7 +22,7 @@ function Layout() {
   const location = useLocation();
   const [showSidebar, setShowSidebar] = useState(false);
   const getNavLinkClass = (path) => {
-    return location.pathname === path ? "font-semibold text-[#0BB501]" : "";
+    return location.pathname === path ? "font-bold text-[#0BB501]" : "";
   };
 
   return (
@@ -111,7 +111,7 @@ function Layout() {
           />
         </div>
 
-        <div className="navlink hidden md:flex items-center justify-start gap-7 lg:gap-7 xl:gap-15 text-base leading-[36px] tracking-[0.2em] font-medium text-[#110229]">
+        <div className="navlink hidden md:flex items-center justify-start gap-7 lg:gap-7 xl:gap-15 text-base xl:text-lg leading-[22px] tracking-[0.1em] font-bold text-[#110229]">
           <NavLink to="/sales-partner" className={`${getNavLinkClass("/sales-partner")} ${getNavLinkClass("/")}`}>
             Sales Partner
           </NavLink>

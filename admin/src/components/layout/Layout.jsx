@@ -67,6 +67,8 @@ function Layout() {
     showSalesPerson, setShowSalesPerson,
     showAddMobileImage, setShowAddMobileImage,
     showEnquirerPropertyForm, setShowEnquirerPropertyForm,
+    showFollowUpList, setShowFollowUpList,
+    showSeoForm, setShowSeoForm,
     isLoggedIn,
   } = useAuth();
 
@@ -101,6 +103,8 @@ function Layout() {
     { state: showAddMobileImage, setter: setShowAddMobileImage},
     { state: showPaymentIdForm, setter: setShowPaymentIdForm },
     { state: showEnquirerPropertyForm, setter: setShowEnquirerPropertyForm },
+    { state: showFollowUpList, setter: setShowFollowUpList },
+    { state: showSeoForm, setter: setShowSeoForm },
     
   ];
 
@@ -197,6 +201,7 @@ function Layout() {
               //{ to: "/customers", icon: customersIcon, label: "Customers" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/builders", icon: partnerIcon, label: "Builders" },
+              { to: "/employees", icon: employeeIcon, label: "Employees" },
               {
                 to: "/salespersons",
                 icon: partnerIcon,
@@ -217,8 +222,9 @@ function Layout() {
                 icon: partnerIcon,
                 label: "Territory Partners",
               },
+              { to: "/guest-users", icon: partnerIcon, label: "Guest Users" },
               //{ to: "/auctionmembers", icon: partnerIcon, label: "Auction Members" },
-              { to: "/employees", icon: employeeIcon, label: "Employees" },
+              
               { to: "/role", icon: employeeIcon, label: "Roles" },
               { to: "/department", icon: employeeIcon, label: "Departments" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },

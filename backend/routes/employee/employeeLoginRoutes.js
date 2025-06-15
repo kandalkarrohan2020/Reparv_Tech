@@ -5,7 +5,7 @@ import db from "../../config/dbconnect.js";
 
 const router = express.Router();
 
-// ✅ User Login Route (Supports Email or Username)
+//  User Login Route (Supports Email or Username)
 router.post("/login", async (req, res) => {
   try {
     const { emailOrUsername, password } = req.body;
@@ -14,7 +14,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // ✅ Query to check both email and username
+    //  Query to check both email and username
     const user = await new Promise((resolve, reject) => {
       db.query(
         `SELECT * FROM employees 
@@ -30,18 +30,18 @@ router.post("/login", async (req, res) => {
       );
     });
 
-    // ✅ Check if password matches
+    //  Check if password matches
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Wrong Password try again! " });
     }
 
-    // ✅ Generate JWT Token
+    //  Generate JWT Token
     const token = jwt.sign({ id: user.id, username: user.username, email: user.email, adharId: user.uid }, process.env.JWT_SECRET, {
       expiresIn: "10d",
     });
 
-    // ✅ Store session data
+    //  Store session data
     req.session.user = {
       id: user.id,
       email: user.email,
@@ -51,7 +51,7 @@ router.post("/login", async (req, res) => {
       role: user.role,
     };
 
-    // ✅ Set secure cookie
+    //  Set secure cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
@@ -71,7 +71,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// ✅ Get Current User's Session Data
+//  Get Current User's Session Data
 router.get("/session-data", (req, res) => {
   if (req.session.user) {
     res.json({ message: "Session Active", user: req.session.user });
@@ -80,7 +80,7 @@ router.get("/session-data", (req, res) => {
   }
 });
 
-// ✅ Logout Route
+//  Logout Route
 router.post("/logout", (req, res) => {
   res.clearCookie("token", { 
     httpOnly: true, 

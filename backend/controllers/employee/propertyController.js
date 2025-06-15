@@ -27,7 +27,13 @@ export const getAll = (req, res) => {
       console.error("Error fetching properties:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    res.json(result);
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json(formatted);
   });
 };
 
@@ -37,7 +43,8 @@ export const getById = (req, res) => {
   if (isNaN(Id))
     return res.status(400).json({ message: "Invalid Property ID" });
 
-  const sql = "SELECT properties.*, builders.company_name FROM properties inner join builders on builders.builderid = properties.builderid WHERE propertyid = ?";
+  const sql =
+    "SELECT properties.*, builders.company_name FROM properties inner join builders on builders.builderid = properties.builderid WHERE propertyid = ?";
   db.query(sql, [Id], (err, result) => {
     if (err) {
       console.error("Error fetching property:", err);
@@ -50,7 +57,7 @@ export const getById = (req, res) => {
   });
 };
 
-// get all images 
+// get all images
 export const getImages = (req, res) => {
   const partnerId = req.user.id;
   if (!partnerId) {
@@ -58,7 +65,7 @@ export const getImages = (req, res) => {
   }
 
   const Id = parseInt(req.params.id);
-  if (isNaN(Id)){
+  if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Property ID" });
   }
 
@@ -73,15 +80,14 @@ export const getImages = (req, res) => {
     }
     res.json(result);
   });
-
-}
+};
 
 export const addProperty = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const files = await convertImagesToWebp(req.files);
   const partnerId = req.user.id;
-  if(!partnerId) {
-    return res.status(401).json({ message: "Unauthorized Access"});
+  if (!partnerId) {
+    return res.status(401).json({ message: "Unauthorized Access" });
   }
   const Id = req.body.propertyid ? parseInt(req.body.propertyid) : null;
 
@@ -312,7 +318,6 @@ export const addProperty = async (req, res) => {
   );
 };
 
-
 export const update = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const files = await convertImagesToWebp(req.files);
@@ -452,10 +457,13 @@ export const update = async (req, res) => {
       }
 
       let approve;
-      if(result[0].approve === "Rejected" || result[0].approve === "Not Approved"){
+      if (
+        result[0].approve === "Rejected" ||
+        result[0].approve === "Not Approved"
+      ) {
         approve = "Not Approved";
       } else {
-        approve = "Approved"
+        approve = "Approved";
       }
 
       const existing = result[0];
@@ -550,7 +558,6 @@ export const update = async (req, res) => {
     }
   );
 };
-
 
 // **Add Property**
 export const addImages = (req, res) => {
@@ -647,39 +654,49 @@ export const deleteImages = (req, res) => {
   }
 
   // First, fetch the image path from the database
-  db.query("SELECT image FROM propertiesimages WHERE imageid = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Error fetching image:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-    
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Image not found" });
-    }
+  db.query(
+    "SELECT image FROM propertiesimages WHERE imageid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Error fetching image:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
 
-    const imagePath = result[0].image; // Get the image path
-    if (imagePath) {
-      const filePath = path.join(process.cwd(), imagePath); // Full path to the file
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Image not found" });
+      }
 
-      // Delete the image file from the uploads folder
-      fs.unlink(filePath, (err) => {
-        if (err && err.code !== "ENOENT") {
-          console.error("Error deleting image:", err);
-        }
+      const imagePath = result[0].image; // Get the image path
+      if (imagePath) {
+        const filePath = path.join(process.cwd(), imagePath); // Full path to the file
 
-        // Now delete the record from the database
-        db.query("DELETE FROM propertiesimages WHERE imageid = ?", [Id], (err) => {
-          if (err) {
-            console.error("Error deleting Image:", err);
-            return res.status(500).json({ message: "Database error", error: err });
+        // Delete the image file from the uploads folder
+        fs.unlink(filePath, (err) => {
+          if (err && err.code !== "ENOENT") {
+            console.error("Error deleting image:", err);
           }
-          res.status(200).json({ message: "Image deleted successfully" });
+
+          // Now delete the record from the database
+          db.query(
+            "DELETE FROM propertiesimages WHERE imageid = ?",
+            [Id],
+            (err) => {
+              if (err) {
+                console.error("Error deleting Image:", err);
+                return res
+                  .status(500)
+                  .json({ message: "Database error", error: err });
+              }
+              res.status(200).json({ message: "Image deleted successfully" });
+            }
+          );
         });
-      });
-    } else {
-      res.status(404).json({ message: "Image path not found" });
+      } else {
+        res.status(404).json({ message: "Image path not found" });
+      }
     }
-  });
+  );
 };
 
 export const propertyInfo = (req, res) => {

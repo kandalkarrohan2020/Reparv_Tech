@@ -23,7 +23,7 @@ router.post("/login", async (req, res) => {
       db.query(
         `SELECT * FROM projectpartner 
          WHERE (username = ? OR email = ?) 
-         AND status='Active'`,
+         AND loginstatus = 'Active'`,
         [emailOrUsername, emailOrUsername], // Check both email & username
         (err, results) => {
           if (err) {

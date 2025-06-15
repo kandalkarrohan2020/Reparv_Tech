@@ -10,7 +10,13 @@ export const getAll = (req, res) => {
       console.error("Error fetching properties:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    res.json(result);
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json(formatted);
   });
 };
 
@@ -20,7 +26,8 @@ export const getById = (req, res) => {
   if (isNaN(Id))
     return res.status(400).json({ message: "Invalid Property ID" });
 
-  const sql = "SELECT properties.*, builders.company_name FROM properties inner join builders on builders.builderid = properties.builderid WHERE propertyid = ?";
+  const sql =
+    "SELECT properties.*, builders.company_name FROM properties inner join builders on builders.builderid = properties.builderid WHERE propertyid = ?";
   db.query(sql, [Id], (err, result) => {
     if (err) {
       console.error("Error fetching property:", err);

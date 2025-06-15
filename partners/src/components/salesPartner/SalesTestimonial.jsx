@@ -9,14 +9,13 @@ import "swiper/css/pagination";
 const SalesTestimonial = () => {
   const [testimonials, setTestimonials] = useState([
     {
-      name: "Hannah Schmitt",
-      feedback: "Lorem ipsum...",
-      image: "https://yourdomain.com/uploads/hannah.jpg",
-    },
+      name: "Gopal Sharma",
+      feedback: "Reparv has been a game-changer for property Sales.",
+      image: "https://ctmirror.org/wp-content/uploads/2021/01/dummy-man-570x570-1.png"},
     {
-      name: "John Doe",
-      feedback: "Another feedback...",
-      image: "https://yourdomain.com/uploads/john.jpg",
+      name: "Aniket Kumar",
+      feedback: "This platform has transformed the way I approach property Sales.",
+      image: "https://ctmirror.org/wp-content/uploads/2021/01/dummy-man-570x570-1.png",
     },
     // Add more...
   ]);

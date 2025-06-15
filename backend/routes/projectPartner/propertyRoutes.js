@@ -28,7 +28,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   limits: {
-    fileSize: 50 * 1024,
+    fileSize: 1024 * 1024 * 2,
   },
   fileFilter: (req, file, cb) => {
     const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
@@ -42,7 +42,7 @@ const upload = multer({
 router.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     if (err.code === "LIMIT_FILE_SIZE") {
-      return res.status(400).json({ success: false, error: "Each image must be under 50 KB." });
+      return res.status(400).json({ success: false, error: "Each image must be under 2MB." });
     }
     return res.status(400).json({ success: false, error: err.message });
   } else if (err) {

@@ -28,7 +28,7 @@ function Layout() {
   const {
     showSuccess,
     URI,
-    successScreen, 
+    successScreen,
     setSuccessScreen,
     selectedCity,
     setSelectedCity,
@@ -55,7 +55,7 @@ function Layout() {
 
   const [showSidebar, setShowSidebar] = useState(false);
   const getNavLinkClass = (path) => {
-    return location.pathname === path ? "font-semibold text-[#0BB501]" : "";
+    return location.pathname === path ? "font-bold text-[#0BB501]" : "";
   };
 
   // *Fetch Data from API*
@@ -63,7 +63,7 @@ function Layout() {
     try {
       const response = await fetch(URI + "/frontend/properties/city", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -142,7 +142,15 @@ function Layout() {
               >
                 Contact Us
               </NavLink>
-              
+              <div
+                onClick={() => {
+                  window.open("https://users.reparv.in/", "_blank");
+                  setShowSidebar(false);
+                }}
+                className="min-w-40 px-2 py-2 flex items-center justify-center cursor-pointer text-sm font-medium hover:font-semibold border border-gray-200 bg-[#0BB501] text-white rounded-lg active:scale-95"
+              >
+                Sell Your Property
+              </div>
             </div>
           </div>
         )}
@@ -162,9 +170,9 @@ function Layout() {
             location.pathname != "/about" ? "sm:inline-block" : "hidden"
           } hidden min-w-[50px] max-w-[180px] relative`}
         >
-          <div className="flex lg:gap-1 items-center justify-center text-base font-semibold  text-black lg:p-1 ">
+          <div className="flex lg:gap-1 items-center justify-center text-lg font-semibold  text-black lg:p-1 ">
             <CiLocationOn className="w-5 h-5" />
-            <span className="hidden sm:block md:hidden lg:block ">
+            <span className="hidden sm:block md:hidden xl:block ">
               {selectedCity || "Select City"}
             </span>
             <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
@@ -192,7 +200,7 @@ function Layout() {
           />
         </div>
 
-        <div className="navlink hidden md:flex items-center justify-start gap-8 lg:gap-12 xl:gap-18 text-base leading-[36px] tracking-[0.2em] font-medium text-[#110229]">
+        <div className="navlink hidden md:flex items-center justify-start gap-5 lg:gap-6 xl:gap-14 text-base font-bold xl:text-lg leading-[30px] tracking-[1px] lg:tracking-[0.1em] text-[#110229]">
           <NavLink to="/" className={`${getNavLinkClass("/")}`}>
             Home
           </NavLink>
@@ -214,6 +222,16 @@ function Layout() {
           >
             Contact Us
           </NavLink>
+
+          <div
+            onClick={() => {
+              window.open("https://users.reparv.in/", "_blank");
+              setShowSidebar(false);
+            }}
+            className="min-w-40 xl:min-w-50 px-2 py-4 xl:py-6 flex items-center justify-center cursor-pointer text-sm xl:text-lg leading-[0] tracking-[0] font-medium hover:font-semibold text-white border-2 bg-[#0BB501] border-gray-200 hover:border-[#0BB501] rounded-lg "
+          >
+            Sell Your Property
+          </div>
 
           {/*<JoinOurTeamDropdown className={`flex gap-1`}></JoinOurTeamDropdown>*/}
         </div>
@@ -259,17 +277,49 @@ function Layout() {
 
             <div className="midBody flex flex-col gap-5 text-lg font-medium !text-White">
               <h3 className="text-xl font-bold">Become a Professional</h3>
-              <p className="cursor-pointer">
-                <Link to="/sales-partner">Sales Partner</Link>
+              <p
+                className="cursor-pointer"
+                onClick={() => {
+                  window.open(
+                    "https://partners.reparv.in/sales-partner",
+                    "_blank"
+                  );
+                }}
+              >
+                Sales Partner
               </p>
-              <p className="cursor-pointer">
-                <Link to="/project-partner">Project Partner</Link>
+              <p
+                className="cursor-pointer"
+                onClick={() => {
+                  window.open(
+                    "https://partners.reparv.in/project-partner",
+                    "_blank"
+                  );
+                }}
+              >
+                Project Partner
               </p>
-              <p className="cursor-pointer">
-                <Link to="/territory-partner">Territory Partner</Link>
+              <p
+                className="cursor-pointer"
+                onClick={() => {
+                  window.open(
+                    "https://partners.reparv.in/territory-partner",
+                    "_blank"
+                  );
+                }}
+              >
+                Territory Partner
               </p>
-              <p className="cursor-pointer">
-                <Link to="/onboarding-partner">Onboarding Partner</Link>
+              <p
+                className="cursor-pointer"
+                onClick={() => {
+                  window.open(
+                    "https://partners.reparv.in/onboarding-partner",
+                    "_blank"
+                  );
+                }}
+              >
+                Onboarding Partner
               </p>
             </div>
 
@@ -323,7 +373,9 @@ function Layout() {
       <div className="footer  md:hidden w-full flex flex-col items-center justify-start gap-4 bg-[#000000] text-white py-15 px-10">
         <div className="footerContainer w-full flex items-start justify-between py-2">
           <div className="footerLeft flex items-center justify-start ">
-            <Link to="/"><img src={footerLogo} alt="" className="w-[135px]" /></Link>
+            <Link to="/">
+              <img src={footerLogo} alt="" className="w-[135px]" />
+            </Link>
           </div>
 
           <div className="footerRight flex flex-col gap-5 text-xs leading-1.5 sm:text-lg font-medium">

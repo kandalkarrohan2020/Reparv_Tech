@@ -21,7 +21,7 @@ router.post("/login", async (req, res) => {
       db.query(
         `SELECT * FROM salespersons 
          WHERE (username = ? OR email = ?) 
-         AND status='Active'`,
+         AND loginstatus = 'Active'`,
         [emailOrUsername, emailOrUsername], 
         (err, results) => {
           if (err) {

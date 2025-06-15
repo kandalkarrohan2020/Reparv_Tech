@@ -27,6 +27,8 @@ const Properties = () => {
     setShowPropertyInfo,
     showRejectReasonForm,
     setShowRejectReasonForm,
+    showSeoForm,
+    setShowSeoForm,
     URI,
     loading,
     setLoading,
@@ -46,6 +48,8 @@ const Properties = () => {
   const [newAddInfo, setNewAddInfo] = useState({
     propertyid: "",
   });
+  const [seoTittle, setSeoTittle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
   const [newProperty, setPropertyData] = useState({
     builderid: "",
     propertyCategory: "",
@@ -319,7 +323,7 @@ const Properties = () => {
     try {
       const response = await fetch(URI + `/admin/properties/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -405,6 +409,60 @@ const Properties = () => {
       fetchData();
     } catch (error) {
       console.error("Error deleting :", error);
+    }
+  };
+
+  //fetch data on form
+  const showSEO = async (id) => {
+    try {
+      const response = await fetch(URI + `/admin/properties/${id}`, {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch property.");
+      const data = await response.json();
+      setSeoTittle(data.seoTittle);
+      setSeoDescription(data.seoDescription);
+      setShowSeoForm(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // Add Or Update SEO Details Tittle , Description
+  const addSeoDetails = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const response = await fetch(
+        URI + `/admin/properties/seo/${propertyKey}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ seoTittle, seoDescription }),
+        }
+      );
+      const data = await response.json();
+      console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      setShowSeoForm(false);
+      setSeoTittle("");
+      setSeoDescription("");
+      await fetchData();
+    } catch (error) {
+      console.error("Error adding Seo Details reason:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -720,6 +778,13 @@ const Properties = () => {
       },
       width: "130px",
     },
+    { name: "Date & Time", selector: (row) => row.updated_at, width: "200px" },
+    {
+      name: "Property Name",
+      selector: (row) => row.propertyName,
+      sortable: true,
+      minWidth: "150px",
+    },
     {
       name: "Builder",
       selector: (row) => row.company_name,
@@ -729,7 +794,7 @@ const Properties = () => {
     {
       name: "Property Lister",
       cell: (row) => (
-        <div className="flex flex-col gap-[2px] p-2">
+        <div className="flex flex-col gap-[2px]">
           <span>{row.fullname}</span>
           <span> {row.contact}</span>
           <span> {row.partnerCity}</span>
@@ -742,13 +807,7 @@ const Properties = () => {
     {
       name: "Category",
       selector: (row) => row.propertyCategory,
-      minWidth: "150px",
-    },
-    {
-      name: "Property Name",
-      selector: (row) => row.propertyName,
-      sortable: true,
-      minWidth: "150px",
+      width: "150px",
     },
     {
       name: "State",
@@ -791,6 +850,7 @@ const Properties = () => {
           {row.status}
         </span>
       ),
+      width: "120px",
     },
     {
       name: "Approve",
@@ -817,6 +877,7 @@ const Properties = () => {
     {
       name: "Actions",
       cell: (row) => <ActionDropdown row={row} />,
+      width: "120px",
     },
   ];
 
@@ -850,6 +911,10 @@ const Properties = () => {
           break;
         case "approve":
           approve(propertyid);
+          break;
+        case "SEO":
+          setPropertyKey(propertyid);
+          showSEO(propertyid);
           break;
         case "rejectReason":
           setPropertyKey(propertyid);
@@ -893,6 +958,7 @@ const Properties = () => {
           ) : (
             <></>
           )}
+          <option value="SEO">SEO Details</option>
           <option value="rejectReason">Reject Reason</option>
           <option value="delete">Delete</option>
         </select>
@@ -922,6 +988,7 @@ const Properties = () => {
             <option value="Reparv Employee">Reparv Employee</option>
             <option value="Onboarding Partner">Onboarding Partner</option>
             <option value="Project Partner">Project Partner</option>
+            <option value="Guest User">Guest User</option>
           </select>
         </div>
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
@@ -1148,6 +1215,78 @@ const Properties = () => {
                 Add CSV File
               </button>
               <Loader />
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* ADD SEO Details */}
+      <div
+        className={` ${
+          !showSeoForm && "hidden"
+        } z-[61] overflow-scroll scrollbar-hide flex fixed`}
+      >
+        <div className="w-[330px] h-[55vh] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">SEO Details</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowSeoForm(false);
+                setSeoTittle("");
+                setSeoDescription("");
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={addSeoDetails}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-1">
+              <input
+                type="hidden"
+                value={propertyKey || ""}
+                onChange={(e) => setPropertyKey(e.target.value)}
+              />
+              <div className={`w-full `}>
+                <textarea
+                  rows={2}
+                  cols={40}
+                  placeholder="Enter Tittle"
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={seoTittle}
+                  onChange={(e) => setSeoTittle(e.target.value)}
+                />
+              </div>
+              <div className={`w-full `}>
+                <textarea
+                  rows={4}
+                  cols={40}
+                  placeholder="Enter Description"
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={seoDescription}
+                  onChange={(e) => setSeoDescription(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSeoForm(false);
+                  setSeoTittle("");
+                  setSeoDescription("");
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Add SEO Details
+              </button>
+              <Loader></Loader>
             </div>
           </form>
         </div>

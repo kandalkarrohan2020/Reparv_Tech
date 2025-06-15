@@ -11,6 +11,8 @@ import {
   del,
   assignLogin,
   updatePaymentId,
+  addFollowUp,
+  fetchFollowUpList,
 } from "../../controllers/admin/projectPartnerController.js";
 
 const router = express.Router();
@@ -36,7 +38,6 @@ const upload = multer({
   },
 });
 
-
 router.get("/", getAll);
 router.get("/active", getAllActive);
 router.get("/:id", getById);
@@ -49,15 +50,17 @@ router.post(
   add
 );
 router.put(
-    "/edit/:id",
-    upload.fields([
-      { name: "adharImage", maxCount: 1 },
-      { name: "panImage", maxCount: 1 },
-    ]),
-    edit
-  );
+  "/edit/:id",
+  upload.fields([
+    { name: "adharImage", maxCount: 1 },
+    { name: "panImage", maxCount: 1 },
+  ]),
+  edit
+);
 router.put("/status/:id", status);
 router.put("/update/paymentid/:id", updatePaymentId);
+router.get("/followup/list/:id", fetchFollowUpList);
+router.post("/followup/add/:id", addFollowUp);
 router.put("/assignlogin/:id", assignLogin);
 router.delete("/delete/:id", del);
 

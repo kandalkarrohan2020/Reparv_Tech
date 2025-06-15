@@ -4,12 +4,16 @@ import "./index.css";
 import App from "./App.jsx";
 import { AuthProvider } from "./store/auth.jsx";
 import { PropertyFilterProvider } from "./store/propertyFilter.jsx";
+import { HelmetProvider } from "react-helmet-async";
+
 createRoot(document.getElementById("root")).render(
-  <AuthProvider>
-    <PropertyFilterProvider>
-      <StrictMode>
-        <App />
-      </StrictMode>
-    </PropertyFilterProvider>
-  </AuthProvider>
+  <HelmetProvider>
+    <AuthProvider>
+      <PropertyFilterProvider>
+        <StrictMode>
+          <App />
+        </StrictMode>
+      </PropertyFilterProvider>
+    </AuthProvider>
+  </HelmetProvider>
 );

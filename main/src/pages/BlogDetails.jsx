@@ -15,7 +15,7 @@ function BlogDetails() {
           alt=""
           className="w-full max-h-[500px] max-w-[1600px] mx-auto object-cover"
         />
-        <div className="absolute max-h-[500px] w-full max-w-[1600px] h-full backdrop-blur-[0.5px] bg-black/10">
+        <div className="absolute max-h-[500px] w-full max-w-[1600px] h-full backdrop-blur-[0.5px] bg-black/30">
           {" "}
         </div>
         {/* Text On BackImage */}

@@ -3,7 +3,7 @@ import moment from "moment";
 
 // **Fetch All**
 export const getAll = (req, res) => {
-  const {propertyCategory } = req.query;
+  const { propertyCategory } = req.query;
   const city = req.user.city;
   let sql = `SELECT * FROM properties WHERE status='Active' AND approve='Approved'`;
   const params = [];
@@ -25,7 +25,13 @@ export const getAll = (req, res) => {
       console.error("Error fetching:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    res.json(result);
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json(formatted);
   });
 };
 
@@ -43,39 +49,41 @@ export const getAllCity = (req, res) => {
 };
 
 export const getAllLocation = (req, res) => {
-    const sql = `
+  const sql = `
       SELECT DISTINCT location 
       FROM properties 
       WHERE status='Active' AND approve='Approved'
     `;
-  
-    db.query(sql, (err, result) => {
-      if (err) {
-        console.error("Error fetching:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-      res.status(200).json(result);
-    });
-  };
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error fetching:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    res.status(200).json(result);
+  });
+};
 
 export const getLocationsByCityAndCategory = (req, res) => {
-    const {city, propertyCategory } = req.query;
-    //const city = req.user.city;
-    if (!propertyCategory || !city) {
-      return res.status(400).json({ message: "propertyCategory and city are required." });
-    }
-  
-    const sql = `SELECT DISTINCT location FROM properties 
+  const { city, propertyCategory } = req.query;
+  //const city = req.user.city;
+  if (!propertyCategory || !city) {
+    return res
+      .status(400)
+      .json({ message: "propertyCategory and city are required." });
+  }
+
+  const sql = `SELECT DISTINCT location FROM properties 
                  WHERE city = ? AND propertyCategory = ? 
                  AND status='Active' AND approve='Approved'`;
-  
-    db.query(sql, [city.trim(), propertyCategory.trim()], (err, result) => {
-      if (err) {
-        console.error("Error fetching locations:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-  
-      const locations = result.map(row => row.location);
-      res.status(200).json(locations);
-    });
-  };
+
+  db.query(sql, [city.trim(), propertyCategory.trim()], (err, result) => {
+    if (err) {
+      console.error("Error fetching locations:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    const locations = result.map((row) => row.location);
+    res.status(200).json(locations);
+  });
+};

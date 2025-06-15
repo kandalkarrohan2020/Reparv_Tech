@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import SEO from "../components/SEO";
 
 const blogPosts = [
   {
@@ -47,6 +48,13 @@ const blogPosts = [
 
 function Blog() {
   return (
+    <>
+      <SEO
+        title={"Real Estate Insights, Tips & News – Reparv Blog"}
+        description={
+          "Stay updated with the latest real estate trends, buyer guides, investment tips, and local property news."
+        }
+      />
     <div className="max-w-6xl mx-auto px-4 sm:px-6">
       <div className="flex flex-col gap-2 sm:gap-4 items-center justify-center pb-5 py-4 sm:py-10">
         <h2 className="text-black text-lg sm:text-3xl leading-[100%] font-semibold">
@@ -88,6 +96,7 @@ function Blog() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

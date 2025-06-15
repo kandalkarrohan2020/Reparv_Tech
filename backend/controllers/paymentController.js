@@ -11,6 +11,25 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+/**
+ * Verifies whether a Razorpay payment ID is valid and captured.
+ * @param {string} paymentId - The Razorpay payment ID to verify.
+ * @returns {object} - Returns the full payment object if valid and captured.
+ * @throws {Error} - Throws an error if payment ID is invalid or not captured.
+ */
+
+export const verifyRazorpayPayment = async (paymentId) => {
+  try {
+    const payment = await razorpay.payments.fetch(paymentId);
+    if (!payment || payment.status !== "captured") {
+      throw new Error("Invalid or unconfirmed Razorpay Payment ID");
+    }
+    return payment;
+  } catch (error) {
+    throw new Error("Invalid Razorpay Payment ID");
+  }
+};
+
 export const createOrder = async (req, res) => {
   const { amount } = req.body;
 

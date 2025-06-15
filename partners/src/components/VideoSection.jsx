@@ -7,6 +7,8 @@ const VideoSection = ({videoFor = "reparv"}) => {
   const { URI } = useAuth();
   const [showVideo, setShowVideo] = useState(false);
   const [videoLink, setVideoLink] = useState("");
+  
+  const [thumbnail, setThumbnail] = useState(videoThumb);
 
   const formatYouTubeEmbedUrl = (url) => {
     const regex =
@@ -39,6 +41,9 @@ const VideoSection = ({videoFor = "reparv"}) => {
         const videoURL = formatYouTubeEmbedUrl(reparvFeedback[0].url);
         if (videoURL) {
           setVideoLink(videoURL);
+          if( reparvFeedback[0].clientimage && reparvFeedback[0].clientimage !== "null") {
+            setThumbnail(`${URI}${reparvFeedback[0]?.clientimage}`);
+          }
         } else {
           alert("Invalid YouTube URL");
         }
@@ -56,18 +61,18 @@ const VideoSection = ({videoFor = "reparv"}) => {
 
   return (
     <div className="w-full h-full flex flex-col items-center">
-      <div className="relative w-full max-w-4xl rounded-xl shadow-[0px_4px_8px_0px_#0000001A] overflow-hidden">
+      <div className="relative w-full max-w-4xl flex items-center justify-center rounded-xl shadow-[0px_4px_8px_0px_#0000001A] overflow-hidden">
         {/* Thumbnail */}
         {!showVideo && (
           <img
-            src={videoThumb}
+            src={thumbnail || videoThumb}
             alt="Video Thumbnail"
             className="w-full h-full object-cover"
           />
         )}
 
         {showVideo && videoLink && (
-          <div className="relative w-full h-[200px] sm:h-[400px]">
+          <div className="relative w-full h-[230px] sm:h-[300px]">
             {" "}
             {/* FIXED HEIGHT */}
             <iframe

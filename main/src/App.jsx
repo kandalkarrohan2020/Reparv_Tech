@@ -8,12 +8,6 @@ import Properties from "./pages/Properties";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 
-//Join Our Team Pages 
-import SalesPartner from "./pages/SalesPertner";
-import TerritoryPartner from "./pages/TerritoryPartner";
-import ProjectPartner from "./pages/ProjectPartner";
-import OnboardingPartner from "./pages/OnboardingPartner";
-
 // privacy Pages
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
@@ -33,11 +27,6 @@ function App() {
           <Route path="/properties" element={<Properties />} />
           <Route path="/property-info/:id" element={<PropertyDetails />} />
           <Route path="/property-details" element={<PropertyDetails />} />
-
-          <Route path="/sales-partner" element={<SalesPartner />} />
-          <Route path="/territory-partner" element={<TerritoryPartner />} />
-          <Route path="/project-partner" element={<ProjectPartner />} />
-          <Route path="/onboarding-partner" element={<OnboardingPartner />} />
 
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contact-us" element={<ContactUs />} />

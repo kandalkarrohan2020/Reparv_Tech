@@ -656,6 +656,7 @@ const Enquirers = () => {
       },
       width: "140px",
     },
+     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     { name: "Source", selector: (row) => row.source, width: "120px" },
     {
       name: "Customer",

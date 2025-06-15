@@ -8,7 +8,13 @@ export const getAll = (req, res) => {
       console.error("Error fetching :", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    res.json(result);
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json(formatted);
   });
 };
 
@@ -37,7 +43,7 @@ export const getById = (req, res) => {
 //     return res.status(400).json({ message: "All fields are required" });
 //   }
 
-//   const sql = `INSERT INTO enquiries (name, contact, email, address, dob, department, position, salary, doj) 
+//   const sql = `INSERT INTO enquiries (name, contact, email, address, dob, department, position, salary, doj)
 //                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 //   db.query(sql, [name, contact, email, address, dob, department, position, salary, doj], (err, result) => {
@@ -82,21 +88,27 @@ export const del = (req, res) => {
     return res.status(400).json({ message: "Invalid Enquiry ID" });
   }
 
-  db.query("SELECT * FROM enquirers WHERE enquirersid = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Enquiry not found" });
-    }
-
-    db.query("DELETE FROM enquirers WHERE enquirersid = ?", [Id], (err) => {
+  db.query(
+    "SELECT * FROM enquirers WHERE enquirersid = ?",
+    [Id],
+    (err, result) => {
       if (err) {
-        console.error("Error deleting :", err);
+        console.error("Database error:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
-      res.status(200).json({ message: "Enquiry deleted successfully" });
-    });
-  });
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Enquiry not found" });
+      }
+
+      db.query("DELETE FROM enquirers WHERE enquirersid = ?", [Id], (err) => {
+        if (err) {
+          console.error("Error deleting :", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+        res.status(200).json({ message: "Enquiry deleted successfully" });
+      });
+    }
+  );
 };

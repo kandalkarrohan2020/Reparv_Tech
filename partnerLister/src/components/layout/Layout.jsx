@@ -28,6 +28,7 @@ function Layout() {
     showPaymentIdForm, setShowPaymentIdForm,
     showPartner, setShowPartner,
     showSalesPerson, setShowSalesPerson,
+    showFollowUpList, setShowFollowUpList,
     isLoggedIn,
   } = useAuth();
 
@@ -39,6 +40,7 @@ function Layout() {
     { state: showSalesPerson, setter: setShowSalesPerson },
     { state: showPartner, setter: setShowPartner},
     { state: showPaymentIdForm, setter: setShowPaymentIdForm},
+     { state: showFollowUpList, setter: setShowFollowUpList},
   ];
 
   const getNavLinkClass = (path) => {

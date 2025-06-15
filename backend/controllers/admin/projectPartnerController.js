@@ -2,6 +2,7 @@ import db from "../../config/dbconnect.js";
 import moment from "moment";
 import bcrypt from "bcryptjs";
 import sendEmail from "../../utils/nodeMailer.js";
+import { verifyRazorpayPayment } from "../paymentController.js";
 
 const saltRounds = 10;
 // **Fetch All **
@@ -12,7 +13,13 @@ export const getAll = (req, res) => {
       console.error("Error fetching :", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    res.json(result);
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json(formatted);
   });
 };
 
@@ -53,6 +60,7 @@ export const add = (req, res) => {
     fullname,
     contact,
     email,
+    intrest,
     address,
     state,
     city,
@@ -68,7 +76,7 @@ export const add = (req, res) => {
   } = req.body;
 
   // Validate required fields
-  if (!fullname || !contact || !email) {
+  if (!fullname || !contact || !email || !intrest) {
     return res.status(400).json({ message: "all fields required!" });
   }
 
@@ -105,8 +113,8 @@ export const add = (req, res) => {
     // Insert new partner only if no duplicate found
     const insertSql = `
       INSERT INTO projectpartner 
-      (fullname, contact, email, address, state, city, pincode, experience, adharno, panno, rerano, bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, reraimage, updated_at, created_at) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (fullname, contact, email, intrest, address, state, city, pincode, experience, adharno, panno, rerano, bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, reraimage, updated_at, created_at) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.query(
@@ -115,6 +123,7 @@ export const add = (req, res) => {
         fullname,
         contact,
         email,
+        intrest,
         address,
         state,
         city,
@@ -160,6 +169,7 @@ export const edit = (req, res) => {
     fullname,
     contact,
     email,
+    intrest,
     address,
     state,
     city,
@@ -174,7 +184,7 @@ export const edit = (req, res) => {
     ifsc,
   } = req.body;
 
-  if (!fullname || !contact || !email) {
+  if (!fullname || !contact || !email || !intrest) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -191,11 +201,12 @@ export const edit = (req, res) => {
     ? `/uploads/${reraImageFile.filename}`
     : null;
 
-  let updateSql = `UPDATE projectpartner SET fullname = ?, contact = ?, email = ?, address = ?, state = ?, city = ?, pincode = ?, experience = ?, adharno = ?, panno = ?, rerano = ?, bankname = ?, accountholdername = ?, accountnumber = ?, ifsc = ?, updated_at = ?`;
+  let updateSql = `UPDATE projectpartner SET fullname = ?, contact = ?, email = ?, intrest = ?, address = ?, state = ?, city = ?, pincode = ?, experience = ?, adharno = ?, panno = ?, rerano = ?, bankname = ?, accountholdername = ?, accountnumber = ?, ifsc = ?, updated_at = ?`;
   const updateValues = [
     fullname,
     contact,
     email,
+    intrest,
     address,
     state,
     city,
@@ -322,6 +333,11 @@ export const updatePaymentId = async (req, res) => {
         .json({ message: "Amount and Payment ID are required" });
     }
 
+    const isValid = await verifyRazorpayPayment(paymentid, amount);
+    if (!isValid) {
+      return res.status(400).json({ message: "Invalid Payment ID" });
+    }
+
     // Get partner details
     db.query(
       "SELECT * FROM projectpartner WHERE id = ?",
@@ -430,6 +446,68 @@ export const updatePaymentId = async (req, res) => {
       .json({ message: "Unexpected server error", error: err });
   }
 };
+
+export const fetchFollowUpList = (req, res) => {
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Partner ID" });
+  }
+
+  const sql = "SELECT * FROM partnerFollowup WHERE partnerId = ? AND role = ? ORDER BY created_at DESC";
+  db.query(sql, [Id, "Project Partner"], (err, result) => {
+    if (err) {
+      console.error("Error fetching :", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json(formatted);
+  });
+};
+
+export const addFollowUp = async (req, res) => {
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Partner ID" });
+  }
+  
+  const { followUp } = req.body;
+  if (!followUp) {
+    return res.status(400).json({ message: "Empty Follow Up" });
+  }
+  
+  db.query(
+    "SELECT * FROM projectpartner WHERE id = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      db.query(
+        "INSERT INTO partnerFollowup (partnerId, role, followUp, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+        [Id, "Project Partner", followUp, currentdate, currentdate],
+        (err, result) => {
+          if (err) {
+            console.error("Error Adding :", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+          res
+            .status(200)
+            .json({ message: "Partner Follow Up add successfully" });
+        }
+      );
+    }
+  );
+}
 
 export const assignLogin = async (req, res) => {
   try {

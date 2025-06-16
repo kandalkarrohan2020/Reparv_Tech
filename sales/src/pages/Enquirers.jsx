@@ -49,8 +49,8 @@ const Enquirers = () => {
     city: "",
     location: "",
     message: "",
-    salesPersonName: user.name,
-    salesPersonContact: user.contact,
+    salesPersonName: user?.name,
+    salesPersonContact: user?.contact,
   });
   const [enquiryStatus, setEnquiryStatus] = useState("");
   const [territoryPartnerList, setTerritoryPartnerList] = useState([]);

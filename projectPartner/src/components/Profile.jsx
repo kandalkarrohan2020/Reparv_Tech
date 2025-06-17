@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 import Loader from "./Loader";
 import { IoMdClose } from "react-icons/io";
 import { FaEdit } from "react-icons/fa";
-import{ Link } from "react-router-dom";
+import { IoCheckmarkDoneCircleSharp } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const { showProfile, setShowProfile, setLoading, URI } = useAuth();
@@ -104,46 +105,50 @@ const Profile = () => {
 
   const changePassword = async (e) => {
     e.preventDefault();
-  
+
     // Ensure state variables exist
     if (!currentPassword || !newPassword) {
       setErrorMessage("Both current and new passwords are required.");
       return;
     }
-  
+
     try {
       setLoading(true); // Show loading state before the request
-  
-      const response = await fetch(`${URI}/project-partner/profile/changepassword`, {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          currentPassword,
-          newPassword,
-        }),
-      });
-  
+
+      const response = await fetch(
+        `${URI}/project-partner/profile/changepassword`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            currentPassword,
+            newPassword,
+          }),
+        }
+      );
+
       if (!response.ok) {
         const errorData = await response.json(); // Get error message from response
         throw new Error(errorData.message || `Error ${response.status}`);
       }
-  
+
       const data = await response.json();
       alert("Password Changed Successfully!");
-  
+
       // Update user state
       fetchProfile();
       setNewUser(data);
       setUser(data);
       setShowChangePass(false);
-      setErrorMessage(""); 
-      
+      setErrorMessage("");
     } catch (err) {
       console.error("Error changing password:", err);
-      setErrorMessage(err.message || "Password change failed. Please try again.");
+      setErrorMessage(
+        err.message || "Password change failed. Please try again."
+      );
     } finally {
       setLoading(false);
       setCurrentPassword("");
@@ -182,10 +187,17 @@ const Profile = () => {
           </h3>
         </div>
 
-        <Link to="/kyc"
-         className="userOtherDetails cursor-pointer text-[#076300] active:scale-95 w-[320px] h-[40px] bg-[#FFFFFF] hover:bg-[#00760c] hover:text-[#FFFFFF] flex flex-col items-center justify-center p-5 gap-3 rounded-[20px] shadow-[#0000001A] ">
-          <h2 className="text-[16px] leading-5 font-semibold ">
-            KYC Details
+        <Link
+          to="/kyc"
+          className="userOtherDetails cursor-pointer text-[#076300] active:scale-95 w-[320px] h-[40px] bg-[#FFFFFF] hover:bg-[#00760c] hover:text-[#FFFFFF] flex flex-col items-center justify-center p-5 gap-3 rounded-[20px] shadow-[#0000001A] "
+        >
+          <h2 className="text-[16px] leading-5 font-semibold flex gap-2 items-center justify-center">
+            <span>KYC Details</span>{" "}
+            <IoCheckmarkDoneCircleSharp
+              className={`${
+                user?.status === "Active" ? "block" : "hidden"
+              } w-5 h-5`}
+            />
           </h2>
         </Link>
 

@@ -74,6 +74,7 @@ const Enquirers = () => {
     location: "",
     message: "",
   });
+  
   //Single Image Upload
   const [selectedImage, setSelectedImage] = useState(null);
 

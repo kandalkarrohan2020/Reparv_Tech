@@ -56,6 +56,7 @@ const [showPartner, setShowPartner ] = useState(false);
 const [showAddMobileImage, setShowAddMobileImage ] = useState(false);
 const [showFollowUpList, setShowFollowUpList] = useState(false);
 const [showSeoForm, setShowSeoForm] = useState(false);
+const [showBlogForm, setShowBlogForm] = useState(false);
 
 
 return <AuthContext.Provider
@@ -99,6 +100,7 @@ return <AuthContext.Provider
         showAddMobileImage, setShowAddMobileImage,
         showFollowUpList, setShowFollowUpList,
         showSeoForm, setShowSeoForm,
+        showBlogForm, setShowBlogForm,
     }
 }>
     {children}

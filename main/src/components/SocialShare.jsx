@@ -4,15 +4,23 @@ import {
   LinkedinShareButton,
   WhatsappShareButton,
 } from "react-share";
-import { FaFacebook, FaLinkedin, FaWhatsapp, FaInstagram, FaShareFromSquare, } from "react-icons/fa6";
+import {
+  FaFacebook,
+  FaLinkedin,
+  FaWhatsapp,
+  FaInstagram,
+  FaShareFromSquare,
+} from "react-icons/fa6";
 import { MdContentCopy } from "react-icons/md";
 
-export default function SocialShare({ url }) {
+export default function SocialShare({ label, url }) {
   const [showShare, setShowShare] = useState(false);
 
   // Function to handle Instagram sharing (opens Instagram with the link)
   const shareOnInstagram = () => {
-    const instagramUrl = `https://www.instagram.com/?url=${encodeURIComponent(url)}`;
+    const instagramUrl = `https://www.instagram.com/?url=${encodeURIComponent(
+      url
+    )}`;
     window.open(instagramUrl, "_blank");
   };
 
@@ -23,42 +31,51 @@ export default function SocialShare({ url }) {
   };
 
   return (
-    <div className="text-center relative">
+    <div className="relative text-center">
       {/* Share Button */}
-      
-      <div className=" sm:w-25 pr-4 sm:p-2 h-full flex items-center justify-center gap-2  cursor-pointer active:scale-95" onClick={() => setShowShare(!showShare)} >
-      <span className="hidden sm:block font-semibold">Share</span>
-      <FaShareFromSquare
-        className="w-5 h-5 text-[#0b9d01]"
-        
-      />
+
+      <div
+        className="flex gap-2 cursor-pointer active:scale-95"
+        onClick={() => setShowShare(!showShare)}
+      >
+        <span className="font-semibold">{label}</span>
+        <FaShareFromSquare className="w-5 h-5 text-[#0b9d01]" />
       </div>
 
       {/* Conditionally Render Share Options */}
       {showShare && (
-        <div className="absolute z-10 flex flex-col top-12 left-1/4 sm:left-1/2 transform -translate-x-1/2 bg-white p-4 shadow-md rounded-lg gap-5 border-2 border-[#0BB501]">
+        <div className="z-10 flex py-4 rounded-lg gap-4">
           {/* Copy Link Button */}
           <button onClick={copyToClipboard}>
-            <MdContentCopy size={24} className="text-[#0BB501] cursor-pointer" />
+            <span className="w-10 h-10 flex items-center justify-center border rounded-md border-[#0000001A] cursor-pointer hover:text-white hover:bg-[#0BB501] active:scale-95">
+              <MdContentCopy className="w-6 h-6" />
+            </span>
           </button>
-          
+
           <FacebookShareButton url={url}>
-            <FaFacebook size={24} className="text-blue-600 cursor-pointer" />
+            <span className="w-10 h-10 flex items-center justify-center border rounded-md border-[#0000001A] cursor-pointer hover:text-white hover:bg-[#0BB501] active:scale-95">
+              <FaFacebook className="w-6 h-6" />
+            </span>
           </FacebookShareButton>
 
           {/* Instagram Share Button */}
           <button onClick={shareOnInstagram}>
-            <FaInstagram size={24} className="text-red-600 cursor-pointer" />
+            <span className="w-10 h-10 flex items-center justify-center border rounded-md border-[#0000001A] cursor-pointer hover:text-white hover:bg-[#0BB501] active:scale-95">
+              <FaInstagram className="w-6 h-6" />
+            </span>
           </button>
 
           <LinkedinShareButton url={url}>
-            <FaLinkedin size={24} className="text-blue-700 cursor-pointer" />
+            <span className="w-10 h-10 flex items-center justify-center border rounded-md border-[#0000001A] cursor-pointer hover:text-white hover:bg-[#0BB501] active:scale-95">
+              <FaLinkedin className="w-6 h-6" />
+            </span>
           </LinkedinShareButton>
 
           <WhatsappShareButton url={url}>
-            <FaWhatsapp size={26} className="text-[#0BB501] cursor-pointer" />
+            <span className="w-10 h-10 flex items-center justify-center border rounded-md border-[#0000001A] cursor-pointer hover:text-white hover:bg-[#0BB501] active:scale-95">
+              <FaWhatsapp className="w-6 h-6" />
+            </span>
           </WhatsappShareButton>
-
         </div>
       )}
     </div>

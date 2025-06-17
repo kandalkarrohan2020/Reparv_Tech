@@ -69,6 +69,7 @@ function Layout() {
     showEnquirerPropertyForm, setShowEnquirerPropertyForm,
     showFollowUpList, setShowFollowUpList,
     showSeoForm, setShowSeoForm,
+    showBlogForm, setShowBlogForm,
     isLoggedIn,
   } = useAuth();
 
@@ -105,6 +106,7 @@ function Layout() {
     { state: showEnquirerPropertyForm, setter: setShowEnquirerPropertyForm },
     { state: showFollowUpList, setter: setShowFollowUpList },
     { state: showSeoForm, setter: setShowSeoForm },
+    { state: showBlogForm, setter: setShowBlogForm },
     
   ];
 
@@ -230,6 +232,7 @@ function Layout() {
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
               { to: "/map", icon: mapIcon, label: "Map" },
               { to: "/calender", icon: calenderIcon, label: "Calendar" },
+              { to: "/blogs", icon: marketingIcon, label: "Blogs" },
               { to: "/slider", icon: marketingIcon, label: "Slider" },
               { to: "/testimonial", icon: marketingIcon, label: "Testimonial" },
               {

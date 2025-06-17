@@ -11,7 +11,7 @@ SELECT
   p.userId,
   p.postContent,
   p.image,
-  p.like,
+  p.likes,
   p.created_at,
   u.fullname,
   u.city,
@@ -45,7 +45,7 @@ export const getAllByUser = (req, res) => {
     p.userId,
     p.postContent,
     p.image,
-    p.like,
+    p.likes,
     p.created_at,
     u.fullname,
     u.city,
@@ -94,7 +94,7 @@ export const add = (req, res) => {
   const finalImagePath = imageFile ? `/uploads/${imageFile}` : null;
 
   const sql = `
-    INSERT INTO territorypartnerposts (userId, image, postContent, \`like\`, created_at)
+    INSERT INTO territorypartnerposts (userId, image, postContent, likes, created_at)
     VALUES (?, ?, ?, ?, ?)
   `;
 
@@ -144,7 +144,7 @@ export const addLike = async (req, res) => {
 
       // Step 2: Update like count
       db.query(
-        "UPDATE territorypartnerposts SET `like` = `like` + 1 WHERE postId = ?",
+        "UPDATE territorypartnerposts SET likes = likes + 1 WHERE postId = ?",
         [postId],
         (err2, result2) => {
           if (err2) {

@@ -7,13 +7,13 @@ export const getAll = (req, res) => {
                       propertyfollowup.remark,
                       propertyfollowup.status, 
                       propertyfollowup.changestatus,
-                      properties.property_name,
+                      properties.propertyName,
                       enquirers.customer,
                       enquirers.contact,
                       territorypartner.fullname
                FROM propertyfollowup 
-               INNER JOIN enquirers ON propertyfollowup.enquirerid = enquirers.enquirersid
-               INNER JOIN properties ON enquirers.propertyid = properties.propertyid
+               LEFT JOIN enquirers ON propertyfollowup.enquirerid = enquirers.enquirersid
+               LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
                LEFT JOIN territorypartner ON enquirers.territorypartnerid = territorypartner.id
                WHERE enquirers.territorypartner = ? 
                ORDER BY propertyfollowup.followupid DESC`; 

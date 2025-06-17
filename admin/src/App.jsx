@@ -26,6 +26,7 @@ import OnBoardingPartner from "./pages/OnBoardingPartner.jsx";
 import ProjectPartner from "./pages/projectPartner.jsx";
 import TerritoryPartner from "./pages/TerritoryPartner.jsx";
 import GuestUser from "./pages/guestUser.jsx";
+import Blogs from "./pages/Blogs.jsx";
 
 const App = () => {
   return (
@@ -53,6 +54,7 @@ const App = () => {
           <Route path="/tickets" element={<Ticketing />} />
           <Route path="/slider" element={<Slider/>} />
           <Route path="/testimonial" element={<Testimonial/>} />
+          <Route path="/blogs" element={<Blogs/>} />
           <Route path="/raw-materials" element={<RawMaterials />} />
           <Route path="/marketing" element={<Marketing />} />
         </Route>

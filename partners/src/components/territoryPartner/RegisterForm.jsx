@@ -49,11 +49,11 @@ function RegisterForm() {
 
       if (response.ok) {
         const res = await response.json();
-        
+
         setSuccessScreen({
           show: true,
           label: "Your Data Send SuccessFully",
-          description: `Pay Rs ${registrationPrice} for Join as a Territory Partner`
+          description: `Pay Rs ${registrationPrice} for Join as a Territory Partner`,
         });
 
         try {
@@ -65,9 +65,9 @@ function RegisterForm() {
             res.Id,
             "territorypartner",
             "id",
-            setSuccessScreen,
+            setSuccessScreen
           );
-          
+
           // If payment is successful, reset the form
           setNewPartner({
             fullname: "",
@@ -150,6 +150,7 @@ function RegisterForm() {
         <input
           type="text"
           required
+          minLength={25}
           placeholder="Why are You Intrested To Join Reparv ?"
           value={newPartner.intrest}
           onChange={(e) => {

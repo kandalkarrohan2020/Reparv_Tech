@@ -27,6 +27,7 @@ import enquirerRoutes from "./routes/admin/enquirerRoutes.js";
 import addEnquiryRoutes from "./routes/admin/enquiryRoutes.js";
 import auctionmembersRoutes from "./routes/admin/auctionmemberRoutes.js";
 import ticketRoutes from "./routes/admin/ticketRoutes.js";
+import blogRoutes from "./routes/admin/blogRoutes.js";
 import sliderRoutes from "./routes/admin/sliderRoutes.js";
 import testimonialRoutes from "./routes/admin/testimonialRoutes.js";
 import calenderRoutes from "./routes/admin/calenderRoutes.js";
@@ -39,6 +40,7 @@ import propertiesRoutes from "./routes/frontend/propertiesRoutes.js";
 import joinourteamRoutes from "./routes/frontend/joinourteamRoutes.js";
 import propertyinfoRoutes from "./routes/frontend/propertyinfoRoutes.js";
 import enquiryRoutes from "./routes/frontend/enquiryRoutes.js";
+import frontendBlogRoutes from "./routes/frontend/blogRoutes.js";
 import sliderImagesRoutes from "./routes/frontend/sliderRoutes.js";
 import testimonialFeedbackRoutes from "./routes/frontend/testimonialRoutes.js";
 
@@ -132,10 +134,6 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "http://localhost:5175",
-  "http://localhost:5176",
   "https://admin.reparv.in",
   "https://reparv.in",
   "https://www.reparv.in",
@@ -202,6 +200,9 @@ const verifyToken = (req, res, next) => {
     "/frontend/joinourteam",
     "/frontend/propertyinfo",
     "/frontend/enquiry",
+    "/frontend/blog",
+    "/frontend/blog/:id",
+    "/frontend/blog/details/:id",
     "/frontend/slider",
     "/frontend/testimonial",
     //i addedd
@@ -264,6 +265,7 @@ app.use("/frontend/properties", propertiesRoutes);
 app.use("/frontend/joinourteam", joinourteamRoutes);
 app.use("/frontend/propertyinfo", propertyinfoRoutes);
 app.use("/frontend/enquiry", enquiryRoutes);
+app.use("/frontend/blog", frontendBlogRoutes);
 app.use("/frontend/slider", sliderImagesRoutes);
 app.use("/frontend/testimonial", testimonialFeedbackRoutes);
 // Payment Call
@@ -291,6 +293,7 @@ app.use("/admin/enquirers", enquirerRoutes);
 app.use("/admin/enquiries", verifyToken, addEnquiryRoutes);
 app.use("/admin/auctionmembers", auctionmembersRoutes);
 app.use("/admin/tickets", ticketRoutes);
+app.use("/admin/blog", blogRoutes);
 app.use("/admin/slider", sliderRoutes);
 app.use("/admin/testimonial", testimonialRoutes);
 app.use("/admin/calender", calenderRoutes);

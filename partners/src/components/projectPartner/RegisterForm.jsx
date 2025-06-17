@@ -148,6 +148,7 @@ function RegisterForm() {
         <input
           type="text"
           required
+          minLength={25}
           placeholder="Why are You Intrested To Join Reparv ?"
           value={newPartner.intrest}
           onChange={(e) => {

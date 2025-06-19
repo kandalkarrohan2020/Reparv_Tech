@@ -73,7 +73,7 @@ function Blog() {
                     {blog?.description}
                   </p>
                   <Link
-                    to={`/blog-details/${blog.id}`}
+                    to={`/blog-details/${blog.seoSlug}`}
                     className="text-[#0078DB] text-base font-medium flex items-center gap-1"
                   >
                     Read More <span>&rarr;</span>

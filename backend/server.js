@@ -201,7 +201,7 @@ const verifyToken = (req, res, next) => {
     "/frontend/propertyinfo",
     "/frontend/enquiry",
     "/frontend/blog",
-    "/frontend/blog/:id",
+    "/frontend/blog/:slug",
     "/frontend/blog/details/:id",
     "/frontend/slider",
     "/frontend/testimonial",

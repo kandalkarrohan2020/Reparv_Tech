@@ -15,6 +15,7 @@ import FilterSidebar from "../components/FilterSidebar";
 import { useInView } from "react-intersection-observer";
 import { usePropertyFilter } from "../store/propertyFilter";
 import SEO from "../components/SEO";
+import PropertyCategories from "../components/PropertyCategories";
 
 export default function Properties() {
   const { setVideoInView, isIntersecting } = useOutletContext();
@@ -239,9 +240,9 @@ export default function Properties() {
                 filteredData.map((property) => (
                   <div
                     onClick={() =>
-                      navigate(`/property-info/${property.propertyid}`)
+                      navigate(`/property-info/${property.seoSlug}`)
                     }
-                    key={property.propertyid}
+                    key={property.seoSlug}
                     className="border border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
                   >
                     <img
@@ -340,9 +341,14 @@ export default function Properties() {
           </div>
         </div>
 
-        {/* Customer Review */}
+        
         <div className="w-full  hidden md:block h-[1px] mt-5 bg-[#00000033] "></div>
         <div ref={videoRef}>
+          <PropertyCategories />
+        </div>
+        <div className="w-full  hidden md:block h-[1px] mt-5 bg-[#00000033] "></div>
+        {/* Customer Review */}
+        <div>
           <VideoReviewSection />
         </div>
       </div>

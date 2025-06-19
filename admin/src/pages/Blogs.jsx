@@ -30,6 +30,7 @@ const Blogs = () => {
     description: "",
     content: "",
   });
+  const [seoSlug, setSeoSlug] = useState("");
   const [seoTittle, setSeoTittle] = useState("");
   const [seoDescription, setSeoDescription] = useState("");
 
@@ -184,6 +185,7 @@ const Blogs = () => {
       });
       if (!response.ok) throw new Error("Failed to fetch blog.");
       const data = await response.json();
+      setSeoSlug(data.seoSlug);
       setSeoTittle(data.seoTittle);
       setSeoDescription(data.seoDescription);
       setShowSeoForm(true);
@@ -203,7 +205,7 @@ const Blogs = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ seoTittle, seoDescription }),
+        body: JSON.stringify({ seoSlug, seoTittle, seoDescription }),
       });
       const data = await response.json();
       console.log(response);
@@ -213,6 +215,7 @@ const Blogs = () => {
         alert(`Error: ${data.message}`);
       }
       setShowSeoForm(false);
+      setSeoSlug("");
       setSeoTittle("");
       setSeoDescription("");
       await fetchData();
@@ -276,7 +279,7 @@ const Blogs = () => {
               alt="blogImage"
               onClick={() => {
                 window.open(
-                  "https://www.reparv.in/blog-details/" + row.id,
+                  "https://www.reparv.in/blog-details/" + row.seoSlug,
                   "_blank"
                 );
               }}
@@ -292,13 +295,15 @@ const Blogs = () => {
       name: "Blog Tittle",
       selector: (row) => row.tittle,
       sortable: true,
-      minWidth: "200px",
+      minWidth: "150px",
+      maxWidth: "250px",
     },
     {
       name: "Description",
       selector: (row) => row.description,
       sortable: true,
       minWidth: "350px",
+      maxWidth: "600px",
     },
     {
       name: "Status",
@@ -325,10 +330,10 @@ const Blogs = () => {
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
 
-    const handleActionSelect = (action, id) => {
+    const handleActionSelect = (action, id, slug) => {
       switch (action) {
         case "view":
-          window.open("https://www.reparv.in/blog-details/" + id, "_blank");
+          window.open("https://www.reparv.in/blog-details/" + slug, "_blank");
           break;
         case "status":
           status(id);
@@ -360,7 +365,7 @@ const Blogs = () => {
           value={selectedAction}
           onChange={(e) => {
             const action = e.target.value;
-            handleActionSelect(action, row.id);
+            handleActionSelect(action, row.id, row.seoSlug);
           }}
         >
           <option value="" disabled>
@@ -578,6 +583,7 @@ const Blogs = () => {
             <IoMdClose
               onClick={() => {
                 setShowSeoForm(false);
+                setSeoSlug("");
                 setSeoTittle("");
                 setSeoDescription("");
               }}
@@ -591,7 +597,25 @@ const Blogs = () => {
                 value={blogId || ""}
                 onChange={(e) => setBlogId(e.target.value)}
               />
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                  Seo Slug
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter Slug"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={seoSlug}
+                  onChange={(e) => {
+                    setSeoSlug(e.target.value);
+                  }}
+                />
+              </div>
               <div className={`w-full `}>
+                <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                  Seo Tittle
+                </label>
                 <textarea
                   rows={2}
                   cols={40}
@@ -603,6 +627,9 @@ const Blogs = () => {
                 />
               </div>
               <div className={`w-full `}>
+                <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                  Seo Description
+                </label>
                 <textarea
                   rows={4}
                   cols={40}

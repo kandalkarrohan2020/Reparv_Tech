@@ -21,9 +21,9 @@ export const getAll = (req, res) => {
 
 // **Fetch Single by ID**
 export const getById = (req, res) => {
-  const id = parseInt(req.params.id);
-  const sql = "SELECT * FROM blogs WHERE id = ?";
-  db.query(sql, [id], (err, result) => {
+  const seoSlug = req.params.slug;
+  const sql = "SELECT * FROM blogs WHERE seoSlug = ?";
+  db.query(sql, [seoSlug], (err, result) => {
     if (err) {
       console.error("Error fetching:", err);
       return res.status(500).json({ message: "Database error", error: err });

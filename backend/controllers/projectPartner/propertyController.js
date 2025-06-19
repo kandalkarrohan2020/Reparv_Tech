@@ -4,6 +4,15 @@ import fs from "fs";
 import path from "path";
 import { convertImagesToWebp } from "../../utils/convertImagesToWebp.js";
 
+function toSlug(text) {
+  return text
+    .toLowerCase() // Convert to lowercase
+    .trim() // Remove leading/trailing spaces
+    .replace(/[^a-z0-9\s-]/g, "") // Remove special characters
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-"); // Replace multiple hyphens with single
+}
+
 const calculateEMI = (principal, rate = 9, years = 20) => {
   const monthlyRate = rate / 12 / 100;
   const months = years * 12;
@@ -195,6 +204,8 @@ export const addProperty = async (req, res) => {
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
+  
+  const seoSlug = toSlug(propertyName);
 
   // calculate EMI On OFFER PRICE
   const emi = calculateEMI(Number(totalOfferPrice));
@@ -234,10 +245,10 @@ export const addProperty = async (req, res) => {
         ageOfPropertyFeature, furnishingFeature, amenitiesFeature, propertyStatusFeature, floorNumberFeature, smartHomeFeature,
         securityBenefit, primeLocationBenefit, rentalIncomeBenefit, qualityBenefit, capitalAppreciationBenefit, ecofriendlyBenefit,
         frontView, sideView, kitchenView, hallView, bedroomView, bathroomView, balconyView,
-        nearestLandmark, developedAmenities,
+        nearestLandmark, developedAmenities, seoSlug,
         updated_at, created_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const values = [
@@ -301,6 +312,7 @@ export const addProperty = async (req, res) => {
         balconyView,
         nearestLandmark,
         developedAmenities,
+        seoSlug,
         currentdate,
         currentdate,
       ];

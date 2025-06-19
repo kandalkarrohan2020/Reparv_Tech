@@ -11,15 +11,16 @@ export default function SiteVisitPopup() {
     URI,
     setLoading,
     setShowSiteVisitPopup,
+    propertyId,
     propertyImage,
     successScreen,
     setSuccessScreen,
   } = useAuth();
-  const { id } = useParams();
+  //const { id } = useParams();
   const location = useLocation();
   //Inquiry Form Data
   const [formData, setFormData] = useState({
-    propertyid: id,
+    propertyid: propertyId,
     fullname: "",
     phone: "",
   });
@@ -51,7 +52,7 @@ export default function SiteVisitPopup() {
       // Clear form after success
       setFormData({
         ...formData,
-        propertyid: id,
+        propertyid: propertyId,
         fullname: "",
         phone: "",
       });

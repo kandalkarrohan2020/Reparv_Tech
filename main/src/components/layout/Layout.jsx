@@ -262,7 +262,7 @@ function Layout() {
             <div className="leftBody flex flex-col gap-5 text-lg font-medium">
               <h3 className="text-xl font-bold">Company</h3>
               <p className="cursoe-pointer">
-                <Link to="/blog">Blog</Link>
+                <Link to="/blogs">Blogs</Link>
               </p>
               <p className="cursoe-pointer">
                 <Link to="/properties">Properties</Link>
@@ -379,7 +379,7 @@ function Layout() {
           </div>
 
           <div className="footerRight flex flex-col gap-5 text-xs leading-1.5 sm:text-lg font-medium">
-            <Link to="/blog">Blog</Link>
+            <Link to="/blogs">Blogs</Link>
             <Link to="/properties">Properties</Link>
             <Link to="/about-us">About Us</Link>
             <Link to="/contact-us">Contact Us</Link>

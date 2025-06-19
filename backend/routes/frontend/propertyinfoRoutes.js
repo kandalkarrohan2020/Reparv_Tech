@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 //router.get("/", getAll);
-router.get("/:id", getById);
-router.get("/getimages/:id", getImages);
+router.get("/:slug", getById);
+router.get("/getimages/:slug", getImages);
 
 export default  router;

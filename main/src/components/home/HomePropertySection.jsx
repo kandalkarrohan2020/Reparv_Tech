@@ -69,8 +69,8 @@ function HomePropertySection({ city }) {
       <div className=" HomeProperties w-full max-w-[1135px] overflow-scroll scrollbar-hide grid place-items-center grid-flow-col gap-6 py-4 px-1 sm:p-5">
         {filteredProperties.map((property) => (
           <div
-            onClick={() => navigate(`/property-info/${property.propertyid}`)}
-            key={property.propertyid}
+            onClick={() => navigate(`/property-info/${property.seoSlug}`)}
+            key={property.seoSlug}
             className="w-[350px] border border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
           >
             <img

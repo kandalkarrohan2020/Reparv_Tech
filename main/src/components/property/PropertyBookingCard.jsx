@@ -5,15 +5,24 @@ import CardAssuredTag from "../../assets/property/cardAssuredTag.svg";
 import { useAuth } from "../../store/auth";
 import FormatPrice from "../FormatPrice";
 
-
 const PropertyBookingCard = ({ propertyInfo }) => {
-  const {priceSummery, setPriceSummery, setShowPriceSummery, setShowBenefitsPopup, setShowSiteVisitPopup, setPropertyImage } = useAuth();
+  const {
+    priceSummery,
+    setPriceSummery,
+    setShowPriceSummery,
+    setShowBenefitsPopup,
+    setShowSiteVisitPopup,
+    setPropertyImage,
+    setPropertyId,
+  } = useAuth();
   return (
     <div
       className={`w-full max-w-[540px] flex flex-col gap-2 sm:gap-4 bg-white rounded-xl p-6 sm:border`}
     >
       {/* Title */}
-      <h2 className="text-lg sm:text-2xl font-semibold">{propertyInfo.propertyName}</h2>
+      <h2 className="text-lg sm:text-2xl font-semibold">
+        {propertyInfo.propertyName}
+      </h2>
 
       {/* Tags */}
       <div className="flex flex-wrap gap-2 text-[11px] md:text-xs font-medium text-[#00092966] group-hover:text-[#e2e2e2] mt-2">
@@ -33,7 +42,9 @@ const PropertyBookingCard = ({ propertyInfo }) => {
       <div className="flex items-center justify-between text-gray-700 mt-3">
         <div className="flex items-center justify-center gap-1 text-sm sm:text-base text-[#00000099] ">
           <FaMapMarkerAlt className="text-[#00000099]" />
-          <span>{propertyInfo.city}, {propertyInfo.state || "Maharashtra"}</span>
+          <span>
+            {propertyInfo.city}, {propertyInfo.state || "Maharashtra"}
+          </span>
         </div>
 
         <a
@@ -122,6 +133,7 @@ const PropertyBookingCard = ({ propertyInfo }) => {
         onClick={() => {
           setShowSiteVisitPopup(true);
           setPropertyImage(JSON.parse(propertyInfo.frontView)[0]);
+          setPropertyId(JSON.parse(propertyInfo.propertyid));
         }}
         className="w-full hidden sm:block bg-[#0BB501] text-white font-semibold py-3 mt-4 rounded-lg text-lg sm:text-2xl active:scale-95 cursor-pointer"
       >

@@ -22,7 +22,8 @@ function PropertyDetails() {
   const { id } = useParams();
   const [propertyInfo, setPropertyInfo] = useState({});
   const [propertyImages, setPropertyImages] = useState([]);
-  const { setShowSiteVisitPopup, URI, setPropertyImage } = useAuth();
+  const { setShowSiteVisitPopup, URI, setPropertyImage, setPropertyId } =
+    useAuth();
 
   // Fetch Property Info
   const fetchData = async () => {
@@ -74,56 +75,72 @@ function PropertyDetails() {
         title={propertyInfo.seoTittle || ""}
         description={propertyInfo.seoDescription || ""}
       />
-    <div className="w-full max-w-7xl flex flex-col sm:p-4 mx-auto">
-      <div className="flex w-full">
-        <div className="leftSection w-full md:w-[50%] flex flex-col gap-5 sm:gap-10">
-          <PropertyImageGallery property={propertyInfo} />
-          <div className=" block md:hidden">
+      <div className="w-full max-w-7xl flex flex-col sm:p-4 mx-auto">
+        <div className="flex w-full">
+          <div className="leftSection w-full md:w-[50%] flex flex-col gap-5 sm:gap-10">
+            <PropertyImageGallery property={propertyInfo} />
+            <div className=" block md:hidden">
+              <PropertyBookingCard propertyInfo={propertyInfo} />
+            </div>
+
+            {/* Property Details */}
+            <div
+              className={`${
+                propertyInfo?.propertyDescription === null ||
+                propertyInfo?.propertyDescription === ""
+                  ? "hidden"
+                  : "block"
+              }`}
+            >
+              <div className="bg-white rounded-lg p-4">
+                <h2 className="text-base font-semibold mb-4">
+                  Property Details
+                </h2>
+                <div className="text-sm text-gray-600 ">{propertyInfo.propertyDescription}</div>
+              </div>
+            </div>
+
+            <PropertyOverview propertyInfo={propertyInfo} />
+            <PropertyFeatures propertyInfo={propertyInfo} />
+            <EMICalculator totalAmount={propertyInfo.totalOfferPrice} />
+          </div>
+          <div
+            className={`${
+              isScrolling ? "absolute " : "fixed"
+            } bookingSection hidden md:flex left-[50%] w-[50%] max-w-[540px] px-6 pb-6 z-10`}
+          >
             <PropertyBookingCard propertyInfo={propertyInfo} />
           </div>
-          <PropertyOverview propertyInfo={propertyInfo} />
-          <PropertyFeatures propertyInfo={propertyInfo} />
-          <EMICalculator totalAmount={propertyInfo.totalOfferPrice}/>
         </div>
+
+        {/* Property Booking Inquiry Button */}
+        <div className="fixed z-30 w-full sm:w-auto right-0 bottom-0 sm:hidden p-4 rounded-2xl text-white text-md shadow-lg ">
+          <button
+            onClick={() => {
+              setShowSiteVisitPopup(true);
+              setPropertyImages(JSON.parse(propertyInfo.frontView)[0]);
+            }}
+            className="w-full flex items-center justify-center sm:hidden rounded-md bg-[#0BB501] text-white font-semibold py-3 text-base active:scale-95 cursor-pointer"
+          >
+            Book Site Visit Now
+          </button>
+        </div>
+
+        {/* Other Properties Section */}
         <div
-          className={`${
-            isScrolling ? "absolute " : "fixed"
-          } bookingSection hidden md:flex left-[50%] w-[50%] max-w-[540px] px-6 pb-6 z-10`}
+          ref={videoRef}
+          className={` w-full flex flex-col px-5 pt-10 sm:pt-13 sm:p-5`}
         >
-          <PropertyBookingCard propertyInfo={propertyInfo} />
+          <h2 className="text-lg md:text-3xl mx-auto text-black font-semibold mb-4">
+            Explore Similar Properties
+          </h2>
+          <OtherProperties
+            propertyCategory={propertyInfo.propertyCategory}
+            propertyId={id}
+            key={propertyInfo.seoSlug}
+          />
         </div>
       </div>
-
-      {/* Property Booking Inquiry Button */}
-      <div
-        className="fixed z-30 w-full sm:w-auto right-0 bottom-0 sm:hidden p-4 rounded-2xl text-white text-md shadow-lg "
-      >
-        <button
-          onClick={() => {
-            setShowSiteVisitPopup(true);
-            setPropertyImages(JSON.parse(propertyInfo.frontView)[0]);
-          }}
-          className="w-full flex items-center justify-center sm:hidden rounded-md bg-[#0BB501] text-white font-semibold py-3 text-base active:scale-95 cursor-pointer"
-        >
-          Book Site Visit Now
-        </button>
-      </div>
-
-      {/* Other Properties Section */}
-      <div
-        ref={videoRef}
-        className={` w-full flex flex-col px-5 pt-10 sm:pt-13 sm:p-5`}
-      >
-        <h2 className="text-lg md:text-3xl mx-auto text-black font-semibold mb-4">
-          Explore Similar Properties
-        </h2>
-        <OtherProperties
-          propertyCategory={propertyInfo.propertyCategory}
-          propertyId={id}
-          key={propertyInfo.propertyid}
-        />
-      </div>
-    </div>
     </>
   );
 }

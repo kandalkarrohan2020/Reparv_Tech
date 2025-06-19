@@ -2,6 +2,15 @@ import db from "../../config/dbconnect.js";
 import moment from "moment";
 import bcrypt from "bcryptjs";
 
+function toSlug(text) {
+  return text
+    .toLowerCase()               // Convert to lowercase
+    .trim()                      // Remove leading/trailing spaces
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-')        // Replace spaces with hyphens
+    .replace(/-+/g, '-');        // Replace multiple hyphens with single
+}
+
 // **Fetch All **
 export const getAll = (req, res) => {
   const sql = "SELECT * FROM blogs ORDER BY created_at DESC";
@@ -54,20 +63,22 @@ export const getById = (req, res) => {
 export const add = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const { tittle, description, content } = req.body;
-
+  
   if (!tittle || !description || !content) {
     return res.status(400).json({ message: "All Fields are Required" });
   }
 
+  const seoSlug = toSlug(tittle);
+
   const blogImageFile = req.files?.["blogImage"]?.[0];
   const blogImageUrl = blogImageFile ? `/uploads/${blogImageFile.filename}` : null;
 
-  const sql = `INSERT INTO blogs (tittle, description, content, image, created_at, updated_at) 
-               VALUES (?, ?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO blogs (tittle, description, content, seoSlug, image, created_at, updated_at) 
+               VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(
     sql,
-    [tittle, description, content, blogImageUrl, currentdate, currentdate],
+    [tittle, description, content, seoSlug, blogImageUrl, currentdate, currentdate],
     (err, result) => {
       if (err) {
         console.error("Error inserting blog:", err);
@@ -104,7 +115,7 @@ export const edit = (req, res) => {
   const updateValues = [tittle, description, content, currentdate];
 
   if (blogImageUrl) {
-    updateSql += `, blogImage = ?`;
+    updateSql += `, image = ?`;
     updateValues.push(blogImageUrl);
   }
 
@@ -170,8 +181,8 @@ export const status = (req, res) => {
 
 //* ADD Seo Details */
 export const seoDetails = (req, res) => {
-  const { seoTittle, seoDescription } = req.body;
-  if (!seoTittle || !seoDescription) {
+  const {seoSlug, seoTittle, seoDescription } = req.body;
+  if (!seoSlug || !seoTittle || !seoDescription) {
     return res.status(401).json({ message: "All Field Are Required" });
   }
   const Id = parseInt(req.params.id);
@@ -189,8 +200,8 @@ export const seoDetails = (req, res) => {
       }
 
       db.query(
-        "UPDATE blogs SET seoTittle = ?, seoDescription = ? WHERE id = ?",
-        [seoTittle, seoDescription, Id],
+        "UPDATE blogs SET seoSlug = ?, seoTittle = ?, seoDescription = ? WHERE id = ?",
+        [seoSlug, seoTittle, seoDescription, Id],
         (err, result) => {
           if (err) {
             console.error("Error While Add Seo Details:", err);

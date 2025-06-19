@@ -15,6 +15,7 @@ import RefundPolicy from "./pages/RefundPolicy";
 import PropertyDetails from "./pages/PropertyDetails";
 import Blog from "./pages/Blog";
 import BlogDetails from "./pages/BlogDetails";
+import ErrorPage from "./pages/ErrorPage";
 
 function App() {
   return (
@@ -36,9 +37,10 @@ function App() {
             element={<TermsAndConditions />}
           />
           <Route path="/cancellation-policy" element={<RefundPolicy />} />
-          <Route path="/blog" element={<Blog />} />
+          <Route path="/blogs" element={<Blog />} />
           <Route path="/blog-details/:blogId" element={<BlogDetails />} />
         </Route>
+        <Route path="*" element={<ErrorPage />}></Route>
       </Routes>
     </BrowserRouter>
   );

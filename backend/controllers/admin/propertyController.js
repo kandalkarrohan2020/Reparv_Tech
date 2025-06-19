@@ -5,6 +5,15 @@ import path from "path";
 import csv from "csv-parser";
 import { convertImagesToWebp } from "../../utils/convertImagesToWebp.js";
 
+function toSlug(text) {
+  return text
+    .toLowerCase() // Convert to lowercase
+    .trim() // Remove leading/trailing spaces
+    .replace(/[^a-z0-9\s-]/g, "") // Remove special characters
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-"); // Replace multiple hyphens with single
+}
+
 const calculateEMI = (principal, rate = 9, years = 20) => {
   const monthlyRate = rate / 12 / 100;
   const months = years * 12;
@@ -260,6 +269,8 @@ export const addProperty = async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
+  const seoSlug = toSlug(propertyName);
+
   const calculateEMI = (price) => {
     const interestRate = 0.08 / 12; // 8% annual interest
     const tenureMonths = 240; // 20 years
@@ -305,10 +316,10 @@ export const addProperty = async (req, res) => {
         ageOfPropertyFeature, furnishingFeature, amenitiesFeature, propertyStatusFeature, floorNumberFeature, smartHomeFeature,
         securityBenefit, primeLocationBenefit, rentalIncomeBenefit, qualityBenefit, capitalAppreciationBenefit, ecofriendlyBenefit,
         frontView, sideView, kitchenView, hallView, bedroomView, bathroomView, balconyView,
-        nearestLandmark, developedAmenities,
+        nearestLandmark, developedAmenities, seoSlug,
         updated_at, created_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const values = [
@@ -371,6 +382,7 @@ export const addProperty = async (req, res) => {
         balconyView,
         nearestLandmark,
         developedAmenities,
+        seoSlug,
         currentdate,
         currentdate,
       ];
@@ -774,8 +786,8 @@ export const approve = (req, res) => {
 
 //* ADD Seo Details */
 export const seoDetails = (req, res) => {
-  const { seoTittle, seoDescription } = req.body;
-  if (!seoTittle || !seoDescription) {
+  const { seoSlug, seoTittle, seoDescription, propertyDescription } = req.body;
+  if (!seoSlug || !seoTittle || !seoDescription || !propertyDescription) {
     return res.status(401).json({ message: "All Field Are Required" });
   }
   const Id = parseInt(req.params.id);
@@ -793,8 +805,8 @@ export const seoDetails = (req, res) => {
       }
 
       db.query(
-        "UPDATE properties SET seoTittle = ?, seoDescription = ? WHERE propertyid = ?",
-        [seoTittle, seoDescription, Id],
+        "UPDATE properties SET seoSlug = ?, seoTittle = ?, seoDescription = ?, propertyDescription = ? WHERE propertyid = ?",
+        [seoSlug, seoTittle, seoDescription, propertyDescription, Id],
         (err, result) => {
           if (err) {
             console.error("Error While Add Seo Details:", err);
@@ -802,15 +814,12 @@ export const seoDetails = (req, res) => {
               .status(500)
               .json({ message: "Database error", error: err });
           }
-          res
-            .status(200)
-            .json({ message: "Seo Details Add successfully" });
+          res.status(200).json({ message: "Seo Details Add successfully" });
         }
       );
     }
   );
 };
-
 
 export const addRejectReason = (req, res) => {
   const { rejectReason } = req.body;
@@ -849,7 +858,6 @@ export const addRejectReason = (req, res) => {
     }
   );
 };
-
 
 // **Add Property**
 export const addImages = (req, res) => {

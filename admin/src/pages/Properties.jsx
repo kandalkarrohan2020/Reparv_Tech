@@ -48,8 +48,10 @@ const Properties = () => {
   const [newAddInfo, setNewAddInfo] = useState({
     propertyid: "",
   });
+  const [seoSlug, setSeoSlug] = useState("");
   const [seoTittle, setSeoTittle] = useState("");
   const [seoDescription, setSeoDescription] = useState("");
+  const [propertyDescription, setPropertyDescription] = useState("");
   const [newProperty, setPropertyData] = useState({
     builderid: "",
     propertyCategory: "",
@@ -424,8 +426,10 @@ const Properties = () => {
       });
       if (!response.ok) throw new Error("Failed to fetch property.");
       const data = await response.json();
+      setSeoSlug(data.seoSlug);
       setSeoTittle(data.seoTittle);
       setSeoDescription(data.seoDescription);
+      setPropertyDescription(data.propertyDescription);
       setShowSeoForm(true);
     } catch (err) {
       console.error("Error fetching :", err);
@@ -445,7 +449,7 @@ const Properties = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ seoTittle, seoDescription }),
+          body: JSON.stringify({ seoSlug, seoTittle, seoDescription, propertyDescription }),
         }
       );
       const data = await response.json();
@@ -456,8 +460,10 @@ const Properties = () => {
         alert(`Error: ${data.message}`);
       }
       setShowSeoForm(false);
+      setSeoSlug("");
       setSeoTittle("");
       setSeoDescription("");
+      setPropertyDescription("");
       await fetchData();
     } catch (error) {
       console.error("Error adding Seo Details reason:", error);
@@ -767,7 +773,7 @@ const Properties = () => {
               alt="Property"
               onClick={() => {
                 window.open(
-                  "https://www.reparv.in/property-info/" + row.propertyid,
+                  "https://www.reparv.in/property-info/" + row.seoSlug,
                   "_blank"
                 );
               }}
@@ -892,13 +898,10 @@ const Properties = () => {
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
 
-    const handleActionSelect = (action, propertyid, propertyType) => {
+    const handleActionSelect = (action, propertyid, slug) => {
       switch (action) {
         case "view":
-          window.open(
-            "https://www.reparv.in/property-info/" + propertyid,
-            "_blank"
-          );
+          window.open("https://www.reparv.in/property-info/" + slug, "_blank");
           break;
         case "status":
           status(propertyid);
@@ -940,7 +943,7 @@ const Properties = () => {
           value={selectedAction}
           onChange={(e) => {
             const action = e.target.value;
-            handleActionSelect(action, row.propertyid, row.propertytypeid);
+            handleActionSelect(action, row.propertyid, row.seoSlug);
           }}
         >
           <option value="" disabled>
@@ -1232,8 +1235,10 @@ const Properties = () => {
             <IoMdClose
               onClick={() => {
                 setShowSeoForm(false);
+                setSeoSlug("");
                 setSeoTittle("");
                 setSeoDescription("");
+                setPropertyDescription("");
               }}
               className="w-6 h-6 cursor-pointer"
             />
@@ -1245,7 +1250,25 @@ const Properties = () => {
                 value={propertyKey || ""}
                 onChange={(e) => setPropertyKey(e.target.value)}
               />
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                  Seo Slug
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter Slug"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={seoSlug}
+                  onChange={(e) => {
+                    setSeoSlug(e.target.value);
+                  }}
+                />
+              </div>
               <div className={`w-full `}>
+                <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                  Seo Tittle
+                </label>
                 <textarea
                   rows={2}
                   cols={40}
@@ -1257,14 +1280,31 @@ const Properties = () => {
                 />
               </div>
               <div className={`w-full `}>
+                <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                  Seo Description
+                </label>
                 <textarea
                   rows={4}
                   cols={40}
-                  placeholder="Enter Description"
+                  placeholder="Enter SEO Description"
                   required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={seoDescription}
                   onChange={(e) => setSeoDescription(e.target.value)}
+                />
+              </div>
+              <div className={`w-full `}>
+                <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                  Property Description
+                </label>
+                <textarea
+                  rows={4}
+                  cols={40}
+                  placeholder="Enter Property Description"
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={propertyDescription}
+                  onChange={(e) => setPropertyDescription(e.target.value)}
                 />
               </div>
             </div>
@@ -1273,8 +1313,10 @@ const Properties = () => {
                 type="button"
                 onClick={() => {
                   setShowSeoForm(false);
+                  setSeoSlug("");
                   setSeoTittle("");
                   setSeoDescription("");
+                  setPropertyDescription("");
                 }}
                 className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
               >

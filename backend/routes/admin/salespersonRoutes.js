@@ -28,7 +28,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // ✅ Limit file size (5MB)
+  limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size (5MB)
   fileFilter: (req, file, cb) => {
     const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
     if (!allowedTypes.includes(file.mimetype)) {
@@ -39,9 +39,9 @@ const upload = multer({
 });
 
 
-router.get("/", getAll);
+router.get("/:paymentStatus", getAll);
 router.get("/active", getAllActive);
-router.get("/:id", getById);
+router.get("/get/:id", getById);
 router.post(
   "/add",
   upload.fields([

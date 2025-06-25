@@ -48,11 +48,7 @@ function Login() {
         console.log("Login Successful", response.data);
         localStorage.setItem("user", JSON.stringify(response.data.user));
         storeTokenInCookie(response.data.token);
-        if (response.data.user.adharId != null) {
-          navigate("/dashboard", { replace: true });
-        } else {
-          navigate("/kyc", { replace: true });
-        }
+        navigate("/dashboard", { replace: true });
       } else {
         setErrorMessage("Invalid login credentials.");
       }

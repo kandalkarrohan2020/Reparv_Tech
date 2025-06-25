@@ -158,9 +158,9 @@ function Layout() {
               <h3 className="text-xl font-bold">Company</h3>
               <p className="cursor-pointer">
                 <Link onClick={() => {window.open(
-                  "https://www.reparv.in/blog",
+                  "https://www.reparv.in/blogs",
                   "_blank"
-                )}} >Blog</Link>
+                )}} >Blogs</Link>
               </p>
               <p className="cursor-pointer">
                 <Link onClick={() => {window.open(
@@ -253,9 +253,9 @@ function Layout() {
 
           <div className="footerRight flex flex-col gap-5 text-xs leading-1.5 sm:text-lg font-medium">
             <Link onClick={() => {window.open(
-                  "https://www.reparv.in/blog",
+                  "https://www.reparv.in/blogs",
                   "_blank"
-                )}}>Blog</Link>
+                )}}>Blogs</Link>
             <Link onClick={() => {window.open(
                   "https://www.reparv.in/properties",
                   "_blank"

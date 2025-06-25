@@ -352,7 +352,7 @@ const Ticketing = () => {
       name: "SN",
       cell: (row, index) => (
         <span
-          className={`px-2 py-1 rounded-md ${
+          className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md ${
             row.status === "Resolved"
               ? "bg-[#EAFBF1] text-[#0BB501]"
               : row.status === "Open"

@@ -5,21 +5,88 @@ import sendEmail from "../../utils/nodeMailer.js";
 import { verifyRazorpayPayment } from "../paymentController.js";
 
 const saltRounds = 10;
-// **Fetch All **
+
 export const getAll = (req, res) => {
-  const sql = "SELECT * FROM salespersons ORDER BY salespersonsid DESC";
-  db.query(sql, (err, result) => {
+  const paymentStatus = req.params.paymentStatus;
+
+  if (!paymentStatus) {
+    return res.status(401).json({ message: "Payment Status Not Selected" });
+  }
+
+  let sql;
+
+  if (paymentStatus === "Success") {
+    sql = `SELECT * FROM salespersons 
+           WHERE paymentstatus = 'Success' 
+           ORDER BY created_at DESC`;
+  } else if (paymentStatus === "Follow Up") {
+    sql = `
+      SELECT s.*, pf.followUp, pf.created_at AS followUpDate
+      FROM salespersons s
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Sales Person'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Sales Person'
+      ) pf ON s.salespersonsid = pf.partnerId
+      WHERE s.paymentstatus = 'Follow Up'
+      ORDER BY s.updated_at DESC
+    `;
+  } else if (paymentStatus === "Pending") {
+    sql = `SELECT * FROM salespersons 
+           WHERE paymentstatus = 'Pending' 
+           ORDER BY created_at DESC`;
+  } else {
+    sql = `SELECT * FROM salespersons ORDER BY salespersonsid DESC`;
+  }
+
+  db.query(sql, (err, salespersons) => {
     if (err) {
-      console.error("Error fetching :", err);
+      console.error("Error fetching Salespersons:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    const formatted = result.map((row) => ({
-      ...row,
-      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
-      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
-    }));
 
-    res.json(formatted);
+    // Query to get count by status
+    const countQuery = `
+      SELECT paymentstatus, COUNT(*) AS count
+      FROM salespersons
+      WHERE paymentstatus IS NOT NULL
+      GROUP BY paymentstatus
+    `;
+
+    db.query(countQuery, (countErr, counts) => {
+      if (countErr) {
+        console.error("Error fetching status counts:", countErr);
+        return res
+          .status(500)
+          .json({ message: "Database error", error: countErr });
+      }
+
+      const formatted = salespersons.map((row) => ({
+        ...row,
+        created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+        updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+        followUp: row.followUp || null,
+        followUpDate: row.followUpDate
+          ? moment(row.followUpDate).format("DD MMM YYYY | hh:mm A")
+          : null,
+      }));
+
+      const paymentStatusCounts = counts.reduce((acc, item) => {
+        acc[item.paymentstatus || "Unknown"] = item.count;
+        return acc;
+      }, {});
+
+      return res.json({
+        data: formatted,
+        paymentStatusCounts,
+      });
+    });
   });
 };
 
@@ -39,6 +106,11 @@ export const getAllActive = (req, res) => {
 // **Fetch Single by ID**
 export const getById = (req, res) => {
   const Id = parseInt(req.params.id);
+
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Sales person ID" });
+  }
+
   const sql = "SELECT * FROM salespersons WHERE salespersonsid = ?";
 
   db.query(sql, [Id], (err, result) => {
@@ -471,7 +543,8 @@ export const fetchFollowUpList = (req, res) => {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
 
-  const sql = "SELECT * FROM partnerFollowup WHERE partnerId = ? AND role = ? ORDER BY created_at DESC";
+  const sql =
+    "SELECT * FROM partnerFollowup WHERE partnerId = ? AND role = ? ORDER BY created_at DESC";
   db.query(sql, [Id, "Sales Person"], (err, result) => {
     if (err) {
       console.error("Error fetching :", err);
@@ -490,42 +563,64 @@ export const fetchFollowUpList = (req, res) => {
 export const addFollowUp = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const Id = parseInt(req.params.id);
+
   if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
-  
+
   const { followUp } = req.body;
-  if (!followUp) {
-    return res.status(400).json({ message: "Empty Follow Up" });
+  if (!followUp || followUp.trim() === "") {
+    return res.status(400).json({ message: "Follow up message is required." });
   }
-  
+
+  // Check if salesperson exists
   db.query(
     "SELECT * FROM salespersons WHERE salespersonsid = ?",
     [Id],
     (err, result) => {
       if (err) {
-        console.error("Database error:", err);
+        console.error("Database error (fetching salesperson):", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
 
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Salesperson not found" });
+      }
+
+      // Insert follow-up entry
       db.query(
         "INSERT INTO partnerFollowup (partnerId, role, followUp, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-        [Id, "Sales Person", followUp, currentdate, currentdate],
-        (err, result) => {
-          if (err) {
-            console.error("Error Adding :", err);
+        [Id, "Sales Person", followUp.trim(), currentdate, currentdate],
+        (insertErr, insertResult) => {
+          if (insertErr) {
+            console.error("Error adding follow-up:", insertErr);
             return res
               .status(500)
-              .json({ message: "Database error", error: err });
+              .json({ message: "Database error", error: insertErr });
           }
-          res
-            .status(200)
-            .json({ message: "Partner Follow Up add successfully" });
+
+          // Update payment status after follow-up is added
+          db.query(
+            "UPDATE salespersons SET paymentstatus = 'Follow Up' WHERE salespersonsid = ?",
+            [Id],
+            (updateErr, updateResult) => {
+              if (updateErr) {
+                console.error("Error updating payment status:", updateErr);
+                return res
+                  .status(500)
+                  .json({ message: "Database error", error: updateErr });
+              }
+
+              return res
+                .status(200)
+                .json({ message: "Partner follow-up added successfully." });
+            }
+          );
         }
       );
     }
   );
-}
+};
 
 export const assignLogin = async (req, res) => {
   try {

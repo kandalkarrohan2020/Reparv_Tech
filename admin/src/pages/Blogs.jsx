@@ -279,7 +279,7 @@ const Blogs = () => {
               alt="blogImage"
               onClick={() => {
                 window.open(
-                  "https://www.reparv.in/blog-details/" + row.seoSlug,
+                  "https://www.reparv.in/blog/" + row.seoSlug,
                   "_blank"
                 );
               }}
@@ -333,7 +333,7 @@ const Blogs = () => {
     const handleActionSelect = (action, id, slug) => {
       switch (action) {
         case "view":
-          window.open("https://www.reparv.in/blog-details/" + slug, "_blank");
+          window.open("https://www.reparv.in/blog/" + slug, "_blank");
           break;
         case "status":
           status(id);

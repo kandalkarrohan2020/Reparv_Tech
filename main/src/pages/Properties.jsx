@@ -5,6 +5,7 @@ import { CiLocationOn } from "react-icons/ci";
 import { IoFilter } from "react-icons/io5";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { IoSearchSharp } from "react-icons/io5";
+import propertyPicture from "../assets/property/propertyPicture.svg";
 import cardAssuredTag from "../assets/property/cardAssuredTag.svg";
 import populerTag from "../assets/property/populerTag.svg";
 import { useNavigate, Navigate } from "react-router-dom";
@@ -246,9 +247,22 @@ export default function Properties() {
                     className="border border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
                   >
                     <img
-                      src={`${URI}${JSON.parse(property.frontView)[0]}`}
+                      src={(() => {
+                        try {
+                          const images = JSON.parse(property.frontView || "[]");
+                          return images.length > 0
+                            ? `${URI}${images[0]}`
+                            : `${propertyPicture}`;
+                        } catch {
+                          return `${propertyPicture}`;
+                        }
+                      })()}
                       alt={property.name}
-                      className=" object-cover h-[200px] w-full"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = `${propertyPicture}`;
+                      }}
+                      className="object-cover h-[200px] w-full"
                     />
                     <div className="relative flex flex-col gap-2">
                       {property.likes > 500 && (
@@ -310,7 +324,7 @@ export default function Properties() {
                           {property.city}
                         </div>
 
-                        <div className="py-1 px-3 bg-[#0000000F] rounded-xl ">
+                        <div className={`${property.propertyCategory !== "NewFlat" || property.propertyCategory !== "NewPlot" ? "hidden" : "block"} py-1 px-3 bg-[#0000000F] rounded-xl `}>
                           RERA Approved
                         </div>
                       </div>
@@ -341,7 +355,6 @@ export default function Properties() {
           </div>
         </div>
 
-        
         <div className="w-full  hidden md:block h-[1px] mt-5 bg-[#00000033] "></div>
         <div ref={videoRef}>
           <PropertyCategories />

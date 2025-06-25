@@ -38,7 +38,7 @@ function App() {
           />
           <Route path="/cancellation-policy" element={<RefundPolicy />} />
           <Route path="/blogs" element={<Blog />} />
-          <Route path="/blog-details/:blogId" element={<BlogDetails />} />
+          <Route path="/blog/:blogId" element={<BlogDetails />} />
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>
       </Routes>

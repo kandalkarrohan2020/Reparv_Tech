@@ -32,6 +32,8 @@ const [showPartnerForm, setShowPartnerForm ] = useState(false);
 const [showPartner, setShowPartner ] = useState(false);
 const [showFollowUpList, setShowFollowUpList] = useState(false);
 
+const [partnerPaymentStatus, setPartnerPaymentStatus] = useState("Pending");
+
 return <AuthContext.Provider
  value={
     {   URI, loading, setLoading,
@@ -47,7 +49,8 @@ return <AuthContext.Provider
         showAssignSalesForm, setShowAssignSalesForm,
         showPartnerForm, setShowPartnerForm ,
         showPartner, setShowPartner,
-        showFollowUpList, setShowFollowUpList
+        showFollowUpList, setShowFollowUpList,
+        partnerPaymentStatus, setPartnerPaymentStatus,
     }
 }>
     {children}

@@ -74,7 +74,7 @@ const Enquirers = () => {
     location: "",
     message: "",
   });
-  
+
   //Single Image Upload
   const [selectedImage, setSelectedImage] = useState(null);
 
@@ -628,7 +628,7 @@ const Enquirers = () => {
       name: "SN",
       cell: (row, index) => (
         <span
-          className={`px-2 py-1 rounded-md ${
+          className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md ${
             row.status === "New"
               ? "bg-[#EAFBF1] text-[#0BB501]"
               : row.status === "Visit Scheduled"
@@ -1216,20 +1216,25 @@ const Enquirers = () => {
                 }}
               >
                 <option value="">Select Sales Person</option>
-                {salesPersonList
-                  .filter((salesPerson) => salesPerson.status === "Active")
-                  .map((salesPerson, index) => {
-                    const optionValue = JSON.stringify({
-                      salespersonid: salesPerson.salespersonsid,
-                      salesperson: salesPerson.fullname,
-                      salespersoncontact: salesPerson.contact,
-                    });
-                    return (
-                      <option key={index} value={optionValue}>
-                        {salesPerson.fullname} | {salesPerson.contact}
-                      </option>
-                    );
-                  })}
+                {Array.isArray(salesPersonList) &&
+                  salesPersonList
+                    .filter((salesPerson) => salesPerson.status === "Active")
+                    .map((salesPerson) => {
+                      const optionValue = JSON.stringify({
+                        salespersonid: salesPerson.salespersonsid,
+                        salesperson: salesPerson.fullname,
+                        salespersoncontact: salesPerson.contact,
+                      });
+
+                      return (
+                        <option
+                          key={salesPerson.salespersonsid}
+                          value={optionValue}
+                        >
+                          {salesPerson.fullname} | {salesPerson.contact}
+                        </option>
+                      );
+                    })}
               </select>
             </div>
 

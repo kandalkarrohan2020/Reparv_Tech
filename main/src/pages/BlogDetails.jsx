@@ -84,9 +84,7 @@ function BlogDetails() {
               <p className="text-xs text-gray-500">{blog?.updated_at}</p>
             </div>
           </div>
-
-          <p className="text-gray-700 mb-4">{blog?.description}</p>
-
+          
           <div
             className="prose max-w-none"
             dangerouslySetInnerHTML={{ __html: blog?.content }}
@@ -94,7 +92,7 @@ function BlogDetails() {
 
           <hr className="my-6 text-[#0000001A] " />
           
-          <SocialShare label={"Share this article"} url={"https://www.reparv.in/blog-details/"+blogId} ></SocialShare>
+          <SocialShare label={"Share this article"} url={"https://www.reparv.in/blog/"+blogId} ></SocialShare>
         </div>
 
         {/* Properties Section */}

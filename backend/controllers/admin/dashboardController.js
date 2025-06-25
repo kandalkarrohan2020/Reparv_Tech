@@ -7,10 +7,11 @@ export const getCount = (req, res) => {
         (SELECT COUNT(propertyid) FROM properties) AS totalProperty,
         (SELECT COUNT(builderid) FROM builders) AS totalBuilder,
         (SELECT COUNT(id) FROM employees) AS totalEmployee,
-        (SELECT COUNT(salespersonsid) FROM salespersons) AS totalSalesPerson,
-        (SELECT COUNT(id) FROM territorypartner) AS totalTerritoryPartner,
-        (SELECT COUNT(partnerid) FROM onboardingpartner) AS totalOnboardingPartner,
-        (SELECT COUNT(id) FROM projectpartner) AS totalProjectPartner,
+        (SELECT COUNT(salespersonsid) FROM salespersons WHERE status = 'Active' AND paymentstatus = 'Success') AS totalSalesPerson,
+        (SELECT COUNT(id) FROM territorypartner WHERE status = 'Active' AND paymentstatus = 'Success') AS totalTerritoryPartner,
+        (SELECT COUNT(partnerid) FROM onboardingpartner WHERE status = 'Active' AND paymentstatus = 'Success') AS totalOnboardingPartner,
+        (SELECT COUNT(id) FROM projectpartner WHERE status = 'Active' AND paymentstatus = 'Success') AS totalProjectPartner,
+        (SELECT COUNT(id) FROM guestUsers WHERE status = 'Active') AS totalGuestUser,
         (SELECT COUNT(ticketid) FROM tickets ) AS totalTicket;
     `;
 

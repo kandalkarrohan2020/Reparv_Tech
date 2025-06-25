@@ -33,7 +33,13 @@ const PropertyBookingCard = ({ propertyInfo }) => {
           {propertyInfo.distanceFromCityCenter} Km From {propertyInfo.city}
         </div>
 
-        <div className="py-1 px-3 bg-[#0000000F] rounded-xl ">
+        <div
+          className={`py-1 px-3 bg-[#0000000F] rounded-xl ${
+            ["NewFlat", "NewPlot"].includes(propertyInfo.propertyCategory)
+              ? "block"
+              : "hidden"
+          }`}
+        >
           RERA Approved
         </div>
       </div>

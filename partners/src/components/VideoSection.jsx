@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { IoPlayCircleOutline } from "react-icons/io5";
-import videoThumb from "../assets/joinOurTeam/salesPartner/videoThumb.svg";
+import videoThumb from "../assets/joinOurTeam/salesPartner/videoThumb.jpeg";
 import { useAuth } from "../store/auth";
 
 const VideoSection = ({videoFor = "reparv"}) => {

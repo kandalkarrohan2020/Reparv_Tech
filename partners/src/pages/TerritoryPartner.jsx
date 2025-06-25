@@ -3,7 +3,7 @@ import territoryFigure from "../assets/joinOurTeam/territoryPartner/territoryFig
 import territoryMobileFigure from "../assets/joinOurTeam/territoryPartner/territoryMobileFig.png";
 import territoryMobileBackImage from "../assets/joinOurTeam/territoryPartner/territoryMobileBack.png";
 import territoryBackImage from "../assets/joinOurTeam/territoryPartner/territoryBack.png";
-import RegisterForm from "../components/territoryPartner/RegisterForm";
+import RegistrationForm from "../components/territoryPartner/RegistrationForm";
 import StepSection from "../components/salesPartner/StepSection";
 
 import WhoIsTerritoryPartner from "../components/territoryPartner/WhoIsTerritoryPartner";
@@ -23,8 +23,8 @@ function TerritoryPertner() {
       />
       <div className="w-full">
         {/* Sales Top BackGround */}
-        <div className="w-full flex flex-col lg:pb-55 items-center justify-center backImage relative">
-          <div className="flex items-center justify-center lg:pb-25 bg-[#026FBE1A]">
+        <div className="w-full flex flex-col items-center justify-center backImage relative">
+          <div className="flex items-center justify-center pb-10 sm:pb-[6vw] bg-[#026FBE1A]">
             <img
               src={territoryBackImage}
               alt=""
@@ -35,15 +35,22 @@ function TerritoryPertner() {
               alt=""
               className="w-full block sm:hidden mx-auto"
             />
-            <div className="absolute bottom-[32px] hidden lg:flex registerForm w-full max-w-[1050px] mx-auto ">
-              <RegisterForm />
+            {/* Registration Button */}
+            <div className="absolute hidden sm:flex items-center justify-center bottom-[5%] left-[30%]">
+              <a href="#registrationForm">
+                <button className="w-[40vw] h-[4vw] text-white bg-[#0BB501] cursor-pointer active:scale-95 rounded-lg text-[1.6vw] font-semibold transition">
+                  Register Now
+                </button>
+              </a>
+            </div>
+            <div className="w-full absolute bottom-[0px] sm:hidden flex items-center justify-center">
+              <a href="#registrationForm" className="w-full">
+                <button className="w-full h-[40px] text-white text-base font-semibold bg-[#0BB501] cursor-pointer active:scale-95 transition">
+                  Register Now
+                </button>
+              </a>
             </div>
           </div>
-        </div>
-
-        {/* Registration Form */}
-        <div className="flex lg:hidden registerForm w-full max-w-[1050px] mx-auto ">
-          <RegisterForm />
         </div>
 
         {/* Sales Other Section */}
@@ -65,7 +72,7 @@ function TerritoryPertner() {
           </div>
 
           {/* Figure/Diagram Section */}
-          <div className="flex flex-col gap-2 sm:gap-4 items-center justify-center pb-10 sm:py-10">
+          <div className="flex flex-col gap-2 sm:gap-4 items-center justify-center pt-10">
             <h2 className="text-lg sm:text-2xl leading-[100%] font-semibold">
               What will Change in Your Business?
             </h2>
@@ -81,6 +88,14 @@ function TerritoryPertner() {
               className="w-full block sm:hidden mx-auto"
             />
           </div>
+        </div>
+
+        {/* Registration Form */}
+        <div
+          id="registrationForm"
+          className="flex items-center justify-center mx-auto py-10 sm:py-20 max-w-[1600px] "
+        >
+          <RegistrationForm />
         </div>
       </div>
     </>

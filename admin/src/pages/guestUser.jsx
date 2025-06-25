@@ -9,6 +9,8 @@ import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
+import { RxCross2 } from "react-icons/rx";
+import { MdDone } from "react-icons/md";
 
 const GuestUser = () => {
   const {
@@ -55,9 +57,7 @@ const GuestUser = () => {
   const add = async (e) => {
     e.preventDefault();
 
-    const endpoint = newPartner.id
-      ? `edit/${newPartner.id}`
-      : "add";
+    const endpoint = newPartner.id ? `edit/${newPartner.id}` : "add";
 
     try {
       setLoading(true);
@@ -138,8 +138,7 @@ const GuestUser = () => {
 
   //Delete record
   const del = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this User?"))
-      return;
+    if (!window.confirm("Are you sure you want to delete this User?")) return;
 
     try {
       setLoading(true);
@@ -191,7 +190,6 @@ const GuestUser = () => {
     }
   };
 
-  
   // Assign login record
   const assignLogin = async (e) => {
     e.preventDefault();
@@ -247,19 +245,45 @@ const GuestUser = () => {
   );
 
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, width: "50px" },
+    {
+      name: "SN",
+      cell: (row, index) => (
+        <span
+          className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md ${
+            row.status === "Active"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : "bg-[#FFEAEA] text-[#ff2323]"
+          }`}
+        >
+          {index + 1}
+        </span>
+      ),
+      width: "70px",
+    },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
       name: "Full Name",
-      selector: (row) => row.fullname,
-      sortable: true,
-      minWidth: "150px",
+      cell: (row) => (
+        <div className={`flex gap-1 items-center justify-center`}>
+          <div
+            className={`px-[2px] py-[2px] rounded-md flex items-center justify-center ${
+              row.loginstatus === "Active"
+                ? "bg-[#EAFBF1] text-[#0BB501]"
+                : "bg-[#FBE9E9] text-[#FF0000]"
+            }`}
+          >
+            {row.loginstatus === "Active" ? <MdDone /> : <RxCross2 />}
+          </div>
+          {row.fullname}
+        </div>
+      ),
+      minWidth: "250px",
     },
     {
       name: "Contact",
       selector: (row) => row.contact,
       sortable: true,
-      minWidth: "150px",
+      width: "150px",
     },
     {
       name: "Email",
@@ -268,36 +292,9 @@ const GuestUser = () => {
       minWidth: "250px",
     },
     {
-      name: "Status",
-      cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.status === "Active"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FBE9E9] text-[#FF0000]"
-          }`}
-        >
-          {row.status}
-        </span>
-      ), minWidth: "150px",
-    },
-    {
-      name: "Assign Login",
-      cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.loginstatus === "Active"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FBE9E9] text-[#FF0000]"
-          }`}
-        >
-          {row.loginstatus}
-        </span>
-      ), width: "150px",
-    },
-    {
       name: "Action",
-      cell: (row) => <ActionDropdown row={row} />, width: "120px",
+      cell: (row) => <ActionDropdown row={row} />,
+      width: "120px",
     },
   ];
 
@@ -359,9 +356,7 @@ const GuestUser = () => {
       className={`overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
     >
       <div className="sales-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
-        <p className="block md:hidden text-lg font-semibold">
-          Guest User
-        </p>
+        <p className="block md:hidden text-lg font-semibold">Guest User</p>
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
             <CiSearch />
@@ -574,9 +569,7 @@ const GuestUser = () => {
       >
         <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">
-             Guest User Details
-            </h2>
+            <h2 className="text-[16px] font-semibold">Guest User Details</h2>
             <IoMdClose
               onClick={() => {
                 setShowPartner(false);

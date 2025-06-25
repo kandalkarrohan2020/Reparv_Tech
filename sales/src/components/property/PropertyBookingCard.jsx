@@ -5,15 +5,23 @@ import CardAssuredTag from "../../assets/property/cardAssuredTag.svg";
 import { useAuth } from "../../store/auth";
 import FormatPrice from "../FormatPrice";
 
-
 const PropertyBookingCard = ({ propertyInfo }) => {
-  const {priceSummery, setPriceSummery, setShowPriceSummery, setShowBenefitsPopup, setShowSiteVisitPopup, setPropertyImage } = useAuth();
+  const {
+    priceSummery,
+    setPriceSummery,
+    setShowPriceSummery,
+    setShowBenefitsPopup,
+    setShowSiteVisitPopup,
+    setPropertyImage,
+  } = useAuth();
   return (
     <div
       className={`w-full max-w-[540px] flex flex-col gap-4 bg-white rounded-xl p-6 sm:border`}
     >
       {/* Title */}
-      <h2 className="text-base sm:text-2xl font-semibold">{propertyInfo.propertyName}</h2>
+      <h2 className="text-base sm:text-2xl font-semibold">
+        {propertyInfo.propertyName}
+      </h2>
 
       {/* Tags */}
       <div className="flex flex-wrap gap-2 text-[10px] md:text-xs font-medium text-[#00092966] group-hover:text-[#e2e2e2] mt-2">
@@ -24,9 +32,16 @@ const PropertyBookingCard = ({ propertyInfo }) => {
           {propertyInfo.distanceFromCityCenter} Km From {propertyInfo.city}
         </div>
 
-        <div className="py-1 px-3 bg-[#0000000F] rounded-xl ">
+        <div
+          className={`py-1 px-3 bg-[#0000000F] rounded-xl ${
+            ["NewFlat", "NewPlot"].includes(propertyInfo.propertyCategory)
+              ? "block"
+              : "hidden"
+          }`}
+        >
           RERA Approved
         </div>
+          
       </div>
 
       {/* Location */}

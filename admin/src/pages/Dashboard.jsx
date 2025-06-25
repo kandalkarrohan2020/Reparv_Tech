@@ -141,6 +141,12 @@ function Dashboard() {
             to: "/territorypartner",
           },
           {
+            label: "Guest Users",
+            value: overviewCountData?.totalGuestUser || "00",
+            //icon: card4,
+            to: "/guest-users",
+          },
+          {
             label: "Total Tickets",
             value: overviewCountData?.totalTicket || "00",
             //icon: card4,

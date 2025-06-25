@@ -19,7 +19,7 @@ function PropertyDetails() {
   // Fetch Property Info
   const fetchData = async () => {
     try {
-      const response = await fetch(`${URI}/frontend/propertyinfo/${id}`, {
+      const response = await fetch(`${URI}/territory-partner/propertyinfo/${id}`, {
         method: "GET",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -36,7 +36,7 @@ function PropertyDetails() {
   const fetchImages = async () => {
     try {
       const response = await fetch(
-        `${URI}/frontend/propertyinfo/getimages/${id}`,
+        `${URI}/territory-partner/propertyinfo/getimages/${id}`,
         {
           method: "GET",
           credentials: "include",

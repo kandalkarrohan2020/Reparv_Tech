@@ -1,5 +1,6 @@
 *{
   box-sizing: border-box;
+  scroll-behavior: smooth;
   font-family: "Inter", sans-serif;
   font-family: "Poppins", sans-serif;
   background-color: "#FAFAFA";

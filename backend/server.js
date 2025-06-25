@@ -72,6 +72,8 @@ import salesTicketRoutes from "./routes/sales/salesTicketRoutes.js";
 import salesEnquirersRoutes from "./routes/sales/salesEnquirerRoutes.js";
 import salesEnquiryRoutes from "./routes/sales/salesEnquiryRoutes.js";
 import salesCalenderRoutes from "./routes/sales/calenderRoutes.js";
+import salesPropertiesRoutes from "./routes/sales/propertiesRoutes.js";
+import salesPropertyinfoRoutes from "./routes/sales/propertyinfoRoutes.js";
 
 // import onBarding Partner Routes
 import partnerLoginRoutes from "./routes/onboardingPartner/partnerLoginRoutes.js";
@@ -99,8 +101,8 @@ import territoryPartnerTicketRoutes from "./routes/territoryPartner/ticketRoutes
 import territoryPartnerEnquirersRoutes from "./routes/territoryPartner/enquirerRoutes.js";
 import territoryPartnerEnquiryRoutes from "./routes/territoryPartner/enquiryRoutes.js";
 import territoryPartnerCalenderRoutes from "./routes/territoryPartner/calenderRoutes.js";
-
 import territoryPartnerPropertiesRoutes from "./routes/territoryPartner/propertiesRoutes.js";
+import territoryPartnerPropertyinfoRoutes from "./routes/territoryPartner/propertyinfoRoutes.js";
 
 import bookPropertyRoute from "./routes/sales/propertyBookingRoute.js";
 //sales app route
@@ -114,6 +116,8 @@ import clientRoute from "./routes/salesAppRoute/clientRoute.js";
 //territory app route
 import territoryUserController from "./routes/territoryAppRoute/userRoute.js";
 import territorypostRoute from "./routes/territoryAppRoute/postRoutes.js";
+import territoryBooking from "./routes/territoryPartner/propertyBookingRoute.js";
+import territoryClientRoute from "./routes/territoryAppRoute/profileRoute.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -134,6 +138,10 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+  "http://localhost:5176",
   "https://admin.reparv.in",
   "https://reparv.in",
   "https://www.reparv.in",
@@ -189,6 +197,8 @@ const verifyToken = (req, res, next) => {
     "/territory-partner/login",
     "/guest-user/register",
     "/guest-user/login",
+    "/admin/states",
+    "/admin/cities",
     "/admin/salespersons/add",
     "/admin/partner/add",
     "/admin/projectpartner/add",
@@ -201,8 +211,8 @@ const verifyToken = (req, res, next) => {
     "/frontend/propertyinfo",
     "/frontend/enquiry",
     "/frontend/blog",
-    "/frontend/blog/:slug",
-    "/frontend/blog/details/:id",
+    "/frontend/blog/",
+    "/frontend/blog/details/",
     "/frontend/slider",
     "/frontend/testimonial",
     //i addedd
@@ -306,7 +316,6 @@ app.use("/guest-user/dashboard", guestUserDashboardRoutes);
 app.use("/guest-user/builders", guestUserBuilderRoutes);
 app.use("/guest-user/properties", guestUserPropertyRoutes);
 
-
 //Employee Routes
 app.use("/employee", employeeLoginRoutes);
 app.use("/employee/profile", employeeProfileRoutes);
@@ -325,6 +334,9 @@ app.use("/sales/properties", salesPropertyRoutes);
 app.use("/sales/tickets", salesTicketRoutes);
 app.use("/sales/calender", salesCalenderRoutes);
 app.use("/sales/enquiry", salesEnquiryRoutes);
+// Property Pages Routes
+app.use("/sales/properties", salesPropertiesRoutes);
+app.use("/sales/propertyinfo", salesPropertyinfoRoutes);
 
 // On Boarding Partner Routes
 app.use("/partner", partnerLoginRoutes);
@@ -351,10 +363,10 @@ app.use("/territory-partner/builders", territoryPartnerBuilderRoutes);
 app.use("/territory-partner/tickets", territoryPartnerTicketRoutes);
 app.use("/territory-partner/enquirers", territoryPartnerEnquirersRoutes);
 app.use("/territory-partner/enquiry", territoryPartnerEnquiryRoutes);
-//app.use("/sales/calender", territoryPartnerCalenderRoutes);
+app.use("/territory-partner/calender", territoryPartnerCalenderRoutes);
 // Property Pages Routes
 app.use("/territory-partner/properties", territoryPartnerPropertiesRoutes);
-
+app.use("/territory-partner/propertyinfo", territoryPartnerPropertyinfoRoutes);
 //Sales App Routes
 app.use("/salesapp/api", authRoute);
 app.use("/salesapp/flats", appFlatRoute);
@@ -366,8 +378,11 @@ app.use("/salesapp/client", clientRoute);
 //Territory App Route
 app.use("/territoryapp/user", territoryUserController);
 app.use("/territoryapp/post", territorypostRoute);
+app.use("/territoryapp/client", territoryClientRoute);
 //Book Enquiry Property
 app.use("/api/booking", bookPropertyRoute);
+//get territory Book Enquiry Property
+app.use("/api/booking/territory", territoryBooking);
 
 //  Start Server
 app.listen(PORT, () => {

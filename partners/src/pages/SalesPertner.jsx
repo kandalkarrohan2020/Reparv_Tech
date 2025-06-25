@@ -6,6 +6,7 @@ import RegisterForm from "../components/salesPartner/RegisterForm";
 import StepSection from "../components/salesPartner/StepSection";
 import SalesTestimonial from "../components/salesPartner/SalesTestimonial";
 import SEO from "../components/SEO";
+import RegistrationForm from "../components/salesPartner/RegistrationForm";
 
 function SalesPartner() {
   return (
@@ -19,7 +20,7 @@ function SalesPartner() {
       />
       <div className="w-full">
         {/* Sales Top BackGround */}
-        <div className="w-full flex flex-col lg:pb-60 items-center justify-center backImage relative">
+        <div className="w-full flex flex-col items-center justify-center backImage relative">
           <img
             src={salesBackImage}
             alt=""
@@ -30,14 +31,21 @@ function SalesPartner() {
             alt=""
             className="w-full block sm:hidden mx-auto"
           />
-          <div className="hidden lg:block registerForm w-full max-w-[1050px] mx-auto absolute bottom-[20px] ">
-            <RegisterForm />
+          {/* Registration Button */}
+          <div className="absolute hidden sm:flex items-center justify-center bottom-[20%] left-[14.5%]">
+            <a href="#registrationForm">
+              <button className="w-[20vw] h-[4vw] text-white bg-[#0BB501] cursor-pointer active:scale-95 rounded-lg text-[1.6vw] font-semibold transition">
+                Register Now
+              </button>
+            </a>
           </div>
-        </div>
-
-        {/* Registration Form */}
-        <div className="flex lg:hidden registerForm w-full max-w-[1050px] mx-auto ">
-          <RegisterForm />
+          <div className="w-full absolute bottom-[0px] sm:hidden flex items-center justify-center">
+            <a href="#registrationForm" className="w-full">
+              <button className="w-full h-[40px] text-white text-base font-semibold bg-[#0BB501] cursor-pointer active:scale-95 transition">
+                Register Now
+              </button>
+            </a>
+          </div>
         </div>
 
         {/* Sales Other Section */}
@@ -53,9 +61,17 @@ function SalesPartner() {
           </div>
         </div>
 
-        {/* Step Section */}
-        <div className="flex items-center justify-center mx-auto pb-7 sm:pb-20 max-w-[1600px] ">
+        {/* Sales Testimonial */}
+        <div className="flex items-center justify-center mx-auto max-w-[1600px] ">
           <SalesTestimonial />
+        </div>
+
+        {/* Registration Form */}
+        <div
+          id="registrationForm"
+          className="flex items-center justify-center mx-auto pb-8 pt-10 sm:py-20 max-w-[1600px] "
+        >
+          <RegistrationForm />
         </div>
       </div>
     </>

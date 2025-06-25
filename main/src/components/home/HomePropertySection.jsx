@@ -4,6 +4,7 @@ import { MdOutlineKingBed } from "react-icons/md";
 import { BiBath } from "react-icons/bi";
 import { FaDiamond } from "react-icons/fa6";
 import { CiLocationOn } from "react-icons/ci";
+import propertyPicture from "../../assets/property/propertyPicture.svg";
 import cardAssuredTag from "../../assets/property/cardAssuredTag.svg";
 import populerTag from "../../assets/property/populerTag.svg";
 import { useNavigate } from "react-router-dom";
@@ -13,16 +14,21 @@ import { useAuth } from "../../store/auth";
 
 function HomePropertySection({ city }) {
   const navigate = useNavigate();
-  const { URI, setPriceSummery, propertySearch, setPropertySearch, setShowPriceSummery } =
-    useAuth();
+  const {
+    URI,
+    setPriceSummery,
+    propertySearch,
+    setPropertySearch,
+    setShowPriceSummery,
+  } = useAuth();
   const [properties, setProperties] = useState([]);
   const filteredProperties = properties?.filter((property) => {
     const nameMatch = property.propertyName
       .toLowerCase()
       .includes(propertySearch?.toLowerCase());
-    const areaMatch = property.builtUpArea && property.builtUpArea
-      .toString()
-      .includes(propertySearch?.toLowerCase());
+    const areaMatch =
+      property.builtUpArea &&
+      property.builtUpArea.toString().includes(propertySearch?.toLowerCase());
     return nameMatch || areaMatch;
   });
 
@@ -74,9 +80,22 @@ function HomePropertySection({ city }) {
             className="w-[350px] border border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
           >
             <img
-              src={`${URI}${JSON.parse(property.frontView)[0]}`}
+              src={(() => {
+                try {
+                  const images = JSON.parse(property.frontView || "[]");
+                  return images.length > 0
+                    ? `${URI}${images[0]}`
+                    : `${propertyPicture}`;
+                } catch {
+                  return `${propertyPicture}`;
+                }
+              })()}
               alt={property.name}
-              className=" object-cover h-[200px] w-full"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = `${propertyPicture}`;
+              }}
+              className="object-cover h-[200px] w-full"
             />
             <div className="relative flex flex-col gap-2">
               {property.likes > 500 && (
@@ -85,7 +104,6 @@ function HomePropertySection({ city }) {
                   className="absolute top-[-15px] left-[-8px]"
                 ></img>
               )}
-
               <div className="w-full px-4 pt-4 flex text-base font-semibold leading-[150%] spacing-[-1%] ">
                 <span className="text-[#000929] group-hover:text-white">
                   {property.propertyName.length > 26
@@ -155,7 +173,13 @@ function HomePropertySection({ city }) {
                   {property.distanceFromCityCenter} Km From {property.city}
                 </div>
 
-                <div className="py-1 px-3 bg-[#0000000F] rounded-xl ">
+                <div
+                  className={`py-1 px-3 bg-[#0000000F] rounded-xl ${
+                    ["NewFlat", "NewPlot"].includes(property.propertyCategory)
+                      ? "block"
+                      : "hidden"
+                  }`}
+                >
                   RERA Approved
                 </div>
               </div>

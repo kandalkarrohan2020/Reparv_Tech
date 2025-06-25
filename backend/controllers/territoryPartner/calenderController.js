@@ -15,10 +15,10 @@ export const getAll = (req, res) => {
                LEFT JOIN enquirers ON propertyfollowup.enquirerid = enquirers.enquirersid
                LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
                LEFT JOIN territorypartner ON enquirers.territorypartnerid = territorypartner.id
-               WHERE enquirers.territorypartner = ? 
-               ORDER BY propertyfollowup.followupid DESC`; 
-  
-  db.query(sql,[req.user.id], (err, result) => {
+               WHERE enquirers.territorypartnerid = ? 
+               ORDER BY propertyfollowup.followupid DESC`;
+
+  db.query(sql, [req.user.id], (err, result) => {
     if (err) {
       console.error("Error fetching :", err);
       return res.status(500).json({ message: "Database error", error: err });
@@ -29,7 +29,6 @@ export const getAll = (req, res) => {
 
 /* Change status */
 export const changeStatus = (req, res) => {
-
   const { status } = req.body;
   if (status === "") {
     return res.status(400).json({ message: "Please Select Status!" });
@@ -59,14 +58,9 @@ export const changeStatus = (req, res) => {
               .status(500)
               .json({ message: "Database error", error: err });
           }
-          res
-            .status(200)
-            .json({ message: "status change successfully" });
+          res.status(200).json({ message: "status change successfully" });
         }
       );
     }
   );
 };
-
-
-

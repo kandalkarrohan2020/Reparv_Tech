@@ -4,11 +4,13 @@ import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import AddButton from "../components/AddButton";
-import FilterData from "../components/FilterData";
+import PartnerFilter from "../components/PartnerFilter";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
+import { RxCross2 } from "react-icons/rx";
+import { MdDone } from "react-icons/md";
 
 const SalesPerson = () => {
   const {
@@ -24,18 +26,25 @@ const SalesPerson = () => {
     setShowSalesPerson,
     showFollowUpList,
     setShowFollowUpList,
+    partnerPaymentStatus,
+    setPartnerPaymentStatus,
   } = useAuth();
 
   const [datas, setDatas] = useState([]);
+  const [paymentStatusCounts, setPaymentStatusCounts] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [salesPersonId, setSalesPersonId] = useState(null);
   const [partner, setPartner] = useState({});
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
   const [newSalesPerson, setNewSalesPerson] = useState({
     fullname: "",
     contact: "",
     email: "",
+    state: "",
+    city: "",
     intrest: "",
   });
 
@@ -47,21 +56,101 @@ const SalesPerson = () => {
   const [followUp, setFollowUp] = useState("");
   const [followUpList, setFollowUpList] = useState([]);
 
-  // **Fetch Data from API**
-  const fetchData = async () => {
+  // Follow Up Add Variables with Enabled Disabled Functionality
+  const [customFollowUp, setCustomFollowUp] = useState("");
+  const [selectedFollowUp, setSelectedFollowUp] = useState("");
+
+  const handleSelectChange = (e) => {
+    const value = e.target.value.trim();
+    setSelectedFollowUp(value);
+    setFollowUp(value);
+    if (value) {
+      setCustomFollowUp("");
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setCustomFollowUp(value);
+    setFollowUp(value.trim());
+    if (value.trim()) {
+      setSelectedFollowUp("");
+    }
+  };
+
+  // **Fetch States from API**
+  const fetchStates = async () => {
     try {
-      const response = await fetch(URI + "/admin/salespersons", {
+      const response = await fetch(URI + "/admin/states", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch salespersons.");
+      if (!response.ok) throw new Error("Failed to fetch States.");
       const data = await response.json();
-      setDatas(data);
+      setStates(data);
     } catch (err) {
       console.error("Error fetching :", err);
+    }
+  };
+
+  // **Fetch States from API**
+  const fetchCities = async () => {
+    try {
+      const response = await fetch(
+        `${URI}/admin/cities/${newSalesPerson?.state}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch cities.");
+      const data = await response.json();
+      console.log(data);
+      setCities(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // **Fetch Data from API**
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        `${URI}/admin/salespersons/${partnerPaymentStatus}`,
+        {
+          method: "GET",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch salespersons.");
+
+      const result = await response.json();
+    
+      // Set the table data
+      if (result?.data) {
+        setDatas(result.data);
+      } else {
+        setDatas([]);
+      }
+
+      // Set the status counts if available
+      if (result?.paymentStatusCounts) {
+        setPaymentStatusCounts(result.paymentStatusCounts);
+      } else {
+        setPaymentStatusCounts({});
+      }
+    } catch (err) {
+      console.error("Error fetching salespersons:", err);
     }
   };
 
@@ -98,6 +187,8 @@ const SalesPerson = () => {
           fullname: "",
           contact: "",
           email: "",
+          state: "",
+          city: "",
           intrest: "",
         });
 
@@ -114,7 +205,7 @@ const SalesPerson = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/salespersons/${id}`, {
+      const response = await fetch(`${URI}/admin/salespersons/get/${id}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -123,7 +214,6 @@ const SalesPerson = () => {
       });
       if (!response.ok) throw new Error("Failed to fetch Sales Persons.");
       const data = await response.json();
-      console.log(data);
       setNewSalesPerson(data);
       setShowSalesForm(true);
     } catch (err) {
@@ -134,7 +224,7 @@ const SalesPerson = () => {
   //fetch data on form
   const viewSalesPerson = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/salespersons/${id}`, {
+      const response = await fetch(`${URI}/admin/salespersons/get/${id}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -143,7 +233,7 @@ const SalesPerson = () => {
       });
       if (!response.ok) throw new Error("Failed to fetch Sales Persons.");
       const data = await response.json();
-
+      console.log(data);
       setPartner(data);
       setShowSalesPerson(true);
     } catch (err) {
@@ -191,7 +281,7 @@ const SalesPerson = () => {
     try {
       const response = await fetch(URI + `/admin/salespersons/status/${id}`, {
         method: "PUT",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -248,13 +338,16 @@ const SalesPerson = () => {
   // Fetch Follow Up List
   const fetchFollowUpList = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/salespersons/followup/list/${id}`, {
-        method: "GET",
-        credentials: "include", // Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + `/admin/salespersons/followup/list/${id}`,
+        {
+          method: "GET",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch follow up list.");
       const data = await response.json();
       setFollowUpList(data);
@@ -282,11 +375,15 @@ const SalesPerson = () => {
       );
       const data = await response.json();
       setFollowUp("");
+      setCustomFollowUp("");
+      setSelectedFollowUp("");
       if (response.ok) {
         alert(`Success: ${data.message}`);
       } else {
         alert(`Error: ${data.message}`);
       }
+      setPartnerPaymentStatus("Follow Up");
+      await fetchData();
       fetchFollowUpList(salesPersonId);
     } catch (error) {
       console.error("Error adding FollowUp :", error);
@@ -314,7 +411,7 @@ const SalesPerson = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include", //  Ensures cookies are sent
           body: JSON.stringify({ salesPersonId, username, password }),
         }
       );
@@ -339,7 +436,14 @@ const SalesPerson = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+    fetchStates();
+  }, [partnerPaymentStatus]);
+
+  useEffect(() => {
+    if (newSalesPerson.state != "") {
+      fetchCities();
+    }
+  }, [newSalesPerson.state]);
 
   const filteredData = datas.filter(
     (item) =>
@@ -350,74 +454,101 @@ const SalesPerson = () => {
   );
 
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, width: "50px" },
+    {
+      name: "SN",
+      cell: (row, index) => (
+        <span
+          className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md ${
+            row.status === "Active"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : "bg-[#FFEAEA] text-[#ff2323]"
+          }`}
+        >
+          {index + 1}
+        </span>
+      ),
+      width: "80px",
+    },
+    {
+      name: "Follow Up",
+      cell: (row) => {
+        const followUpColorMap = {
+          CNR1: "bg-red-100 text-red-600",
+          CNR2: "bg-red-100 text-red-600",
+          CNR3: "bg-red-100 text-red-600",
+          CNR4: "bg-red-100 text-red-600",
+          "Switch Off": "bg-red-100 text-red-700",
+          "Call Busy": "bg-yellow-100 text-yellow-600",
+          "Call Back": "bg-yellow-100 text-yellow-600",
+          "Not Responding (After Follow Up)": "bg-yellow-100 text-yellow-600",
+          "Call Cut / Disconnected": "bg-orange-100 text-orange-600",
+          "Invalid Number": "bg-red-100 text-red-700",
+          "Wrong Number": "bg-red-100 text-red-700",
+          "Form Filled By Mistake": "bg-blue-100 text-blue-600",
+          "Repeat Lead": "bg-gray-100 text-gray-600",
+          "Lead Clash": "bg-purple-100 text-purple-500",
+          "Details Shared": "bg-green-100 text-green-600",
+          "Not Interested": "bg-pink-100 text-pink-600",
+          "Not Interested (After Details Shared & Explanation)":
+            "bg-orange-100 text-orange-600",
+          Interested: "bg-green-100 text-green-700",
+          "Documents Collected": "bg-green-200 text-green-800",
+          "Payment Done": "bg-green-300 text-green-900",
+          // fallback/default:
+          Success: "bg-[#EAFBF1] text-[#0BB501]",
+          "Follow Up": "bg-[#E9F2FF] text-[#0068FF]",
+        };
+
+        const styleClass =
+          followUpColorMap[row.followUp] || "bg-[#efefef] text-[#000000]";
+
+        return (
+          <span className={`px-2 py-1 rounded-md ${styleClass}`}>
+            {row.followUp || "—"}
+          </span>
+        );
+      },
+      omit: false,
+      minWidth: "200px",
+    },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
       name: "Full Name",
-      selector: (row) => row.fullname,
-      sortable: true,
-      minWidth: "150px",
+      cell: (row) => (
+        <div className={`flex gap-1 items-center justify-center`}>
+          <div
+            className={`px-[2px] py-[2px] rounded-md flex items-center justify-center ${
+              row.loginstatus === "Active"
+                ? "bg-[#EAFBF1] text-[#0BB501]"
+                : "bg-[#FBE9E9] text-[#FF0000]"
+            }`}
+          >
+            {row.loginstatus === "Active" ? <MdDone /> : <RxCross2 />}
+          </div>
+          {row.fullname}
+        </div>
+      ),
+       width: "250px",
     },
     {
       name: "Contact",
       selector: (row) => row.contact,
       sortable: true,
-      minWidth: "150px",
+      width: "150px",
     },
     {
-      name: "Email",
-      selector: (row) => row.email,
-      sortable: true,
-      minWidth: "250px",
-    },
-    {
-      name: "Payment Status",
-      cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.paymentstatus === "Success"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FBE9E9] text-[#FF0000]"
-          }`}
-        >
-          {row.paymentstatus}
-        </span>
-      ),
-      minWidth: "150px",
-    },
-    {
-      name: "Status",
-      cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.status === "Active"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FBE9E9] text-[#FF0000]"
-          }`}
-        >
-          {row.status}
-        </span>
-      ),
-    },
-    {
-      name: "Assign Login",
-      cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.loginstatus === "Active"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FBE9E9] text-[#FF0000]"
-          }`}
-        >
-          {row.loginstatus}
-        </span>
-      ),
-    },
-    {
-      name: "",
+      name: "Action",
       cell: (row) => <ActionDropdown row={row} />,
+      width: "120px",
     },
   ];
+
+  const hasFollowUp = datas.some((row) => !!row.followUp);
+
+  const finalColumns = columns.map((col) => {
+    if (col.name === "Follow Up") return { ...col, omit: !hasFollowUp };
+    return col;
+  });
 
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
@@ -502,7 +633,7 @@ const SalesPerson = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <FilterData />
+              <PartnerFilter counts={paymentStatusCounts} />
               <CustomDateRangePicker />
             </div>
             <AddButton label={"Add"} func={setShowSalesForm} />
@@ -512,7 +643,7 @@ const SalesPerson = () => {
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="overflow-scroll scrollbar-hide"
-            columns={columns}
+            columns={finalColumns}
             data={filteredData}
             pagination
           />
@@ -522,7 +653,7 @@ const SalesPerson = () => {
       <div
         className={`${
           showSalesForm ? "flex" : "hidden"
-        } z-[61] sales-form overflow-scroll scrollbar-hide w-[400px] md:w-[700px] max:h-[70vh] fixed`}
+        } z-[61] sales-form overflow-scroll scrollbar-hide w-[400px] md:w-[700px] max-h-[70vh] fixed`}
       >
         <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-10 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
@@ -548,7 +679,8 @@ const SalesPerson = () => {
               />
               <div className="w-full ">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Full Name
+                  Full Name{" "}
+                  <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -566,7 +698,8 @@ const SalesPerson = () => {
               </div>
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Contact Number
+                  Contact Number{" "}
+                  <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -585,7 +718,8 @@ const SalesPerson = () => {
               </div>
               <div className="w-full ">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Email
+                  Email{" "}
+                  <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="email"
@@ -601,6 +735,54 @@ const SalesPerson = () => {
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              {/* State Select Input */}
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Select State <span className="text-red-600">*</span>
+                </label>
+                <select
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={newSalesPerson.state}
+                  onChange={(e) =>
+                    setNewSalesPerson({ ...newSalesPerson, state: e.target.value })
+                  }
+                >
+                  <option value="">Select Your State</option>
+                  {states?.map((state, index) => (
+                    <option key={index} value={state.state}>
+                      {state.state}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* City Select Input */}
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Select City <span className="text-red-600">*</span>
+                </label>
+                <select
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={newSalesPerson.city}
+                  onChange={(e) =>
+                    setNewSalesPerson({
+                      ...newSalesPerson,
+                      city: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Select Your City</option>
+                  {cities?.map((city, index) => (
+                    <option key={index} value={city.city}>
+                      {city.city}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="w-full ">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
                   Why are You Intrested ?{" "}
@@ -609,6 +791,7 @@ const SalesPerson = () => {
                 <input
                   type="text"
                   required
+                  minLength={3}
                   placeholder="Enter Your Intrest to Join Reparv"
                   value={newSalesPerson.intrest}
                   onChange={(e) => {
@@ -718,7 +901,7 @@ const SalesPerson = () => {
           !showFollowUpList && "hidden"
         }  z-[61] overflow-scroll scrollbar-hide flex fixed`}
       >
-        <div className="w-[330px] sm:w-[600px]  overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] h-[75vh] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-[330px] sm:w-[600px]  overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] max-h-[75vh] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">Partner Follow Up</h2>
             <IoMdClose
@@ -730,18 +913,65 @@ const SalesPerson = () => {
           </div>
           <form onSubmit={addFollowUp}>
             <div className="w-full grid gap-4 place-items-center grid-cols-1">
-              <div className="w-full">
-                <input
-                  type="text"
-                  required
-                  placeholder="Enter Follow Up"
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={followUp}
-                  onChange={(e) => {
-                    setFollowUp(e.target.value);
-                  }}
-                />
-              </div>
+              {/* Dropdown */}
+              <select
+                value={selectedFollowUp}
+                onChange={handleSelectChange}
+                disabled={customFollowUp.length > 0}
+                className={`w-full p-4 border rounded-[4px] text-[16px] font-medium 
+                            focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none
+                            ${
+                              customFollowUp.length > 0
+                                ? "bg-gray-200 cursor-not-allowed"
+                                : ""
+                            }`}
+              >
+                <option value="">Select Follow Up</option>
+                <option className="text-red-600">CNR1</option>
+                <option className="text-red-600">CNR2</option>
+                <option className="text-red-600">CNR3</option>
+                <option className="text-red-600">CNR4</option>
+                <option className="text-red-700">Switch Off</option>
+                <option className="text-yellow-600">Call Busy</option>
+                <option className="text-yellow-600">Call Back</option>
+                <option className="text-yellow-600">
+                  Not Responding (After Follow Up)
+                </option>
+                <option className="text-orange-600">
+                  Call Cut / Disconnected
+                </option>
+                <option className="text-red-700">Invalid Number</option>
+                <option className="text-red-700">Wrong Number</option>
+                <option className="text-blue-600">
+                  Form Filled By Mistake
+                </option>
+                <option className="text-gray-600">Repeat Lead</option>
+                <option className="text-purple-500">Lead Clash</option>
+                <option className="text-green-600">Details Shared</option>
+                <option className="text-pink-600">Not Interested</option>
+                <option className="text-orange-600">
+                  Not Interested (After Details Shared & Explanation)
+                </option>
+                <option className="text-green-700">Interested</option>
+                <option className="text-green-800">Documents Collected</option>
+                <option className="text-green-900">Payment Done</option>
+              </select>
+
+              {/* Input Field */}
+              <input
+                type="text"
+                placeholder="Enter Custom Follow Up"
+                value={customFollowUp}
+                onChange={handleInputChange}
+                disabled={selectedFollowUp.length > 0}
+                className={`w-full p-4 border border-[#00000033] rounded-[4px] text-[16px] font-medium
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 
+                           ${
+                             selectedFollowUp.length > 0
+                               ? "bg-gray-200 cursor-not-allowed"
+                               : ""
+                           }`}
+              />
             </div>
             <div className="flex h-10 mt-8 md:mt-4 justify-center sm:justify-end gap-6">
               <button

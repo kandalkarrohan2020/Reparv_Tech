@@ -5,6 +5,7 @@ import { CiLocationOn } from "react-icons/ci";
 import { IoFilter } from "react-icons/io5";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { IoSearchSharp } from "react-icons/io5";
+import propertyPicture from "../assets/property/propertyPicture.svg";
 import cardAssuredTag from "../assets/property/cardAssuredTag.svg";
 import populerTag from "../assets/property/populerTag.svg";
 import { useNavigate, Navigate } from "react-router-dom";
@@ -14,7 +15,6 @@ import FilterSidebar from "../components/FilterSidebar";
 import { usePropertyFilter } from "../store/propertyFilter";
 
 export default function Properties() {
-
   const navigate = useNavigate();
   const { filteredLocations, setFilteredLocations, minBudget, maxBudget } =
     usePropertyFilter();
@@ -26,7 +26,8 @@ export default function Properties() {
     propertyType,
     selectedCity,
     setSelectedCity,
-    showFilterePopup, setShowFilterPopup,
+    showFilterePopup,
+    setShowFilterPopup,
   } = useAuth();
   const [properties, setProperties] = useState([]);
   const [locations, setLocations] = useState([]);
@@ -39,7 +40,7 @@ export default function Properties() {
 
   const fetchData = async () => {
     try {
-      let url = `${URI}/frontend/properties?`;
+      let url = `${URI}/territory-partner/properties?`;
       const params = [];
 
       if (selectedCity && selectedCity.trim() !== "") {
@@ -108,13 +109,16 @@ export default function Properties() {
   // *Fetch Data from API*
   const fetchLocation = async () => {
     try {
-      const response = await fetch(URI + "/frontend/properties/location/all", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + "/territory-partner/properties/location/all",
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to fetch properties.");
 
@@ -169,7 +173,12 @@ export default function Properties() {
 
         {/* City Selector And Location Filter For MobileScreen  */}
         <div className="min-w-[140px]  flex sm:hidden gap-1 items-center justify-between">
-          <div onClick={()=>{setShowFilterPopup(true)}} className="filterIcon p-2 border border-gray-300 rounded-md flex items-center justify-center">
+          <div
+            onClick={() => {
+              setShowFilterPopup(true);
+            }}
+            className="filterIcon p-2 border border-gray-300 rounded-md flex items-center justify-center"
+          >
             <IoFilter />
           </div>
           <div className="selectCity min-w-[100px] max-w-[180px] relative inline-block">
@@ -224,9 +233,22 @@ export default function Properties() {
                   className="border max-w-[400px] border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
                 >
                   <img
-                    src={`${URI}${JSON.parse(property.frontView)[0]}`}
+                    src={(() => {
+                      try {
+                        const images = JSON.parse(property.frontView || "[]");
+                        return images.length > 0
+                          ? `${URI}${images[0]}`
+                          : `${propertyPicture}`;
+                      } catch {
+                        return `${propertyPicture}`;
+                      }
+                    })()}
                     alt={property.name}
-                    className=" object-cover h-[200px] w-full"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = `${propertyPicture}`;
+                    }}
+                    className="object-cover h-[200px] w-full"
                   />
                   <div className="relative flex flex-col gap-2">
                     {property.likes > 500 && (
@@ -288,7 +310,15 @@ export default function Properties() {
                         {property.city}
                       </div>
 
-                      <div className="py-1 px-3 bg-[#0000000F] rounded-xl ">
+                      <div
+                        className={`py-1 px-3 bg-[#0000000F] rounded-xl ${
+                          ["NewFlat", "NewPlot"].includes(
+                            propertyInfo.propertyCategory
+                          )
+                            ? "block"
+                            : "hidden"
+                        }`}
+                      >
                         RERA Approved
                       </div>
                     </div>

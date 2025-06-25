@@ -4,6 +4,7 @@ import { MdOutlineKingBed } from "react-icons/md";
 import { BiBath } from "react-icons/bi";
 import { FaDiamond } from "react-icons/fa6";
 import { CiLocationOn } from "react-icons/ci";
+import propertyPicture from "../assets/property/propertyPicture.svg";
 import cardAssuredTag from "../assets/property/cardAssuredTag.svg";
 import populerTag from "../assets/property/populerTag.svg";
 import { useNavigate } from "react-router-dom";
@@ -44,9 +45,7 @@ function OtherProperties({ propertyCategory, propertyId }) {
       if (!response.ok) throw new Error("Failed to fetch properties.");
 
       const data = await response.json();
-      const filtered = data.filter(
-        (p) => p.seoSlug !== propertyId
-      );
+      const filtered = data.filter((p) => p.seoSlug !== propertyId);
       setProperties(filtered);
     } catch (err) {
       console.error("Error fetching:", err);
@@ -66,9 +65,22 @@ function OtherProperties({ propertyCategory, propertyId }) {
           className="w-[350px] sm:w-[375px] border border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
         >
           <img
-            src={`${URI}${JSON.parse(property.frontView)[0]}`}
+            src={(() => {
+              try {
+                const images = JSON.parse(property.frontView || "[]");
+                return images.length > 0
+                  ? `${URI}${images[0]}`
+                  : `${propertyPicture}`;
+              } catch {
+                return `${propertyPicture}`;
+              }
+            })()}
             alt={property.name}
-            className=" object-cover h-[200px] w-full"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = `${propertyPicture}`;
+            }}
+            className="object-cover h-[200px] w-full"
           />
           <div className="relative flex flex-col gap-2">
             {property.likes > 500 && (
@@ -127,7 +139,13 @@ function OtherProperties({ propertyCategory, propertyId }) {
                 {property.distanceFromCityCenter} Km From {property.city}
               </div>
 
-              <div className="py-1 px-3 bg-[#0000000F] rounded-xl ">
+              <div
+                className={`py-1 px-3 bg-[#0000000F] rounded-xl ${
+                  ["NewFlat", "NewPlot"].includes(property.propertyCategory)
+                    ? "block"
+                    : "hidden"
+                }`}
+              >
                 RERA Approved
               </div>
             </div>

@@ -20,9 +20,9 @@ const CalendarScheduler = () => {
   //Fetch Data
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/sales/calender/meetings", {
+      const response = await fetch(URI + "/territory-partner/calender/meetings", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -38,7 +38,7 @@ const CalendarScheduler = () => {
 
   const changeStatus = async (id, label) => {
     try {
-      const response = await fetch(`${URI}/sales/calender/meeting/status/${id}`, {
+      const response = await fetch(`${URI}/territory-partner/calender/meeting/status/${id}`, {
         method: "PUT",
         credentials: "include",
         headers: {

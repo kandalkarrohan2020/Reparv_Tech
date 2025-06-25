@@ -1,5 +1,8 @@
 import express from "express";
-import { getAll, changeStatus} from "../../controllers/territoryPartner/calenderController.js";
+import {
+  getAll,
+  changeStatus,
+} from "../../controllers/territoryPartner/calenderController.js";
 
 const router = express.Router();
 

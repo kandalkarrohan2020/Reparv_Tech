@@ -39,9 +39,9 @@ const upload = multer({
 });
 
 
-router.get("/", getAll);
+router.get("/:paymentStatus", getAll);
 router.get("/active", getAllActive);
-router.get("/:id", getById);
+router.get("/get/:id", getById);
 router.post(
   "/add",
   upload.fields([

@@ -5,21 +5,89 @@ import sendEmail from "../../utils/nodeMailer.js";
 import { verifyRazorpayPayment } from "../paymentController.js";
 
 const saltRounds = 10;
-// **Fetch All **
 export const getAll = (req, res) => {
-  const sql = "SELECT * FROM territorypartner ORDER BY id DESC";
+  const paymentStatus = req.params.paymentStatus
+
+  if (!paymentStatus) {
+    return res.status(401).json({ message: "Payment Status Not Selected" });
+  }
+
+  let sql;
+
+  if (paymentStatus === "Success") {
+    sql = `SELECT * FROM territorypartner
+           WHERE paymentstatus = 'Success' 
+           ORDER BY created_at DESC`;
+  } else if (paymentStatus === "Follow Up") {
+    sql = `
+      SELECT tp.*, pf.followUp, pf.created_at AS followUpDate
+      FROM territorypartner tp
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Territory Partner'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Territory Partner'
+      ) pf ON tp.id = pf.partnerId
+      WHERE tp.paymentstatus = 'Follow Up'
+      ORDER BY tp.updated_at DESC
+    `;
+  } else if (paymentStatus === "Pending") {
+    sql = `SELECT * FROM territorypartner
+           WHERE paymentstatus = 'Pending' 
+           ORDER BY created_at DESC`;
+  } else {
+    sql = `SELECT * FROM territorypartner ORDER BY id DESC`;
+  }
+
+  // Step 1: Fetch partner data
   db.query(sql, (err, result) => {
     if (err) {
-      console.error("Error fetching :", err);
+      console.error("Error fetching Territory Partners:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    const formatted = result.map((row) => ({
-      ...row,
-      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
-      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
-    }));
 
-    res.json(formatted);
+    // Step 2: Fetch paymentStatus counts
+    const countQuery = `
+      SELECT paymentstatus, COUNT(*) AS count
+      FROM territorypartner
+      WHERE paymentstatus IS NOT NULL
+      GROUP BY paymentstatus
+    `;
+
+    db.query(countQuery, (countErr, counts) => {
+      if (countErr) {
+        return res
+          .status(500)
+          .json({ message: "Database error", error: countErr });
+      }
+
+      // Format the counts
+      const paymentStatusCounts = counts.reduce((acc, item) => {
+        acc[item.paymentstatus || "Unknown"] = item.count;
+        return acc;
+      }, {});
+
+      // Format date fields and follow up info
+      const formatted = result.map((row) => ({
+        ...row,
+        created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+        updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+        followUp: row.followUp || null,
+        followUpDate: row.followUpDate
+          ? moment(row.followUpDate).format("DD MMM YYYY | hh:mm A")
+          : null,
+      }));
+
+      return res.json({
+        data: formatted,
+        paymentStatusCounts,
+      });
+    });
   });
 };
 
@@ -469,7 +537,8 @@ export const fetchFollowUpList = (req, res) => {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
 
-  const sql = "SELECT * FROM partnerFollowup WHERE partnerId = ? AND role = ? ORDER BY created_at DESC";
+  const sql =
+    "SELECT * FROM partnerFollowup WHERE partnerId = ? AND role = ? ORDER BY created_at DESC";
   db.query(sql, [Id, "Territory Partner"], (err, result) => {
     if (err) {
       console.error("Error fetching :", err);
@@ -488,15 +557,17 @@ export const fetchFollowUpList = (req, res) => {
 export const addFollowUp = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const Id = parseInt(req.params.id);
+
   if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
-  
+
   const { followUp } = req.body;
-  if (!followUp) {
-    return res.status(400).json({ message: "Empty Follow Up" });
+  if (!followUp || followUp.trim() === "") {
+    return res.status(400).json({ message: "Follow Up message is required." });
   }
-  
+
+  // Check if territory partner exists
   db.query(
     "SELECT * FROM territorypartner WHERE id = ?",
     [Id],
@@ -506,24 +577,47 @@ export const addFollowUp = async (req, res) => {
         return res.status(500).json({ message: "Database error", error: err });
       }
 
+      if (result.length === 0) {
+        return res
+          .status(404)
+          .json({ message: "Territory partner not found." });
+      }
+
+      // Insert follow-up
       db.query(
         "INSERT INTO partnerFollowup (partnerId, role, followUp, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-        [Id, "Territory Partner", followUp, currentdate, currentdate],
-        (err, result) => {
-          if (err) {
-            console.error("Error Adding :", err);
+        [Id, "Territory Partner", followUp.trim(), currentdate, currentdate],
+        (insertErr, insertResult) => {
+          if (insertErr) {
+            console.error("Error adding follow-up:", insertErr);
             return res
               .status(500)
-              .json({ message: "Database error", error: err });
+              .json({ message: "Database error", error: insertErr });
           }
-          res
-            .status(200)
-            .json({ message: "Partner Follow Up add successfully" });
+
+          // Update paymentstatus
+          db.query(
+            "UPDATE territorypartner SET paymentstatus = 'Follow Up' WHERE id = ?",
+            [Id],
+            (updateErr, updateResult) => {
+              if (updateErr) {
+                console.error("Error updating paymentstatus:", updateErr);
+                return res
+                  .status(500)
+                  .json({ message: "Database error", error: updateErr });
+              }
+
+              return res.status(200).json({
+                message:
+                  "Territory partner follow-up added and payment status updated to 'Follow Up'.",
+              });
+            }
+          );
         }
       );
     }
   );
-}
+};
 
 export const assignLogin = async (req, res) => {
   try {

@@ -9,7 +9,7 @@ export const add = async (req, res) => {
     return res.status(400).json({ message: "Invalid Sales Id" });
   }
 
-  const { propertyid, fullname, phone, salesPersonName, salesPersonContact } =
+  const { propertyid, fullname, phone, state, city, minbudget, maxbudget, salesPersonName, salesPersonContact } =
     req.body;
 
   // Validate required fields
@@ -17,6 +17,10 @@ export const add = async (req, res) => {
     !propertyid ||
     !fullname ||
     !phone ||
+    !state ||
+    !city ||
+    !minbudget ||
+    !maxbudget ||
     !salesPersonName ||
     !salesPersonContact
   ) {
@@ -26,16 +30,13 @@ export const add = async (req, res) => {
   let salesInfo = salesPersonName + " - " + salesPersonContact;
 
   const insertSQL = `INSERT INTO enquirers (
-    propertyid,
-    salespersonid,
-    customer,
-    contact,
-    assign,
-    updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    propertyid, salespersonid, customer, contact,
+    state, city, minbudget, maxbudget, assign,
+    updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(
     insertSQL,
-    [propertyid, salesId, fullname, phone, salesInfo, currentdate, currentdate],
+    [propertyid, salesId, fullname, phone, state, city, minbudget, maxbudget, salesInfo, currentdate, currentdate],
     (err, result) => {
       if (err) {
         console.error("Error inserting:", err);

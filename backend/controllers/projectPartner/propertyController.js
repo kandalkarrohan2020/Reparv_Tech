@@ -156,7 +156,6 @@ export const addProperty = async (req, res) => {
   if (
     !builderid ||
     !propertyCategory ||
-    !propertyApprovedBy ||
     !propertyName ||
     !address ||
     !state ||
@@ -401,7 +400,6 @@ export const update = async (req, res) => {
   if (
     !builderid ||
     !propertyCategory ||
-    !propertyApprovedBy ||
     !propertyName ||
     !address ||
     !state ||

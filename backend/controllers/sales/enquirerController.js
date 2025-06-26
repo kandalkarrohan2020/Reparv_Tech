@@ -11,7 +11,7 @@ export const getAll = (req, res) => {
   }
 
   const sql = `
-    SELECT enquirers.*, properties.frontView,
+    SELECT enquirers.*, properties.frontView, properties.seoSlug,
     territorypartner.fullname AS territoryName,
     territorypartner.contact AS territoryContact
     FROM enquirers 

@@ -1,33 +1,50 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 
-// **Fetch All Properties**
+// Fetch All Enquiries
 export const getAll = (req, res) => {
   const enquirySource = req.params.source;
   if (!enquirySource) {
     return res.status(401).json({ message: "Enquiry Source Not Selected" });
   }
+
   let sql;
 
   if (enquirySource === "Onsite") {
-    sql = `SELECT enquirers.*, properties.frontView 
-                  FROM enquirers LEFT JOIN properties 
-                  ON enquirers.propertyid = properties.propertyid 
-                  WHERE properties.status = 'active' AND properties.approve = 'Approved' 
-                  ORDER BY enquirers.enquirersid DESC`;
+    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug,
+                  territorypartner.fullname AS territoryName, 
+                  territorypartner.contact AS territoryContact
+           FROM enquirers 
+           LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+           LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+           WHERE properties.status = 'active' AND properties.approve = 'Approved' 
+           ORDER BY enquirers.enquirersid DESC`;
   } else if (enquirySource === "Direct") {
-    sql = `SELECT enquirers.* FROM enquirers
-                  WHERE enquirers.source = "Direct" 
-                  ORDER BY enquirers.enquirersid DESC`;
+    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug,
+                  territorypartner.fullname AS territoryName, 
+                  territorypartner.contact AS territoryContact
+           FROM enquirers 
+           LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+           LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+           WHERE enquirers.source = "Direct" 
+           ORDER BY enquirers.enquirersid DESC`;
   } else if (enquirySource === "CSV") {
-    sql = `SELECT enquirers.* FROM enquirers
-                  WHERE enquirers.source = "CSV File" 
-                  ORDER BY enquirers.enquirersid DESC`;
+    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, 
+                  territorypartner.fullname AS territoryName, 
+                  territorypartner.contact AS territoryContact
+           FROM enquirers 
+           LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+           LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+           WHERE enquirers.source = "CSV File" 
+           ORDER BY enquirers.enquirersid DESC`;
   } else {
-    sql = `SELECT enquirers.*, properties.frontView 
-                  FROM enquirers LEFT JOIN properties 
-                  ON enquirers.propertyid = properties.propertyid  
-                  ORDER BY enquirers.enquirersid DESC`;
+    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, 
+                  territorypartner.fullname AS territoryName, 
+                  territorypartner.contact AS territoryContact
+           FROM enquirers 
+           LEFT JOIN properties ON enquirers.propertyid = properties.propertyid  
+           LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+           ORDER BY enquirers.enquirersid DESC`;
   }
 
   db.query(sql, (err, result) => {
@@ -35,6 +52,7 @@ export const getAll = (req, res) => {
       console.error("Error fetching Enquirers:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
+
     const formatted = result.map((row) => ({
       ...row,
       created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
@@ -48,7 +66,12 @@ export const getAll = (req, res) => {
 // **Fetch Single by ID**
 export const getById = (req, res) => {
   const Id = parseInt(req.params.id);
-  const sql = "SELECT * FROM enquirers WHERE enquirersid = ?";
+  const sql = `SELECT enquirers.*,
+                territorypartner.fullname AS territoryName, 
+                territorypartner.contact AS territoryContact
+                FROM enquirers 
+                LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+                WHERE enquirersid = ?`;
 
   db.query(sql, [Id], (err, result) => {
     if (err) {

@@ -17,18 +17,69 @@ export default function SiteVisitPopup() {
   } = useAuth();
   const { id } = useParams();
   const location = useLocation();
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+
   //Inquiry Form Data
   const [formData, setFormData] = useState({
     propertyid: id,
     fullname: "",
     phone: "",
+    state: "",
+    city: "",
+    minbudget: "",
+    maxbudget: "",
     salesPersonName: user.name,
     salesPersonContact: user.contact,
   });
-  console.log(user);
+
+  // **Fetch States from API**
+  const fetchStates = async () => {
+    try {
+      const response = await fetch(URI + "/admin/states", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch States.");
+      const data = await response.json();
+      setStates(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // **Fetch States from API**
+  const fetchCities = async () => {
+    try {
+      const response = await fetch(`${URI}/admin/cities/${formData?.state}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch cities.");
+      const data = await response.json();
+      console.log(data);
+      setCities(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
   useEffect(() => {
+    fetchStates();
     setFormData({ ...formData, propertyid: id });
   }, []);
+
+  useEffect(() => {
+    if (formData.state != "") {
+      fetchCities();
+    }
+  }, [formData.state]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,6 +107,10 @@ export default function SiteVisitPopup() {
         propertyid: id,
         fullname: "",
         phone: "",
+        state: "",
+        city: "",
+        minbudget: "",
+        maxbudget: "",
       });
     } catch (err) {
       console.error("Error Booking Property:", err);
@@ -66,22 +121,11 @@ export default function SiteVisitPopup() {
 
   return (
     <div className="w-full max-w-[750px] relative flex flex-col md:flex-row bg-white rounded-tl-2xl rounded-tr-2xl md:rounded-2xl overflow-hidden shadow-xl ">
-      {/* Left Image Section */}
-      <div className="w-full hidden md:flex items-center justify-center md:w-1/2 relative">
-        <img
-          src={URI + propertyImage ? URI + propertyImage : localPropertyImage}
-          alt="Modern Property"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute top-5 left-20">
-          <img src={reparvLogo} alt="Reparv Logo" className="h-10" />
-        </div>
-      </div>
-
-      {/* Right Form Section */}
-      <div className="w-full flex flex-col gap-4 justify-center md:w-1/2 p-6 relative">
+      {/* Form Section */}
+      <div className="w-full flex flex-col gap-3 justify-center p-6 relative">
         {/* Close Button */}
-        <div className="w-full flex justify-end">
+        <div className="w-full flex items-center justify-between">
+          <img src={reparvLogo} alt="Reparv Logo" className="h-8" />
           <RxCross2
             onClick={() => {
               setShowSiteVisitPopup(false);
@@ -94,51 +138,144 @@ export default function SiteVisitPopup() {
         </h2>
 
         <form onSubmit={handleSubmit} className="w-full space-y-4">
-          <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
-            <label htmlFor="fullName" className="ml-1">
-              Full Name
-            </label>
-            <input
-              type="text"
-              name="fullname"
-              id="fullName"
-              placeholder="Enter Full Name"
-              value={formData.fullname}
-              onChange={(e) => {
-                setFormData({ ...formData, fullname: e.target.value });
-              }}
-              className="w-full font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
-              required
-            />
-          </div>
-          <div className="flex flex-col gap-3 text-sm font-semibold text-[#00000066] ">
-            <label htmlFor="fullName" className="ml-1">
-              Enter Phone Number
-            </label>
-            <input
-              type="text"
-              name="phone"
-              id="phone"
-              placeholder="Enter Phone Number"
-              value={formData.phone}
-              onChange={(e) => {
-                const input = e.target.value;
-                if (/^\d{0,10}$/.test(input)) {
-                  // Allows only up to 10 digits
-                  setFormData({ ...formData, phone: input });
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 ">
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
+              <label htmlFor="fullName" className="ml-1 text-xs">
+                Full Name
+              </label>
+              <input
+                type="text"
+                name="fullname"
+                id="fullName"
+                placeholder="Enter Full Name"
+                value={formData.fullname}
+                onChange={(e) => {
+                  setFormData({ ...formData, fullname: e.target.value });
+                }}
+                className="w-full font-medium p-3 border border-[#00000033] rounded-md focus:outline-0"
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
+              <label htmlFor="fullName" className="ml-1 text-xs">
+                Enter Phone Number
+              </label>
+              <input
+                type="text"
+                name="phone"
+                id="phone"
+                placeholder="Enter Phone Number"
+                value={formData.phone}
+                onChange={(e) => {
+                  const input = e.target.value;
+                  if (/^\d{0,10}$/.test(input)) {
+                    // Allows only up to 10 digits
+                    setFormData({ ...formData, phone: input });
+                  }
+                }}
+                className="w-full font-medium p-3 border border-[#00000033] rounded-md focus:outline-0"
+                required
+              />
+            </div>
+            {/* State Select Input */}
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
+              <label htmlFor="state" className="ml-1 text-xs">
+                Select State
+              </label>
+              <select
+                name="state"
+                id="state"
+                required
+                className="w-full font-medium p-3 border border-[#00000033] rounded-md focus:outline-0 appearance-none"
+                style={{ backgroundImage: "none" }}
+                value={formData.state}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    state: e.target.value,
+                  })
                 }
-              }}
-              className="w-full font-medium p-4 border border-[#00000033] rounded-md focus:outline-0"
-              required
-            />
+              >
+                <option value="">Select Your State</option>
+                {states?.map((state, index) => (
+                  <option key={index} value={state.state}>
+                    {state.state}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* City Select Input */}
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
+              <label htmlFor="city" className="ml-1 text-xs">
+                Select City
+              </label>
+              <select
+                name="city"
+                id="city"
+                required
+                className="w-full font-medium p-3 border border-[#00000033] rounded-md focus:outline-0 appearance-none"
+                style={{ backgroundImage: "none" }}
+                value={formData.city}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    city: e.target.value,
+                  })
+                }
+              >
+                <option value="">Select Your City</option>
+                {cities?.map((city, index) => (
+                  <option key={index} value={city.city}>
+                    {city.city}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
+              <label htmlFor="fullName" className="ml-1 text-xs">
+                Min Budget
+              </label>
+              <input
+                type="number"
+                name="minbudget"
+                id="minbudget"
+                placeholder="Enter Min-budget"
+                value={formData.minbudget}
+                onChange={(e) => {
+                  setFormData({ ...formData, minbudget: e.target.value });
+                }}
+                className="w-full font-medium p-3 border border-[#00000033] rounded-md focus:outline-0"
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
+              <label htmlFor="fullName" className="ml-1 text-xs">
+                Max Budget
+              </label>
+              <input
+                type="number"
+                name="maxbudget"
+                id="maxbudget"
+                placeholder="Enter Max-budget"
+                value={formData.maxbudget}
+                onChange={(e) => {
+                  setFormData({ ...formData, maxbudget: e.target.value });
+                }}
+                className="w-full font-medium p-3 border border-[#00000033] rounded-md focus:outline-0"
+                required
+              />
+            </div>
           </div>
-          <button
-            type="submit"
-            className="w-full mt-2 bg-[#0BB501] text-white py-3 rounded-md hover:bg-green-700 transition"
-          >
-            Book Site Visit Now
-          </button>
-          <p className="text-xs text-center mt-4 text-[#00000066]">
+          <div className="w-full flex items-center justify-center">
+            <button
+              type="submit"
+              className="w-full sm:w-1/2 bg-[#0BB501] text-white py-2 rounded-md hover:scale-105 active:scale-100 transition cursor-pointer"
+            >
+              Book Site Visit Now
+            </button>
+          </div>
+          <p className="text-xs text-center mt-2 text-[#00000066]">
             By registering, you’ll get a call from our agent.
           </p>
         </form>

@@ -97,7 +97,7 @@ export default function KYC() {
   //fetch data on form
   const showDetails = async () => {
     try {
-      const response = await fetch(URI + `/admin/salespersons/${user.id}`, {
+      const response = await fetch(URI + `/admin/salespersons/get/${user.id}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -107,6 +107,7 @@ export default function KYC() {
       if (!response.ok) throw new Error("Failed to fetch Sales Persons.");
       const data = await response.json();
       setUserData(data);
+      console.log(data);
     } catch (err) {
       console.error("Error fetching:", err);
     }

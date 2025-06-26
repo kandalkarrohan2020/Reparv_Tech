@@ -194,9 +194,14 @@ const Properties = () => {
   const filteredData = datas.filter(
     (item) =>
       item.propertyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.location.toLowerCase().includes(searchTerm.toLowerCase())
+      item.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.propertyCategory.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.approve.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   const columns = [
     {
       name: "SN",
@@ -225,7 +230,7 @@ const Properties = () => {
               alt="Property"
               onClick={() => {
                 window.open(
-                  "https://www.reparv.in/property-info/" + row.propertyid,
+                  "https://www.reparv.in/property-info/" + row.seoSlug,
                   "_blank"
                 );
               }}
@@ -302,10 +307,10 @@ const Properties = () => {
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
 
-    const handleActionSelect = (action, propertyid, propertyType) => {
+    const handleActionSelect = (action, propertyid, seoSlug) => {
       switch (action) {
         case "view":
-          window.open("https://www.reparv.in/property-info/"+propertyid, "_blank");
+          window.open("https://www.reparv.in/property-info/"+seoSlug, "_blank");
           break;
         case "update":
           edit(propertyid);
@@ -326,7 +331,7 @@ const Properties = () => {
           value={selectedAction}
           onChange={(e) => {
             const action = e.target.value;
-            handleActionSelect(action, row.propertyid, row.propertytypeid);
+            handleActionSelect(action, row.propertyid, row.seoSlug);
           }}
         >
           <option value="" disabled>
@@ -355,7 +360,6 @@ const Properties = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <FilterData />
               <CustomDateRangePicker />
             </div>
             <AddButton label={"Add "} func={setShowPropertyForm} />

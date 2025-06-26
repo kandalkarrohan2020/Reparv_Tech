@@ -13,7 +13,12 @@ import Loader from "../components/Loader";
 import { IoMdClose } from "react-icons/io";
 
 const Properties = () => {
-  const { setShowPropertyForm, URI, showAdditionalInfoForm, setShowAdditionalInfoForm } = useAuth();
+  const {
+    setShowPropertyForm,
+    URI,
+    showAdditionalInfoForm,
+    setShowAdditionalInfoForm,
+  } = useAuth();
   const [datas, setDatas] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
@@ -358,8 +363,12 @@ const Properties = () => {
   const filteredData = datas.filter(
     (item) =>
       item.propertyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.location.toLowerCase().includes(searchTerm.toLowerCase())
+      item.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.propertyCategory.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.approve.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const columns = [
@@ -390,7 +399,7 @@ const Properties = () => {
               alt="Property"
               onClick={() => {
                 window.open(
-                  "https://www.reparv.in/property-info/" + row.propertyid,
+                  "https://www.reparv.in/property-info/" + row.seoSlug,
                   "_blank"
                 );
               }}
@@ -401,7 +410,12 @@ const Properties = () => {
       },
       width: "130px",
     },
-    { name: "Property Name", selector: (row) => row.propertyName, sortable: true, width: "150px", },
+    {
+      name: "Property Name",
+      selector: (row) => row.propertyName,
+      sortable: true,
+      width: "150px",
+    },
     {
       name: "Builder",
       selector: (row) => row.company_name,
@@ -411,9 +425,10 @@ const Properties = () => {
     {
       name: "Category",
       selector: (row) => row.propertyCategory,
-      sortable: true, width: "150px",
+      sortable: true,
+      width: "150px",
     },
-    { name: "Address", selector: (row) => row.address, minWidth: "200px", },
+    { name: "Address", selector: (row) => row.address, minWidth: "200px" },
     {
       name: "State",
       selector: (row) => row.state,
@@ -427,14 +442,14 @@ const Properties = () => {
       width: "150px",
     },
     { name: "Pin Code", selector: (row) => row.pincode, width: "100px" },
-    { name: "Location", selector: (row) => row.location, width: "150px", },
+    { name: "Location", selector: (row) => row.location, width: "150px" },
     {
       name: "Rera No.",
       selector: (row) => row.reraRegistered,
       sortable: true,
       width: "160px",
     },
-    { name: "Area", selector: (row) => row.builtUpArea, },
+    { name: "Area", selector: (row) => row.builtUpArea },
     {
       name: "Total Price",
       selector: (row) => row.totalOfferPrice,
@@ -472,11 +487,11 @@ const Properties = () => {
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
 
-    const handleActionSelect = (action, propertyid) => {
+    const handleActionSelect = (action, propertyid, seoSlug) => {
       switch (action) {
         case "view":
           window.open(
-            "https://www.reparv.in/property-info/" + propertyid,
+            "https://www.reparv.in/property-info/" + seoSlug,
             "_blank"
           );
           break;
@@ -503,7 +518,7 @@ const Properties = () => {
           value={selectedAction}
           onChange={(e) => {
             const action = e.target.value;
-            handleActionSelect(action, row.propertyid);
+            handleActionSelect(action, row.propertyid, row.seoSlug);
           }}
         >
           <option value="" disabled>
@@ -540,7 +555,6 @@ const Properties = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <FilterData />
               <CustomDateRangePicker />
             </div>
             <AddButton label={"Add "} func={setShowPropertyForm} />

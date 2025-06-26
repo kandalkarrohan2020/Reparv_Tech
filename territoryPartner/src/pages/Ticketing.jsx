@@ -27,6 +27,7 @@ const Ticketing = () => {
   const [departmentData, setDepartmentData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [ticket, setTicket] = useState({});
+  const [selectedTicketFilter, setSelectedTicketFilter] = useState("");
   const [newTicket, setNewTicketData] = useState({
     adminid: "",
     departmentid: "",
@@ -242,7 +243,11 @@ const Ticketing = () => {
     }
   };
 
-  const filteredData = data.filter(
+  const filteredData = data.filter((item) =>
+    item.status.toLowerCase().includes(selectedTicketFilter.toLowerCase())
+  );
+
+  const filteredTicketData = filteredData.filter(
     (item) =>
       item.ticketno.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -279,7 +284,10 @@ const Ticketing = () => {
       name: "Ticket No",
       cell: (row, index) => (
         <span
-          className={`px-2 py-1 rounded-md ${
+          onClick={() => {
+            viewTicket(row.ticketid);
+          }}
+          className={`px-2 py-1 rounded-md cursor-pointer ${
             row.status === "Resolved"
               ? "bg-[#EAFBF1] text-[#0BB501]"
               : row.status === "Open"
@@ -303,7 +311,8 @@ const Ticketing = () => {
     {
       name: "Description",
       selector: (row) => row.details,
-      minWidth: "300px", maxWidth: "350px",
+      minWidth: "300px",
+      maxWidth: "350px",
     },
     {
       name: "Admin",
@@ -417,7 +426,10 @@ const Ticketing = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <TicketingFilter />
+              <TicketingFilter
+                selectedFilter={selectedTicketFilter}
+                setSelectedFilter={setSelectedTicketFilter}
+              />
               <CustomDateRangePicker />
             </div>
             <AddButton label={"Add"} func={setShowTicketForm} />
@@ -431,7 +443,7 @@ const Ticketing = () => {
           <DataTable
             className="scrollbar-hide"
             columns={finalColumns}
-            data={filteredData}
+            data={filteredTicketData}
             pagination
           />
         </div>
@@ -453,9 +465,7 @@ const Ticketing = () => {
             />
           </div>
           <form onSubmit={addTicket} className="w-full">
-            <div
-              className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2"
-            >
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
               <input
                 type="hidden"
                 value={newTicket.ticketid || ""}

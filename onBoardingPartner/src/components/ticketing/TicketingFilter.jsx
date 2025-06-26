@@ -2,14 +2,15 @@ import React, { useState } from "react";
 import { HiMiniFunnel } from "react-icons/hi2";
 
 const filterOptions = [
+  { label: "", color: "text-black" },
+  { label: "Open", color: "text-[#0068FF]" },
   { label: "Resolved", color: "text-[#0BB501]" },
   { label: "In progress", color: "text-[#FFCA00]" },
   { label: "Pending", color: "text-[#FF4646]" },
 ];
 
-const TicketingFilter = () => {
+const TicketingFilter = ({selectedFilter, setSelectedFilter}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState("");
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -28,6 +29,8 @@ const TicketingFilter = () => {
         className={`min-w-[40px] h-[32px] ${selectedFilter&&"h-[36px]"} items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm cursor-pointer ${
           selectedFilter === "Resolved"
             ? "text-[#0BB501]"
+             : selectedFilter === "Open"
+            ? "text-[#0068FF]"
             : selectedFilter === "In progress"
             ? "text-[#FFCA00]"
             : selectedFilter === "Pending"
@@ -35,7 +38,7 @@ const TicketingFilter = () => {
             : "text-[#000000]"}`}
         onClick={toggleDropdown}
       >
-        {selectedFilter?<div className={`flex gap-2 items-center justify-center leading-[20px] text-sm font-semibold `}><HiMiniFunnel className="text-black"/> {selectedFilter}</div>:<HiMiniFunnel />}
+        {selectedFilter?<div className={`flex gap-2 items-center justify-center leading-[20px] text-sm font-semibold `}><HiMiniFunnel className="text-black"/> {selectedFilter}</div>:<HiMiniFunnel/>}
       </div>
 
       {/* Dropdown */}
@@ -54,7 +57,7 @@ const TicketingFilter = () => {
                 readOnly
                 className="cursor-pointer"
               />
-              <span className="text-sm">{option.label}</span>
+              <span className="text-sm">{option.label || "All"}</span>
             </div>
           ))}
         </div>

@@ -8,21 +8,27 @@ export const add = async (req, res) => {
     propertyid,
     fullname,
     phone,
+    state,
+    city,
+    minbudget,
+    maxbudget
   } = req.body; 
 
   if (
     !propertyid ||
     !fullname ||
-    !phone 
+    !phone ||
+    !state ||
+    !city ||
+    !minbudget ||
+    !maxbudget 
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   const insertSQL = `INSERT INTO enquirers (
-    propertyid,
-    customer,
-    contact,
-    updated_at, created_at) VALUES (?, ?, ?, ?, ?)`;
+    propertyid, customer, contact, state, city, minbudget, maxbudget,
+    updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(
     insertSQL,
@@ -30,6 +36,10 @@ export const add = async (req, res) => {
       propertyid,
       fullname,
       phone,
+      state, 
+      city, 
+      minbudget, 
+      maxbudget,
       currentdate,
       currentdate,
     ],

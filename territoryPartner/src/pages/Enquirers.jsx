@@ -32,6 +32,7 @@ const Enquirers = () => {
   } = useAuth();
 
   const [datas, setDatas] = useState([]);
+  const [selectedFilter, setSelectedFilter] = useState("");
   const [remarkList, setRemarkList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [states, setStates] = useState([]);
@@ -202,12 +203,15 @@ const Enquirers = () => {
       : "add/enquiry";
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/territory-partner/enquiry/${endpoint}`, {
-        method: newEnquiry.enquirersid ? "PUT" : "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newEnquiry),
-      });
+      const response = await fetch(
+        `${URI}/territory-partner/enquiry/${endpoint}`,
+        {
+          method: newEnquiry.enquirersid ? "PUT" : "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newEnquiry),
+        }
+      );
 
       if (response.status === 409) {
         alert("Enquiry already exists!");
@@ -523,13 +527,17 @@ const Enquirers = () => {
     }
   }, [newEnquiry.state]);
 
-  const filteredData = datas?.filter(
+  const filteredData = datas?.filter((item) =>
+    item.status.toLowerCase().includes(selectedFilter.toLowerCase())
+  );
+
+  const filteredTicketData = filteredData?.filter(
     (item) =>
       item.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.status.toLowerCase().includes(searchTerm.toLowerCase())
+      item.source.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   const columns = [
     {
       name: "SN",
@@ -599,7 +607,7 @@ const Enquirers = () => {
               alt="Property"
               onClick={() => {
                 window.open(
-                  "https://www.reparv.in/property-info/" + row.propertyid,
+                  "https://www.reparv.in/property-info/" + row.seoSlug,
                   "_blank"
                 );
               }}
@@ -610,7 +618,7 @@ const Enquirers = () => {
       },
       width: "130px",
     },
-     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
+    { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     { name: "Source", selector: (row) => row.source, width: "100px" },
     {
       name: "Customer",
@@ -638,7 +646,7 @@ const Enquirers = () => {
       ),
       width: "150px",
     },
-    
+
     {
       name: "Action",
       cell: (row) => <ActionDropdown row={row} />,
@@ -728,7 +736,10 @@ const Enquirers = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <FilterData />
+              <FilterData
+                selectedFilter={selectedFilter}
+                setSelectedFilter={setSelectedFilter}
+              />
               <CustomDateRangePicker />
             </div>
             <AddButton label={"Add "} func={setShowEnquiryForm} />
@@ -739,7 +750,7 @@ const Enquirers = () => {
           <DataTable
             className="scrollbar-hide"
             columns={columns}
-            data={filteredData}
+            data={filteredTicketData}
             pagination
           />
         </div>

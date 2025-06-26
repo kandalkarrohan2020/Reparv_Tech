@@ -182,6 +182,8 @@ const RegistrationForm = () => {
             <input
               type="text"
               required
+              minLength={10}
+              maxLength={10}
               placeholder="Your Phone Number"
               value={newPartner.contact}
               onChange={(e) => {

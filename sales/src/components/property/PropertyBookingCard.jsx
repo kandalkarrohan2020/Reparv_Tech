@@ -25,7 +25,11 @@ const PropertyBookingCard = ({ propertyInfo }) => {
 
       {/* Tags */}
       <div className="flex flex-wrap gap-2 text-[10px] md:text-xs font-medium text-[#00092966] group-hover:text-[#e2e2e2] mt-2">
-        <div className="py-1 px-3 bg-[#0000000F] rounded-xl ">
+        <div
+          className={`${
+            property.propertyCategory === "FarmLand" ? "hidden" : "block"
+          } py-1 px-3 bg-[#0000000F] rounded-xl `}
+        >
           {propertyInfo.propertyApprovedBy}
         </div>
         <div className="py-1 px-3 bg-[#0000000F] rounded-xl ">
@@ -41,7 +45,6 @@ const PropertyBookingCard = ({ propertyInfo }) => {
         >
           RERA Approved
         </div>
-          
       </div>
 
       {/* Location */}

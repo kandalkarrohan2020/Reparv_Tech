@@ -194,9 +194,14 @@ const Properties = () => {
   const filteredData = datas.filter(
     (item) =>
       item.propertyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.location.toLowerCase().includes(searchTerm.toLowerCase())
+      item.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.propertyCategory.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.approve.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
   const columns = [
     {
       name: "SN",

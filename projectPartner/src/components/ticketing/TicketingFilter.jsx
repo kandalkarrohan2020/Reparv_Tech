@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { HiMiniFunnel } from "react-icons/hi2";
 
 const filterOptions = [
+  { label: "", color: "text-black" },
   { label: "Open", color: "text-[#0068FF]" },
   { label: "Resolved", color: "text-[#0BB501]" },
   { label: "In progress", color: "text-[#FFCA00]" },
   { label: "Pending", color: "text-[#FF4646]" },
 ];
 
-const TicketingFilter = () => {
+const TicketingFilter = ({selectedFilter, setSelectedFilter}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState("");
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -38,7 +38,7 @@ const TicketingFilter = () => {
             : "text-[#000000]"}`}
         onClick={toggleDropdown}
       >
-        {selectedFilter?<div className={`flex gap-2 items-center justify-center leading-[20px] text-sm font-semibold `}><HiMiniFunnel className="text-black"/> {selectedFilter}</div>:<HiMiniFunnel />}
+        {selectedFilter?<div className={`flex gap-2 items-center justify-center leading-[20px] text-sm font-semibold `}><HiMiniFunnel className="text-black"/> {selectedFilter}</div>:<HiMiniFunnel/>}
       </div>
 
       {/* Dropdown */}
@@ -57,7 +57,7 @@ const TicketingFilter = () => {
                 readOnly
                 className="cursor-pointer"
               />
-              <span className="text-sm">{option.label}</span>
+              <span className="text-sm">{option.label || "All"}</span>
             </div>
           ))}
         </div>

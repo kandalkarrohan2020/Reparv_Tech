@@ -17,9 +17,21 @@ export const getAll = (req, res) => {
 
   switch (paymentStatus) {
     case "Success":
-      sql = `SELECT * FROM projectpartner
-             WHERE paymentstatus = 'Success' 
-             ORDER BY created_at DESC`;
+      sql = `SELECT projectpartner.*, pf.followUp, pf.created_at AS followUpDate
+        FROM projectpartner
+        LEFT JOIN (
+          SELECT p1.*
+          FROM partnerFollowup p1
+          INNER JOIN (
+            SELECT partnerId, MAX(created_at) AS latest
+            FROM partnerFollowup
+            WHERE role = 'Project Partner'
+            GROUP BY partnerId
+          ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+          WHERE p1.role = 'Project Partner'
+        ) pf ON projectpartner.id = pf.partnerId
+        WHERE projectpartner.paymentstatus = 'Success'
+        ORDER BY projectpartner.created_at DESC`;
       break;
 
     case "Follow Up":
@@ -43,9 +55,21 @@ export const getAll = (req, res) => {
       break;
 
     case "Pending":
-      sql = `SELECT * FROM projectpartner 
-             WHERE paymentstatus = 'Pending' 
-             ORDER BY created_at DESC`;
+      sql = `SELECT projectpartner.*, pf.followUp, pf.created_at AS followUpDate
+        FROM projectpartner
+        LEFT JOIN (
+          SELECT p1.*
+          FROM partnerFollowup p1
+          INNER JOIN (
+            SELECT partnerId, MAX(created_at) AS latest
+            FROM partnerFollowup
+            WHERE role = 'Project Partner'
+            GROUP BY partnerId
+          ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+          WHERE p1.role = 'Project Partner'
+        ) pf ON projectpartner.id = pf.partnerId
+        WHERE projectpartner.paymentstatus = 'Pending'
+        ORDER BY projectpartner.created_at DESC`;
       break;
 
     default:
@@ -129,9 +153,10 @@ export const getById = (req, res) => {
   });
 };
 
-// **Add New **
+// **Add New Project Partner **
 export const add = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+
   const {
     fullname,
     contact,
@@ -151,12 +176,12 @@ export const add = (req, res) => {
     ifsc,
   } = req.body;
 
-  // Validate required fields
+  // Basic validation
   if (!fullname || !contact || !email || !intrest) {
-    return res.status(400).json({ message: "all fields required!" });
+    return res.status(400).json({ message: "All fields are required!" });
   }
 
-  // Handle uploaded files safely
+  // Handle uploaded files
   const adharImageFile = req.files?.["adharImage"]?.[0];
   const panImageFile = req.files?.["panImage"]?.[0];
   const reraImageFile = req.files?.["reraImage"]?.[0];
@@ -169,15 +194,16 @@ export const add = (req, res) => {
     ? `/uploads/${reraImageFile.filename}`
     : null;
 
-  // First check if partner already exists
+  // Check for duplicates
   const checkSql = `SELECT * FROM projectpartner WHERE contact = ? OR email = ?`;
 
   db.query(checkSql, [contact, email], (checkErr, checkResult) => {
     if (checkErr) {
       console.error("Error checking existing Project Partner:", checkErr);
-      return res
-        .status(500)
-        .json({ message: "Database error during validation", error: checkErr });
+      return res.status(500).json({
+        message: "Database error during validation",
+        error: checkErr,
+      });
     }
 
     if (checkResult.length > 0) {
@@ -186,7 +212,7 @@ export const add = (req, res) => {
       });
     }
 
-    // Insert new partner only if no duplicate found
+    // Insert new project partner
     const insertSql = `
       INSERT INTO projectpartner 
       (fullname, contact, email, intrest, address, state, city, pincode, experience, adharno, panno, rerano, bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, reraimage, updated_at, created_at) 
@@ -221,15 +247,44 @@ export const add = (req, res) => {
       (insertErr, insertResult) => {
         if (insertErr) {
           console.error("Error inserting Project Partner:", insertErr);
-          return res
-            .status(500)
-            .json({ message: "Database error", error: insertErr });
+          return res.status(500).json({
+            message: "Database error during insert",
+            error: insertErr,
+          });
         }
 
-        res.status(201).json({
-          message: "Project Partner added successfully",
-          Id: insertResult.insertId,
-        });
+        // Insert follow-up entry for new partner
+        const followupSql = `
+          INSERT INTO partnerFollowup 
+          (partnerId, role, followUp, followUpText, created_at, updated_at) 
+          VALUES (?, ?, ?, ?, ?, ?)
+        `;
+
+        db.query(
+          followupSql,
+          [
+            insertResult.insertId,
+            "Project Partner",
+            "New",
+            "Newly Added Project Partner",
+            currentdate,
+            currentdate,
+          ],
+          (followupErr, followupResult) => {
+            if (followupErr) {
+              console.error("Error adding follow-up:", followupErr);
+              return res.status(500).json({
+                message: "Follow-up insert failed",
+                error: followupErr,
+              });
+            }
+
+            return res.status(201).json({
+              message: "Project Partner added successfully",
+              Id: insertResult.insertId,
+            });
+          }
+        );
       }
     );
   });
@@ -554,8 +609,8 @@ export const addFollowUp = async (req, res) => {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
 
-  const { followUp } = req.body;
-  if (!followUp || followUp.trim() === "") {
+  const { followUp, followUpText } = req.body;
+  if (!followUp || !followUpText) {
     return res.status(400).json({ message: "Follow Up message is required." });
   }
 
@@ -572,8 +627,15 @@ export const addFollowUp = async (req, res) => {
 
     // Insert follow-up
     db.query(
-      "INSERT INTO partnerFollowup (partnerId, role, followUp, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-      [Id, "Project Partner", followUp.trim(), currentdate, currentdate],
+      "INSERT INTO partnerFollowup (partnerId, role, followUp, followUpText, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+      [
+        Id,
+        "Project Partner",
+        followUp.trim(),
+        followUpText.trim(),
+        currentdate,
+        currentdate,
+      ],
       (insertErr, insertResult) => {
         if (insertErr) {
           console.error("Error adding follow-up:", insertErr);
@@ -584,8 +646,8 @@ export const addFollowUp = async (req, res) => {
 
         // Update paymentstatus
         db.query(
-          "UPDATE projectpartner SET paymentstatus = 'Follow Up' WHERE id = ?",
-          [Id],
+          "UPDATE projectpartner SET paymentstatus = 'Follow Up', updated_at = ? WHERE id = ?",
+          [currentdate, Id],
           (updateErr, updateResult) => {
             if (updateErr) {
               console.error("Error updating paymentstatus:", updateErr);
@@ -594,12 +656,10 @@ export const addFollowUp = async (req, res) => {
                 .json({ message: "Database error", error: updateErr });
             }
 
-            return res
-              .status(200)
-              .json({
-                message:
-                  "Partner follow-up added and payment status updated to 'Follow Up'.",
-              });
+            return res.status(200).json({
+              message:
+                "Partner follow-up added and payment status updated to 'Follow Up'.",
+            });
           }
         );
       }

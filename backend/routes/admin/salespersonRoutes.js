@@ -39,9 +39,9 @@ const upload = multer({
 });
 
 
-router.get("/:paymentStatus", getAll);
-router.get("/active", getAllActive);
-router.get("/get/:id", getById);
+router.get("/active", getAllActive);      // specific path first
+router.get("/get/:id", getById);          // more specific dynamic route
+router.get("/:paymentStatus", getAll);    // less specific dynamic route last
 router.post(
   "/add",
   upload.fields([

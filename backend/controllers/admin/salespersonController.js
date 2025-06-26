@@ -16,9 +16,21 @@ export const getAll = (req, res) => {
   let sql;
 
   if (paymentStatus === "Success") {
-    sql = `SELECT * FROM salespersons 
-           WHERE paymentstatus = 'Success' 
-           ORDER BY created_at DESC`;
+    sql = `SELECT s.*, pf.followUp, pf.created_at AS followUpDate
+      FROM salespersons s
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Sales Person'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Sales Person'
+      ) pf ON s.salespersonsid = pf.partnerId
+      WHERE s.paymentstatus = 'Success'
+      ORDER BY s.created_at DESC`;
   } else if (paymentStatus === "Follow Up") {
     sql = `
       SELECT s.*, pf.followUp, pf.created_at AS followUpDate
@@ -38,9 +50,21 @@ export const getAll = (req, res) => {
       ORDER BY s.updated_at DESC
     `;
   } else if (paymentStatus === "Pending") {
-    sql = `SELECT * FROM salespersons 
-           WHERE paymentstatus = 'Pending' 
-           ORDER BY created_at DESC`;
+    sql = `SELECT s.*, pf.followUp, pf.created_at AS followUpDate
+      FROM salespersons s
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Sales Person'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Sales Person'
+      ) pf ON s.salespersonsid = pf.partnerId
+      WHERE s.paymentstatus = 'Pending'
+      ORDER BY s.created_at DESC`;
   } else {
     sql = `SELECT * FROM salespersons ORDER BY salespersonsid DESC`;
   }
@@ -125,7 +149,7 @@ export const getById = (req, res) => {
   });
 };
 
-// **Add New **
+// **Add New Sales Person **
 export const add = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
 
@@ -150,9 +174,9 @@ export const add = (req, res) => {
 
   // Validate required fields
   if (!fullname || !contact || !email || !intrest) {
-    return res
-      .status(400)
-      .json({ message: "FullName, Contact and Email Required!" });
+    return res.status(400).json({
+      message: "FullName, Contact and Email Required!",
+    });
   }
 
   // Handle uploaded files safely
@@ -168,15 +192,16 @@ export const add = (req, res) => {
     ? `/uploads/${reraImageFile.filename}`
     : null;
 
-  // First check if salesperson already exists
+  // Check for duplicates
   const checkSql = `SELECT * FROM salespersons WHERE contact = ? OR email = ?`;
 
   db.query(checkSql, [contact, email], (checkErr, checkResult) => {
     if (checkErr) {
       console.error("Error checking existing salesperson:", checkErr);
-      return res
-        .status(500)
-        .json({ message: "Database error during validation", error: checkErr });
+      return res.status(500).json({
+        message: "Database error during validation",
+        error: checkErr,
+      });
     }
 
     if (checkResult.length > 0) {
@@ -185,7 +210,7 @@ export const add = (req, res) => {
       });
     }
 
-    // Insert new salesperson only if no duplicate found
+    // Insert new salesperson
     const insertSql = `
       INSERT INTO salespersons 
       (fullname, contact, email, intrest, address, state, city, pincode, experience, rerano, adharno, panno, 
@@ -221,15 +246,44 @@ export const add = (req, res) => {
       (insertErr, insertResult) => {
         if (insertErr) {
           console.error("Error inserting Sales Person:", insertErr);
-          return res
-            .status(500)
-            .json({ message: "Database error", error: insertErr });
+          return res.status(500).json({
+            message: "Database error",
+            error: insertErr,
+          });
         }
 
-        res.status(201).json({
-          message: "Sales Person added successfully",
-          Id: insertResult.insertId,
-        });
+        // Insert default follow-up entry
+        const followupSql = `
+          INSERT INTO partnerFollowup 
+          (partnerId, role, followUp, followUpText, created_at, updated_at) 
+          VALUES (?, ?, ?, ?, ?, ?)
+        `;
+
+        db.query(
+          followupSql,
+          [
+            insertResult.insertId,
+            "Sales Person",
+            "New",
+            "Newly Added Sales Person",
+            currentdate,
+            currentdate,
+          ],
+          (followupErr, followupResult) => {
+            if (followupErr) {
+              console.error("Error adding follow-up:", followupErr);
+              return res.status(500).json({
+                message: "Follow-up insert failed",
+                error: followupErr,
+              });
+            }
+
+            return res.status(201).json({
+              message: "Sales Person added successfully",
+              Id: insertResult.insertId,
+            });
+          }
+        );
       }
     );
   });
@@ -568,8 +622,8 @@ export const addFollowUp = async (req, res) => {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
 
-  const { followUp } = req.body;
-  if (!followUp || followUp.trim() === "") {
+  const { followUp, followUpText } = req.body;
+  if (!followUp || !followUpText) {
     return res.status(400).json({ message: "Follow up message is required." });
   }
 
@@ -589,8 +643,15 @@ export const addFollowUp = async (req, res) => {
 
       // Insert follow-up entry
       db.query(
-        "INSERT INTO partnerFollowup (partnerId, role, followUp, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-        [Id, "Sales Person", followUp.trim(), currentdate, currentdate],
+        "INSERT INTO partnerFollowup (partnerId, role, followUp, followUpText, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+        [
+          Id,
+          "Sales Person",
+          followUp.trim(),
+          followUpText.trim(),
+          currentdate,
+          currentdate,
+        ],
         (insertErr, insertResult) => {
           if (insertErr) {
             console.error("Error adding follow-up:", insertErr);
@@ -601,8 +662,8 @@ export const addFollowUp = async (req, res) => {
 
           // Update payment status after follow-up is added
           db.query(
-            "UPDATE salespersons SET paymentstatus = 'Follow Up' WHERE salespersonsid = ?",
-            [Id],
+            "UPDATE salespersons SET paymentstatus = 'Follow Up', updated_at = ? WHERE salespersonsid = ?",
+            [currentdate, Id],
             (updateErr, updateResult) => {
               if (updateErr) {
                 console.error("Error updating payment status:", updateErr);

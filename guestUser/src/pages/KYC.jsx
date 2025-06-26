@@ -8,11 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function KYC() {
   const navigate = useNavigate();
-  const {
-    URI,
-    user,
-    setLoading,
-  } = useAuth();
+  const { URI, user, setLoading } = useAuth();
 
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
@@ -27,7 +23,6 @@ export default function KYC() {
     experience: "",
     adharno: "",
     panno: "",
-    rerano: "",
     ifsc: "",
     bankname: "",
     accountnumber: "",
@@ -37,7 +32,6 @@ export default function KYC() {
   const [imageFiles, setImageFiles] = useState({
     adharImage: null,
     panImage: null,
-    reraImage: null,
   });
 
   const handleImageChange = (event, category) => {
@@ -122,8 +116,6 @@ export default function KYC() {
     if (imageFiles.adharImage)
       formData.append("adharImage", imageFiles.adharImage);
     if (imageFiles.panImage) formData.append("panImage", imageFiles.panImage);
-    if (imageFiles.reraImage)
-      formData.append("reraImage", imageFiles.reraImage);
 
     try {
       setLoading(true);
@@ -155,7 +147,6 @@ export default function KYC() {
           experience: "",
           adharno: "",
           panno: "",
-          rerano: "",
           ifsc: "",
           bankname: "",
           accountnumber: "",
@@ -340,23 +331,6 @@ export default function KYC() {
 
           <div className="w-full">
             <label className="block text-sm leading-4 text-[#00000066] font-medium">
-              RERA Number
-            </label>
-            <input
-              type="text"
-              placeholder="Enter Rera Number"
-              value={userData.rerano}
-              onChange={(e) => {
-                const input = e.target.value.toUpperCase(); // Convert to uppercase
-                if (/^[A-Z0-9]{0,10}$/.test(input)) {
-                  setUserData({ ...userData, rerano: input });
-                }
-              }}
-              className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501]"
-            />
-          </div>
-          <div className="w-full">
-            <label className="block text-sm leading-4 text-[#00000066] font-medium">
               Experience <span className="text-red-600">*</span>
             </label>
             <input
@@ -373,6 +347,7 @@ export default function KYC() {
               className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501]"
             />
           </div>
+          <div></div>
 
           {/* Aadhaar Image Upload */}
           <div className="w-full">
@@ -463,51 +438,6 @@ export default function KYC() {
               </div>
             )}
           </div>
-
-          {/* Aadhaar Image Upload */}
-          <div className="w-full">
-            <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-              Upload Rera Image
-            </label>
-            <div className="w-full mt-2">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageChange(e, "reraImage")}
-                className="hidden"
-                id="reraImageUpload"
-              />
-              <label
-                htmlFor="reraImageUpload"
-                className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-              >
-                <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                  Upload Image
-                </span>
-                <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
-                  Browse
-                </div>
-              </label>
-            </div>
-          </div>
-
-          {/* Preview Section */}
-          {imageFiles.reraImage && (
-            <div className="relative mt-2">
-              <img
-                src={URL.createObjectURL(imageFiles.reraImage)}
-                alt="Rera Preview"
-                className="w-full object-cover rounded-lg border border-gray-300"
-              />
-              <button
-                type="button"
-                onClick={() => removeImage("reraImage")}
-                className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-              >
-                ✕
-              </button>
-            </div>
-          )}
         </div>
 
         <div className="w-full flex mt-8 md:mt-8 justify-end gap-6">

@@ -238,46 +238,66 @@ const GuestUser = () => {
 
   const filteredData = datas.filter(
     (item) =>
-      item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.fullname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.state?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.adhar?.toLowerCase().includes(searchTerm.toLowerCase())
+      item.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const columns = [
     {
       name: "SN",
       cell: (row, index) => (
-        <span
-          className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md ${
-            row.status === "Active"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FFEAEA] text-[#ff2323]"
-          }`}
-        >
-          {index + 1}
-        </span>
+        <div className="relative group flex items-center w-full">
+          {/* Serial Number Box */}
+          <span
+            className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md cursor-pointer ${
+              row.status === "Active"
+                ? "bg-[#EAFBF1] text-[#0BB501]"
+                : "bg-[#FFEAEA] text-[#ff2323]"
+            }`}
+          >
+            {index + 1}
+          </span>
+
+          {/* Tooltip */}
+          <div className="absolute w-[65px] text-center -top-12 left-[30px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+            {row.status === "Active" ? "Active" : "Inactive"}
+          </div>
+        </div>
       ),
-      width: "70px",
+      width: "80px",
     },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
       name: "Full Name",
       cell: (row) => (
         <div className={`flex gap-1 items-center justify-center`}>
-          <div
-            className={`px-[2px] py-[2px] rounded-md flex items-center justify-center ${
-              row.loginstatus === "Active"
-                ? "bg-[#EAFBF1] text-[#0BB501]"
-                : "bg-[#FBE9E9] text-[#FF0000]"
-            }`}
-          >
-            {row.loginstatus === "Active" ? <MdDone /> : <RxCross2 />}
+          <div className="relative group cursor-pointer">
+            <div
+              className={`px-[2px] py-[2px] rounded-md flex items-center justify-center ${
+                row.loginstatus === "Active"
+                  ? "bg-[#EAFBF1] text-[#0BB501]"
+                  : "bg-[#FBE9E9] text-[#FF0000]"
+              }`}
+              onClick={() => {
+                setPartnerId(row.id);
+                setGiveAccess(true);
+              }}
+            >
+              {row.loginstatus === "Active" ? <MdDone /> : <RxCross2 />}
+            </div>
+            <div className="absolute w-[150px] text-center -top-12 left-[75px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+              {row.loginstatus === "Active"
+                ? "Login Status Active"
+                : "Login Status Inactive"}
+            </div>
           </div>
           {row.fullname}
         </div>
       ),
-      minWidth: "250px",
+      minWidth: "200px",
     },
     {
       name: "Contact",
@@ -290,6 +310,18 @@ const GuestUser = () => {
       selector: (row) => row.email,
       sortable: true,
       minWidth: "250px",
+    },
+    {
+      name: "State",
+      selector: (row) => row.state,
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "City",
+      selector: (row) => row.city,
+      sortable: true,
+      width: "150px",
     },
     {
       name: "Action",
@@ -370,7 +402,6 @@ const GuestUser = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <FilterData />
               <CustomDateRangePicker />
             </div>
             <AddButton label={"Add"} func={setShowPartnerForm} />

@@ -62,7 +62,7 @@ const StepOne = ({ newProperty, setPropertyData, builderData, states, cities }) 
           </select>
         </div>
 
-        <div className="w-full">
+        <div className={`${newProperty.propertyCategory === "FarmLand" ? "hidden":"block"} w-full`}>
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Property Approved by <span className="text-red-600">*</span>
           </label>

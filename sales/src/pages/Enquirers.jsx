@@ -11,7 +11,7 @@ import { useAuth } from "../store/auth";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 import AddButton from "../components/AddButton";
-import FormatPrice from "../components/FormatPrice"; 
+import FormatPrice from "../components/FormatPrice";
 
 const Enquirers = () => {
   const navigate = useNavigate();
@@ -32,6 +32,7 @@ const Enquirers = () => {
   } = useAuth();
 
   const [datas, setDatas] = useState([]);
+  const [selectedFilter, setSelectedFilter] = useState("");
   const [remarkList, setRemarkList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [states, setStates] = useState([]);
@@ -570,12 +571,17 @@ const Enquirers = () => {
     }
   }, [newEnquiry.state]);
 
-  const filteredData = datas?.filter(
+  const filteredData = datas?.filter((item) =>
+    item.status.toLowerCase().includes(selectedFilter.toLowerCase())
+  );
+
+  const filteredTicketData = filteredData?.filter(
     (item) =>
       item.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.location.toLowerCase().includes(searchTerm.toLowerCase())
+      item.source.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   const columns = [
     {
       name: "SN",
@@ -645,7 +651,7 @@ const Enquirers = () => {
               alt="Property"
               onClick={() => {
                 window.open(
-                  "https://www.reparv.in/property-info/" + row.propertyid,
+                  "https://www.reparv.in/property-info/" + row.seoSlug,
                   "_blank"
                 );
               }}
@@ -656,7 +662,7 @@ const Enquirers = () => {
       },
       width: "140px",
     },
-     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
+    { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     { name: "Source", selector: (row) => row.source, width: "120px" },
     {
       name: "Customer",
@@ -676,7 +682,7 @@ const Enquirers = () => {
       ),
       minWidth: "200px",
     },
-    
+
     {
       name: "Action",
       cell: (row) => <ActionDropdown row={row} />,
@@ -761,7 +767,10 @@ const Enquirers = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <FilterData />
+              <FilterData
+                selectedFilter={selectedFilter}
+                setSelectedFilter={setSelectedFilter}
+              />
               <CustomDateRangePicker />
             </div>
             <AddButton label={"Add "} func={setShowEnquiryForm} />
@@ -772,7 +781,7 @@ const Enquirers = () => {
           <DataTable
             className="scrollbar-hide"
             columns={columns}
-            data={filteredData}
+            data={filteredTicketData}
             pagination
           />
         </div>
@@ -1696,7 +1705,7 @@ const Enquirers = () => {
                   remarkList.map((remark, index) => (
                     <div key={index} className="w-full">
                       <label className="block mt-4 text-sm leading-4 text-[#00000066] font-medium">
-                       <span
+                        <span
                           className={`px-2 py-1 rounded-md ${
                             remark?.status === "New"
                               ? "bg-[#EAFBF1] text-[#0BB501]"

@@ -17,9 +17,21 @@ export const getAll = (req, res) => {
 
   switch (paymentStatus) {
     case "Success":
-      sql = `SELECT * FROM onboardingpartner 
-             WHERE paymentstatus = 'Success' 
-             ORDER BY created_at DESC`;
+      sql = `SELECT onboardingpartner.*, pf.followUp, pf.created_at AS followUpDate
+        FROM onboardingpartner
+        LEFT JOIN (
+          SELECT p1.*
+          FROM partnerFollowup p1
+          INNER JOIN (
+            SELECT partnerId, MAX(created_at) AS latest
+            FROM partnerFollowup
+            WHERE role = 'Onboarding Partner'
+            GROUP BY partnerId
+          ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+          WHERE p1.role = 'Onboarding Partner'
+        ) pf ON onboardingpartner.partnerid = pf.partnerId
+        WHERE onboardingpartner.paymentstatus = 'Success' 
+        ORDER BY onboardingpartner.created_at DESC`;
       break;
 
     case "Follow Up":
@@ -43,9 +55,21 @@ export const getAll = (req, res) => {
       break;
 
     case "Pending":
-      sql = `SELECT * FROM onboardingpartner 
-             WHERE paymentstatus = 'Pending' 
-             ORDER BY created_at DESC`;
+      sql = `SELECT onboardingpartner.*, pf.followUp, pf.created_at AS followUpDate
+        FROM onboardingpartner
+        LEFT JOIN (
+          SELECT p1.*
+          FROM partnerFollowup p1
+          INNER JOIN (
+            SELECT partnerId, MAX(created_at) AS latest
+            FROM partnerFollowup
+            WHERE role = 'Onboarding Partner'
+            GROUP BY partnerId
+          ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+          WHERE p1.role = 'Onboarding Partner'
+        ) pf ON onboardingpartner.partnerid = pf.partnerId
+        WHERE onboardingpartner.paymentstatus = 'Pending' 
+        ORDER BY onboardingpartner.created_at DESC`;
       break;
 
     default:
@@ -173,9 +197,10 @@ export const add = (req, res) => {
   db.query(checkSql, [contact, email], (checkErr, checkResult) => {
     if (checkErr) {
       console.error("Error checking existing Partner:", checkErr);
-      return res
-        .status(500)
-        .json({ message: "Database error during validation", error: checkErr });
+      return res.status(500).json({
+        message: "Database error during validation",
+        error: checkErr,
+      });
     }
 
     if (checkResult.length > 0) {
@@ -184,9 +209,9 @@ export const add = (req, res) => {
       });
     }
 
-    // Only insert if no existing partner
-    const sql = `INSERT INTO onboardingpartner (fullname, contact, email, intrest, address, state, city, pincode, experience, adharno, panno, bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, updated_at, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO onboardingpartner 
+    (fullname, contact, email, intrest, address, state, city, pincode, experience, adharno, panno, bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, updated_at, created_at) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     db.query(
       sql,
@@ -218,10 +243,32 @@ export const add = (req, res) => {
             .status(500)
             .json({ message: "Database error", error: err });
         }
-        return res.status(201).json({
-          message: "OnBoarding Partner added successfully",
-          Id: result.insertId,
-        });
+
+        // Insert default follow-up
+        db.query(
+          "INSERT INTO partnerFollowup (partnerId, role, followUp, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+          [
+            result.insertId,
+            "Onboarding Partner",
+            "New",
+            "Newly Added Onboarding Partner",
+            currentdate,
+            currentdate,
+          ],
+          (insertErr, insertResult) => {
+            if (insertErr) {
+              console.error("Error Adding Follow Up:", insertErr);
+              return res
+                .status(500)
+                .json({ message: "Database error", error: insertErr });
+            }
+
+            return res.status(201).json({
+              message: "OnBoarding Partner added successfully",
+              Id: result.insertId,
+            });
+          }
+        );
       }
     );
   });
@@ -548,9 +595,9 @@ export const addFollowUp = async (req, res) => {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
 
-  const { followUp } = req.body;
-  if (!followUp || followUp.trim() === "") {
-    return res.status(400).json({ message: "Empty Follow Up" });
+  const { followUp, followUpText } = req.body;
+  if (!followUp || !followUpText) {
+    return res.status(400).json({ message: "Empty Follow Up or Text" });
   }
 
   // Check if onboarding partner exists
@@ -571,8 +618,15 @@ export const addFollowUp = async (req, res) => {
 
       // Insert follow-up entry
       db.query(
-        "INSERT INTO partnerFollowup (partnerId, role, followUp, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-        [Id, "Onboarding Partner", followUp.trim(), currentdate, currentdate],
+        "INSERT INTO partnerFollowup (partnerId, role, followUp, followUpText, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+        [
+          Id,
+          "Onboarding Partner",
+          followUp.trim(),
+          followUpText.trim(),
+          currentdate,
+          currentdate,
+        ],
         (insertErr, insertResult) => {
           if (insertErr) {
             console.error("Error Adding Follow Up:", insertErr);
@@ -583,8 +637,8 @@ export const addFollowUp = async (req, res) => {
 
           // Update paymentstatus in onboardingpartner
           db.query(
-            "UPDATE onboardingpartner SET paymentstatus = 'Follow Up' WHERE partnerid = ?",
-            [Id],
+            "UPDATE onboardingpartner SET paymentstatus = 'Follow Up', updated_at = ? WHERE partnerid = ?",
+            [currentdate, Id],
             (updateErr, updateResult) => {
               if (updateErr) {
                 console.error("Error updating paymentstatus:", updateErr);

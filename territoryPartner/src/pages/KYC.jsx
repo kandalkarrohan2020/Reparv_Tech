@@ -97,7 +97,7 @@ export default function KYC() {
   //fetch data on form
   const showDetails = async () => {
     try {
-      const response = await fetch(URI + `/admin/territorypartner/${user.id}`, {
+      const response = await fetch(URI + `/admin/territorypartner/get/${user.id}`, {
         method: "GET",
         credentials: "include",
         headers: {

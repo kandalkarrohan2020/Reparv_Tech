@@ -258,7 +258,6 @@ const Builders = () => {
       item.contact_person.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.office_address.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.registration_no.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -436,7 +435,6 @@ const Builders = () => {
               </div>
               <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
                 <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-                  <FilterData />
                   <CustomDateRangePicker />
                 </div>
                 <AddButton label={"Add"} func={setShowBuilderForm} />

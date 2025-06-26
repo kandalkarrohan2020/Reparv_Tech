@@ -1,4 +1,4 @@
-import React from "react"; 
+import React from "react";
 import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
@@ -55,29 +55,9 @@ const OnBoardingPartner = () => {
   });
 
   const [followUp, setFollowUp] = useState("");
+  const [followUpText, setFollowUpText] = useState("");
   const [followUpList, setFollowUpList] = useState([]);
 
-  // Follow Up Add Variables with Enabled Disabled Functionality
-  const [customFollowUp, setCustomFollowUp] = useState("");
-  const [selectedFollowUp, setSelectedFollowUp] = useState("");
-
-  const handleSelectChange = (e) => {
-    const value = e.target.value.trim();
-    setSelectedFollowUp(value);
-    setFollowUp(value);
-    if (value) {
-      setCustomFollowUp("");
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setCustomFollowUp(value);
-    setFollowUp(value.trim());
-    if (value.trim()) {
-      setSelectedFollowUp("");
-    }
-  };
   // **Fetch States from API**
   const fetchStates = async () => {
     try {
@@ -238,7 +218,7 @@ const OnBoardingPartner = () => {
       setLoading(true);
       const response = await fetch(URI + `/admin/partner/delete/${id}`, {
         method: "DELETE",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -340,18 +320,8 @@ const OnBoardingPartner = () => {
   // ADD Follow Up
   const addFollowUp = async (e) => {
     e.preventDefault();
-
-    // Prioritize customFollowUp if present, else use selectedFollowUp
-    const selectedValue = customFollowUp.trim() || selectedFollowUp.trim();
-
-    if (!selectedValue) {
-      alert("Please enter or select a follow-up reason.");
-      return;
-    }
-
     try {
       setLoading(true);
-
       const response = await fetch(
         `${URI}/admin/partner/followup/add/${partnerId}`,
         {
@@ -360,12 +330,10 @@ const OnBoardingPartner = () => {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify({ followUp: selectedValue }),
+          body: JSON.stringify({ followUp, followUpText }),
         }
       );
-
       const data = await response.json();
-
       if (response.ok) {
         alert(`Success: ${data.message}`);
         setPartnerPaymentStatus("Follow Up");
@@ -374,11 +342,9 @@ const OnBoardingPartner = () => {
       } else {
         alert(`Error: ${data.message}`);
       }
-
       // Clear input fields
       setFollowUp("");
-      setCustomFollowUp("");
-      setSelectedFollowUp("");
+      setFollowUpText("");
     } catch (error) {
       console.error("Error adding FollowUp:", error);
     } finally {
@@ -441,32 +407,41 @@ const OnBoardingPartner = () => {
 
   const filteredData = datas.filter(
     (item) =>
-      item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.fullname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.adhar?.toLowerCase().includes(searchTerm.toLowerCase())
+      item.state?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.city?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const columns = [
     {
       name: "SN",
       cell: (row, index) => (
-        <span
-          className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md ${
-            row.status === "Active"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FFEAEA] text-[#ff2323]"
-          }`}
-        >
-          {index + 1}
-        </span>
+        <div className="relative group flex items-center w-full">
+          {/* Serial Number Box */}
+          <span
+            className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md cursor-pointer ${
+              row.status === "Active"
+                ? "bg-[#EAFBF1] text-[#0BB501]"
+                : "bg-[#FFEAEA] text-[#ff2323]"
+            }`}
+          >
+            {index + 1}
+          </span>
+
+          {/* Tooltip */}
+          <div className="absolute w-[65px] text-center -top-12 left-[30px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+            {row.status === "Active" ? "Active" : "Inactive"}
+          </div>
+        </div>
       ),
-      width: "80px",
+      width: "70px",
     },
     {
       name: "Follow Up",
       cell: (row) => {
         const followUpColorMap = {
+          New: "bg-blue-100 text-blue-700",
           CNR1: "bg-red-100 text-red-600",
           CNR2: "bg-red-100 text-red-600",
           CNR3: "bg-red-100 text-red-600",
@@ -497,32 +472,47 @@ const OnBoardingPartner = () => {
           followUpColorMap[row.followUp] || "bg-[#efefef] text-[#000000]";
 
         return (
-          <span className={`px-2 py-1 rounded-md ${styleClass}`}>
-            {row.followUp || "—"}
+          <span
+            onClick={() => {
+              setPartnerId(row.partnerid);
+              fetchFollowUpList(row.partnerid);
+              setShowFollowUpList(true);
+            }}
+            className={`px-2 py-1 rounded-md cursor-pointer ${styleClass}`}
+          >
+            {row.followUp || "- Empty -"}
           </span>
         );
       },
-      omit: false,
-      minWidth: "200px",
+      minWidth: "150px",
     },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
       name: "Full Name",
       cell: (row) => (
         <div className={`flex gap-1 items-center justify-center`}>
-          <div
-            className={`px-[2px] py-[2px] rounded-md flex items-center justify-center ${
-              row.loginstatus === "Active"
-                ? "bg-[#EAFBF1] text-[#0BB501]"
-                : "bg-[#FBE9E9] text-[#FF0000]"
-            }`}
-          >
-            {row.loginstatus === "Active" ? <MdDone /> : <RxCross2 />}
+          <div className="relative group cursor-pointer">
+            <div
+              className={`px-[2px] py-[2px] rounded-md flex items-center justify-center ${
+                row.loginstatus === "Active"
+                  ? "bg-[#EAFBF1] text-[#0BB501]"
+                  : "bg-[#FBE9E9] text-[#FF0000]"
+              }`}
+              onClick={() => {
+                setPartnerId(row.partnerid);
+                setGiveAccess(true);
+              }}
+            >
+              {row.loginstatus === "Active" ? <MdDone /> : <RxCross2 />}
+            </div>
+            <div className="absolute w-[150px] text-center -top-12 left-[75px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+              {row.loginstatus === "Active" ? "Login Status Active" : "Login Status Inactive"}
+            </div>
           </div>
           {row.fullname}
         </div>
       ),
-      width: "250px",
+      width: "200px",
     },
     {
       name: "Contact",
@@ -531,18 +521,23 @@ const OnBoardingPartner = () => {
       width: "150px",
     },
     {
+      name: "State",
+      selector: (row) => row.state,
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "City",
+      selector: (row) => row.city,
+      sortable: true,
+      width: "120px",
+    },
+    {
       name: "Action",
       cell: (row) => <ActionDropdown row={row} />,
       width: "120px",
     },
   ];
-
-  const hasFollowUp = datas.some((row) => !!row.followUp);
-
-  const finalColumns = columns.map((col) => {
-    if (col.name === "Follow Up") return { ...col, omit: !hasFollowUp };
-    return col;
-  });
 
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
@@ -639,7 +634,7 @@ const OnBoardingPartner = () => {
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="overflow-scroll scrollbar-hide"
-            columns={finalColumns}
+            columns={columns}
             data={filteredData}
             pagination
             //onRowClicked={(row) => {alert("Click On The Row:"+row.fullname)}}
@@ -893,7 +888,7 @@ const OnBoardingPartner = () => {
         </div>
       </div>
 
-      {/* Update Payment Id Form */}
+      {/* Add Follow Up Form */}
       <div
         className={` ${
           !showFollowUpList && "hidden"
@@ -905,6 +900,8 @@ const OnBoardingPartner = () => {
             <IoMdClose
               onClick={() => {
                 setShowFollowUpList(false);
+                setFollowUp("");
+                setFollowUpText("");
               }}
               className="w-6 h-6 cursor-pointer"
             />
@@ -913,16 +910,12 @@ const OnBoardingPartner = () => {
             <div className="w-full grid gap-4 place-items-center grid-cols-1">
               {/* Dropdown */}
               <select
-                value={selectedFollowUp}
-                onChange={handleSelectChange}
-                disabled={customFollowUp.length > 0}
-                className={`w-full p-4 border rounded-[4px] text-[16px] font-medium 
-                            focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none
-                            ${
-                              customFollowUp.length > 0
-                                ? "bg-gray-200 cursor-not-allowed"
-                                : ""
-                            }`}
+                required
+                value={followUp}
+                onChange={(e) => {
+                  setFollowUp(e.target.value);
+                }}
+                className="w-full p-4 border rounded-[4px] text-[16px] font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
               >
                 <option value="">Select Follow Up</option>
                 <option className="text-red-600">CNR1</option>
@@ -958,19 +951,16 @@ const OnBoardingPartner = () => {
               {/* Input Field */}
               <input
                 type="text"
+                required
                 placeholder="Enter Custom Follow Up"
-                value={customFollowUp}
-                onChange={handleInputChange}
-                disabled={selectedFollowUp.length > 0}
-                className={`w-full p-4 border border-[#00000033] rounded-[4px] text-[16px] font-medium
-                           focus:outline-none focus:ring-2 focus:ring-blue-500 
-                           ${
-                             selectedFollowUp.length > 0
-                               ? "bg-gray-200 cursor-not-allowed"
-                               : ""
-                           }`}
+                value={followUpText}
+                onChange={(e) => {
+                  setFollowUpText(e.target.value);
+                }}
+                className="w-full p-4 border border-[#00000033] rounded-[4px] text-[16px] font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+
             <div className="flex h-10 mt-8 md:mt-4 justify-center sm:justify-end gap-6">
               <button
                 type="submit"
@@ -978,7 +968,7 @@ const OnBoardingPartner = () => {
               >
                 Add Follow Up
               </button>
-              <Loader></Loader>
+              <Loader />
             </div>
           </form>
           {/* Show Follow Up List */}
@@ -987,16 +977,61 @@ const OnBoardingPartner = () => {
               {followUpList.length > 0 ? (
                 followUpList.map((followUp, index) => (
                   <div key={index} className="w-full">
-                    <label className="block mt-2 text-sm leading-4 text-[#00000066] font-medium">
-                      <span className={`px-2 py-1 rounded-md`}>
-                        {followUp?.created_at}
+                    <div className="flex gap-2 flex-wrap items-center justify-start mt-2 text-sm leading-4 text-[#00000066] font-medium">
+                      <span>
+                        {followUp?.created_at} {"->"}
                       </span>
-                    </label>
+                      <span
+                        className={`px-[6px] py-[2px] rounded-lg text-xs font-medium
+                        ${
+                          followUp?.followUp === "CNR1" ||
+                          followUp?.followUp === "CNR2" ||
+                          followUp?.followUp === "CNR3" ||
+                          followUp?.followUp === "CNR4"
+                            ? "bg-red-100 text-red-600"
+                            : followUp?.followUp === "Switch Off"
+                            ? "bg-red-100 text-red-700"
+                            : followUp?.followUp === "Call Busy" ||
+                              followUp?.followUp === "Call Back" ||
+                              followUp?.followUp ===
+                                "Not Responding (After Follow Up)"
+                            ? "bg-yellow-100 text-yellow-600"
+                            : followUp?.followUp ===
+                                "Call Cut / Disconnected" ||
+                              followUp?.followUp ===
+                                "Not Interested (After Details Shared & Explanation)"
+                            ? "bg-orange-100 text-orange-600"
+                            : followUp?.followUp === "Invalid Number" ||
+                              followUp?.followUp === "Wrong Number"
+                            ? "bg-red-100 text-red-700"
+                            : followUp?.followUp === "Form Filled By Mistake"
+                            ? "bg-blue-100 text-blue-600"
+                            : followUp?.followUp === "Repeat Lead"
+                            ? "bg-gray-100 text-gray-600"
+                            : followUp?.followUp === "Lead Clash"
+                            ? "bg-purple-100 text-purple-500"
+                            : followUp?.followUp === "Details Shared"
+                            ? "bg-green-100 text-green-600"
+                            : followUp?.followUp === "Not Interested"
+                            ? "bg-pink-100 text-pink-600"
+                            : followUp?.followUp === "Interested"
+                            ? "bg-green-100 text-green-700"
+                            : followUp?.followUp === "Documents Collected"
+                            ? "bg-green-100 text-green-800"
+                            : followUp?.followUp === "Payment Done"
+                            ? "bg-green-100 text-green-900"
+                            : "bg-gray-100 text-black"
+                        }`}
+                      >
+                        {" "}
+                        {followUp?.followUp}
+                      </span>
+                    </div>
                     <input
                       type="text"
                       disabled
                       className="w-full mt-[6px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={followUp.followUp}
+                      value={followUp.followUpText}
                       readOnly
                     />
                   </div>

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { parse } from "date-fns";
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
@@ -243,19 +244,49 @@ const Ticketing = () => {
     }
   };
 
-  const filteredData = data.filter((item) =>
-    item.status.toLowerCase().includes(selectedTicketFilter.toLowerCase())
-  );
+  const [range, setRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
+  ]);
 
-  const filteredTicketData = filteredData.filter(
-    (item) =>
-      item.ticketno.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.issue.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.admin_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.employee_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredData = data.filter((item) => {
+    const search = searchTerm.toLowerCase();
+    const statusFilter = selectedTicketFilter.toLowerCase();
+    // Status filter
+    const matchesStatus = item.status?.toLowerCase().includes(statusFilter);
+
+    // Search term filter
+    const matchesSearch =
+      item.ticketno?.toLowerCase().includes(search) ||
+      item.status?.toLowerCase().includes(search) ||
+      item.issue?.toLowerCase().includes(search) ||
+      item.admin_name?.toLowerCase().includes(search) ||
+      item.department?.toLowerCase().includes(search) ||
+      item.employee_name?.toLowerCase().includes(search);
+
+    // Date range filter
+    let startDate = range[0].startDate;
+    let endDate = range[0].endDate;
+
+    if (startDate) startDate = new Date(startDate.setHours(0, 0, 0, 0));
+    if (endDate) endDate = new Date(endDate.setHours(23, 59, 59, 999));
+
+    // Parse item.created_at (format: "26 Apr 2025 | 06:28 PM")
+    const itemDate = parse(
+      item.created_at,
+      "dd MMM yyyy | hh:mm a",
+      new Date()
+    );
+
+    const matchesDate =
+      (!startDate && !endDate) || // no range selected
+      (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
+
+    return matchesStatus && matchesSearch && matchesDate;
+  });
 
   const baseColumns = [
     {
@@ -430,7 +461,9 @@ const Ticketing = () => {
                 selectedFilter={selectedTicketFilter}
                 setSelectedFilter={setSelectedTicketFilter}
               />
-              <CustomDateRangePicker />
+              <div className="hidden xl:block">
+                <CustomDateRangePicker range={range} setRange={setRange} />
+              </div>
             </div>
             <AddButton label={"Add"} func={setShowTicketForm} />
           </div>
@@ -443,7 +476,7 @@ const Ticketing = () => {
           <DataTable
             className="scrollbar-hide"
             columns={finalColumns}
-            data={filteredTicketData}
+            data={filteredData}
             pagination
           />
         </div>

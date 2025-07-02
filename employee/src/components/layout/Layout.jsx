@@ -173,7 +173,7 @@ function Layout() {
 
         {/* Content Area */}
         <div
-          className="flex-1 p-4 md:pl-0 md:pt-0 overflow-scroll scrollbar-hide"
+          className="flex-1 md:p-4 md:pl-0 md:pt-0 overflow-scroll scrollbar-hide"
           onClick={() => isSidebarOpen && setIsSidebarOpen(false)}
         >
           <Outlet />

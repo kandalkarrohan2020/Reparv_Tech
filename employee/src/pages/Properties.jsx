@@ -1,4 +1,5 @@
 import React from "react";
+import { parse } from "date-fns";
 import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
@@ -286,17 +287,47 @@ const Properties = () => {
     }
   }, [newProperty.state]);
 
-  const filteredData = datas.filter(
-    (item) =>
-      item.propertyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.propertyCategory.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.approve.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  
+  const [range, setRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
+  ]);
+
+  const filteredData = datas.filter((item) => {
+    // Text search filter
+    const matchesSearch =
+      item.propertyName?.toLowerCase().includes(searchTerm) ||
+      item.company_name?.toLowerCase().includes(searchTerm) ||
+      item.propertyCategory?.toLowerCase().includes(searchTerm) ||
+      item.state?.toLowerCase().includes(searchTerm) ||
+      item.city?.toLowerCase().includes(searchTerm) ||
+      item.approve?.toLowerCase().includes(searchTerm) ||
+      item.status?.toLowerCase().includes(searchTerm);
+
+    // Date range filter
+    let startDate = range[0].startDate;
+    let endDate = range[0].endDate;
+
+    if (startDate) startDate = new Date(startDate.setHours(0, 0, 0, 0));
+    if (endDate) endDate = new Date(endDate.setHours(23, 59, 59, 999));
+
+    // Parse item.created_at (format: "26 Apr 2025 | 06:28 PM")
+    const itemDate = parse(
+      item.created_at,
+      "dd MMM yyyy | hh:mm a",
+      new Date()
+    );
+
+    const matchesDate =
+      (!startDate && !endDate) || // no filter
+      (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
+
+    // Final return
+    return matchesSearch && matchesDate;
+  });
+
   const columns = [
     {
       name: "SN",
@@ -336,15 +367,24 @@ const Properties = () => {
       },
       width: "130px",
     },
-    { name: "Property Name", selector: (row) => row.propertyName, sortable: true, minWidth: "160px", },
+    {
+      name: "Property Name",
+      selector: (row) => row.propertyName,
+      sortable: true,
+      minWidth: "160px",
+    },
     {
       name: "Builder",
       selector: (row) => row.company_name,
       sortable: true,
       minWidth: "150px",
     },
-    { name: "Type", selector: (row) => row.propertyCategory,  minWidth: "150px", },
-    { name: "Address", selector: (row) => row.address,  minWidth: "200px", },
+    {
+      name: "Type",
+      selector: (row) => row.propertyCategory,
+      minWidth: "150px",
+    },
+    { name: "Address", selector: (row) => row.address, minWidth: "200px" },
     {
       name: "State",
       selector: (row) => row.state,
@@ -358,14 +398,14 @@ const Properties = () => {
       minWidth: "150px",
     },
     { name: "Pin Code", selector: (row) => row.pincode, width: "120px" },
-    { name: "Location", selector: (row) => row.location,  minWidth: "150px",  },
+    { name: "Location", selector: (row) => row.location, minWidth: "150px" },
     {
       name: "Rera No.",
       selector: (row) => row.reraRegistered,
       sortable: true,
       minWidth: "150px",
     },
-    { name: "Area", selector: (row) => row.builtUpArea,  minWidth: "150px", },
+    { name: "Area", selector: (row) => row.builtUpArea, minWidth: "150px" },
     {
       name: "Price Sqft",
       selector: (row) => row.totalOfferPrice,
@@ -457,7 +497,13 @@ const Properties = () => {
 
   return (
     <div className="properties overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
-      <div className="properties-table w-full h-[578px] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
+      <div className="properties-table w-full h-[578px] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+        <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
+          <p className="block md:hidden text-lg font-semibold">Properties</p>
+          <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+            <AddButton label={"Add"} func={setShowPropertyForm} />
+          </div>
+        </div>
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
             <CiSearch />
@@ -471,9 +517,13 @@ const Properties = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <CustomDateRangePicker />
+              <div className="hidden xl:block">
+                <CustomDateRangePicker range={range} setRange={setRange} />
+              </div>
             </div>
-            <AddButton label={"Add "} func={setShowPropertyForm} />
+            <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+              <AddButton label={"Add"} func={setShowPropertyForm} />
+            </div>
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { parse } from "date-fns";
 import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
@@ -10,10 +11,7 @@ import { FiMoreVertical } from "react-icons/fi";
 import MultiStepForm from "../components/propertyForm/MultiStepForm";
 
 const Properties = () => {
-  const {
-    setShowPropertyForm,
-    URI,
-  } = useAuth();
+  const { setShowPropertyForm, URI } = useAuth();
   const [datas, setDatas] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
@@ -191,16 +189,46 @@ const Properties = () => {
     }
   }, [newProperty.state]);
 
-  const filteredData = datas.filter(
-    (item) =>
-      item.propertyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.propertyCategory.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.approve.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [range, setRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
+  ]);
+
+  const filteredData = datas.filter((item) => {
+    // Text search filter
+    const matchesSearch =
+      item.propertyName?.toLowerCase().includes(searchTerm) ||
+      item.company_name?.toLowerCase().includes(searchTerm) ||
+      item.propertyCategory?.toLowerCase().includes(searchTerm) ||
+      item.state?.toLowerCase().includes(searchTerm) ||
+      item.city?.toLowerCase().includes(searchTerm) ||
+      item.approve?.toLowerCase().includes(searchTerm) ||
+      item.status?.toLowerCase().includes(searchTerm);
+
+    // Date range filter
+    let startDate = range[0].startDate;
+    let endDate = range[0].endDate;
+
+    if (startDate) startDate = new Date(startDate.setHours(0, 0, 0, 0));
+    if (endDate) endDate = new Date(endDate.setHours(23, 59, 59, 999));
+
+    // Parse item.created_at (format: "26 Apr 2025 | 06:28 PM")
+    const itemDate = parse(
+      item.created_at,
+      "dd MMM yyyy | hh:mm a",
+      new Date()
+    );
+
+    const matchesDate =
+      (!startDate && !endDate) || // no filter
+      (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
+
+    // Final return
+    return matchesSearch && matchesDate;
+  });
 
   const columns = [
     {
@@ -310,7 +338,10 @@ const Properties = () => {
     const handleActionSelect = (action, propertyid, seoSlug) => {
       switch (action) {
         case "view":
-          window.open("https://www.reparv.in/property-info/"+seoSlug, "_blank");
+          window.open(
+            "https://www.reparv.in/property-info/" + seoSlug,
+            "_blank"
+          );
           break;
         case "update":
           edit(propertyid);
@@ -360,7 +391,9 @@ const Properties = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <CustomDateRangePicker />
+              <div className="hidden xl:block">
+                <CustomDateRangePicker range={range} setRange={setRange} />
+              </div>
             </div>
             <AddButton label={"Add "} func={setShowPropertyForm} />
           </div>

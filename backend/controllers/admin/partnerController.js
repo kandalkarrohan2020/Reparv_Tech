@@ -246,7 +246,7 @@ export const add = (req, res) => {
 
         // Insert default follow-up
         db.query(
-          "INSERT INTO partnerFollowup (partnerId, role, followUp, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+          "INSERT INTO partnerFollowup (partnerId, role, followUp, followUpText, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
           [
             result.insertId,
             "Onboarding Partner",

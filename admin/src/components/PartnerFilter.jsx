@@ -29,7 +29,7 @@ const PartnerFilter = ({ counts = {} }) => {
   ];
 
   return (
-    <div className="flex flex-wrap gap-3 items-center">
+    <div className="flex flex-wrap gap-3 items-center z-10">
       {filterOptions.map((option) => {
         const isActive = partnerPaymentStatus === option.label;
         return (

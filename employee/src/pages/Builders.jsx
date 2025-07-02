@@ -1,3 +1,4 @@
+import { parse } from "date-fns";
 import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
@@ -263,16 +264,44 @@ const Builders = () => {
     fetchData();
   }, []);
 
-  const filteredData = datas.filter(
-    (item) =>
-      item.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.contact_person.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.office_address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.registration_no.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [range, setRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
+  ]);
+
+  const filteredData = datas.filter((item) => {
+    const search = searchTerm.toLowerCase();
+
+    const matchesSearch =
+      item.company_name?.toLowerCase().includes(search) ||
+      item.contact_person?.toLowerCase().includes(search) ||
+      item.contact?.toLowerCase().includes(search) ||
+      item.email?.toLowerCase().includes(search) ||
+      item.registration_no?.toLowerCase().includes(search) ||
+      item.status?.toLowerCase().includes(search);
+
+    // Date range logic
+    let startDate = range[0].startDate;
+    let endDate = range[0].endDate;
+
+    if (startDate) startDate = new Date(startDate.setHours(0, 0, 0, 0));
+    if (endDate) endDate = new Date(endDate.setHours(23, 59, 59, 999));
+
+    const itemDate = parse(
+      item.created_at,
+      "dd MMM yyyy | hh:mm a",
+      new Date()
+    );
+
+    const matchesDate =
+      (!startDate && !endDate) ||
+      (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
+
+    return matchesSearch && matchesDate;
+  });
 
   const columns = [
     { name: "SN", selector: (row, index) => index + 1, sortable: true },
@@ -376,8 +405,13 @@ const Builders = () => {
     >
       {!showBuilderForm ? (
         <>
-          <div className="builder-table w-full h-[550px] sm:h-[578px] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
-            <p className="block md:hidden text-lg font-semibold">Builders</p>
+          <div className="builder-table w-full h-[550px] sm:h-[578px] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+            <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
+              <p className="block md:hidden text-lg font-semibold">Builders</p>
+              <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+                <AddButton label={"Add"} func={setShowBuilderForm} />
+              </div>
+            </div>
             <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
               <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
                 <CiSearch />
@@ -391,10 +425,13 @@ const Builders = () => {
               </div>
               <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
                 <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-                  <FilterData />
-                  <CustomDateRangePicker />
+                  <div className="block">
+                    <CustomDateRangePicker range={range} setRange={setRange} />
+                  </div>
                 </div>
-                <AddButton label={"Add"} func={setShowBuilderForm} />
+                <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+                  <AddButton label={"Add"} func={setShowBuilderForm} />
+                </div>
               </div>
             </div>
             <h2 className="text-[16px] font-semibold">Builders List</h2>
@@ -570,7 +607,7 @@ const Builders = () => {
                   Notes
                 </label>
                 <input
-                  type="text" 
+                  type="text"
                   placeholder="Enter notes"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.notes}

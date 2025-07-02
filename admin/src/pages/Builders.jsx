@@ -1,3 +1,4 @@
+import { parse } from "date-fns";
 import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
@@ -9,6 +10,7 @@ import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
 import { RiArrowDropDownLine } from "react-icons/ri";
+import DownloadCSV from "../components/DownloadCSV";
 
 const Builders = () => {
   const {
@@ -44,13 +46,16 @@ const Builders = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/admin/builders/get/"+selectedLister, {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + "/admin/builders/get/" + selectedLister,
+        {
+          method: "GET",
+          credentials: "include", // ✅ Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch builders.");
       const data = await response.json();
       setDatas(data);
@@ -252,15 +257,44 @@ const Builders = () => {
     fetchData();
   }, [selectedLister]);
 
-  const filteredData = datas.filter(
-    (item) =>
-      item.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.contact_person.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.registration_no.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [range, setRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
+  ]);
+
+  const filteredData = datas.filter((item) => {
+    const search = searchTerm.toLowerCase();
+
+    const matchesSearch =
+      item.company_name?.toLowerCase().includes(search) ||
+      item.contact_person?.toLowerCase().includes(search) ||
+      item.contact?.toLowerCase().includes(search) ||
+      item.email?.toLowerCase().includes(search) ||
+      item.registration_no?.toLowerCase().includes(search) ||
+      item.status?.toLowerCase().includes(search);
+
+    // Date range logic
+    let startDate = range[0].startDate;
+    let endDate = range[0].endDate;
+
+    if (startDate) startDate = new Date(startDate.setHours(0, 0, 0, 0));
+    if (endDate) endDate = new Date(endDate.setHours(23, 59, 59, 999));
+
+    const itemDate = parse(
+      item.created_at,
+      "dd MMM yyyy | hh:mm a",
+      new Date()
+    );
+
+    const matchesDate =
+      (!startDate && !endDate) ||
+      (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
+
+    return matchesSearch && matchesDate;
+  });
 
   const columns = [
     {
@@ -274,12 +308,12 @@ const Builders = () => {
       name: "Company Name",
       selector: (row) => row.company_name,
       sortable: true,
-      minWidth: "150px" 
+      minWidth: "150px",
     },
     {
       name: "Contact Person",
       selector: (row) => row.contact_person,
-      minWidth: "150px" 
+      minWidth: "150px",
     },
     {
       name: "Builder Lister",
@@ -293,12 +327,12 @@ const Builders = () => {
       width: "180px",
     },
     { name: "Contact", selector: (row) => row.contact, minWidth: "150px" },
-    { name: "Email", selector: (row) => row.email, minWidth: "150px"  },
+    { name: "Email", selector: (row) => row.email, minWidth: "150px" },
     { name: "Office address", selector: (row) => row.office_address },
     {
       name: "Registration No",
       selector: (row) => row.registration_no,
-      minWidth: "150px" 
+      minWidth: "150px",
     },
     {
       name: "Status",
@@ -335,9 +369,10 @@ const Builders = () => {
   ];
 
   const hasBuilderLister = datas.some((row) => !!row.listerName);
- 
+
   const finalColumns = columns.map((col) => {
-    if (col.name === "Builder Lister") return { ...col, omit: !hasBuilderLister };
+    if (col.name === "Builder Lister")
+      return { ...col, omit: !hasBuilderLister };
     return col;
   });
 
@@ -401,26 +436,31 @@ const Builders = () => {
     >
       {!showBuilderForm ? (
         <>
-          <div className="builder-table overflow-scroll scrollbar-hide w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
-            <p className="block md:hidden text-lg font-semibold">Builders</p>
-            <div className="w-full sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
-              <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
-                <span>{selectedLister || "Select Lister"}</span>
-                <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+          <div className="builder-table overflow-scroll scrollbar-hide w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+            <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
+              <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+                <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+                  <span>{selectedLister || "Select Lister"}</span>
+                  <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+                </div>
+                <select
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  value={selectedLister}
+                  onChange={(e) => {
+                    setSelectedLister(e.target.value);
+                  }}
+                >
+                  <option value="Select Builder Lister">
+                    Select Builder Lister
+                  </option>
+                  <option value="Reparv Employee">Reparv Employee</option>
+                  <option value="Project Partner">Project Partner</option>
+                </select>
               </div>
-              <select
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                value={selectedLister}
-                onChange={(e) => {
-                  setSelectedLister(e.target.value);
-                }}
-              >
-                <option value="Select Builder Lister">
-                  Select Builder Lister
-                </option>
-                <option value="Reparv Employee">Reparv Employee</option>
-                <option value="Project Partner">Project Partner</option>
-              </select>
+              <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+                <DownloadCSV data={filteredData} filename={"Builders.csv"} />
+                <AddButton label={"Add"} func={setShowBuilderForm} />
+              </div>
             </div>
             <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
               <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
@@ -435,9 +475,14 @@ const Builders = () => {
               </div>
               <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
                 <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-                  <CustomDateRangePicker />
+                  <div className="block">
+                    <CustomDateRangePicker range={range} setRange={setRange} />
+                  </div>
                 </div>
-                <AddButton label={"Add"} func={setShowBuilderForm} />
+                <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+                  <DownloadCSV data={filteredData} filename={"Builders.csv"} />
+                  <AddButton label={"Add"} func={setShowBuilderForm} />
+                </div>
               </div>
             </div>
             <h2 className="text-[16px] font-semibold">Builders List</h2>

@@ -85,7 +85,7 @@ const CalendarScheduler = () => {
               value={selectedDate}
               locale="en-US"
               tileContent={tileContent}
-              showNeighboringMonth={false} // 🔥 Hides previous & next month dates
+              showNeighboringMonth={false} //  Hides previous & next month dates
               formatShortWeekday={(locale, date) => format(date, "E").charAt(0)}
               className="min-w-[300px] rounded-lg border border-gray-300 p-4 w-full shadow-md"
               tileClassName={({ date, view }) => {

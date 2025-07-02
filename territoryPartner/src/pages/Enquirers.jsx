@@ -1,4 +1,5 @@
 import React from "react";
+import { parse } from "date-fns";
 import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import propertyPicture from "../assets/property/propertyPicture.svg";
@@ -527,16 +528,45 @@ const Enquirers = () => {
     }
   }, [newEnquiry.state]);
 
-  const filteredData = datas?.filter((item) =>
-    item.status.toLowerCase().includes(selectedFilter.toLowerCase())
-  );
+  const [range, setRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
+  ]);
 
-  const filteredTicketData = filteredData?.filter(
-    (item) =>
-      item.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.source.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredData = datas.filter((item) => {
+    // Status filter
+    const matchesStatus = item.status
+      ?.toLowerCase()
+      .includes(selectedFilter.toLowerCase());
+
+    // Search term filter
+    const matchesSearch =
+      item.customer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.source?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Date range filter
+    let startDate = range[0].startDate;
+    let endDate = range[0].endDate;
+
+    if (startDate) startDate = new Date(startDate.setHours(0, 0, 0, 0));
+    if (endDate) endDate = new Date(endDate.setHours(23, 59, 59, 999));
+
+    const itemDate = parse(
+      item.created_at,
+      "dd MMM yyyy | hh:mm a",
+      new Date()
+    );
+
+    const matchesDate =
+      (!startDate && !endDate) ||
+      (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
+
+    return matchesStatus && matchesSearch && matchesDate;
+  });
 
   const columns = [
     {
@@ -740,7 +770,9 @@ const Enquirers = () => {
                 selectedFilter={selectedFilter}
                 setSelectedFilter={setSelectedFilter}
               />
-              <CustomDateRangePicker />
+              <div className="hidden xl:block">
+                <CustomDateRangePicker range={range} setRange={setRange} />
+              </div>
             </div>
             <AddButton label={"Add "} func={setShowEnquiryForm} />
           </div>
@@ -750,7 +782,7 @@ const Enquirers = () => {
           <DataTable
             className="scrollbar-hide"
             columns={columns}
-            data={filteredTicketData}
+            data={filteredData}
             pagination
           />
         </div>

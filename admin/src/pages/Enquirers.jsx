@@ -1,4 +1,5 @@
 import React from "react";
+import { parse } from "date-fns";
 import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
@@ -12,6 +13,7 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import AddButton from "../components/AddButton";
 import propertyPicture from "../assets/propertyPicture.svg";
 import FormatPrice from "../components/FormatPrice";
+import DownloadCSV from "../components/DownloadCSV";
 
 const Enquirers = () => {
   const {
@@ -615,17 +617,46 @@ const Enquirers = () => {
       fetchCities();
     }
   }, [newEnquiry.state]);
-  
-  const filteredData = datas?.filter((item) =>
-    item.status.toLowerCase().includes(selectedFilter.toLowerCase())
-  );
 
-  const filteredTicketData = filteredData?.filter(
-    (item) =>
-      item.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.source.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [range, setRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
+  ]);
+
+  const filteredData = datas.filter((item) => {
+    // Status filter
+    const matchesStatus = item.status
+      ?.toLowerCase()
+      .includes(selectedFilter.toLowerCase());
+
+    // Search term filter
+    const matchesSearch =
+      item.customer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.source?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Date range filter
+    let startDate = range[0].startDate;
+    let endDate = range[0].endDate;
+
+    if (startDate) startDate = new Date(startDate.setHours(0, 0, 0, 0));
+    if (endDate) endDate = new Date(endDate.setHours(23, 59, 59, 999));
+
+    const itemDate = parse(
+      item.created_at,
+      "dd MMM yyyy | hh:mm a",
+      new Date()
+    );
+
+    const matchesDate =
+      (!startDate && !endDate) ||
+      (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
+
+    return matchesStatus && matchesSearch && matchesDate;
+  });
 
   const columns = [
     {
@@ -749,7 +780,8 @@ const Enquirers = () => {
               : "bg-[#FFEAEA] text-[#ff2323]"
           }`}
         >
-          {(row.territoryName ? row.territoryName + " - " : "No ")+(row.territoryContact ? row.territoryContact : "Assign")} 
+          {(row.territoryName ? row.territoryName + " - " : "No ") +
+            (row.territoryContact ? row.territoryContact : "Assign")}
         </span>
       ),
       minWidth: "180px",
@@ -826,26 +858,34 @@ const Enquirers = () => {
 
   return (
     <div className="enquirers overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
-      <div className="enquirers-table w-full h-[80vh] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
+      <div className="enquirers-table w-full h-[80vh] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
         {/* <p className="block md:hidden text-lg font-semibold">Enquirers</p> */}
-        <div className="w-full sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
-          <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
-            <span>{selectedSource || "Select Source"}</span>
-            <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+        <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
+          <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+            <div className="flex gap-1 sm:gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+              <span>{selectedSource || "Select Source"}</span>
+              <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+            </div>
+            <select
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              value={selectedSource}
+              onChange={(e) => {
+                const action = e.target.value;
+                setSelectedSource(action);
+              }}
+            >
+              <option value="Select Enquiry Source">
+                Select Enquiry Source
+              </option>
+              <option value="Onsite">Onsite</option>
+              <option value="Direct">Direct</option>
+              <option value="CSV">CSV File</option>
+            </select>
           </div>
-          <select
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            value={selectedSource}
-            onChange={(e) => {
-              const action = e.target.value;
-              setSelectedSource(action);
-            }}
-          >
-            <option value="Select Enquiry Source">Select Enquiry Source</option>
-            <option value="Onsite">Onsite</option>
-            <option value="Direct">Direct</option>
-            <option value="CSV">CSV File</option>
-          </select>
+          <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+            <DownloadCSV data={filteredData} filename={"Enquirers.csv"} />
+            <AddButton label={"Add "} func={setShowEnquiryForm} />
+          </div>
         </div>
         <div className="searchBarContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
@@ -860,10 +900,18 @@ const Enquirers = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <FilterData selectedFilter={selectedFilter} setSelectedFilter={setSelectedFilter} />
-              <CustomDateRangePicker />
+              <FilterData
+                selectedFilter={selectedFilter}
+                setSelectedFilter={setSelectedFilter}
+              />
+              <div className="block">
+                <CustomDateRangePicker range={range} setRange={setRange} />
+              </div>
             </div>
-            <AddButton label={"Add "} func={setShowEnquiryForm} />
+            <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+              <DownloadCSV data={filteredData} filename={"Enquirers.csv"} />
+              <AddButton label={"Add "} func={setShowEnquiryForm} />
+            </div>
           </div>
         </div>
         <h2 className="text-[16px] font-semibold">Enquiry List</h2>
@@ -871,7 +919,7 @@ const Enquirers = () => {
           <DataTable
             className="scrollbar-hide"
             columns={columns}
-            data={filteredTicketData}
+            data={filteredData}
             pagination
           />
         </div>
@@ -1769,7 +1817,14 @@ const Enquirers = () => {
                   type="text"
                   disabled
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={(enquiry.territoryName ? enquiry.territoryName + " - " : "No ")+(enquiry.territoryContact ? enquiry.territoryContact : "Assign")}
+                  value={
+                    (enquiry.territoryName
+                      ? enquiry.territoryName + " - "
+                      : "No ") +
+                    (enquiry.territoryContact
+                      ? enquiry.territoryContact
+                      : "Assign")
+                  }
                   readOnly
                 />
               </div>

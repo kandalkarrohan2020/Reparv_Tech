@@ -187,10 +187,6 @@ const Role = () => {
                 />
               </div>
               <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
-                <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-                  <EmployeeFilter/>
-                  <CustomDateRangePicker />
-                </div>
                 <AddButton
                   label={"Add"}
                   func={setShowRoleForm}

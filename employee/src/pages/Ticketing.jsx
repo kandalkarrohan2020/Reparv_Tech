@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { parse } from "date-fns";
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
@@ -341,19 +342,49 @@ const Ticketing = () => {
     }
   };
 
-  const filteredData = data.filter((item) =>
-    item.status.toLowerCase().includes(selectedTicketFilter.toLowerCase())
-  );
+  const [range, setRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
+  ]);
 
-  const filteredTicketData = filteredData.filter(
-    (item) =>
-      item.ticketno.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.issue.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.admin_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.employee_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredData = data.filter((item) => {
+    const search = searchTerm.toLowerCase();
+    const statusFilter = selectedTicketFilter.toLowerCase();
+    // Status filter
+    const matchesStatus = item.status?.toLowerCase().includes(statusFilter);
+
+    // Search term filter
+    const matchesSearch =
+      item.ticketno?.toLowerCase().includes(search) ||
+      item.status?.toLowerCase().includes(search) ||
+      item.issue?.toLowerCase().includes(search) ||
+      item.admin_name?.toLowerCase().includes(search) ||
+      item.department?.toLowerCase().includes(search) ||
+      item.employee_name?.toLowerCase().includes(search);
+
+    // Date range filter
+    let startDate = range[0].startDate;
+    let endDate = range[0].endDate;
+
+    if (startDate) startDate = new Date(startDate.setHours(0, 0, 0, 0));
+    if (endDate) endDate = new Date(endDate.setHours(23, 59, 59, 999));
+
+    // Parse item.created_at (format: "26 Apr 2025 | 06:28 PM")
+    const itemDate = parse(
+      item.created_at,
+      "dd MMM yyyy | hh:mm a",
+      new Date()
+    );
+
+    const matchesDate =
+      (!startDate && !endDate) || // no range selected
+      (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
+
+    return matchesStatus && matchesSearch && matchesDate;
+  });
 
   const baseColumns = [
     {
@@ -578,30 +609,35 @@ const Ticketing = () => {
 
   return (
     <div className="ticketing overflow-scroll w-full h-screen flex flex-col items-start justify-start">
-      <div className="ticket-table w-full h-[80vh] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
+      <div className="ticket-table w-full h-[80vh] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
         {/* <p className="block md:hidden text-lg font-semibold">Tickets</p> */}
-        <div className="selectTicketGenerator min-w-[220px] max-w-[230px] relative inline-block">
-          <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
-            <span>{selectedGenerator || "Select Ticket Generator"}</span>
-            <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+        <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
+          <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+            <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+              <span>{selectedGenerator || "Select Ticket Generator"}</span>
+              <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+            </div>
+            <select
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              value={selectedGenerator}
+              onChange={(e) => {
+                const action = e.target.value;
+                setSelectedGenerator(action);
+              }}
+            >
+              <option value="Select Ticket Generator">
+                Select Ticket Generator
+              </option>
+              <option value="Admin">Admin</option>
+              <option value="Sales Person">Sales Person</option>
+              <option value="Onboarding Partner">Onboarding Partner</option>
+              <option value="Territory Partner">Territory Partner</option>
+              <option value="Project Partner">Project Partner</option>
+            </select>
           </div>
-          <select
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            value={selectedGenerator}
-            onChange={(e) => {
-              const action = e.target.value;
-              setSelectedGenerator(action);
-            }}
-          >
-            <option value="Select Ticket Generator">
-              Select Ticket Generator
-            </option>
-            <option value="Admin">Admin</option>
-            <option value="Sales Person">Sales Person</option>
-            <option value="Onboarding Partner">Onboarding Partner</option>
-            <option value="Territory Partner">Territory Partner</option>
-            <option value="Project Partner">Project Partner</option>
-          </select>
+          <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+            <AddButton label={"Add"} func={setShowTicketForm} />
+          </div>
         </div>
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
@@ -620,9 +656,13 @@ const Ticketing = () => {
                 selectedFilter={selectedTicketFilter}
                 setSelectedFilter={setSelectedTicketFilter}
               />
-              <CustomDateRangePicker />
+              <div className="block">
+                <CustomDateRangePicker range={range} setRange={setRange} />
+              </div>
             </div>
-            <AddButton label={"Add"} func={setShowTicketForm} />
+            <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+              <AddButton label={"Add"} func={setShowTicketForm} />
+            </div>
           </div>
         </div>
         <div className="w-full flex items-center justify-between">
@@ -633,7 +673,7 @@ const Ticketing = () => {
           <DataTable
             className="scrollbar-hide"
             columns={finalColumns}
-            data={filteredTicketData}
+            data={filteredData}
             pagination
           />
         </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import { parse } from "date-fns";
 import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
@@ -13,6 +14,7 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import MultiStepForm from "../components/propertyForm/MultiStepForm";
 import { useLocation } from "react-router-dom";
 import propertyPicture from "../assets/propertyPicture.svg";
+import DownloadCSV from "../components/DownloadCSV";
 
 const Properties = () => {
   const location = useLocation();
@@ -449,7 +451,12 @@ const Properties = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ seoSlug, seoTittle, seoDescription, propertyDescription }),
+          body: JSON.stringify({
+            seoSlug,
+            seoTittle,
+            seoDescription,
+            propertyDescription,
+          }),
         }
       );
       const data = await response.json();
@@ -737,16 +744,46 @@ const Properties = () => {
     }
   }, [newProperty.state]);
 
-  const filteredData = datas.filter(
-    (item) =>
-      item.propertyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.propertyCategory.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.approve.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [range, setRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
+  ]);
+
+  const filteredData = datas.filter((item) => {
+    // Text search filter
+    const matchesSearch =
+      item.propertyName?.toLowerCase().includes(searchTerm) ||
+      item.company_name?.toLowerCase().includes(searchTerm) ||
+      item.propertyCategory?.toLowerCase().includes(searchTerm) ||
+      item.state?.toLowerCase().includes(searchTerm) ||
+      item.city?.toLowerCase().includes(searchTerm) ||
+      item.approve?.toLowerCase().includes(searchTerm) ||
+      item.status?.toLowerCase().includes(searchTerm);
+
+    // Date range filter
+    let startDate = range[0].startDate;
+    let endDate = range[0].endDate;
+
+    if (startDate) startDate = new Date(startDate.setHours(0, 0, 0, 0));
+    if (endDate) endDate = new Date(endDate.setHours(23, 59, 59, 999));
+
+    // Parse item.created_at (format: "26 Apr 2025 | 06:28 PM")
+    const itemDate = parse(
+      item.created_at,
+      "dd MMM yyyy | hh:mm a",
+      new Date()
+    );
+
+    const matchesDate =
+      (!startDate && !endDate) || // no filter
+      (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
+
+    // Final return
+    return matchesSearch && matchesDate;
+  });
 
   const columns = [
     {
@@ -974,28 +1011,34 @@ const Properties = () => {
 
   return (
     <div className="properties overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
-      <div className="properties-table w-full h-[80vh] flex flex-col p-6 gap-4 my-[10px] bg-white rounded-[24px]">
-        <div className="w-full sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
-          <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
-            <span>{selectedPartner || "Select Partner"}</span>
-            <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+      <div className="properties-table w-full h-[80vh] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+        <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
+          <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+            <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+              <span>{selectedPartner || "Select Partner"}</span>
+              <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+            </div>
+            <select
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              value={selectedPartner}
+              onChange={(e) => {
+                const action = e.target.value;
+                setSelectedPartner(action);
+              }}
+            >
+              <option value="Select Property Lister">
+                Select Property Lister
+              </option>
+              <option value="Reparv Employee">Reparv Employee</option>
+              <option value="Onboarding Partner">Onboarding Partner</option>
+              <option value="Project Partner">Project Partner</option>
+              <option value="Guest User">Guest User</option>
+            </select>
           </div>
-          <select
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            value={selectedPartner}
-            onChange={(e) => {
-              const action = e.target.value;
-              setSelectedPartner(action);
-            }}
-          >
-            <option value="Select Property Lister">
-              Select Property Lister
-            </option>
-            <option value="Reparv Employee">Reparv Employee</option>
-            <option value="Onboarding Partner">Onboarding Partner</option>
-            <option value="Project Partner">Project Partner</option>
-            <option value="Guest User">Guest User</option>
-          </select>
+          <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+            <DownloadCSV data={filteredData} filename={"Properties.csv"} />
+            <AddButton label={"Add "} func={setShowPropertyForm} />
+          </div>
         </div>
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
@@ -1010,9 +1053,14 @@ const Properties = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <CustomDateRangePicker />
+              <div className="block">
+                <CustomDateRangePicker range={range} setRange={setRange} />
+              </div>
             </div>
-            <AddButton label={"Add "} func={setShowPropertyForm} />
+            <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+              <DownloadCSV data={filteredData} filename={"Properties.csv"} />
+              <AddButton label={"Add "} func={setShowPropertyForm} />
+            </div>
           </div>
         </div>
 

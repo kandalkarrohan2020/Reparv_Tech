@@ -23,7 +23,7 @@ const TicketingFilter = ({selectedFilter, setSelectedFilter}) => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative z-10">
       {/* Filter Button */}
       <div
         className={`min-w-[40px] h-[32px] ${selectedFilter&&"h-[36px]"} items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm cursor-pointer ${
@@ -43,7 +43,7 @@ const TicketingFilter = ({selectedFilter, setSelectedFilter}) => {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-[40px] right-0 w-[200px] bg-white shadow-md border rounded-bl-[10px] overflow-hidden rounded-br-[10px] z-10">
+        <div className="absolute top-[40px] left-[-15px] w-[200px] bg-white shadow-md border rounded-bl-[10px] overflow-hidden rounded-br-[10px] z-20">
           {filterOptions.map((option, index) => (
             <div
               key={index}

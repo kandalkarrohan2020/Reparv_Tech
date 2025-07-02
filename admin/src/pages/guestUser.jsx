@@ -1,4 +1,5 @@
 import React from "react";
+import { parse } from "date-fns";
 import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
@@ -11,6 +12,7 @@ import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
 import { RxCross2 } from "react-icons/rx";
 import { MdDone } from "react-icons/md";
+import DownloadCSV from "../components/DownloadCSV";
 
 const GuestUser = () => {
   const {
@@ -236,14 +238,42 @@ const GuestUser = () => {
     fetchData();
   }, []);
 
-  const filteredData = datas.filter(
-    (item) =>
-      item.fullname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.state?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [range, setRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
+  ]);
+
+  const filteredData = datas.filter((item) => {
+    const search = searchTerm.toLowerCase();
+
+    const matchesSearch =
+      item.fullname?.toLowerCase().includes(search) ||
+      item.contact?.toLowerCase().includes(search) ||
+      item.state?.toLowerCase().includes(search) ||
+      item.city?.toLowerCase().includes(search) ||
+      item.email?.toLowerCase().includes(search);
+
+    let startDate = range[0].startDate;
+    let endDate = range[0].endDate;
+
+    if (startDate) startDate = new Date(startDate.setHours(0, 0, 0, 0));
+    if (endDate) endDate = new Date(endDate.setHours(23, 59, 59, 999));
+
+    const itemDate = parse(
+      item.created_at,
+      "dd MMM yyyy | hh:mm a",
+      new Date()
+    );
+
+    const matchesDate =
+      (!startDate && !endDate) ||
+      (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
+
+    return matchesSearch && matchesDate;
+  });
 
   const columns = [
     {
@@ -387,8 +417,14 @@ const GuestUser = () => {
     <div
       className={`overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
     >
-      <div className="sales-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
-        <p className="block md:hidden text-lg font-semibold">Guest User</p>
+      <div className="sales-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+        <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
+          <p className="block md:hidden text-lg font-semibold">Guest Users</p>
+          <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+            <DownloadCSV data={filteredData} filename={"GuestUsers.csv"} />
+            <AddButton label={"Add"} func={setShowPartnerForm} />
+          </div>
+        </div>
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
             <CiSearch />
@@ -402,9 +438,14 @@ const GuestUser = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <CustomDateRangePicker />
+              <div className="block">
+                <CustomDateRangePicker range={range} setRange={setRange} />
+              </div>
             </div>
-            <AddButton label={"Add"} func={setShowPartnerForm} />
+            <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+              <DownloadCSV data={filteredData} filename={"GuestUsers.csv"} />
+              <AddButton label={"Add"} func={setShowPartnerForm} />
+            </div>
           </div>
         </div>
         <h2 className="text-[16px] font-semibold">Guest User List</h2>

@@ -1,3 +1,4 @@
+import { parse } from "date-fns";
 import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
@@ -68,12 +69,15 @@ const Builders = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/project-partner/builders/${endpoint}`, {
-        method: newBuilder.builderid ? "PUT" : "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newBuilder),
-      });
+      const response = await fetch(
+        `${URI}/project-partner/builders/${endpoint}`,
+        {
+          method: newBuilder.builderid ? "PUT" : "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newBuilder),
+        }
+      );
 
       if (response.status === 409) {
         alert("Builder already exists!");
@@ -113,13 +117,16 @@ const Builders = () => {
   //fetch data on form
   const edit = async (builderid) => {
     try {
-      const response = await fetch(URI + `/project-partner/builders/${builderid}`, {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + `/project-partner/builders/${builderid}`,
+        {
+          method: "GET",
+          credentials: "include", // ✅ Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch builders.");
       const data = await response.json();
       setNewBuilder(data);
@@ -132,13 +139,16 @@ const Builders = () => {
   //fetch data on form
   const viewBuilder = async (builderid) => {
     try {
-      const response = await fetch(URI + `/project-partner/builders/${builderid}`, {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + `/project-partner/builders/${builderid}`,
+        {
+          method: "GET",
+          credentials: "include", // ✅ Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch builders.");
       const data = await response.json();
       setBuilder(data);
@@ -212,29 +222,71 @@ const Builders = () => {
     fetchData();
   }, []);
 
-  const filteredData = datas.filter(
-    (item) =>
-      item.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.contact_person.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.office_address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.registration_no.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [range, setRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
+  ]);
+
+  const filteredData = datas.filter((item) => {
+    const search = searchTerm.toLowerCase();
+
+    const matchesSearch =
+      item.company_name?.toLowerCase().includes(search) ||
+      item.contact_person?.toLowerCase().includes(search) ||
+      item.contact?.toLowerCase().includes(search) ||
+      item.email?.toLowerCase().includes(search) ||
+      item.registration_no?.toLowerCase().includes(search) ||
+      item.status?.toLowerCase().includes(search);
+
+    // Date range logic
+    let startDate = range[0].startDate;
+    let endDate = range[0].endDate;
+
+    if (startDate) startDate = new Date(startDate.setHours(0, 0, 0, 0));
+    if (endDate) endDate = new Date(endDate.setHours(23, 59, 59, 999));
+
+    const itemDate = parse(
+      item.created_at,
+      "dd MMM yyyy | hh:mm a",
+      new Date()
+    );
+
+    const matchesDate =
+      (!startDate && !endDate) ||
+      (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
+
+    return matchesSearch && matchesDate;
+  });
 
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, sortable: false, width:"50px" },
+    {
+      name: "SN",
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: "50px",
+    },
     {
       name: "Company Name",
       selector: (row) => row.company_name,
-      sortable: true, minWidth: "150px"
+      sortable: true,
+      minWidth: "150px",
     },
-    { name: "Contact Person", selector: (row) => row.contact_person , minWidth: "150px"},
-    { name: "Contact", selector: (row) => row.contact , minWidth: "150px"},
-    { name: "Email", selector: (row) => row.email , minWidth: "150px"},
+    {
+      name: "Contact Person",
+      selector: (row) => row.contact_person,
+      minWidth: "150px",
+    },
+    { name: "Contact", selector: (row) => row.contact, minWidth: "150px" },
+    { name: "Email", selector: (row) => row.email, minWidth: "150px" },
     { name: "Office address", selector: (row) => row.office_address },
-    { name: "Registration No", selector: (row) => row.registration_no , minWidth: "150px"},
+    {
+      name: "Registration No",
+      selector: (row) => row.registration_no,
+      minWidth: "150px",
+    },
     {
       name: "Status",
       cell: (row) => (
@@ -324,14 +376,21 @@ const Builders = () => {
               </div>
               <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
                 <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-                  <CustomDateRangePicker />
+                  <div className="hidden xl:block">
+                    <CustomDateRangePicker range={range} setRange={setRange} />
+                  </div>
                 </div>
                 <AddButton label={"Add"} func={setShowBuilderForm} />
               </div>
             </div>
             <h2 className="text-[16px] font-semibold">Builders List</h2>
             <div className="overflow-scroll scrollbar-hide">
-              <DataTable className="overflow-scroll scrollbar-hide" columns={columns} data={filteredData} pagination />
+              <DataTable
+                className="overflow-scroll scrollbar-hide"
+                columns={columns}
+                data={filteredData}
+                pagination
+              />
             </div>
           </div>
         </>

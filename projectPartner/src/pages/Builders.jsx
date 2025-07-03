@@ -361,8 +361,13 @@ const Builders = () => {
     >
       {!showBuilderForm ? (
         <>
-          <div className="builder-table overflow-scroll scrollbar-hide w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
-            <p className="block md:hidden text-lg font-semibold">Builders</p>
+          <div className="builder-table overflow-scroll scrollbar-hide w-full h-[80vh] flex flex-col p-4 md:p-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+            <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
+              <p className="block md:hidden text-lg font-semibold">Builders</p>
+              <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+                <AddButton label={"Add"} func={setShowBuilderForm} />
+              </div>
+            </div>
             <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
               <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
                 <CiSearch />
@@ -376,11 +381,13 @@ const Builders = () => {
               </div>
               <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
                 <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-                  <div className="hidden xl:block">
+                  <div className="block">
                     <CustomDateRangePicker range={range} setRange={setRange} />
                   </div>
                 </div>
-                <AddButton label={"Add"} func={setShowBuilderForm} />
+                <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+                  <AddButton label={"Add"} func={setShowBuilderForm} />
+                </div>
               </div>
             </div>
             <h2 className="text-[16px] font-semibold">Builders List</h2>

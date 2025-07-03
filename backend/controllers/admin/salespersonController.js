@@ -713,8 +713,7 @@ export const assignLogin = async (req, res) => {
 
         // Store original email before updating the database
         const email = result[0].email;
-        let loginstatus =
-          result[0].loginstatus === "Active" ? "Inactive" : "Active";
+        let loginstatus = "Active";
 
         // Update salesperson details
         db.query(

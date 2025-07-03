@@ -517,7 +517,7 @@ const Properties = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <div className="hidden xl:block">
+              <div className="block">
                 <CustomDateRangePicker range={range} setRange={setRange} />
               </div>
             </div>

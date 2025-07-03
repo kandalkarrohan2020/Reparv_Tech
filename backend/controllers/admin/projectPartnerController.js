@@ -692,8 +692,7 @@ export const assignLogin = async (req, res) => {
           return res.status(404).json({ message: "Projet Partner not found" });
         }
 
-        let loginstatus =
-          result[0].loginstatus === "Active" ? "Inactive" : "Active";
+        let loginstatus = "Active";
         const email = result[0].email;
 
         db.query(

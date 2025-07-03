@@ -146,7 +146,7 @@ const MultiStepForm = ({
       if (err.response?.data?.error) {
         alert("Upload failed: " + err.response.data.error);
       } else {
-        alert("Unexpected Error");
+        alert("please check empty fields or try again later.");
       }
     } finally {
       setLoading(false);

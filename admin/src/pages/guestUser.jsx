@@ -197,7 +197,7 @@ const GuestUser = () => {
     e.preventDefault();
     if (
       !window.confirm(
-        "Are you sure you want to assign login to this onBoarding Partner ?"
+        "Are you sure you want to assign login to this User ?"
       )
     )
       return;

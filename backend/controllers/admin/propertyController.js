@@ -857,6 +857,116 @@ export const addRejectReason = (req, res) => {
   );
 };
 
+
+export const setPropertyCommission = (req, res) => {
+  const {
+    commissionType,
+    commissionAmount,
+    commissionPercentage,
+    commissionAmountPerSquareFeet,
+  } = req.body;
+
+  const Id = parseInt(req.params.id);
+
+  if (!commissionType || isNaN(Id)) {
+    return res
+      .status(400)
+      .json({ message: "Commission type and valid Property ID are required" });
+  }
+
+  // Step 1: Fetch property to get required data
+  db.query(
+    "SELECT * FROM properties WHERE propertyid = ?",
+    [Id],
+    (err, results) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+
+      const property = results[0];
+      let updateSQL = "";
+      let updateParams = [];
+
+      // Step 2: Handle different commission types
+      if (commissionType === "Fixed") {
+        if (!commissionAmount) {
+          return res
+            .status(400)
+            .json({ message: "commissionAmount is required for Fixed type" });
+        }
+
+        updateSQL = `UPDATE properties 
+                   SET commissionType = ?, commissionAmount = ?, commissionPercentage = NULL, commissionAmountPerSquareFeet = NULL 
+                   WHERE propertyid = ?`;
+        updateParams = [commissionType, commissionAmount, Id];
+      } else if (commissionType === "Percentage") {
+        if (!commissionPercentage) {
+          return res
+            .status(400)
+            .json({
+              message: "commissionPercentage is required for Percentage type",
+            });
+        }
+
+        const totalPrice = parseFloat(property.totalOfferPrice || 0);
+        const calculatedAmount = (totalPrice * commissionPercentage) / 100;
+
+        updateSQL = `UPDATE properties 
+                   SET commissionType = ?, commissionAmount = ?, commissionPercentage = ?, commissionAmountPerSquareFeet = NULL 
+                   WHERE propertyid = ?`;
+        updateParams = [
+          commissionType,
+          calculatedAmount,
+          commissionPercentage,
+          Id,
+        ];
+      } else if (commissionType === "PerSquareFeet") {
+        if (!commissionAmountPerSquareFeet) {
+          return res
+            .status(400)
+            .json({
+              message:
+                "commissionAmountPerSquareFeet is required for PerSquareFeet type",
+            });
+        }
+
+        const carpetArea = parseFloat(property.carpetArea || 0);
+        const calculatedAmount = carpetArea * commissionAmountPerSquareFeet;
+
+        updateSQL = `UPDATE properties 
+                   SET commissionType = ?, commissionAmount = ?, commissionAmountPerSquareFeet = ?, commissionPercentage = NULL 
+                   WHERE propertyid = ?`;
+        updateParams = [
+          commissionType,
+          calculatedAmount,
+          commissionAmountPerSquareFeet,
+          Id,
+        ];
+      } else {
+        return res.status(400).json({ message: "Invalid commission type" });
+      }
+
+      // Step 3: Run the update
+      db.query(updateSQL, updateParams, (err, result) => {
+        if (err) {
+          console.error("Error While Updating Commission:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+        res
+          .status(200)
+          .json({ message: "Property commission saved successfully" });
+      });
+    }
+  );
+};
+
 // **Add Property**
 export const addImages = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");

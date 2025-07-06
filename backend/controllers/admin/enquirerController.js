@@ -360,6 +360,78 @@ export const visitScheduled = (req, res) => {
 
 export const token = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const { paymenttype, tokenamount, remark, dealamount, enquiryStatus } =
+    req.body;
+
+  const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+
+  if (
+    !paymenttype ||
+    !tokenamount ||
+    !remark ||
+    !dealamount ||
+    !enquiryStatus
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Please add visit date and remark!" });
+  }
+
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Enquiry ID" });
+  }
+
+  db.query(
+    "SELECT * FROM enquirers WHERE enquirersid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Enquirer not found" });
+      }
+
+      const insertSQL = `
+      INSERT INTO propertyfollowup (enquirerid, paymenttype, tokenamount, remark, dealamount, status, paymentimage, updated_at, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+      db.query(
+        insertSQL,
+        [
+          Id,
+          paymenttype,
+          tokenamount,
+          remark,
+          dealamount,
+          enquiryStatus,
+          imagePath,
+          currentdate,
+          currentdate,
+        ],
+        (err, insertResult) => {
+          if (err) {
+            console.error("Error inserting visit:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+
+          res.status(201).json({
+            message: "Token added successfully",
+            Id: insertResult.insertId,
+          });
+        }
+      );
+    }
+  );
+};
+
+export const tokenOld = (req, res) => {
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const { paymenttype, remark, dealamount, enquiryStatus } = req.body;
 
   const imagePath = req.file ? `/uploads/${req.file.filename}` : null;

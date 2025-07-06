@@ -70,6 +70,7 @@ const Enquirers = () => {
   const [visitDate, setVisitDate] = useState("");
   const [token, setToken] = useState({
     paymenttype: "",
+    tokenamount: "",
     dealamount: "",
     remark: "",
   });
@@ -431,6 +432,7 @@ const Enquirers = () => {
       }
       const formData = new FormData();
       formData.append("paymenttype", token.paymenttype);
+      formData.append("tokenamount", token.tokenamount);
       formData.append("remark", token.remark);
       formData.append("dealamount", token.dealamount);
       formData.append("enquiryStatus", enquiryStatus);
@@ -452,6 +454,7 @@ const Enquirers = () => {
           alert(`Success: ${data.message}`);
           setToken({
             paymenttype: "",
+            tokenamount: "",
             dealamount: "",
             remark: "",
           });
@@ -1100,228 +1103,251 @@ const Enquirers = () => {
               className="w-6 h-6 cursor-pointer"
             />
           </div>
-          <form className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
-            <input
-              type="hidden"
-              value={enquiryId || ""}
-              onChange={(e) => setEnquiryId(e.target.value)}
-            />
-
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Enquiry Status
-              </label>
-              <select
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
-                style={{ backgroundImage: "none" }}
-                value={enquiryStatus}
-                onChange={(e) => {
-                  setEnquiryStatus(e.target.value);
-                }}
-              >
-                <option value="" disabled>
-                  Select Enquiry Status
-                </option>
-                <option value="New">New</option>
-                <option value="Visit Scheduled">Visit Scheduled</option>
-                <option value="Token">Token</option>
-                <option value="Follow Up">Follow Up</option>
-                <option value="Cancelled">Cancelled</option>
-              </select>
-            </div>
-
-            <div
-              className={`${
-                enquiryStatus === "Visit Scheduled" ? "block" : "hidden"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Meeting Date
-              </label>
+          <form>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
               <input
-                type="date"
-                required
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={visitDate}
-                onChange={(e) => {
-                  const selectedDate = e.target.value; // Get full date
-                  const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
-                  setVisitDate(formattedDate);
-                }}
+                type="hidden"
+                value={enquiryId || ""}
+                onChange={(e) => setEnquiryId(e.target.value)}
               />
-            </div>
-            <div
-              className={`${
-                enquiryStatus === "Visit Scheduled" ? "block" : "hidden"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Enquiry Remark
-              </label>
-              <textarea
-                rows={2}
-                cols={40}
-                placeholder="Enter Remark"
-                required
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={visitRemark}
-                onChange={(e) => {
-                  setVisitRemark(e.target.value);
-                }}
-              />
-            </div>
-            <div
-              className={`${
-                enquiryStatus === "Token" ? "block" : "hidden"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Payment Type
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="Enter Paymet Type"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={token.paymenttype}
-                onChange={(e) =>
-                  setToken({ ...token, paymenttype: e.target.value })
-                }
-              />
-            </div>
-            <div
-              className={`${
-                enquiryStatus === "Token" ? "block" : "hidden"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Enquiry Remark
-              </label>
-              <textarea
-                rows={2}
-                cols={40}
-                placeholder="Enter Remark"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={token.remark}
-                onChange={(e) => {
-                  setToken({ ...token, remark: e.target.value });
-                }}
-              />
-            </div>
 
-            <div
-              className={`${
-                enquiryStatus === "Token" ? "block" : "hidden"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Deal In Amount
-              </label>
-              <input
-                type="number"
-                required
-                placeholder="Enter Amount"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={token.dealamount}
-                onChange={(e) =>
-                  setToken({ ...token, dealamount: e.target.value })
-                }
-              />
-            </div>
-            <div
-              className={`${
-                enquiryStatus === "Token" ? "block" : "hidden"
-              } w-full`}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-                Upload Property Image
-              </label>
-              <div className="w-full mt-2">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={singleImageChange}
-                  className="hidden"
-                  id="imageUpload"
-                />
-                <label
-                  htmlFor="imageUpload"
-                  className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-                >
-                  <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                    Upload Image
-                  </span>
-                  <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
-                    Browse
-                  </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Enquiry Status
                 </label>
+                <select
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={enquiryStatus}
+                  onChange={(e) => {
+                    setEnquiryStatus(e.target.value);
+                  }}
+                >
+                  <option value="" disabled>
+                    Select Enquiry Status
+                  </option>
+                  <option value="New">New</option>
+                  <option value="Visit Scheduled">Visit Scheduled</option>
+                  <option value="Token">Token</option>
+                  <option value="Follow Up">Follow Up</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
               </div>
 
-              {/* Preview Section */}
-              {selectedImage && (
-                <div className="relative mt-2">
-                  <img
-                    src={URL.createObjectURL(selectedImage)}
-                    alt="Uploaded preview"
-                    className="w-full object-cover rounded-lg border border-gray-300"
-                  />
-                  <button
-                    type="button"
-                    onClick={removeSingleImage}
-                    className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-                  >
-                    ✕
-                  </button>
-                </div>
-              )}
-            </div>
+              <div
+                className={`${
+                  enquiryStatus === "Visit Scheduled" ? "block" : "hidden"
+                } w-full `}
+              >
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Meeting Date
+                </label>
+                <input
+                  type="date"
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={visitDate}
+                  onChange={(e) => {
+                    const selectedDate = e.target.value; // Get full date
+                    const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
+                    setVisitDate(formattedDate);
+                  }}
+                />
+              </div>
+              <div
+                className={`${
+                  enquiryStatus === "Visit Scheduled" ? "block" : "hidden"
+                } w-full `}
+              >
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Enquiry Remark
+                </label>
+                <textarea
+                  rows={2}
+                  cols={40}
+                  placeholder="Enter Remark"
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={visitRemark}
+                  onChange={(e) => {
+                    setVisitRemark(e.target.value);
+                  }}
+                />
+              </div>
+              <div
+                className={`${
+                  enquiryStatus === "Token" ? "block" : "hidden"
+                } w-full `}
+              >
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Payment Type
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter Paymet Type"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={token.paymenttype}
+                  onChange={(e) =>
+                    setToken({ ...token, paymenttype: e.target.value })
+                  }
+                />
+              </div>
+              <div
+                className={`${
+                  enquiryStatus === "Token" ? "block" : "hidden"
+                } w-full `}
+              >
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Token Amount
+                </label>
+                <input
+                  type="number"
+                  required
+                  placeholder="Enter Token Amount"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={token.tokenamount}
+                  onChange={(e) =>
+                    setToken({ ...token, tokenamount: e.target.value })
+                  }
+                />
+              </div>
 
-            <div
-              className={`${
-                enquiryStatus === "Follow Up" || enquiryStatus === "Cancelled"
-                  ? "block"
-                  : "hidden"
-              } w-full `}
-            ></div>
-            <div
-              className={`${
-                enquiryStatus === "Follow Up" ? "block" : "hidden"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Enquiry Remark
-              </label>
-              <textarea
-                rows={2}
-                cols={40}
-                placeholder="Enter Remark"
-                required
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={followUpRemark}
-                onChange={(e) => {
-                  setFollowUpRemark(e.target.value);
-                }}
-              />
-            </div>
-            <div
-              className={`${
-                enquiryStatus === "Cancelled" ? "block" : "hidden"
-              } w-full `}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Enquiry Remark
-              </label>
-              <textarea
-                rows={2}
-                cols={40}
-                placeholder="Enter Remark"
-                required
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={cancelledRemark}
-                onChange={(e) => {
-                  setCancelledRemark(e.target.value);
-                }}
-              />
+              <div
+                className={`${
+                  enquiryStatus === "Token" ? "block" : "hidden"
+                } w-full `}
+              >
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Deal In Amount
+                </label>
+                <input
+                  type="number"
+                  required
+                  placeholder="Enter Amount"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={token.dealamount}
+                  onChange={(e) =>
+                    setToken({ ...token, dealamount: e.target.value })
+                  }
+                />
+              </div>
+
+              <div
+                className={`${
+                  enquiryStatus === "Token" ? "block" : "hidden"
+                } w-full `}
+              >
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Enquiry Remark
+                </label>
+                <textarea
+                  rows={2}
+                  cols={40}
+                  placeholder="Enter Remark"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={token.remark}
+                  onChange={(e) => {
+                    setToken({ ...token, remark: e.target.value });
+                  }}
+                />
+              </div>
+
+              <div
+                className={`${
+                  enquiryStatus === "Token" ? "block" : "hidden"
+                } w-full`}
+              >
+                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
+                  Upload Property Image
+                </label>
+                <div className="w-full mt-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={singleImageChange}
+                    className="hidden"
+                    id="imageUpload"
+                  />
+                  <label
+                    htmlFor="imageUpload"
+                    className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
+                  >
+                    <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
+                      Upload Image
+                    </span>
+                    <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                      Browse
+                    </div>
+                  </label>
+                </div>
+
+                {/* Preview Section */}
+                {selectedImage && (
+                  <div className="relative mt-2">
+                    <img
+                      src={URL.createObjectURL(selectedImage)}
+                      alt="Uploaded preview"
+                      className="w-full object-cover rounded-lg border border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeSingleImage}
+                      className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div
+                className={`${
+                  enquiryStatus === "Follow Up" || enquiryStatus === "Cancelled"
+                    ? "block"
+                    : "hidden"
+                } w-full `}
+              ></div>
+              <div
+                className={`${
+                  enquiryStatus === "Follow Up" ? "block" : "hidden"
+                } w-full `}
+              >
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Enquiry Remark
+                </label>
+                <textarea
+                  rows={2}
+                  cols={40}
+                  placeholder="Enter Remark"
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={followUpRemark}
+                  onChange={(e) => {
+                    setFollowUpRemark(e.target.value);
+                  }}
+                />
+              </div>
+              <div
+                className={`${
+                  enquiryStatus === "Cancelled" ? "block" : "hidden"
+                } w-full `}
+              >
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Enquiry Remark
+                </label>
+                <textarea
+                  rows={2}
+                  cols={40}
+                  placeholder="Enter Remark"
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={cancelledRemark}
+                  onChange={(e) => {
+                    setCancelledRemark(e.target.value);
+                  }}
+                />
+              </div>
             </div>
             <div className="flex mt-8 md:mt-6 justify-end gap-6">
               <button

@@ -2,11 +2,7 @@ import db from "../../config/dbconnect.js";
 
 //Fetch All
 export const getAll = (req, res) => {
-  const sql = `SELECT propertyfollowup.followupid,
-                      propertyfollowup.visitdate,
-                      propertyfollowup.remark,
-                      propertyfollowup.status, 
-                      propertyfollowup.changestatus,
+  const sql = `SELECT propertyfollowup.*,
                       properties.propertyName,
                       enquirers.customer,
                       enquirers.contact,

@@ -249,7 +249,7 @@ export default function Properties() {
                       e.target.onerror = null;
                       e.target.src = `${propertyPicture}`;
                     }}
-                    className="object-cover h-[200px] w-full"
+                    className="object-cover h-[200px] w-full bg-[#00000020]"
                   />
                   <div className="relative flex flex-col gap-2">
                     {property.likes > 500 && (
@@ -326,13 +326,13 @@ export default function Properties() {
                         <IoMdDoneAll className="w-[17px] h-[17px] text-green-700" />
                         <span>RERA Approved</span>
                       </div>
-
+                    </div>
+                    <div className="flex flex-wrap gap-2 px-4 text-[10px] md:text-xs font-medium  text-[#00092966] group-hover:text-[#e2e2e2]">
                       <div className="py-1 px-3 bg-[#0000000F] rounded-xl ">
                         {property.distanceFromCityCenter} KM Distance from city
                         center
                       </div>
                     </div>
-
                     <hr className="text-[#F0EFFB] my-2 " />
                     <div className="w-full flex px-4 justify-between mb-1">
                       <img src={cardAssuredTag} alt="" className="w-40" />

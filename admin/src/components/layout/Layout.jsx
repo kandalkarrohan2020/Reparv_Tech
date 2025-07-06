@@ -202,7 +202,7 @@ function Layout() {
             {[
               { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/enquirers", icon: enquirersIcon, label: "Enquirers" },
-              //{ to: "/customers", icon: customersIcon, label: "Customers" },
+              { to: "/customers", icon: customersIcon, label: "Customers" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/builders", icon: partnerIcon, label: "Builders" },
               { to: "/employees", icon: employeeIcon, label: "Employees" },

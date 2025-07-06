@@ -4,6 +4,7 @@ import { HiOutlineArrowNarrowRight } from "react-icons/hi";
 import CardAssuredTag from "../../assets/property/cardAssuredTag.svg";
 import { useAuth } from "../../store/auth";
 import FormatPrice from "../FormatPrice";
+import { IoMdDoneAll } from "react-icons/io";
 
 const PropertyBookingCard = ({ propertyInfo }) => {
   const {
@@ -24,23 +25,50 @@ const PropertyBookingCard = ({ propertyInfo }) => {
         {propertyInfo.propertyName}
       </h2>
 
-      {/* Tags */}
-      <div className="flex flex-wrap gap-2 text-[11px] md:text-xs font-medium text-[#00092966] group-hover:text-[#e2e2e2] mt-2">
-        <div className={`${propertyInfo.propertyCategory === "FarmLand" ? "hidden" : "block"} py-1 px-3 bg-[#0000000F] rounded-xl `}>
-          {propertyInfo.propertyApprovedBy}
+      {/* Flat/Plot Count */}
+      <div
+        className={`${
+          ["NewFlat", "NewPlot"].includes(propertyInfo.propertyCategory)
+            ? "flex"
+            : "hidden"
+        } flex flex-wrap gap-4 text-sm md:text-base font-medium text-[#00092966] group-hover:text-[#e2e2e2] mt-1`}
+      >
+        <div className={`py-[6px] sm:py-[8px] px-4 sm:px-6 flex gap-2 items-center justify-center text-green-700 bg-[#eeffec] rounded-xl`} >
+          <span>Available</span>
+          <div className="flex items-center justify-center text-xs md:text-sm py-[2px] px-2 bg-white rounded-lg">{propertyInfo.availableCount}</div>
         </div>
-        <div className="py-1 px-3 bg-[#0000000F] rounded-xl ">
-          {propertyInfo.distanceFromCityCenter} Km From {propertyInfo.city}
+        
+        <div className={`py-[6px] sm:py-[8px] px-4 sm:px-6 flex gap-2 items-center justify-center text-red-500 bg-red-100 rounded-xl`} >
+          <span>Booked </span>
+          <div className="flex items-center justify-center text-xs md:text-sm py-[2px] px-2 bg-white rounded-lg">{propertyInfo.bookedCount}</div>
+        </div>
+  
+      </div>
+
+      {/* Tags */}
+      <div className="flex flex-wrap gap-2 text-[11px] md:text-xs font-medium text-[#00092966] group-hover:text-[#e2e2e2] mt-1">
+        <div
+          className={`${
+            propertyInfo.propertyCategory === "FarmLand" ? "hidden" : "flex"
+          } py-1 px-3 gap-1 items-center justify-center text-gray-600 bg-[#eeffec] rounded-xl `}
+        >
+          <IoMdDoneAll className="w-[17px] h-[17px] text-green-700" />
+          <span>{propertyInfo.propertyApprovedBy}</span>
         </div>
 
         <div
-          className={`py-1 px-3 bg-[#0000000F] rounded-xl ${
+          className={`py-1 px-3 gap-1 items-center justify-center text-gray-600 bg-[#eeffec] rounded-xl ${
             ["NewFlat", "NewPlot"].includes(propertyInfo.propertyCategory)
-              ? "block"
+              ? "flex"
               : "hidden"
           }`}
         >
-          RERA Approved
+          <IoMdDoneAll className="w-[17px] h-[17px] text-green-700" />
+          <span>RERA Approved</span>
+        </div>
+
+        <div className="py-1 px-3 bg-[#0000000F] rounded-xl ">
+          {propertyInfo.distanceFromCityCenter} KM Distance from city center
         </div>
       </div>
 

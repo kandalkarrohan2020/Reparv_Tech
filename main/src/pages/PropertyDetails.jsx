@@ -35,6 +35,7 @@ function PropertyDetails() {
       });
       if (!response.ok) throw new Error("Failed to fetch property info.");
       const data = await response.json();
+      console.log("Property Info", data);
       setPropertyInfo(data);
     } catch (err) {
       console.error("Error fetching property info:", err);

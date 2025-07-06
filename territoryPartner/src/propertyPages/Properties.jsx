@@ -13,6 +13,7 @@ import { useAuth } from "../store/auth";
 import FormatPrice from "../components/FormatPrice";
 import FilterSidebar from "../components/FilterSidebar";
 import { usePropertyFilter } from "../store/propertyFilter";
+import { IoMdDoneAll } from "react-icons/io";
 
 export default function Properties() {
   const navigate = useNavigate();
@@ -301,25 +302,34 @@ export default function Properties() {
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-2 px-4 text-[10px] md:text-xs font-medium text-[#00092966] mt-2">
-                      <div className={`${property.propertyCategory === "FarmLand" ? "hidden" : "block"} py-1 px-3 bg-[#0000000F] rounded-xl `}>
-                        {property.propertyApprovedBy}
-                      </div>
-                      <div className="py-1 px-3 bg-[#0000000F] rounded-xl ">
-                        {property.distanceFromCityCenter} KM From{" "}
-                        {property.city}
+                    <div className="flex flex-wrap gap-2 px-4 text-[10px] md:text-xs font-medium  text-[#00092966] group-hover:text-[#e2e2e2] mt-2">
+                      <div
+                        className={`${
+                          property.propertyCategory === "FarmLand"
+                            ? "hidden"
+                            : "flex"
+                        } py-1 px-3 gap-1 items-center justify-center text-gray-600 bg-[#eeffec] rounded-xl `}
+                      >
+                        <IoMdDoneAll className="w-[17px] h-[17px] text-green-700" />
+                        <span>{property.propertyApprovedBy}</span>
                       </div>
 
                       <div
-                        className={`py-1 px-3 bg-[#0000000F] rounded-xl ${
+                        className={`py-1 px-3 gap-1 items-center justify-center text-gray-600 bg-[#eeffec] rounded-xl ${
                           ["NewFlat", "NewPlot"].includes(
                             property.propertyCategory
                           )
-                            ? "block"
+                            ? "flex"
                             : "hidden"
                         }`}
                       >
-                        RERA Approved
+                        <IoMdDoneAll className="w-[17px] h-[17px] text-green-700" />
+                        <span>RERA Approved</span>
+                      </div>
+
+                      <div className="py-1 px-3 bg-[#0000000F] rounded-xl ">
+                        {property.distanceFromCityCenter} KM Distance from city
+                        center
                       </div>
                     </div>
 

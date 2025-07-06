@@ -59,7 +59,7 @@ function HomePropertySection({ city }) {
   useEffect(() => {
     fetchData();
   }, [city]);
-
+  
   return (
     <div className="flex flex-col items-center p-4 sm:gap-4 lg:pt-25 pb-5 md:pb-15">
       <div className="w-full flex items-center justify-between px-2 py-2 sm:hidden">

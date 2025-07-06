@@ -17,6 +17,7 @@ import {
   addCsvFile,
   fetchAdditionalInfo,
   seoDetails,
+  setPropertyCommission,
 } from "../../controllers/admin/propertyController.js";
 import multer from "multer";
 import path from "path";
@@ -97,6 +98,7 @@ router.put(
 router.put("/status/:id", status);
 router.put("/seo/:id", seoDetails);
 router.put("/reject/:id", addRejectReason);
+router.put("/commission/:id", setPropertyCommission);
 router.put("/approve/:id", approve);
 router.delete("/delete/:id", del);
 router.post("/addimages", upload.array("images[]"), addImages);

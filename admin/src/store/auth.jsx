@@ -57,6 +57,7 @@ const [showAddMobileImage, setShowAddMobileImage ] = useState(false);
 const [showFollowUpList, setShowFollowUpList] = useState(false);
 const [showSeoForm, setShowSeoForm] = useState(false);
 const [showBlogForm, setShowBlogForm] = useState(false);
+const [showCommissionForm, setShowCommissionForm] = useState(false);
 
 const [partnerPaymentStatus, setPartnerPaymentStatus] = useState("Pending");
 return <AuthContext.Provider
@@ -101,7 +102,7 @@ return <AuthContext.Provider
         showFollowUpList, setShowFollowUpList,
         showSeoForm, setShowSeoForm,
         showBlogForm, setShowBlogForm,
-
+        showCommissionForm, setShowCommissionForm,
         partnerPaymentStatus, setPartnerPaymentStatus,
     }
 }>

@@ -70,6 +70,7 @@ function Layout() {
     showFollowUpList, setShowFollowUpList,
     showSeoForm, setShowSeoForm,
     showBlogForm, setShowBlogForm,
+    showCommissionForm, setShowCommissionForm,
     isLoggedIn,
   } = useAuth();
 
@@ -107,6 +108,7 @@ function Layout() {
     { state: showFollowUpList, setter: setShowFollowUpList },
     { state: showSeoForm, setter: setShowSeoForm },
     { state: showBlogForm, setter: setShowBlogForm },
+    { state: showCommissionForm, setter: setShowCommissionForm },
     
   ];
 

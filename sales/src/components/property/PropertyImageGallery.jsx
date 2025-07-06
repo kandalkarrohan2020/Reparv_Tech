@@ -83,7 +83,7 @@ const PropertyImageGallery = ({ property }) => {
         <img
           src={`${URI}${activeImages[currentIndex]}`}
           alt={`${activeCategory}-${currentIndex + 1}`}
-          className="w-full h-[250px] sm:h-[390px] object-cover rounded-lg"
+          className="w-full h-[250px] sm:h-[390px] object-cover rounded-lg bg-[#00000020]"
         />
 
         <button

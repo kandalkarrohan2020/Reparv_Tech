@@ -31,6 +31,8 @@ const Properties = () => {
     setShowRejectReasonForm,
     showSeoForm,
     setShowSeoForm,
+    showCommissionForm,
+    setShowCommissionForm,
     URI,
     loading,
     setLoading,
@@ -120,6 +122,13 @@ const Properties = () => {
   const [selectedPartner, setSelectedPartner] = useState(
     "Select Property Lister"
   );
+
+  const [propertyCommission, setPropertyCommission] = useState({
+    commissionType: "",
+    commissionAmount: "",
+    commissionPercentage: "",
+    commissionAmountPerSquareFeet: "",
+  });
 
   //Single Image Upload
   const [selectedImage, setSelectedImage] = useState(null);
@@ -728,6 +737,71 @@ const Properties = () => {
     }
   };
 
+  //fetch data on form
+  const showPropertyCommission = async (id) => {
+    try {
+      const response = await fetch(URI + `/admin/properties/${id}`, {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch property.");
+      const data = await response.json();
+      setPropertyCommission({
+        ...propertyCommission,
+        commissionType: data.commissionType || "",
+        commissionAmount: data.commissionAmount || "",
+        commissionPercentage: data.commissionPercentage || "",
+        commissionAmountPerSquareFeet:
+          data.ccommissionAmountPerSquareFeet || "",
+      });
+      setShowCommissionForm(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // Set Commission Type
+  const addPropertyCommission = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const response = await fetch(
+        URI + `/admin/properties/commission/${propertyKey}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(propertyCommission),
+        }
+      );
+      const data = await response.json();
+      console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      setShowCommissionForm(false);
+      setPropertyCommission({
+        ...propertyCommission,
+        commissionType: "",
+        commissionAmount: "",
+        commissionPercentage: "",
+        commissionAmountPerSquareFeet: "",
+      });
+      await fetchData();
+    } catch (error) {
+      console.error("Error adding property commission reason:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, [selectedPartner]);
@@ -856,30 +930,8 @@ const Properties = () => {
       width: "150px",
     },
     {
-      name: "State",
-      selector: (row) => row.state,
-      sortable: true,
-      minWidth: "200px",
-    },
-    {
       name: "City",
       selector: (row) => row.city,
-      sortable: true,
-      width: "150px",
-    },
-    { name: "Pin Code", selector: (row) => row.pincode, width: "120px" },
-    { name: "Location", selector: (row) => row.location, width: "150px" },
-    { name: "Address", selector: (row) => row.address, width: "250px" },
-    { name: "Rera No.", selector: (row) => row.reraRegistered, width: "150px" },
-    {
-      name: "Area",
-      selector: (row) => row.builtUpArea,
-      sortable: true,
-      width: "120px",
-    },
-    {
-      name: "Price",
-      selector: (row) => row.totalOfferPrice,
       sortable: true,
       width: "150px",
     },
@@ -963,6 +1015,10 @@ const Properties = () => {
           setPropertyKey(propertyid);
           setShowRejectReasonForm(true);
           break;
+        case "setCommission":
+          setPropertyKey(propertyid);
+          showPropertyCommission(propertyid);
+          break;
         case "additionalinfo":
           setPropertyKey(propertyid);
           setShowAdditionalInfoForm(true);
@@ -1003,6 +1059,7 @@ const Properties = () => {
           )}
           <option value="SEO">SEO Details</option>
           <option value="rejectReason">Reject Reason</option>
+          <option value="setCommission">Set Commission</option>
           <option value="delete">Delete</option>
         </select>
       </div>
@@ -1439,6 +1496,143 @@ const Properties = () => {
                 className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
               >
                 Add Reason
+              </button>
+              <Loader></Loader>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* ADD Property Commission Form */}
+      <div
+        className={` ${
+          !showCommissionForm && "hidden"
+        } z-[61] overflow-scroll scrollbar-hide flex fixed`}
+      >
+        <div className="w-[330px] h-[450px] sm:w-[600px] sm:h-[450px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[400px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">Property Commission</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowCommissionForm(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={addPropertyCommission}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-1">
+              <input
+                type="hidden"
+                value={propertyKey || ""}
+                onChange={(e) => setPropertyKey(e.target.value)}
+              />
+
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Commission Type
+                </label>
+                <select
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={propertyCommission.commissionType}
+                  onChange={(e) => {
+                    setPropertyCommission({
+                      ...propertyCommission,
+                      commissionType: e.target.value,
+                    });
+                  }}
+                >
+                  <option value="" disabled>
+                    Select Commission Type
+                  </option>
+                  <option value="Fixed">Fixed</option>
+                  <option value="Percentage">Percentage</option>
+                  <option value="PerSquareFeet">Square Feet</option>
+                </select>
+              </div>
+
+              {propertyCommission.commissionType === "Fixed" && (
+                <div className={`w-full`}>
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                    Commission Amount
+                  </label>
+                  <input
+                    name="commissionAmount"
+                    type="number"
+                    required
+                    placeholder="Enter Amount"
+                    className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={propertyCommission.commissionAmount}
+                    onChange={(e) => {
+                      setPropertyCommission({
+                        ...propertyCommission,
+                        commissionAmount: e.target.value,
+                      });
+                    }}
+                  />
+                </div>
+              )}
+
+              {propertyCommission.commissionType === "Percentage" && (
+                <div className={`w-full`}>
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                    Commission Percentage
+                  </label>
+                  <input
+                    name="commissionPercentage"
+                    type="number"
+                    required
+                    placeholder="Enter Percentage"
+                    className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={propertyCommission.commissionPercentage}
+                    onChange={(e) => {
+                      setPropertyCommission({
+                        ...propertyCommission,
+                        commissionPercentage: e.target.value,
+                      });
+                    }}
+                  />
+                </div>
+              )}
+
+              {propertyCommission.commissionType === "PerSquareFeet" && (
+                <div className={`w-full`}>
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                    Commission per Square Feet
+                  </label>
+                  <input
+                    name="commissionAmountPerSquareFeet"
+                    type="number"
+                    required
+                    placeholder="Enter Amount per Square Feet"
+                    className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={propertyCommission.commissionAmountPerSquareFeet}
+                    onChange={(e) => {
+                      setPropertyCommission({
+                        ...propertyCommission,
+                        commissionAmountPerSquareFeet: e.target.value,
+                      });
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCommissionForm(false);
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Save
               </button>
               <Loader></Loader>
             </div>

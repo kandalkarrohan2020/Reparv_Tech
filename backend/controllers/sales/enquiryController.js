@@ -5,12 +5,22 @@ import moment from "moment";
 export const add = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const salesId = req.user.id;
+
   if (!salesId) {
     return res.status(400).json({ message: "Invalid Sales Id" });
   }
 
-  const { propertyid, fullname, phone, state, city, minbudget, maxbudget, salesPersonName, salesPersonContact } =
-    req.body;
+  const {
+    propertyid,
+    fullname,
+    phone,
+    state,
+    city,
+    minbudget,
+    maxbudget,
+    salesPersonName,
+    salesPersonContact
+  } = req.body;
 
   // Validate required fields
   if (
@@ -27,27 +37,61 @@ export const add = async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  let salesInfo = salesPersonName + " - " + salesPersonContact;
+  let salesInfo = `${salesPersonName} - ${salesPersonContact}`;
 
-  const insertSQL = `INSERT INTO enquirers (
-    propertyid, salespersonid, customer, contact,
-    state, city, minbudget, maxbudget, assign,
-    updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  // Step 1: Fetch propertyCategory using propertyid
+  const categorySQL = `SELECT propertyCategory FROM properties WHERE propertyid = ?`;
 
-  db.query(
-    insertSQL,
-    [propertyid, salesId, fullname, phone, state, city, minbudget, maxbudget, salesInfo, currentdate, currentdate],
-    (err, result) => {
-      if (err) {
-        console.error("Error inserting:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-      res.status(201).json({
-        message: "Enquiry added successfully",
-        Id: result.insertId,
-      });
+  db.query(categorySQL, [propertyid], (err, results) => {
+    if (err) {
+      console.error("Error fetching property category:", err);
+      return res.status(500).json({ message: "Database error", error: err });
     }
-  );
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "Property not found" });
+    }
+
+    const propertyCategory = results[0].propertyCategory;
+
+    // Step 2: Insert enquiry
+    const insertSQL = `INSERT INTO enquirers (
+      propertyid, category, salespersonid, customer, contact,
+      state, city, minbudget, maxbudget, source, assign,
+      updated_at, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    db.query(
+      insertSQL,
+      [
+        propertyid,
+        propertyCategory,
+        salesId,
+        fullname,
+        phone,
+        state,
+        city,
+        minbudget,
+        maxbudget,
+        "Onsite",
+        salesInfo,
+        currentdate,
+        currentdate
+      ],
+      (err, result) => {
+        if (err) {
+          console.error("Error inserting enquiry:", err);
+          return res.status(500).json({ message: "Database error", error: err });
+        }
+
+        res.status(201).json({
+          message: "Enquiry added successfully",
+          Id: result.insertId,
+          propertyCategory: propertyCategory, // Optional: include in response
+        });
+      }
+    );
+  });
 };
 
 // Add Normal Enquiry Without Property ID

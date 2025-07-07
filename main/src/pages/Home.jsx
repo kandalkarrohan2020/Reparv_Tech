@@ -31,7 +31,7 @@ function Home() {
         <div className="block lg:hidden">
           <PropertyNavbar />
         </div>
-        <HomePropertySection city={selectedCity} />
+        <HomePropertySection />
         <VideoReviewSection />
         <StepsSection />
       </div>

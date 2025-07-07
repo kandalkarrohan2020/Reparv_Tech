@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 import FormatPrice from "../FormatPrice";
 import { useAuth } from "../../store/auth";
 
-function HomePropertySection({ city }) {
+function HomePropertySection() {
   const navigate = useNavigate();
   const {
     URI,
@@ -21,6 +21,7 @@ function HomePropertySection({ city }) {
     propertySearch,
     setPropertySearch,
     setShowPriceSummery,
+    selectedCity,
   } = useAuth();
   const [properties, setProperties] = useState([]);
   const filteredProperties = properties?.filter((property) => {
@@ -37,7 +38,7 @@ function HomePropertySection({ city }) {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        `${URI}/frontend/all-properties/${city ? city : ""}`,
+        `${URI}/frontend/all-properties/${selectedCity}`,
         {
           method: "GET",
           credentials: "include",
@@ -55,11 +56,11 @@ function HomePropertySection({ city }) {
       console.error("Error fetching:", err);
     }
   };
-
+  
   useEffect(() => {
     fetchData();
-  }, [city]);
-  
+  }, [selectedCity]);
+
   return (
     <div className="flex flex-col items-center p-4 sm:gap-4 lg:pt-25 pb-5 md:pb-15">
       <div className="w-full flex items-center justify-between px-2 py-2 sm:hidden">
@@ -220,7 +221,7 @@ function HomePropertySection({ city }) {
           properties.length == 0 ? "block" : "hidden"
         } text-xl sm:text-2xl font-bold m-4`}
       >
-        No Properties Found In {city}
+        No Properties Found In {selectedCity}
       </h1>
     </div>
   );

@@ -58,10 +58,12 @@ function Layout() {
     return location.pathname === path ? "font-bold text-[#0BB501]" : "";
   };
 
+  const [cities, setCities] = useState([]);
+
   // *Fetch Data from API*
   const fetchAllCity = async () => {
     try {
-      const response = await fetch(URI + "/frontend/properties/city", {
+      const response = await fetch(URI + "/frontend/properties/cities", {
         method: "GET",
         credentials: "include", // Ensures cookies are sent
         headers: {
@@ -69,15 +71,18 @@ function Layout() {
         },
       });
 
-      if (!response.ok) throw new Error("Failed to fetch city.");
+      if (!response.ok) throw new Error("Failed to fetch cities.");
 
       const data = await response.json();
-
-      //setAllCity([...data]);
+      setCities(data); // Sets the cities array
     } catch (err) {
       console.error("Error fetching:", err);
     }
   };
+
+  useEffect(() => {
+    fetchAllCity();
+  }, []);
 
   return (
     <div className="layout w-full flex flex-col bg-white overflow-hidden ">
@@ -167,16 +172,17 @@ function Layout() {
         </div>
         <div
           className={`selectCity ${
-            location.pathname != "/about" ? "sm:inline-block" : "hidden"
+            location.pathname !== "/about" ? "sm:inline-block" : "hidden"
           } hidden min-w-[50px] max-w-[180px] relative`}
         >
-          <div className="flex lg:gap-1 items-center justify-center text-lg font-semibold  text-black lg:p-1 ">
+          <div className="flex lg:gap-1 items-center justify-center text-lg font-semibold text-black lg:p-1">
             <CiLocationOn className="w-5 h-5" />
-            <span className="hidden sm:block md:hidden xl:block ">
+            <span className="hidden sm:block md:hidden xl:block">
               {selectedCity || "Select City"}
             </span>
             <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
           </div>
+
           <select
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             value={selectedCity}
@@ -186,9 +192,11 @@ function Layout() {
             }}
           >
             <option value="">Select City</option>
-            <option value="Nagpur">Nagpur</option>
-            <option value="Chandrapur">Chandrapur</option>
-            <option value="Wardha">Wardha</option>
+            {cities?.map((city, index) => (
+              <option key={index} value={city}>
+                {city}
+              </option>
+            ))}
           </select>
         </div>
         <div className="menu flex items-center justify-between md:hidden">

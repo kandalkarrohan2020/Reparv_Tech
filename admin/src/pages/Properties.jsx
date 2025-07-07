@@ -898,7 +898,7 @@ const Properties = () => {
       },
       width: "130px",
     },
-    { name: "Date & Time", selector: (row) => row.updated_at, width: "200px" },
+    { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
       name: "Property Name",
       selector: (row) => row.propertyName,

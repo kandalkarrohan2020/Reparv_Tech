@@ -43,7 +43,7 @@ export const getAll = (req, res) => {
                FROM properties 
                INNER JOIN builders ON properties.builderid = builders.builderid 
                INNER JOIN employees ON properties.employeeid = employees.id 
-               ORDER BY properties.propertyid DESC;`;
+               ORDER BY properties.created_at DESC;`;
   } else if (propertyLister === "Onboarding Partner") {
     sql = `SELECT properties.*,
                       builders.company_name, 
@@ -53,7 +53,7 @@ export const getAll = (req, res) => {
                FROM properties 
                INNER JOIN builders ON properties.builderid = builders.builderid 
                INNER JOIN onboardingpartner ON properties.partnerid = onboardingpartner.partnerid 
-               ORDER BY properties.propertyid DESC;`;
+               ORDER BY properties.created_at DESC;`;
   } else if (propertyLister === "Project Partner") {
     sql = `SELECT properties.*,
            builders.company_name, 
@@ -63,7 +63,7 @@ export const getAll = (req, res) => {
         FROM properties 
         INNER JOIN builders ON properties.builderid = builders.builderid 
         INNER JOIN projectpartner ON properties.projectpartnerid = projectpartner.id 
-        ORDER BY properties.propertyid DESC;`;
+        ORDER BY properties.created_at DESC;`;
   } else if (propertyLister === "Guest User") {
     sql = `SELECT properties.*,
            builders.company_name, 
@@ -73,13 +73,13 @@ export const getAll = (req, res) => {
         FROM properties 
         INNER JOIN builders ON properties.builderid = builders.builderid 
         INNER JOIN guestUsers ON properties.guestUserId = guestUsers.id 
-        ORDER BY properties.propertyid DESC;`;
+        ORDER BY properties.created_at DESC;`;
   } else {
     sql = `SELECT properties.*,
                       builders.company_name 
                FROM properties 
                INNER JOIN builders ON properties.builderid = builders.builderid 
-               ORDER BY properties.propertyid DESC;`;
+               ORDER BY properties.created_at DESC;`;
   }
 
   db.query(sql, (err, result) => {
@@ -857,7 +857,6 @@ export const addRejectReason = (req, res) => {
   );
 };
 
-
 export const setPropertyCommission = (req, res) => {
   const {
     commissionType,
@@ -906,11 +905,9 @@ export const setPropertyCommission = (req, res) => {
         updateParams = [commissionType, commissionAmount, Id];
       } else if (commissionType === "Percentage") {
         if (!commissionPercentage) {
-          return res
-            .status(400)
-            .json({
-              message: "commissionPercentage is required for Percentage type",
-            });
+          return res.status(400).json({
+            message: "commissionPercentage is required for Percentage type",
+          });
         }
 
         const totalPrice = parseFloat(property.totalOfferPrice || 0);
@@ -927,12 +924,10 @@ export const setPropertyCommission = (req, res) => {
         ];
       } else if (commissionType === "PerSquareFeet") {
         if (!commissionAmountPerSquareFeet) {
-          return res
-            .status(400)
-            .json({
-              message:
-                "commissionAmountPerSquareFeet is required for PerSquareFeet type",
-            });
+          return res.status(400).json({
+            message:
+              "commissionAmountPerSquareFeet is required for PerSquareFeet type",
+          });
         }
 
         const carpetArea = parseFloat(property.carpetArea || 0);

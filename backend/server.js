@@ -34,7 +34,7 @@ import calenderRoutes from "./routes/admin/calenderRoutes.js";
 //import marketingRoutes from "./routes/admin/marketingRoutes.js";
 //import rawmaterialRoutes from "./routes/admin/rawmaterialRoutes.js";
 
-//fontend
+//frontend
 import allPropertiesRoutes from "./routes/frontend/allPropertiesRoutes.js";
 import propertiesRoutes from "./routes/frontend/propertiesRoutes.js";
 import joinourteamRoutes from "./routes/frontend/joinourteamRoutes.js";
@@ -69,6 +69,7 @@ import salesProfileRoutes from "./routes/sales/salesProfileRoutes.js";
 import salesDashboardRoutes from "./routes/sales/dashboardRoutes.js";
 import salesPropertyRoutes from "./routes/sales/salesPropertyRoutes.js";
 import salesTicketRoutes from "./routes/sales/salesTicketRoutes.js";
+import salesCustomerRoutes from "./routes/sales/customerRoutes.js";
 import salesEnquirersRoutes from "./routes/sales/salesEnquirerRoutes.js";
 import salesEnquiryRoutes from "./routes/sales/salesEnquiryRoutes.js";
 import salesCalenderRoutes from "./routes/sales/calenderRoutes.js";
@@ -88,6 +89,7 @@ import projectPartnerLoginRoutes from "./routes/projectPartner/loginRoutes.js";
 import projectPartnerProfileRoutes from "./routes/projectPartner/profileRoutes.js";
 import projectPartnerDashboardRoutes from "./routes/projectPartner/dashboardRoutes.js";
 import projectPartnerPropertyRoutes from "./routes/projectPartner/propertyRoutes.js";
+import projectPartnerCustomerRoutes from "./routes/projectPartner/customerRoutes.js";
 import projectPartnerBuilderRoutes from "./routes/projectPartner/builderRoutes.js";
 import projectPartnerTicketRoutes from "./routes/projectPartner/ticketRoutes.js";
 
@@ -98,6 +100,7 @@ import territoryPartnerDashboardRoutes from "./routes/territoryPartner/dashboard
 //import territoryPartnerPropertyRoutes from "./routes/territoryPartner/propertyRoutes.js";
 import territoryPartnerBuilderRoutes from "./routes/territoryPartner/builderRoutes.js";
 import territoryPartnerTicketRoutes from "./routes/territoryPartner/ticketRoutes.js";
+import territoryPartnerCustomerRoutes from "./routes/territoryPartner/customerRoutes.js";
 import territoryPartnerEnquirersRoutes from "./routes/territoryPartner/enquirerRoutes.js";
 import territoryPartnerEnquiryRoutes from "./routes/territoryPartner/enquiryRoutes.js";
 import territoryPartnerCalenderRoutes from "./routes/territoryPartner/calenderRoutes.js";
@@ -331,6 +334,7 @@ app.use("/sales/profile", salesProfileRoutes);
 app.use("/sales/enquirers", salesEnquirersRoutes);
 app.use("/sales/dashboard", salesDashboardRoutes);
 app.use("/sales/properties", salesPropertyRoutes);
+app.use("/sales/customers", salesCustomerRoutes);
 app.use("/sales/tickets", salesTicketRoutes);
 app.use("/sales/calender", salesCalenderRoutes);
 app.use("/sales/enquiry", salesEnquiryRoutes);
@@ -351,6 +355,7 @@ app.use("/project-partner", projectPartnerLoginRoutes);
 app.use("/project-partner/profile", projectPartnerProfileRoutes);
 app.use("/project-partner/dashboard", projectPartnerDashboardRoutes);
 app.use("/project-partner/properties", projectPartnerPropertyRoutes);
+app.use("/project-partner/customers", projectPartnerCustomerRoutes);
 app.use("/project-partner/builders", projectPartnerBuilderRoutes);
 app.use("/project-partner/tickets", projectPartnerTicketRoutes);
 
@@ -361,12 +366,14 @@ app.use("/territory-partner/dashboard", territoryPartnerDashboardRoutes);
 //app.use("/territory-partner/properties", territoryPartnerPropertyRoutes);
 app.use("/territory-partner/builders", territoryPartnerBuilderRoutes);
 app.use("/territory-partner/tickets", territoryPartnerTicketRoutes);
+app.use("/territory-partner/customers", territoryPartnerCustomerRoutes);
 app.use("/territory-partner/enquirers", territoryPartnerEnquirersRoutes);
 app.use("/territory-partner/enquiry", territoryPartnerEnquiryRoutes);
 app.use("/territory-partner/calender", territoryPartnerCalenderRoutes);
 // Property Pages Routes
 app.use("/territory-partner/properties", territoryPartnerPropertiesRoutes);
 app.use("/territory-partner/propertyinfo", territoryPartnerPropertyinfoRoutes);
+
 //Sales App Routes
 app.use("/salesapp/api", authRoute);
 app.use("/salesapp/flats", appFlatRoute);

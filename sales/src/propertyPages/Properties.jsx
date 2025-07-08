@@ -39,6 +39,32 @@ export default function Properties() {
     item.propertyName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const [cities, setCities] = useState([]);
+
+  // *Fetch Data from API*
+  const fetchAllCity = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/properties/cities", {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch cities.");
+
+      const data = await response.json();
+      setCities(data); // Sets the cities array
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllCity();
+  }, []);
+
   const fetchData = async () => {
     try {
       let url = `${URI}/frontend/properties?`;
@@ -194,9 +220,11 @@ export default function Properties() {
               }}
             >
               <option value="">Select City</option>
-              <option value="Nagpur">Nagpur</option>
-              <option value="Chandrapur">Chandrapur</option>
-              <option value="Wardha">Wardha</option>
+              {cities?.map((city, index) => (
+                <option key={index} value={city}>
+                  {city}
+                </option>
+              ))}
             </select>
           </div>
         </div>

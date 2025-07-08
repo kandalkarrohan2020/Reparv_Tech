@@ -14,7 +14,7 @@ const [successScreen, setSuccessScreen] = useState({
     description: "Our Representative will call you shortly",
 });
 const [priceSummery, setPriceSummery] = useState({});
-const [selectedCity, setSelectedCity] = useState("Nagpur");
+const [selectedCity, setSelectedCity] = useState("");
 const [propertyImage, setPropertyImage] = useState("");
 const [propertyType, setPropertyType] = useState("properties");
 const [propertySearch, setPropertySearch] = useState("");

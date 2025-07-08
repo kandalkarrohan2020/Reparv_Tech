@@ -41,9 +41,9 @@ function Layout() {
     showFilterPopup,
     setShowFilterPopup,
   } = useAuth();
-
+  const navigate = useNavigate();
   const location = useLocation();
-
+  
   const { ref: footerRef, inView: footerInView } = useInView({
     threshold: 0.1,
   });
@@ -189,6 +189,7 @@ function Layout() {
             onChange={(e) => {
               const action = e.target.value;
               setSelectedCity(action);
+              navigate("/properties");
             }}
           >
             <option value="">Select City</option>

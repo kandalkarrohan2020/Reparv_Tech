@@ -4,7 +4,7 @@ import moment from "moment";
 // **Fetch All **
 export const getAll = (req, res) => {
   const sql = `SELECT enquirers.*, 
-    properties.frontView, properties.seoSlug
+    properties.frontView, properties.seoSlug, properties.commissionAmount
     FROM enquirers 
     LEFT JOIN properties 
     ON enquirers.propertyid = properties.propertyid 

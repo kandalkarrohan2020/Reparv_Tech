@@ -4,6 +4,7 @@ import Layout from "./components/layout/Layout.jsx";
 import Login from "./pages/Login.jsx";
 import Overview from "./pages/Overview.jsx";
 import Enquirers from "./pages/Enquirers.jsx";
+import Customers from "./pages/Customers.jsx";
 import Properties from "./pages/Properties.jsx";
 import Calender from "./pages/Calender.jsx";
 import Ticketing from "./pages/Ticketing.jsx";
@@ -15,6 +16,7 @@ import Property from "./propertyPages/Properties.jsx";
 import PropertyDetails from "./propertyPages/PropertyDetails.jsx";
 import KYC from "./pages/KYC.jsx";
 
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -25,6 +27,7 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route path="/dashboard" element={<Overview />} />
           <Route path="/enquirers" element={<Enquirers />} />
+          <Route path="/customers" element={<Customers />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/calender" element={<Calender />} />
           <Route path="/tickets" element={<Ticketing />} />

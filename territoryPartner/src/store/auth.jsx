@@ -47,6 +47,9 @@ const [showPriceSummery, setShowPriceSummery] = useState(false);
 const [showBenefitsPopup, setShowBenefitsPopup] = useState(false);
 const [showFilterPopup, setShowFilterPopup] = useState(false);
 const [showSiteVisitPopup, setShowSiteVisitPopup] = useState(false);
+const [showCustomer, setShowCustomer] = useState(false);
+const [showCustomerPaymentForm, setShowCustomerPaymentForm] = useState(false);
+
 return <AuthContext.Provider
  value={
     {   URI, loading, setLoading,
@@ -68,6 +71,8 @@ return <AuthContext.Provider
         showTicket, setShowTicket,
         showPropertyInfo, setShowPropertyInfo,
         showEnquirerPropertyForm, setShowEnquirerPropertyForm,
+        showCustomer, setShowCustomer,
+        showCustomerPaymentForm, setShowCustomerPaymentForm,
 
         priceSummery, setPriceSummery,
         propertyImage, setPropertyImage,

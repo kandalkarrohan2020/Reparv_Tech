@@ -11,7 +11,7 @@ export const getAll = (req, res) => {
   let sql;
 
   if (enquirySource === "Onsite") {
-    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug,
+    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
                   territorypartner.fullname AS territoryName, 
                   territorypartner.contact AS territoryContact
            FROM enquirers 
@@ -20,7 +20,7 @@ export const getAll = (req, res) => {
            WHERE properties.status = 'active' AND properties.approve = 'Approved' 
            ORDER BY enquirers.enquirersid DESC`;
   } else if (enquirySource === "Direct") {
-    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug,
+    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
                   territorypartner.fullname AS territoryName, 
                   territorypartner.contact AS territoryContact
            FROM enquirers 
@@ -29,7 +29,7 @@ export const getAll = (req, res) => {
            WHERE enquirers.source = "Direct" 
            ORDER BY enquirers.enquirersid DESC`;
   } else if (enquirySource === "CSV") {
-    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, 
+    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
                   territorypartner.fullname AS territoryName, 
                   territorypartner.contact AS territoryContact
            FROM enquirers 
@@ -38,7 +38,7 @@ export const getAll = (req, res) => {
            WHERE enquirers.source = "CSV File" 
            ORDER BY enquirers.enquirersid DESC`;
   } else {
-    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, 
+    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
                   territorypartner.fullname AS territoryName, 
                   territorypartner.contact AS territoryContact
            FROM enquirers 
@@ -395,12 +395,14 @@ export const token = (req, res) => {
         return res.status(404).json({ message: "Enquirer not found" });
       }
 
-      const insertSQL = `
-      INSERT INTO propertyfollowup (enquirerid, paymenttype, tokenamount, remark, dealamount, status, paymentimage, updated_at, created_at)
+      // First: Insert into propertyfollowup
+      const insertFollowupSQL = `
+      INSERT INTO propertyfollowup 
+        (enquirerid, paymenttype, tokenamount, remark, dealamount, status, paymentimage, updated_at, created_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       db.query(
-        insertSQL,
+        insertFollowupSQL,
         [
           Id,
           paymenttype,
@@ -414,16 +416,38 @@ export const token = (req, res) => {
         ],
         (err, insertResult) => {
           if (err) {
-            console.error("Error inserting visit:", err);
+            console.error("Error inserting followup:", err);
             return res
               .status(500)
               .json({ message: "Database error", error: err });
           }
 
-          res.status(201).json({
-            message: "Token added successfully",
-            Id: insertResult.insertId,
-          });
+          // Second: Automatically insert into customerPayment
+          const insertPaymentSQL = `
+          INSERT INTO customerPayment 
+            (enquirerId, paymentType, paymentAmount, paymentImage, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?)`;
+
+          db.query(
+            insertPaymentSQL,
+            [Id, paymenttype, tokenamount, imagePath, currentdate, currentdate],
+            (payErr, payResult) => {
+              if (payErr) {
+                console.error("Error inserting customer payment:", payErr);
+                return res.status(500).json({
+                  message:
+                    "Token added, but failed to insert customer payment.",
+                  error: payErr,
+                });
+              }
+
+              return res.status(201).json({
+                message: "Token and Payment added successfully",
+                followupId: insertResult.insertId,
+                paymentId: payResult.insertId,
+              });
+            }
+          );
         }
       );
     }
@@ -432,11 +456,18 @@ export const token = (req, res) => {
 
 export const tokenOld = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { paymenttype, remark, dealamount, enquiryStatus } = req.body;
+  const { paymenttype, tokenamount, remark, dealamount, enquiryStatus } =
+    req.body;
 
   const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
 
-  if (!paymenttype || !remark || !dealamount || !enquiryStatus) {
+  if (
+    !paymenttype ||
+    !tokenamount ||
+    !remark ||
+    !dealamount ||
+    !enquiryStatus
+  ) {
     return res
       .status(400)
       .json({ message: "Please add visit date and remark!" });
@@ -461,14 +492,15 @@ export const tokenOld = (req, res) => {
       }
 
       const insertSQL = `
-      INSERT INTO propertyfollowup (enquirerid, paymenttype, remark, dealamount, status, paymentimage, updated_at, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+      INSERT INTO propertyfollowup (enquirerid, paymenttype, tokenamount, remark, dealamount, status, paymentimage, updated_at, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       db.query(
         insertSQL,
         [
           Id,
           paymenttype,
+          tokenamount,
           remark,
           dealamount,
           enquiryStatus,

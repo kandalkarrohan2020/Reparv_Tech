@@ -10,6 +10,7 @@ import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
 import DownloadCSV from "../components/DownloadCSV";
+import FormatPrice from "../components/FormatPrice";
 
 const Employee = () => {
   const {
@@ -315,7 +316,7 @@ const Employee = () => {
       minWidth: "150px",
     },
     {
-      name: "UID",
+      name: "Adhar No",
       selector: (row) => row.uid,
       sortable: true,
       minWidth: "140px",
@@ -334,7 +335,7 @@ const Employee = () => {
     },
     {
       name: "Salary",
-      selector: (row) => row.salary,
+      selector: (row) => <FormatPrice price={parseFloat(row.salary)} />,
       sortable: true,
       minWidth: "150px",
     },

@@ -3,6 +3,7 @@ import { useLocation, NavLink } from "react-router-dom";
 import reparvMainLogo from "../../assets/layout/reparvMainLogo.svg";
 import calenderIcon from "../../assets/layout/calenderIcon.svg";
 import enquirersIcon from "../../assets/layout/enquirersIcon.svg";
+import customersIcon from "../../assets/layout/customersIcon.svg";
 import overviewIcon from "../../assets/layout/overviewIcon.svg";
 import ticketingIcon from "../../assets/layout/ticketingIcon.svg";
 import { Outlet } from "react-router-dom";
@@ -66,6 +67,10 @@ function Layout() {
     setShowPriceSummery,
     showEnquirerPropertyForm,
     setShowEnquirerPropertyForm,
+    showCustomer,
+    setShowCustomer,
+    showCustomerPaymentForm,
+    setShowCustomerPaymentForm,
   } = useAuth();
 
   const overlays = [
@@ -80,6 +85,8 @@ function Layout() {
     { state: showEnquiryForm, setter: setShowEnquiryForm },
     { state: showPropertyInfo, setter: setShowPropertyInfo },
     { state: showEnquirerPropertyForm, setter: setShowEnquirerPropertyForm },
+    { state: showCustomer, setter: setShowCustomer },
+    { state: showCustomerPaymentForm, setter: setShowCustomerPaymentForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -172,6 +179,7 @@ function Layout() {
             {[
               { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/enquirers", icon: enquirersIcon, label: "Enquirers" },
+              { to: "/customers", icon: customersIcon, label: "Customers" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
               { to: "/calender", icon: calenderIcon, label: "Calendar" },

@@ -58,6 +58,8 @@ const [showFollowUpList, setShowFollowUpList] = useState(false);
 const [showSeoForm, setShowSeoForm] = useState(false);
 const [showBlogForm, setShowBlogForm] = useState(false);
 const [showCommissionForm, setShowCommissionForm] = useState(false);
+const [showCustomer, setShowCustomer] = useState(false);
+const [showCustomerPaymentForm, setShowCustomerPaymentForm] = useState(false);
 
 const [partnerPaymentStatus, setPartnerPaymentStatus] = useState("Pending");
 return <AuthContext.Provider
@@ -104,6 +106,8 @@ return <AuthContext.Provider
         showBlogForm, setShowBlogForm,
         showCommissionForm, setShowCommissionForm,
         partnerPaymentStatus, setPartnerPaymentStatus,
+        showCustomer, setShowCustomer,
+        showCustomerPaymentForm, setShowCustomerPaymentForm,
     }
 }>
     {children}

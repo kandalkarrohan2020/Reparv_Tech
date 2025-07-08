@@ -9,12 +9,40 @@ import PropertyNavbar from "./PropertyNavbar";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { IoSearchSharp } from "react-icons/io5";
 import { CiLocationOn } from "react-icons/ci";
+import { useNavigate} from "react-router-dom";
 
 export default function ImageSlider() {
-  const { URI, selectedCity, setSelectedCity, propertySearch, setPropertySearch  } = useAuth();
+  const {
+    URI,
+    selectedCity,
+    setSelectedCity,
+    propertySearch,
+    setPropertySearch,
+  } = useAuth();
+  const navigate = useNavigate();
   const [sliderImages, setSliderImages] = useState([]);
   const [mobileImage, setMobileImage] = useState([]);
-  
+  const [cities, setCities] = useState([]);
+  // *Fetch Data from API*
+  const fetchAllCity = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/properties/cities", {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch cities.");
+
+      const data = await response.json();
+      setCities(data); // Sets the cities array
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
   // **Fetch Data from API**
   const getSliderImages = async () => {
     try {
@@ -33,10 +61,10 @@ export default function ImageSlider() {
     }
   };
 
-  
-  useEffect(()=>{
-    getSliderImages(); 
-  },[]);
+  useEffect(() => {
+    fetchAllCity();
+    getSliderImages();
+  }, []);
 
   return (
     <div className="relative w-full mx-auto max-w-[1650px] flex flex-col items-center justify-center mb-5">
@@ -49,7 +77,9 @@ export default function ImageSlider() {
           <input
             type="text"
             value={propertySearch}
-            onChange={(e)=> {setPropertySearch(e.target.value)}}
+            onChange={(e) => {
+              setPropertySearch(e.target.value);
+            }}
             placeholder="Search Property"
             className="w-full pl-7 md:pl-14 pr-4 py-2 text-xs md:text-base rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-[#00000066]"
           />
@@ -67,12 +97,15 @@ export default function ImageSlider() {
             onChange={(e) => {
               const action = e.target.value;
               setSelectedCity(action);
+              //navigate("/properties");
             }}
           >
             <option value="">Select City</option>
-            <option value="Nagpur">Nagpur</option>
-            <option value="Chandrapur">Chandrapur</option>
-            <option value="Wardha">Wardha</option>
+            {cities?.map((city, index) => (
+              <option key={index} value={city}>
+                {city}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -95,21 +128,21 @@ export default function ImageSlider() {
         {sliderImages?.map((img, index) => (
           <SwiperSlide key={index}>
             <img
-              src={URI+"/uploads/"+img.image}
+              src={URI + "/uploads/" + img.image}
               alt={`Slide ${index + 1}`}
               className="hidden sm:block w-full h-auto object-cover"
             />
             <img
-              src={URI+"/uploads/"+img?.mobileimage}
+              src={URI + "/uploads/" + img?.mobileimage}
               alt={`Slide ${index + 1}`}
               className={`block sm:hidden w-full h-auto object-cover`}
             />
           </SwiperSlide>
         ))}
       </Swiper>
-      
+
       <div className="custom-pagination hidden sm:flex items-center justify-center gap-1 m-5 absolute bottom-[60px] z-10"></div>
-      <div className = "hidden lg:block absolute w-full z-10 lg:bottom-[-60px] xl:bottom-[-50px]" >
+      <div className="hidden lg:block absolute w-full z-10 lg:bottom-[-60px] xl:bottom-[-50px]">
         <PropertyNavbar />
       </div>
     </div>

@@ -40,6 +40,7 @@ export default function Properties() {
   const [locations, setLocations] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState(properties);
   const [searchTerm, setSearchTerm] = useState("");
+  const [cities, setCities] = useState([]);
 
   const filteredData = filteredProperties.filter((item) =>
     item.propertyName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -72,6 +73,26 @@ export default function Properties() {
 
       const data = await response.json();
       setProperties(data);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  // *Fetch Data from API*
+  const fetchAllCity = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/properties/cities", {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch cities.");
+
+      const data = await response.json();
+      setCities(data); // Sets the cities array
     } catch (err) {
       console.error("Error fetching:", err);
     }
@@ -140,6 +161,7 @@ export default function Properties() {
 
   useEffect(() => {
     fetchData();
+    fetchAllCity();
     if (selectedCity) {
       fetchLocationByCity();
     } else {
@@ -208,12 +230,15 @@ export default function Properties() {
                 onChange={(e) => {
                   const action = e.target.value;
                   setSelectedCity(action);
+                  //navigate("/properties");
                 }}
               >
                 <option value="">Select City</option>
-                <option value="Nagpur">Nagpur</option>
-                <option value="Chandrapur">Chandrapur</option>
-                <option value="Wardha">Wardha</option>
+                {cities?.map((city, index) => (
+                  <option key={index} value={city}>
+                    {city}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

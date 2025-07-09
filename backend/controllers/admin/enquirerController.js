@@ -358,7 +358,7 @@ export const visitScheduled = (req, res) => {
   );
 };
 
-export const token = (req, res) => {
+export const tokeOld = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const { paymenttype, tokenamount, remark, dealamount, enquiryStatus } =
     req.body;
@@ -454,7 +454,7 @@ export const token = (req, res) => {
   );
 };
 
-export const tokenOld = (req, res) => {
+export const token = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const { paymenttype, tokenamount, remark, dealamount, enquiryStatus } =
     req.body;

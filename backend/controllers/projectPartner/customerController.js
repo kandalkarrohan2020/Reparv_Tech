@@ -56,7 +56,13 @@ export const getById = (req, res) => {
     if (result.length === 0) {
       return res.status(404).json({ message: "Customer not found" });
     }
-    res.json(result[0]);
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json(formatted[0]);
   });
 };
 
@@ -154,4 +160,3 @@ export const addPayment = (req, res) => {
     }
   );
 };
-

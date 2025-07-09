@@ -26,7 +26,7 @@ const Customers = () => {
   const [customer, setCustomer] = useState({});
   const [enquirerId, setEnquirerId] = useState("");
   const [paymentList, setPaymentList] = useState([]);
-  const [balancedAmount, setBalancedAmount] = useState(0);
+  const [balancedAmount, setBalancedAmount] = useState(null);
   const [customerPayment, setCustomerPayment] = useState({
     paymentType: "",
     paymentAmount: "",
@@ -46,19 +46,18 @@ const Customers = () => {
     setSelectedImage(null);
   };
 
-  const calculateBalance = (payments) => {
-  let totalPaid = 0;
+  const calculateBalance = (payments = [], customer) => {
+    const tokenAmount = Number(customer.tokenamount) || 0;
+    const dealAmount = Number(customer.dealamount) || 0;
 
-  payments.forEach((payment) => {
-    totalPaid += parseFloat(payment.paymentAmount) || 0;
-  });
+    const totalPaid = payments.reduce(
+      (sum, payment) => sum + (Number(payment.paymentAmount) || 0),
+      tokenAmount
+    );
 
-  const dealAmount = parseFloat(customer.dealamount) || 0;
-
-  const balance = dealAmount - totalPaid;
-
-  setBalancedAmount(balance);
-};
+    const balance = dealAmount - totalPaid;
+    setBalancedAmount(balance);
+  };
 
   //Fetch Data
   const fetchData = async () => {
@@ -83,26 +82,27 @@ const Customers = () => {
 
   const viewCustomer = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/customers/${id}`, {
+      const response = await fetch(`${URI}/admin/customers/${id}`, {
         method: "GET",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
       });
+
       if (!response.ok) throw new Error("Failed to fetch Customers.");
       const data = await response.json();
       setCustomer(data);
-      await fetchPaymentData(id);
+      await fetchPaymentData(id, data);
       setShowCustomer(true);
     } catch (err) {
       console.error("Error fetching :", err);
     }
   };
 
-  const fetchPaymentData = async (id) => {
+  const fetchPaymentData = async (id, customer) => {
     try {
-      const response = await fetch(URI + `/admin/customers/payment/get/${id}`, {
+      const response = await fetch(`${URI}/admin/customers/payment/get/${id}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -111,8 +111,9 @@ const Customers = () => {
       });
       if (!response.ok) throw new Error("Failed to fetch Payment Data.");
       const data = await response.json();
+
+      calculateBalance(data, customer);
       setPaymentList(data);
-      calculateBalance(data);
     } catch (err) {
       console.error("Error fetching :", err);
     }
@@ -504,6 +505,7 @@ const Customers = () => {
             <IoMdClose
               onClick={() => {
                 setShowCustomer(false);
+                setBalancedAmount(null);
               }}
               className="w-6 h-6 cursor-pointer"
             />
@@ -581,56 +583,84 @@ const Customers = () => {
               <h2 className="font-semibold mt-6 ">Payment History</h2>
 
               <div className="mt-4 grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
-                {paymentList.length > 0 ? (
-                  paymentList.map((payment, index) => (
-                    <div key={index} className="w-full">
-                      <div className="w-full px-2 py-1 border rounded-lg">
-                        <div className="w-full mt-2 flex flex-row gap-3 items-start justify-start ">
-                          <img
-                            src={URI + payment.paymentImage}
-                            alt="Payment_Image"
-                            onClick={() => {
-                              window.open(URI + payment.paymentImage, "_blank");
-                            }}
-                            className="w-[120px] object-cover cursor-pointer"
-                          />
+                <div key="tokenAmount" className="w-full">
+                  <div className="w-full px-2 py-1 border rounded-lg">
+                    <div className="w-full mt-2 flex flex-row gap-3 items-start justify-start ">
+                      <img
+                        src={URI + customer.paymentimage}
+                        alt="Payment_Image"
+                        onClick={() => {
+                          window.open(URI + customer.paymentimage, "_blank");
+                        }}
+                        className="w-[120px] max-h-[100px] object-cover cursor-pointer"
+                      />
 
-                          <div className="w-full flex flex-col gap-1 items-start justify-center">
-                            <div className="w-full text-sm">
-                              <label className="block text-xs leading-4 text-[#00000066] font-medium">
-                                Payment Type
-                              </label>
-                              <span>{payment.paymentType}</span>
-                            </div>
-                            <div className="w-full text-sm">
-                              <label className="block text-xs leading-4 text-[#00000066] font-medium">
-                                Payment Amount
-                              </label>
-                              <FormatPrice
-                                price={payment.paymentAmount}
-                              ></FormatPrice>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="w-full text-sm mt-2 my-1 border-t">
-                          <label className="block text-xs mt-1 leading-4 text-[#00000066] font-medium">
-                            Date & Time
+                      <div className="w-full flex flex-col gap-1 items-start justify-center">
+                        <div className="w-full text-sm">
+                          <label className="block text-xs leading-4 text-[#00000066] font-medium">
+                            Payment Type
                           </label>
-                          <span>{payment.created_at}</span>
+                          <span>{customer.paymenttype}</span>
+                        </div>
+                        <div className="w-full text-sm">
+                          <label className="block text-xs leading-4 text-[#00000066] font-medium">
+                            Token Amount
+                          </label>
+                          <FormatPrice
+                            price={customer.tokenamount}
+                          ></FormatPrice>
                         </div>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <input
-                    type="text"
-                    disabled
-                    className="w-full text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value="No Payment Found"
-                    readOnly
-                  />
-                )}
+
+                    <div className="w-full text-sm mt-2 my-1 border-t">
+                      <label className="block text-xs mt-1 leading-4 text-[#00000066] font-medium">
+                        Date & Time
+                      </label>
+                      <span>{customer.created_at}</span>
+                    </div>
+                  </div>
+                </div>
+                {paymentList?.map((payment, index) => (
+                  <div key={index} className="w-full">
+                    <div className="w-full px-2 py-1 border rounded-lg">
+                      <div className="w-full mt-2 flex flex-row gap-3 items-start justify-start ">
+                        <img
+                          src={URI + payment.paymentImage}
+                          alt="Payment_Image"
+                          onClick={() => {
+                            window.open(URI + payment.paymentImage, "_blank");
+                          }}
+                          className="w-[120px] h-[80px] object-cover cursor-pointer"
+                        />
+
+                        <div className="w-full flex flex-col gap-1 items-start justify-center">
+                          <div className="w-full text-sm">
+                            <label className="block text-xs leading-4 text-[#00000066] font-medium">
+                              Payment Type
+                            </label>
+                            <span>{payment.paymentType}</span>
+                          </div>
+                          <div className="w-full text-sm">
+                            <label className="block text-xs leading-4 text-[#00000066] font-medium">
+                              Payment Amount
+                            </label>
+                            <FormatPrice
+                              price={payment.paymentAmount}
+                            ></FormatPrice>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="w-full text-sm mt-2 my-1 border-t">
+                        <label className="block text-xs mt-1 leading-4 text-[#00000066] font-medium">
+                          Date & Time
+                        </label>
+                        <span>{payment.created_at}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </form>

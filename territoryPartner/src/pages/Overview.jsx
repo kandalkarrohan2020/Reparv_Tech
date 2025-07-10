@@ -79,8 +79,9 @@ function Overview() {
           },
           {
             label: "No. of Deal Done",
-            value: "00",
+            value: overviewCountData?.totalCustomer || "00",
             icon: card2,
+            to: "/customers",
           },
           {
             label: "Self Earning",

@@ -754,8 +754,7 @@ const Properties = () => {
         commissionType: data.commissionType || "",
         commissionAmount: data.commissionAmount || "",
         commissionPercentage: data.commissionPercentage || "",
-        commissionAmountPerSquareFeet:
-          data.ccommissionAmountPerSquareFeet || "",
+        commissionAmountPerSquareFeet: data.commissionAmountPerSquareFeet || "",
       });
       setShowCommissionForm(true);
     } catch (err) {

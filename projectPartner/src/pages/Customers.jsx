@@ -24,6 +24,9 @@ const Customers = () => {
   const [customer, setCustomer] = useState({});
   const [enquirerId, setEnquirerId] = useState("");
   const [paymentList, setPaymentList] = useState([]);
+  const [totalPaid, setTotalPaid] = useState(null);
+  const [salesCommission, setSalesCommission] = useState(null);
+  const [territoryCommission, setTerritoryCommission] = useState(null);
   const [balancedAmount, setBalancedAmount] = useState(0);
   const [customerPayment, setCustomerPayment] = useState({
     paymentType: "",
@@ -54,6 +57,7 @@ const Customers = () => {
     );
 
     const balance = dealAmount - totalPaid;
+    setTotalPaid(totalPaid);
     setBalancedAmount(balance);
   };
 
@@ -90,6 +94,25 @@ const Customers = () => {
 
       if (!response.ok) throw new Error("Failed to fetch Customers.");
       const data = await response.json();
+      if (data.commissionType !== "Percentage") {
+        const baseCommission = Number(data.commissionAmount) || 0;
+
+        const salesCommission = (baseCommission * 40) / 100;
+        const territoryCommission = (baseCommission * 20) / 100;
+
+        setSalesCommission(salesCommission);
+        setTerritoryCommission(territoryCommission);
+      } else {
+        const dealAmount = Number(data.dealamount) || 0;
+        const commissionPercentage = Number(data.commissionPercentage) || 0;
+        const totalCommission = (dealAmount * commissionPercentage) / 100;
+
+        const salesCommission = (totalCommission * 40) / 100;
+        const territoryCommission = (totalCommission * 20) / 100;
+
+        setSalesCommission(salesCommission);
+        setTerritoryCommission(territoryCommission);
+      }
       setCustomer(data);
       await fetchPaymentData(id, data);
       setShowCustomer(true);
@@ -254,11 +277,6 @@ const Customers = () => {
     {
       name: "Token Amount",
       selector: (row) => <FormatPrice price={row.tokenamount} />,
-      minWidth: "150px",
-    },
-    {
-      name: "Remark",
-      selector: (row) => row.remark,
       minWidth: "150px",
     },
     {
@@ -537,13 +555,69 @@ const Customers = () => {
 
               <div className="w-full ">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Sales Partner
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  className="w-full mt-[4px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={customer.assign}
+                  readOnly
+                />
+              </div>
+
+              <div className="w-full ">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Sales Commission
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  className="w-full mt-[4px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={salesCommission?.toFixed(2)}
+                  readOnly
+                />
+              </div>
+
+              <div className="w-full ">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Territory Partner
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  className="w-full mt-[4px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={
+                    customer.territoryName + " - " + customer.territoryContact
+                  }
+                  readOnly
+                />
+              </div>
+
+              <div className="w-full ">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Territory Commission
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  className="w-full mt-[4px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={territoryCommission?.toFixed(2)}
+                  readOnly
+                />
+              </div>
+
+              <div className="w-full ">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
                   Deal Amount
                 </label>
                 <input
                   type="text"
                   disabled
                   className="w-full mt-[4px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={parseFloat(customer.dealamount) / 100000 + " Lakh"}
+                  value={
+                    (Number(customer.dealamount) / 100000)?.toFixed(2) + " Lac"
+                  }
                   readOnly
                 />
               </div>
@@ -556,7 +630,7 @@ const Customers = () => {
                   type="text"
                   disabled
                   className="w-full mt-[4px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={balancedAmount / 100000 + " Lakh"}
+                  value={(balancedAmount / 100000)?.toFixed(2) + " Lac"}
                   readOnly
                 />
               </div>
@@ -577,7 +651,13 @@ const Customers = () => {
 
             {/* Show Customer Payment List */}
             <div className="w-full ">
-              <h2 className="font-semibold mt-6 ">Payment History</h2>
+              <div className="w-full mt-6 flex items-center justify-between">
+                <h2 className="font-semibold">Payment History</h2>
+                <div className="font-semibold text-sm sm:text-base text-black">
+                  <span>{"Total:"} </span>
+                  <FormatPrice price={totalPaid} />
+                </div>
+              </div>
 
               <div className="mt-4 grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
                 <div key="tokenAmount" className="w-full">

@@ -8,14 +8,14 @@ import card4 from "../assets/overview/card4.svg";
 import CitySelector from "../components/CitySelector";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import DataTable from "react-data-table-component";
-import { useNavigate }  from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../store/auth";
 
 function Overview() {
   const { URI } = useAuth();
-    const navigate = useNavigate(); 
-    const [overviewData, setOverviewData] = useState([]);
-    const [overviewCountData, setOverviewCountData] = useState({});
+  const navigate = useNavigate();
+  const [overviewData, setOverviewData] = useState([]);
+  const [overviewCountData, setOverviewCountData] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredData = overviewData?.filter(
@@ -65,21 +65,17 @@ function Overview() {
 
   useEffect(() => {
     fetchCountData();
-  },[]);
+  }, []);
 
   return (
     <div className="overview overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
       <div className="overview-card-container px-4 md:px-0 gap-2 sm:gap-5 w-full grid place-items-center grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 my-5">
-        <div
-          className="overview-card w-full max-w-[272px] h-[132px] flex gap-1 flex-col items-center justify-center rounded-[24px] p-6 bg-transperent"
-        >
+        <div className="overview-card w-full max-w-[272px] h-[132px] flex gap-1 flex-col items-center justify-center rounded-[24px] p-6 bg-transperent">
           <div className="upside w-full max-w-[224px] h-[40px] flex items-center justify-between gap-3 text-[24px] font-normal text-black">
             <p>Hii Franchise, </p>
           </div>
           <div className="downside w-[224px] h-[40px] flex items-center text-[40px] font-semibold text-black">
-            <p className="flex items-center justify-center">
-              Welcome
-            </p>
+            <p className="flex items-center justify-center">Welcome</p>
           </div>
         </div>
 
@@ -91,15 +87,16 @@ function Overview() {
           },
           {
             label: "No. of Deal Done",
-            value: "00",
+            value: overviewCountData?.totalCustomer || "00",
             icon: card2,
+            to: "/customers",
           },
           {
             label: "Deal in Sq. Ft.",
             value: "00 Sq. Ft.",
             icon: card4,
           },
-          
+
           {
             label: "Properties",
             value: overviewCountData?.totalProperty || "00",
@@ -118,7 +115,6 @@ function Overview() {
             //icon: card4,
             to: "/tickets",
           },
-          
         ].map((card, index) => (
           <div
             key={index}
@@ -127,7 +123,13 @@ function Overview() {
           >
             <div className="upside w-full sm:max-w-[224px] h-[30px] sm:h-[40px] flex items-center justify-between gap-2 sm:gap-3 text-xs sm:text-base font-medium text-white">
               <p>{card.label}</p>
-              <img src={card.icon} alt="" className={`${card.icon? "block":"hidden"} w-5 sm:w-10 h-5 sm:h-10`}/>
+              <img
+                src={card.icon}
+                alt=""
+                className={`${
+                  card.icon ? "block" : "hidden"
+                } w-5 sm:w-10 h-5 sm:h-10`}
+              />
             </div>
             <div className="downside w-full h-[30px] sm:w-[224px] sm:h-[40px] flex items-center text-xl sm:text-[32px] font-semibold text-white">
               <p className="flex items-center justify-center">

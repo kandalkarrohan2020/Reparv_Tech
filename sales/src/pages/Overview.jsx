@@ -14,7 +14,7 @@ import { useAuth } from "../store/auth";
 
 function Overview() {
   const navigate = useNavigate();
-  const {URI} = useAuth();
+  const { URI } = useAuth();
   const [overviewData, setOverviewData] = useState([]);
   const [overviewCountData, setOverviewCountData] = useState({});
 
@@ -67,9 +67,9 @@ function Overview() {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchCountData();
-  },[]);
+  }, []);
 
   return (
     <div className="overview overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
@@ -82,8 +82,9 @@ function Overview() {
           },
           {
             label: "No. of Deal Done",
-            value: "00",
+            value: overviewCountData?.totalCustomer || "00",
             icon: card2,
+            to: "/customers",
           },
           {
             label: "Self Earning",
@@ -121,7 +122,13 @@ function Overview() {
           >
             <div className="upside w-full sm:max-w-[224px] h-[30px] sm:h-[40px] flex items-center justify-between gap-2 sm:gap-3 text-xs sm:text-base font-medium text-white">
               <p>{card.label}</p>
-              <img src={card.icon} alt="" className={`${card.icon? "block":"hidden"} w-5 sm:w-10 h-5 sm:h-10`}/>
+              <img
+                src={card.icon}
+                alt=""
+                className={`${
+                  card.icon ? "block" : "hidden"
+                } w-5 sm:w-10 h-5 sm:h-10`}
+              />
             </div>
             <div className="downside w-full h-[30px] sm:w-[224px] sm:h-[40px] flex items-center text-xl sm:text-[32px] font-semibold text-white">
               <p className="flex items-center justify-center">

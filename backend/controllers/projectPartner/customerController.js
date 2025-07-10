@@ -9,9 +9,15 @@ export const getAll = (req, res) => {
       enquirers.*, 
       properties.frontView,
       properties.seoSlug,
+      properties.commissionType,
+      properties.commissionAmount,
+      properties.commissionPercentage,
+      territorypartner.fullname AS territoryName, 
+      territorypartner.contact AS territoryContact,
       propertyfollowup.*
     FROM enquirers 
     LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+    LEFT JOIN territorypartner ON enquirers.territorypartnerid = territorypartner.id
     LEFT JOIN propertyfollowup ON propertyfollowup.enquirerid = enquirers.enquirersid
     WHERE enquirers.status = 'Token' AND propertyfollowup.status = 'Token' AND properties.projectpartnerid = ?
     ORDER BY propertyfollowup.created_at DESC
@@ -40,9 +46,15 @@ export const getById = (req, res) => {
       enquirers.*, 
       properties.frontView,
       properties.seoSlug,
+      properties.commissionType,
+      properties.commissionAmount,
+      properties.commissionPercentage,
+      territorypartner.fullname AS territoryName, 
+      territorypartner.contact AS territoryContact,
       propertyfollowup.*
     FROM enquirers 
     LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+    LEFT JOIN territorypartner ON enquirers.territorypartnerid = territorypartner.id
     LEFT JOIN propertyfollowup ON propertyfollowup.enquirerid = enquirers.enquirersid
     WHERE enquirers.status = 'Token' AND propertyfollowup.status = 'Token' AND enquirers.enquirersid = ?
     ORDER BY enquirers.enquirersid DESC

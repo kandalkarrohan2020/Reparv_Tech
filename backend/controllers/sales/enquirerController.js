@@ -18,7 +18,7 @@ export const getAll = (req, res) => {
     LEFT JOIN properties 
     ON enquirers.propertyid = properties.propertyid
     LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
-    WHERE enquirers.salespersonid = ? 
+    WHERE enquirers.status != 'Token' AND enquirers.salespersonid = ? 
     ORDER BY enquirers.enquirersid DESC`;
 
   db.query(sql, [Id], (err, results) => {

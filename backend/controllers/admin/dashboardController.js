@@ -3,6 +3,18 @@ import db from "../../config/dbconnect.js";
 export const getCount = (req, res) => {
   const query = `
       SELECT
+        (SELECT IFNULL(SUM(pf.dealamount), 0)
+         FROM propertyfollowup pf
+         JOIN enquirers e ON pf.enquirerid = e.enquirersid
+         WHERE pf.status = 'Token') AS totalDealAmount,
+
+        (SELECT COUNT(enquirersid) FROM enquirers WHERE status = 'Token') AS totalCustomer,
+
+        (SELECT IFNULL(SUM(p.carpetArea), 0)
+         FROM enquirers e
+         JOIN properties p ON e.propertyid = p.propertyid
+         WHERE e.status = 'Token') AS totalDealInSquareFeet,
+
         (SELECT COUNT(enquirersid) FROM enquirers) AS totalEnquiry,
         (SELECT COUNT(propertyid) FROM properties) AS totalProperty,
         (SELECT COUNT(builderid) FROM builders) AS totalBuilder,
@@ -12,8 +24,8 @@ export const getCount = (req, res) => {
         (SELECT COUNT(partnerid) FROM onboardingpartner WHERE status = 'Active' AND paymentstatus = 'Success') AS totalOnboardingPartner,
         (SELECT COUNT(id) FROM projectpartner WHERE status = 'Active' AND paymentstatus = 'Success') AS totalProjectPartner,
         (SELECT COUNT(id) FROM guestUsers WHERE status = 'Active') AS totalGuestUser,
-        (SELECT COUNT(ticketid) FROM tickets ) AS totalTicket;
-    `;
+        (SELECT COUNT(ticketid) FROM tickets) AS totalTicket
+  `;
 
   db.query(query, (err, results) => {
     if (err) {
@@ -21,7 +33,7 @@ export const getCount = (req, res) => {
       return res.status(500).json({ error: "Database error" });
     }
 
-    return res.json(results[0]); 
+    return res.json(results[0]);
   });
 };
 

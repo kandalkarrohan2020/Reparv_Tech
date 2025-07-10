@@ -4,7 +4,6 @@ import { HiMiniFunnel } from "react-icons/hi2";
 const filterOptions = [
   { label: "", color: "text-black bg-gray-100" },
   { label: "New", color: "text-[#0BB501] bg-green-100" },
-  { label: "Token", color: "text-[#FFCA00] bg-yellow-100" },
   { label: "Follow Up", color: "text-[#5D00FF] bg-purple-100" },
   { label: "Cancelled", color: "text-[#FF4646] bg-red-100 " },
    { label: "Visit Scheduled", color: "text-[#0068FF] bg-blue-100" },
@@ -32,8 +31,6 @@ const FilterData = ({selectedFilter, setSelectedFilter}) => {
             ? "bg-[#EAFBF1] text-[#0BB501]"
             : selectedFilter === "Visit Scheduled"
             ? "bg-[#E9F2FF] text-[#0068FF]"
-            : selectedFilter === "Token"
-            ? "bg-[#FFF8DD] text-[#FFCA00]"
             : selectedFilter === "Cancelled"
             ? "bg-[#FFEAEA] text-[#ff2323]"
             : selectedFilter === "Follow Up"

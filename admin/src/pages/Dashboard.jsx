@@ -58,6 +58,7 @@ function Dashboard() {
       });
       if (!response.ok) throw new Error("Failed to fetch Count.");
       const data = await response.json();
+      console.log(data);
       setOverviewCountData(data);
     } catch (err) {
       console.error("Error fetching :", err);
@@ -66,7 +67,7 @@ function Dashboard() {
 
   useEffect(() => {
     fetchCountData();
-  },[]);
+  }, []);
 
   return (
     <div className="overview overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
@@ -74,13 +75,14 @@ function Dashboard() {
         {[
           {
             label: "Total Deal Amount",
-            value: "00 Lac",
+            value: (Number(overviewCountData?.totalDealAmount) / 10000000).toFixed(2) + " cr" || "00",
             icon: card1,
           },
           {
             label: "No. of Deal Done",
-            value: "00",
+            value: overviewCountData?.totalCustomer || "00",
             icon: card2,
+            to: "/customers",
           },
           {
             label: "Reparv Share",
@@ -89,7 +91,7 @@ function Dashboard() {
           },
           {
             label: "Deal in Sq. Ft.",
-            value: "00 Sq. Ft.",
+            value: overviewCountData?.totalDealInSquareFeet || "00",
             icon: card4,
           },
           {

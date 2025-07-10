@@ -770,7 +770,7 @@ const Enquirers = () => {
             Action
           </option>
           <option value="view">View</option>
-          <option value="status">Status</option>
+          {row.status !== "Token" && <option value="status">Status</option>}
           {row.source !== "Onsite" && <option value="update">Update</option>}
           {row.source !== "Onsite" && (
             <option value="property">Property</option>

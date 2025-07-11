@@ -77,7 +77,7 @@ function Overview() {
         {[
           {
             label: "Total Deal Amount",
-            value: "00 Lac",
+            value: (Number(overviewCountData?.totalDealAmount) / 10000000).toFixed(2) + " cr" || "00",
             icon: card1,
           },
           {
@@ -88,12 +88,12 @@ function Overview() {
           },
           {
             label: "Self Earning",
-            value: "00",
-            icon: card3,
+            value: (Number(overviewCountData?.selfEarning) / 100000).toFixed(2) + " Lac" || "00",
+            icon: card1,
           },
           {
             label: "Deal in Sq. Ft.",
-            value: "00 Sq. Ft.",
+            value: overviewCountData?.totalDealInSquareFeet || "00",
             icon: card4,
           },
           {
@@ -132,11 +132,7 @@ function Overview() {
             </div>
             <div className="downside w-full h-[30px] sm:w-[224px] sm:h-[40px] flex items-center text-xl sm:text-[32px] font-semibold text-white">
               <p className="flex items-center justify-center">
-                <FaRupeeSign
-                  className={`${
-                    card.label === "Total Deal Amount" ? "block" : "hidden"
-                  }`}
-                />
+                 {["Total Deal Amount", "Self Earning"].includes(card.label) && <FaRupeeSign />}
                 {card.value}
               </p>
             </div>

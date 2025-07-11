@@ -15,21 +15,26 @@ export const getAll = (req, res) => {
 
   let sql = "";
 
+  const followUpJoin = `
+    LEFT JOIN (
+      SELECT p1.*
+      FROM partnerFollowup p1
+      INNER JOIN (
+        SELECT partnerId, MAX(created_at) AS latest
+        FROM partnerFollowup
+        WHERE role = 'Onboarding Partner'
+        GROUP BY partnerId
+      ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+      WHERE p1.role = 'Onboarding Partner'
+    ) pf ON onboardingpartner.partnerid = pf.partnerId
+  `;
+
   switch (paymentStatus) {
     case "Success":
-      sql = `SELECT onboardingpartner.*, pf.followUp, pf.created_at AS followUpDate
+      sql = `
+        SELECT onboardingpartner.*, pf.followUp, pf.created_at AS followUpDate
         FROM onboardingpartner
-        LEFT JOIN (
-          SELECT p1.*
-          FROM partnerFollowup p1
-          INNER JOIN (
-            SELECT partnerId, MAX(created_at) AS latest
-            FROM partnerFollowup
-            WHERE role = 'Onboarding Partner'
-            GROUP BY partnerId
-          ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-          WHERE p1.role = 'Onboarding Partner'
-        ) pf ON onboardingpartner.partnerid = pf.partnerId
+        ${followUpJoin}
         WHERE onboardingpartner.paymentstatus = 'Success' 
         ORDER BY onboardingpartner.created_at DESC`;
       break;
@@ -38,37 +43,27 @@ export const getAll = (req, res) => {
       sql = `
         SELECT onboardingpartner.*, pf.followUp, pf.created_at AS followUpDate
         FROM onboardingpartner
-        LEFT JOIN (
-          SELECT p1.*
-          FROM partnerFollowup p1
-          INNER JOIN (
-            SELECT partnerId, MAX(created_at) AS latest
-            FROM partnerFollowup
-            WHERE role = 'Onboarding Partner'
-            GROUP BY partnerId
-          ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-          WHERE p1.role = 'Onboarding Partner'
-        ) pf ON onboardingpartner.partnerid = pf.partnerId
-        WHERE onboardingpartner.paymentstatus = 'Follow Up' 
-        ORDER BY onboardingpartner.updated_at DESC
-      `;
+        ${followUpJoin}
+        WHERE onboardingpartner.paymentstatus = 'Follow Up' AND onboardingpartner.loginstatus = 'Inactive'
+        ORDER BY onboardingpartner.updated_at DESC`;
       break;
 
     case "Pending":
-      sql = `SELECT onboardingpartner.*, pf.followUp, pf.created_at AS followUpDate
+      sql = `
+        SELECT onboardingpartner.*, pf.followUp, pf.created_at AS followUpDate
         FROM onboardingpartner
-        LEFT JOIN (
-          SELECT p1.*
-          FROM partnerFollowup p1
-          INNER JOIN (
-            SELECT partnerId, MAX(created_at) AS latest
-            FROM partnerFollowup
-            WHERE role = 'Onboarding Partner'
-            GROUP BY partnerId
-          ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-          WHERE p1.role = 'Onboarding Partner'
-        ) pf ON onboardingpartner.partnerid = pf.partnerId
+        ${followUpJoin}
         WHERE onboardingpartner.paymentstatus = 'Pending' 
+        ORDER BY onboardingpartner.created_at DESC`;
+      break;
+
+    case "Free":
+      sql = `
+        SELECT onboardingpartner.*, pf.followUp, pf.created_at AS followUpDate
+        FROM onboardingpartner
+        ${followUpJoin}
+        WHERE onboardingpartner.paymentstatus != 'Success'
+          AND onboardingpartner.loginstatus = 'Active'
         ORDER BY onboardingpartner.created_at DESC`;
       break;
 
@@ -82,12 +77,23 @@ export const getAll = (req, res) => {
       return res.status(500).json({ message: "Database error", error: err });
     }
 
-    // Count query
+    // Updated count query for accurate grouping including "Free"
     const countQuery = `
-      SELECT paymentstatus, COUNT(*) AS count 
-      FROM onboardingpartner 
-      WHERE paymentstatus IS NOT NULL
-      GROUP BY paymentstatus
+      SELECT 'Success' AS status, COUNT(*) AS count
+      FROM onboardingpartner
+      WHERE paymentstatus = 'Success'
+      UNION ALL
+      SELECT 'Pending', COUNT(*)
+      FROM onboardingpartner
+      WHERE paymentstatus = 'Pending'
+      UNION ALL
+      SELECT 'Follow Up', COUNT(*)
+      FROM onboardingpartner
+      WHERE paymentstatus = 'Follow Up' AND loginstatus = 'Inactive'
+      UNION ALL
+      SELECT 'Free', COUNT(*)
+      FROM onboardingpartner
+      WHERE paymentstatus != 'Success' AND loginstatus = 'Active'
     `;
 
     db.query(countQuery, (countErr, counts) => {
@@ -108,17 +114,10 @@ export const getAll = (req, res) => {
           : null,
       }));
 
-      const paymentStatusCounts =
-        Array.isArray(counts) && counts.length > 0
-          ? counts.reduce((acc, item) => {
-              acc[item.paymentstatus || "Unknown"] = item.count;
-              return acc;
-            }, {})
-          : {
-              Success: 0,
-              Pending: 0,
-              "Follow Up": 0,
-            };
+      const paymentStatusCounts = {};
+      counts.forEach((item) => {
+        paymentStatusCounts[item.status] = item.count;
+      });
 
       return res.json({
         data: formatted,
@@ -162,11 +161,13 @@ export const getById = (req, res) => {
 // **Add New **
 export const add = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+
   const {
     fullname,
     contact,
     email,
     intrest,
+    refrence,
     address,
     state,
     city,
@@ -183,6 +184,35 @@ export const add = (req, res) => {
   if (!fullname || !contact || !email || !intrest) {
     return res.status(400).json({ message: "All fields are required" });
   }
+
+  const createReferralCode = (length = 6) => {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*";
+    let code = "";
+    for (let i = 0; i < length; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return "REF-" + code;
+  };
+
+  const generateUniqueReferralCode = (callback) => {
+    const code = createReferralCode();
+    db.query(
+      "SELECT referral FROM onboardingpartner WHERE referral = ?",
+      [code],
+      (err, results) => {
+        if (err) {
+          return callback(err, null);
+        }
+        if (results.length > 0) {
+          // Code exists, retry
+          return generateUniqueReferralCode(callback);
+        }
+        // Unique code found
+        return callback(null, code);
+      }
+    );
+  };
 
   const adharImageFile = req.files?.["adharImage"]?.[0];
   const panImageFile = req.files?.["panImage"]?.[0];
@@ -209,68 +239,81 @@ export const add = (req, res) => {
       });
     }
 
-    const sql = `INSERT INTO onboardingpartner 
-    (fullname, contact, email, intrest, address, state, city, pincode, experience, adharno, panno, bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, updated_at, created_at) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-    db.query(
-      sql,
-      [
-        fullname,
-        contact,
-        email,
-        intrest,
-        address,
-        state,
-        city,
-        pincode,
-        experience,
-        adharno,
-        panno,
-        bankname,
-        accountholdername,
-        accountnumber,
-        ifsc,
-        adharImageUrl,
-        panImageUrl,
-        currentdate,
-        currentdate,
-      ],
-      (err, result) => {
-        if (err) {
-          console.error("Error inserting:", err);
-          return res
-            .status(500)
-            .json({ message: "Database error", error: err });
-        }
-
-        // Insert default follow-up
-        db.query(
-          "INSERT INTO partnerFollowup (partnerId, role, followUp, followUpText, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
-          [
-            result.insertId,
-            "Onboarding Partner",
-            "New",
-            "Newly Added Onboarding Partner",
-            currentdate,
-            currentdate,
-          ],
-          (insertErr, insertResult) => {
-            if (insertErr) {
-              console.error("Error Adding Follow Up:", insertErr);
-              return res
-                .status(500)
-                .json({ message: "Database error", error: insertErr });
-            }
-
-            return res.status(201).json({
-              message: "OnBoarding Partner added successfully",
-              Id: result.insertId,
-            });
-          }
-        );
+    // Now generate a unique referral code
+    generateUniqueReferralCode((referralErr, referralCode) => {
+      if (referralErr) {
+        console.error("Referral code generation failed:", referralErr);
+        return res.status(500).json({
+          message: "Error generating unique referral code",
+          error: referralErr,
+        });
       }
-    );
+
+      const sql = `INSERT INTO onboardingpartner 
+      (fullname, contact, email, intrest, refrence, referral, address, state, city, pincode, experience, adharno, panno, bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, updated_at, created_at) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+      db.query(
+        sql,
+        [
+          fullname,
+          contact,
+          email,
+          intrest,
+          refrence,
+          referralCode,
+          address,
+          state,
+          city,
+          pincode,
+          experience,
+          adharno,
+          panno,
+          bankname,
+          accountholdername,
+          accountnumber,
+          ifsc,
+          adharImageUrl,
+          panImageUrl,
+          currentdate,
+          currentdate,
+        ],
+        (err, result) => {
+          if (err) {
+            console.error("Error inserting:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+
+          // Insert default follow-up
+          db.query(
+            "INSERT INTO partnerFollowup (partnerId, role, followUp, followUpText, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+            [
+              result.insertId,
+              "Onboarding Partner",
+              "New",
+              "Newly Added Onboarding Partner",
+              currentdate,
+              currentdate,
+            ],
+            (insertErr, insertResult) => {
+              if (insertErr) {
+                console.error("Error Adding Follow Up:", insertErr);
+                return res
+                  .status(500)
+                  .json({ message: "Database error", error: insertErr });
+              }
+
+              return res.status(201).json({
+                message: "OnBoarding Partner added successfully",
+                Id: result.insertId,
+              });
+            }
+          );
+        }
+      );
+    });
   });
 };
 
@@ -298,7 +341,7 @@ export const edit = (req, res) => {
     ifsc,
   } = req.body;
 
-  if (!fullname || !contact || !email || !intrest) {
+  if (!fullname || !contact || !email ) {
     return res.status(400).json({ message: "All fields are required" });
   }
 

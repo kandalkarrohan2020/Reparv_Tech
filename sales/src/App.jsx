@@ -9,6 +9,7 @@ import Properties from "./pages/Properties.jsx";
 import Calender from "./pages/Calender.jsx";
 import Ticketing from "./pages/Ticketing.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
+import DownloadApk from "./pages/DownloadApk.jsx";
 
 //property Routes 
 import ScrollToTop from "./components/ScrollToTop.jsx";
@@ -31,6 +32,7 @@ const App = () => {
           <Route path="/properties" element={<Properties />} />
           <Route path="/calender" element={<Calender />} />
           <Route path="/tickets" element={<Ticketing />} />
+          <Route path="/download-apk" element={<DownloadApk />} />
 
           <Route path="/property" element={<Property />} />
           <Route path="/property-info/:id" element={<PropertyDetails />} />

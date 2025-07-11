@@ -15,58 +15,59 @@ export const getAll = (req, res) => {
 
   let sql;
 
-  if (paymentStatus === "Success") {
-    sql = `SELECT s.*, pf.followUp, pf.created_at AS followUpDate
-      FROM salespersons s
-      LEFT JOIN (
-        SELECT p1.*
-        FROM partnerFollowup p1
-        INNER JOIN (
-          SELECT partnerId, MAX(created_at) AS latest
-          FROM partnerFollowup
-          WHERE role = 'Sales Person'
-          GROUP BY partnerId
-        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-        WHERE p1.role = 'Sales Person'
-      ) pf ON s.salespersonsid = pf.partnerId
-      WHERE s.paymentstatus = 'Success'
-      ORDER BY s.created_at DESC`;
-  } else if (paymentStatus === "Follow Up") {
-    sql = `
-      SELECT s.*, pf.followUp, pf.created_at AS followUpDate
-      FROM salespersons s
-      LEFT JOIN (
-        SELECT p1.*
-        FROM partnerFollowup p1
-        INNER JOIN (
-          SELECT partnerId, MAX(created_at) AS latest
-          FROM partnerFollowup
-          WHERE role = 'Sales Person'
-          GROUP BY partnerId
-        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-        WHERE p1.role = 'Sales Person'
-      ) pf ON s.salespersonsid = pf.partnerId
-      WHERE s.paymentstatus = 'Follow Up'
-      ORDER BY s.updated_at DESC
-    `;
-  } else if (paymentStatus === "Pending") {
-    sql = `SELECT s.*, pf.followUp, pf.created_at AS followUpDate
-      FROM salespersons s
-      LEFT JOIN (
-        SELECT p1.*
-        FROM partnerFollowup p1
-        INNER JOIN (
-          SELECT partnerId, MAX(created_at) AS latest
-          FROM partnerFollowup
-          WHERE role = 'Sales Person'
-          GROUP BY partnerId
-        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-        WHERE p1.role = 'Sales Person'
-      ) pf ON s.salespersonsid = pf.partnerId
-      WHERE s.paymentstatus = 'Pending'
-      ORDER BY s.created_at DESC`;
-  } else {
-    sql = `SELECT * FROM salespersons ORDER BY salespersonsid DESC`;
+  const followUpJoin = `
+    LEFT JOIN (
+      SELECT p1.*
+      FROM partnerFollowup p1
+      INNER JOIN (
+        SELECT partnerId, MAX(created_at) AS latest
+        FROM partnerFollowup
+        WHERE role = 'Sales Person'
+        GROUP BY partnerId
+      ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+      WHERE p1.role = 'Sales Person'
+    ) pf ON s.salespersonsid = pf.partnerId
+  `;
+
+  switch (paymentStatus) {
+    case "Success":
+      sql = `
+        SELECT s.*, pf.followUp, pf.created_at AS followUpDate
+        FROM salespersons s
+        ${followUpJoin}
+        WHERE s.paymentstatus = 'Success'
+        ORDER BY s.created_at DESC`;
+      break;
+
+    case "Follow Up":
+      sql = `
+        SELECT s.*, pf.followUp, pf.created_at AS followUpDate
+        FROM salespersons s
+        ${followUpJoin}
+        WHERE s.paymentstatus = 'Follow Up' AND s.loginstatus = 'Inactive'
+        ORDER BY s.updated_at DESC`;
+      break;
+
+    case "Pending":
+      sql = `
+        SELECT s.*, pf.followUp, pf.created_at AS followUpDate
+        FROM salespersons s
+        ${followUpJoin}
+        WHERE s.paymentstatus = 'Pending'
+        ORDER BY s.created_at DESC`;
+      break;
+
+    case "Free":
+      sql = `
+        SELECT s.*, pf.followUp, pf.created_at AS followUpDate
+        FROM salespersons s
+        ${followUpJoin}
+        WHERE s.paymentstatus != 'Success' AND s.loginstatus = 'Active'
+        ORDER BY s.created_at DESC`;
+      break;
+
+    default:
+      sql = `SELECT * FROM salespersons ORDER BY salespersonsid DESC`;
   }
 
   db.query(sql, (err, salespersons) => {
@@ -75,12 +76,23 @@ export const getAll = (req, res) => {
       return res.status(500).json({ message: "Database error", error: err });
     }
 
-    // Query to get count by status
+    // Accurate count query with "Free"
     const countQuery = `
-      SELECT paymentstatus, COUNT(*) AS count
+      SELECT 'Success' AS status, COUNT(*) AS count
       FROM salespersons
-      WHERE paymentstatus IS NOT NULL
-      GROUP BY paymentstatus
+      WHERE paymentstatus = 'Success'
+      UNION ALL
+      SELECT 'Pending', COUNT(*)
+      FROM salespersons
+      WHERE paymentstatus = 'Pending'
+      UNION ALL
+      SELECT 'Follow Up', COUNT(*)
+      FROM salespersons
+      WHERE paymentstatus = 'Follow Up' AND loginstatus = 'Inactive'
+      UNION ALL
+      SELECT 'Free', COUNT(*)
+      FROM salespersons
+      WHERE paymentstatus != 'Success' AND loginstatus = 'Active'
     `;
 
     db.query(countQuery, (countErr, counts) => {
@@ -101,10 +113,10 @@ export const getAll = (req, res) => {
           : null,
       }));
 
-      const paymentStatusCounts = counts.reduce((acc, item) => {
-        acc[item.paymentstatus || "Unknown"] = item.count;
-        return acc;
-      }, {});
+      const paymentStatusCounts = {};
+      counts.forEach((item) => {
+        paymentStatusCounts[item.status] = item.count;
+      });
 
       return res.json({
         data: formatted,
@@ -114,7 +126,7 @@ export const getAll = (req, res) => {
   });
 };
 
-// **Fetch All**
+// **Fetch All Active**
 export const getAllActive = (req, res) => {
   const sql =
     "SELECT * FROM salespersons WHERE status = 'Active' ORDER BY salespersonsid DESC";
@@ -158,6 +170,7 @@ export const add = (req, res) => {
     contact,
     email,
     intrest,
+    refrence,
     address,
     state,
     city,
@@ -178,6 +191,31 @@ export const add = (req, res) => {
       message: "FullName, Contact and Email Required!",
     });
   }
+
+  // Function to generate referral code
+  const createReferralCode = () => {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*";
+    let code = "";
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return "REF-" + code; // Total 10 characters
+  };
+
+  // Check if referral is unique
+  const generateUniqueReferralCode = (callback) => {
+    const code = createReferralCode();
+    db.query(
+      "SELECT referral FROM salespersons WHERE referral = ?",
+      [code],
+      (err, results) => {
+        if (err) return callback(err, null);
+        if (results.length > 0) return generateUniqueReferralCode(callback);
+        return callback(null, code);
+      }
+    );
+  };
 
   // Handle uploaded files safely
   const adharImageFile = req.files?.["adharImage"]?.[0];
@@ -210,82 +248,95 @@ export const add = (req, res) => {
       });
     }
 
-    // Insert new salesperson
-    const insertSql = `
-      INSERT INTO salespersons 
-      (fullname, contact, email, intrest, address, state, city, pincode, experience, rerano, adharno, panno, 
-      bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, reraimage, updated_at, created_at) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+    // Generate unique referral code
+    generateUniqueReferralCode((referralErr, referralCode) => {
+      if (referralErr) {
+        console.error("Referral code generation failed:", referralErr);
+        return res.status(500).json({
+          message: "Error generating referral code",
+          error: referralErr,
+        });
+      }
 
-    db.query(
-      insertSql,
-      [
-        fullname,
-        contact,
-        email,
-        intrest,
-        address,
-        state,
-        city,
-        pincode,
-        experience,
-        rerano,
-        adharno,
-        panno,
-        bankname,
-        accountholdername,
-        accountnumber,
-        ifsc,
-        adharImageUrl,
-        panImageUrl,
-        reraImageUrl,
-        currentdate,
-        currentdate,
-      ],
-      (insertErr, insertResult) => {
-        if (insertErr) {
-          console.error("Error inserting Sales Person:", insertErr);
-          return res.status(500).json({
-            message: "Database error",
-            error: insertErr,
-          });
-        }
+      // Insert new salesperson
+      const insertSql = `
+        INSERT INTO salespersons 
+        (fullname, contact, email, intrest, refrence, referral, address, state, city, pincode, experience, rerano, adharno, panno, 
+         bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, reraimage, updated_at, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
 
-        // Insert default follow-up entry
-        const followupSql = `
-          INSERT INTO partnerFollowup 
-          (partnerId, role, followUp, followUpText, created_at, updated_at) 
-          VALUES (?, ?, ?, ?, ?, ?)
-        `;
-
-        db.query(
-          followupSql,
-          [
-            insertResult.insertId,
-            "Sales Person",
-            "New",
-            "Newly Added Sales Person",
-            currentdate,
-            currentdate,
-          ],
-          (followupErr, followupResult) => {
-            if (followupErr) {
-              console.error("Error adding follow-up:", followupErr);
-              return res.status(500).json({
-                message: "Follow-up insert failed",
-                error: followupErr,
-              });
-            }
-
-            return res.status(201).json({
-              message: "Sales Person added successfully",
-              Id: insertResult.insertId,
+      db.query(
+        insertSql,
+        [
+          fullname,
+          contact,
+          email,
+          intrest,
+          refrence,
+          referralCode,
+          address,
+          state,
+          city,
+          pincode,
+          experience,
+          rerano,
+          adharno,
+          panno,
+          bankname,
+          accountholdername,
+          accountnumber,
+          ifsc,
+          adharImageUrl,
+          panImageUrl,
+          reraImageUrl,
+          currentdate,
+          currentdate,
+        ],
+        (insertErr, insertResult) => {
+          if (insertErr) {
+            console.error("Error inserting Sales Person:", insertErr);
+            return res.status(500).json({
+              message: "Database error",
+              error: insertErr,
             });
           }
-        );
-      }
-    );
+
+          // Insert default follow-up entry
+          const followupSql = `
+            INSERT INTO partnerFollowup 
+            (partnerId, role, followUp, followUpText, created_at, updated_at) 
+            VALUES (?, ?, ?, ?, ?, ?)
+          `;
+
+          db.query(
+            followupSql,
+            [
+              insertResult.insertId,
+              "Sales Person",
+              "New",
+              "Newly Added Sales Person",
+              currentdate,
+              currentdate,
+            ],
+            (followupErr) => {
+              if (followupErr) {
+                console.error("Error adding follow-up:", followupErr);
+                return res.status(500).json({
+                  message: "Follow-up insert failed",
+                  error: followupErr,
+                });
+              }
+
+              return res.status(201).json({
+                message: "Sales Person added successfully",
+                Id: insertResult.insertId,
+              });
+            }
+          );
+        }
+      );
+    });
   });
 };
 
@@ -311,7 +362,7 @@ export const edit = (req, res) => {
   } = req.body;
   const salespersonsid = req.params.id;
 
-  if (!fullname || !contact || !email || !intrest) {
+  if (!fullname || !contact || !email) {
     return res.status(400).json({ message: "All fields are required" });
   }
 

@@ -359,11 +359,10 @@ export const visitScheduled = (req, res) => {
   );
 };
 
-export const tokeOld = (req, res) => {
+export const token = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const { paymenttype, tokenamount, remark, dealamount, enquiryStatus } =
     req.body;
-
   const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
 
   if (
@@ -373,9 +372,7 @@ export const tokeOld = (req, res) => {
     !dealamount ||
     !enquiryStatus
   ) {
-    return res
-      .status(400)
-      .json({ message: "Please add visit date and remark!" });
+    return res.status(400).json({ message: "Please add all required fields!" });
   }
 
   const Id = parseInt(req.params.id);
@@ -383,69 +380,91 @@ export const tokeOld = (req, res) => {
     return res.status(400).json({ message: "Invalid Enquiry ID" });
   }
 
+  // Step 1: Get Enquirer (to access propertyid)
   db.query(
     "SELECT * FROM enquirers WHERE enquirersid = ?",
     [Id],
-    (err, result) => {
-      if (err) {
-        console.error("Database error:", err);
+    (err, enquirerResult) => {
+      if (err)
         return res.status(500).json({ message: "Database error", error: err });
-      }
-
-      if (result.length === 0) {
+      if (enquirerResult.length === 0)
         return res.status(404).json({ message: "Enquirer not found" });
-      }
 
-      // First: Insert into propertyfollowup
-      const insertFollowupSQL = `
-      INSERT INTO propertyfollowup 
-        (enquirerid, paymenttype, tokenamount, remark, dealamount, status, paymentimage, updated_at, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const enquirer = enquirerResult[0];
+      const propertyId = enquirer.propertyid;
 
+      // Step 2: Get Property data
       db.query(
-        insertFollowupSQL,
-        [
-          Id,
-          paymenttype,
-          tokenamount,
-          remark,
-          dealamount,
-          enquiryStatus,
-          imagePath,
-          currentdate,
-          currentdate,
-        ],
-        (err, insertResult) => {
-          if (err) {
-            console.error("Error inserting followup:", err);
+        "SELECT commissionType, commissionAmount, commissionPercentage FROM properties WHERE propertyid = ?",
+        [propertyId],
+        (err, propertyResult) => {
+          if (err)
             return res
               .status(500)
-              .json({ message: "Database error", error: err });
+              .json({ message: "Property fetch error", error: err });
+          if (propertyResult.length === 0)
+            return res.status(404).json({ message: "Property not found" });
+
+          const property = propertyResult[0];
+          let { commissionType, commissionAmount, commissionPercentage } =
+            property;
+
+          commissionType = commissionType || "";
+          commissionPercentage = Number(commissionPercentage) || 0;
+          let finalCommissionAmount = Number(commissionAmount) || 0;
+
+          // If type is percentage, calculate commissionAmount from dealamount
+          if (commissionType.toLowerCase() === "percentage") {
+            finalCommissionAmount =
+              (Number(dealamount) * commissionPercentage) / 100;
           }
 
-          // Second: Automatically insert into customerPayment
-          const insertPaymentSQL = `
-          INSERT INTO customerPayment 
-            (enquirerId, paymentType, paymentAmount, paymentImage, created_at, updated_at)
-          VALUES (?, ?, ?, ?, ?, ?)`;
+          // Split commission
+          const reparvCommission = (finalCommissionAmount * 40) / 100;
+          const salesCommission = (finalCommissionAmount * 40) / 100;
+          const territoryCommission = (finalCommissionAmount * 20) / 100;
+
+          // Step 3: Insert into propertyfollowup
+          const insertSQL = `
+          INSERT INTO propertyfollowup (
+            enquirerid, paymenttype, tokenamount, remark, dealamount, status, 
+            totalcommission, reparvcommission, salescommission, territorycommission, paymentimage,
+            updated_at, created_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
 
           db.query(
-            insertPaymentSQL,
-            [Id, paymenttype, tokenamount, imagePath, currentdate, currentdate],
-            (payErr, payResult) => {
-              if (payErr) {
-                console.error("Error inserting customer payment:", payErr);
-                return res.status(500).json({
-                  message:
-                    "Token added, but failed to insert customer payment.",
-                  error: payErr,
-                });
-              }
+            insertSQL,
+            [
+              Id,
+              paymenttype,
+              tokenamount,
+              remark,
+              dealamount,
+              enquiryStatus,
+              finalCommissionAmount,
+              reparvCommission,
+              salesCommission,
+              territoryCommission,
+              imagePath,
+              currentdate,
+              currentdate,
+            ],
+            (err, insertResult) => {
+              if (err)
+                return res
+                  .status(500)
+                  .json({ message: "Insert error", error: err });
 
-              return res.status(201).json({
-                message: "Token and Payment added successfully",
+              res.status(201).json({
+                message: "Token added successfully",
                 followupId: insertResult.insertId,
-                paymentId: payResult.insertId,
+                commissionBreakdown: {
+                  totalCommission: finalCommissionAmount,
+                  salesCommission,
+                  reparvCommission,
+                  territoryCommission,
+                },
               });
             }
           );
@@ -455,7 +474,7 @@ export const tokeOld = (req, res) => {
   );
 };
 
-export const token = (req, res) => {
+export const tokenOld = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const { paymenttype, tokenamount, remark, dealamount, enquiryStatus } =
     req.body;

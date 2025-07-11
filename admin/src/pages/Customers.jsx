@@ -28,8 +28,6 @@ const Customers = () => {
   const [paymentList, setPaymentList] = useState([]);
   const [totalPaid, setTotalPaid] = useState(null);
   const [balancedAmount, setBalancedAmount] = useState(null);
-  const [salesCommission, setSalesCommission] = useState(null);
-  const [territoryCommission, setTerritoryCommission] = useState(null);
   const [customerPayment, setCustomerPayment] = useState({
     paymentType: "",
     paymentAmount: "",
@@ -96,25 +94,6 @@ const Customers = () => {
 
       if (!response.ok) throw new Error("Failed to fetch Customers.");
       const data = await response.json();
-      if (data.commissionType !== "Percentage") {
-        const baseCommission = Number(data.commissionAmount) || 0;
-
-        const salesCommission = (baseCommission * 40) / 100;
-        const territoryCommission = (baseCommission * 20) / 100;
-
-        setSalesCommission(salesCommission);
-        setTerritoryCommission(territoryCommission);
-      } else {
-        const dealAmount = Number(data.dealamount) || 0;
-        const commissionPercentage = Number(data.commissionPercentage) || 0;
-        const totalCommission = (dealAmount * commissionPercentage) / 100;
-
-        const salesCommission = (totalCommission * 40) / 100;
-        const territoryCommission = (totalCommission * 20) / 100;
-
-        setSalesCommission(salesCommission);
-        setTerritoryCommission(territoryCommission);
-      }
       setCustomer(data);
       await fetchPaymentData(id, data);
       setShowCustomer(true);
@@ -577,7 +556,7 @@ const Customers = () => {
                   type="text"
                   disabled
                   className="w-full mt-[4px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={salesCommission?.toFixed(2)}
+                  value={customer.salescommission?.toFixed(2) || 0}
                   readOnly
                 />
               </div>
@@ -605,7 +584,7 @@ const Customers = () => {
                   type="text"
                   disabled
                   className="w-full mt-[4px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={territoryCommission?.toFixed(2)}
+                  value={customer.territorycommission?.toFixed(2) || 0}
                   readOnly
                 />
               </div>

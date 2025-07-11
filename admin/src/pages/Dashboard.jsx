@@ -85,14 +85,29 @@ function Dashboard() {
             to: "/customers",
           },
           {
-            label: "Reparv Share",
-            value: "00",
-            icon: card3,
+            label: "Total Share",
+            value: (Number(overviewCountData?.totalCommission) / 100000).toFixed(2) + " Lac" || "00",
+            icon: card1,
           },
           {
             label: "Deal in Sq. Ft.",
             value: overviewCountData?.totalDealInSquareFeet || "00",
             icon: card4,
+          },
+          {
+            label: "Reparv Share",
+            value: (Number(overviewCountData?.totalReparvCommission) / 100000).toFixed(2) + " Lac" || "00",
+            icon: card1,
+          },
+          {
+            label: "Sales Share",
+            value: (Number(overviewCountData?.totalSalesCommission) / 100000).toFixed(2) + " Lac" || "00",
+            icon: card1,
+          },
+          {
+            label: "Territory Share",
+            value: (Number(overviewCountData?.totalTerritoryCommission) / 100000).toFixed(2) + " Lac" || "00",
+            icon: card1,
           },
           {
             label: "No of Enquiry",
@@ -172,11 +187,7 @@ function Dashboard() {
             </div>
             <div className="downside w-full h-[30px] sm:w-[224px] sm:h-[40px] flex items-center text-xl sm:text-[32px] font-semibold text-white">
               <p className="flex items-center justify-center">
-                <FaRupeeSign
-                  className={`${
-                    card.label === "Total Deal Amount" ? "block" : "hidden"
-                  }`}
-                />
+                {["Total Deal Amount", "Reparv Share", "Total Share", "Sales Share", "Territory Share"].includes(card.label) && <FaRupeeSign />}
                 {card.value}
               </p>
             </div>

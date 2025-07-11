@@ -16,6 +16,7 @@ const Profile = () => {
     email: "",
     contact: "",
     role: "",
+    referral: "",
     userimage: "",
   });
 
@@ -398,7 +399,7 @@ const Profile = () => {
         <div
           className={`${
             !showEditProfile && !showChangePass ? "flex" : "hidden"
-          } profileInfoContainer pt-12 pb-7 w-[320px] h-[495px] bg-[#FFFFFF] flex flex-col px-10 gap-5 rounded-[20px] shadow-[#0000001A] `}
+          } profileInfoContainer pt-12 pb-7 w-[320px] h-[495px] bg-[#FFFFFF] flex flex-col px-10 gap-4 text-[15px] font-medium rounded-[20px] shadow-[#0000001A] `}
         >
           <div className="w-full flex items-center justify-between gap-4">
             <h2 className="text-[18px] leading-5 font-semibold text-[#00000066] ">
@@ -412,39 +413,46 @@ const Profile = () => {
               className="text-[#076300] w-5 leading-5 font-semibold cursor-pointer active:scale-95"
             />
           </div>
-          <h3 className="text-[16px] text-[#000000] leading-5 ">
+          <h3 className="text-[#000000] leading-5 ">
             Name:{" "}
-            <b className="text-[16px] text-[#000000] leading-5 font-semibold ">
+            <b className="text-[#000000] leading-5 font-semibold ">
               {" "}
               {user?.fullname}
             </b>
           </h3>
-          <h3 className="text-[16px] text-[#000000] leading-5 ">
+          <h3 className="text-[#000000] leading-5 ">
             UserName:{" "}
-            <b className="text-[16px] text-[#000000] leading-5 font-semibold ">
+            <b className="text-[#000000] leading-5 font-semibold ">
               {" "}
               {user?.username}
             </b>
           </h3>
-          <h3 className="text-[16px] text-[#000000] leading-5 ">
+          <h3 className="text-[#000000] leading-5 ">
             Email:{" "}
-            <b className="text-[16px] text-[#000000] leading-5 font-semibold ">
+            <b className="text-[#000000] leading-5 font-semibold ">
               {" "}
               {user?.email}
             </b>
           </h3>
-          <h3 className="text-[16px] text-[#000000] leading-5 ">
+          <h3 className="text-[#000000] leading-5 ">
             Phone:{" "}
-            <b className="text-[16px] text-[#000000] leading-5 font-semibold ">
+            <b className="text-[#000000] leading-5 font-semibold ">
               {" "}
               {user?.contact}
             </b>
           </h3>
-          <h3 className="text-[16px] text-[#000000] leading-5 ">
+          <h3 className="text-[#000000] leading-5 ">
             Role:{" "}
-            <b className="text-[16px] text-[#000000] leading-5 font-semibold ">
+            <b className="text-[#000000] leading-5 font-semibold ">
               {" "}
               {user?.role}
+            </b>
+          </h3>
+          <h3 className="text-[#000000] leading-5 ">
+            Referral Code:{" "}
+            <b className="text-[#076300] leading-5 font-semibold ">
+              {" "}
+              {user?.referral}
             </b>
           </h3>
           <h3

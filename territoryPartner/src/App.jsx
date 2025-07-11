@@ -13,8 +13,7 @@ import ScrollToTop from "./components/ScrollToTop.jsx";
 import Property from "./propertyPages/Properties.jsx";
 import PropertyDetails from "./propertyPages/PropertyDetails.jsx";
 import KYC from "./pages/KYC.jsx";
-
-
+import DownloadApk from "./pages/DownloadApk.jsx";
 
 const App = () => {
   return (
@@ -29,7 +28,8 @@ const App = () => {
           <Route path="/customers" element={<Customers />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/tickets" element={<Ticketing />} />
-          <Route path="/calender" element={<CalendarScheduler/>} />
+          <Route path="/calender" element={<CalendarScheduler />} />
+          <Route path="/download-apk" element={<DownloadApk />} />
           
           <Route path="/property" element={<Property />} />
           <Route path="/property-info/:id" element={<PropertyDetails />} />

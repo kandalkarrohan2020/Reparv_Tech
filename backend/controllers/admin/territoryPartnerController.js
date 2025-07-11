@@ -14,89 +14,101 @@ export const getAll = (req, res) => {
 
   let sql;
 
-  if (paymentStatus === "Success") {
-    sql = `SELECT tp.*, pf.followUp, pf.created_at AS followUpDate
-      FROM territorypartner tp
-      LEFT JOIN (
-        SELECT p1.*
-        FROM partnerFollowup p1
-        INNER JOIN (
-          SELECT partnerId, MAX(created_at) AS latest
-          FROM partnerFollowup
-          WHERE role = 'Territory Partner'
-          GROUP BY partnerId
-        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-        WHERE p1.role = 'Territory Partner'
-      ) pf ON tp.id = pf.partnerId
-      WHERE tp.paymentstatus = 'Success'
-      ORDER BY tp.created_at DESC`;
-  } else if (paymentStatus === "Follow Up") {
-    sql = `
-      SELECT tp.*, pf.followUp, pf.created_at AS followUpDate
-      FROM territorypartner tp
-      LEFT JOIN (
-        SELECT p1.*
-        FROM partnerFollowup p1
-        INNER JOIN (
-          SELECT partnerId, MAX(created_at) AS latest
-          FROM partnerFollowup
-          WHERE role = 'Territory Partner'
-          GROUP BY partnerId
-        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-        WHERE p1.role = 'Territory Partner'
-      ) pf ON tp.id = pf.partnerId
-      WHERE tp.paymentstatus = 'Follow Up'
-      ORDER BY tp.updated_at DESC
-    `;
-  } else if (paymentStatus === "Pending") {
-    sql = `SELECT tp.*, pf.followUp, pf.created_at AS followUpDate
-      FROM territorypartner tp
-      LEFT JOIN (
-        SELECT p1.*
-        FROM partnerFollowup p1
-        INNER JOIN (
-          SELECT partnerId, MAX(created_at) AS latest
-          FROM partnerFollowup
-          WHERE role = 'Territory Partner'
-          GROUP BY partnerId
-        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-        WHERE p1.role = 'Territory Partner'
-      ) pf ON tp.id = pf.partnerId
-      WHERE tp.paymentstatus = 'Pending'
-      ORDER BY tp.created_at DESC`;
-  } else {
-    sql = `SELECT * FROM territorypartner ORDER BY id DESC`;
+  const followUpJoin = `
+    LEFT JOIN (
+      SELECT p1.*
+      FROM partnerFollowup p1
+      INNER JOIN (
+        SELECT partnerId, MAX(created_at) AS latest
+        FROM partnerFollowup
+        WHERE role = 'Territory Partner'
+        GROUP BY partnerId
+      ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+      WHERE p1.role = 'Territory Partner'
+    ) pf ON tp.id = pf.partnerId
+  `;
+
+  switch (paymentStatus) {
+    case "Success":
+      sql = `
+        SELECT tp.*, pf.followUp, pf.created_at AS followUpDate
+        FROM territorypartner tp
+        ${followUpJoin}
+        WHERE tp.paymentstatus = 'Success'
+        ORDER BY tp.created_at DESC`;
+      break;
+
+    case "Follow Up":
+      sql = `
+        SELECT tp.*, pf.followUp, pf.created_at AS followUpDate
+        FROM territorypartner tp
+        ${followUpJoin}
+        WHERE tp.paymentstatus = 'Follow Up' AND tp.loginstatus = 'Inactive'
+        ORDER BY tp.updated_at DESC`;
+      break;
+
+    case "Pending":
+      sql = `
+        SELECT tp.*, pf.followUp, pf.created_at AS followUpDate
+        FROM territorypartner tp
+        ${followUpJoin}
+        WHERE tp.paymentstatus = 'Pending'
+        ORDER BY tp.created_at DESC`;
+      break;
+
+    case "Free":
+      sql = `
+        SELECT tp.*, pf.followUp, pf.created_at AS followUpDate
+        FROM territorypartner tp
+        ${followUpJoin}
+        WHERE tp.paymentstatus != 'Success' AND tp.loginstatus = 'Active'
+        ORDER BY tp.created_at DESC`;
+      break;
+
+    default:
+      sql = `SELECT * FROM territorypartner ORDER BY id DESC`;
   }
 
-  // Step 1: Fetch partner data
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching Territory Partners:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
 
-    // Step 2: Fetch paymentStatus counts
+    // Count query with "Free" added
     const countQuery = `
-      SELECT paymentstatus, COUNT(*) AS count
+      SELECT 'Success' AS status, COUNT(*) AS count
       FROM territorypartner
-      WHERE paymentstatus IS NOT NULL
-      GROUP BY paymentstatus
+      WHERE paymentstatus = 'Success'
+      UNION ALL
+      SELECT 'Pending', COUNT(*)
+      FROM territorypartner
+      WHERE paymentstatus = 'Pending'
+      UNION ALL
+      SELECT 'Follow Up', COUNT(*)
+      FROM territorypartner
+      WHERE paymentstatus = 'Follow Up' AND loginstatus = 'Inactive'
+      UNION ALL
+      SELECT 'Free', COUNT(*)
+      FROM territorypartner
+      WHERE paymentstatus != 'Success' AND loginstatus = 'Active'
     `;
 
     db.query(countQuery, (countErr, counts) => {
       if (countErr) {
+        console.error("Error fetching status counts:", countErr);
         return res
           .status(500)
           .json({ message: "Database error", error: countErr });
       }
 
-      // Format the counts
-      const paymentStatusCounts = counts.reduce((acc, item) => {
-        acc[item.paymentstatus || "Unknown"] = item.count;
-        return acc;
-      }, {});
+      // Format counts into object
+      const paymentStatusCounts = {};
+      counts.forEach((item) => {
+        paymentStatusCounts[item.status] = item.count;
+      });
 
-      // Format date fields and follow up info
+      // Format results
       const formatted = result.map((row) => ({
         ...row,
         created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
@@ -154,6 +166,7 @@ export const add = (req, res) => {
     contact,
     email,
     intrest,
+    refrence,
     address,
     state,
     city,
@@ -173,6 +186,30 @@ export const add = (req, res) => {
     return res.status(400).json({ message: "All Fields required!" });
   }
 
+  // Generate referral code
+  const createReferralCode = () => {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*";
+    let code = "";
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return "REF-" + code; // Total 10 characters
+  };
+
+  const generateUniqueReferralCode = (callback) => {
+    const code = createReferralCode();
+    db.query(
+      "SELECT referral FROM territorypartner WHERE referral = ?",
+      [code],
+      (err, results) => {
+        if (err) return callback(err, null);
+        if (results.length > 0) return generateUniqueReferralCode(callback);
+        return callback(null, code);
+      }
+    );
+  };
+
   // Handle uploaded files safely
   const adharImageFile = req.files?.["adharImage"]?.[0];
   const panImageFile = req.files?.["panImage"]?.[0];
@@ -186,7 +223,7 @@ export const add = (req, res) => {
     ? `/uploads/${reraImageFile.filename}`
     : null;
 
-  // Check if partner already exists
+  // Check for duplicates
   const checkSql = `SELECT * FROM territorypartner WHERE contact = ? OR email = ?`;
 
   db.query(checkSql, [contact, email], (checkErr, checkResult) => {
@@ -204,82 +241,95 @@ export const add = (req, res) => {
       });
     }
 
-    // Insert new territory partner
-    const insertSql = `
-      INSERT INTO territorypartner 
-      (fullname, contact, email, intrest, address, state, city, pincode, experience, adharno, panno, rerano, 
-       bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, reraimage, updated_at, created_at) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+    // Generate unique referral code before inserting
+    generateUniqueReferralCode((referralErr, referralCode) => {
+      if (referralErr) {
+        console.error("Error generating referral:", referralErr);
+        return res.status(500).json({
+          message: "Referral code generation failed",
+          error: referralErr,
+        });
+      }
 
-    db.query(
-      insertSql,
-      [
-        fullname,
-        contact,
-        email,
-        intrest,
-        address,
-        state,
-        city,
-        pincode,
-        experience,
-        adharno,
-        panno,
-        rerano,
-        bankname,
-        accountholdername,
-        accountnumber,
-        ifsc,
-        adharImageUrl,
-        panImageUrl,
-        reraImageUrl,
-        currentdate,
-        currentdate,
-      ],
-      (insertErr, insertResult) => {
-        if (insertErr) {
-          console.error("Error inserting Territory Partner:", insertErr);
-          return res.status(500).json({
-            message: "Database error during insertion",
-            error: insertErr,
-          });
-        }
+      // Insert new territory partner
+      const insertSql = `
+        INSERT INTO territorypartner 
+        (fullname, contact, email, intrest, refrence, referral, address, state, city, pincode, experience, adharno, panno, rerano, 
+         bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, reraimage, updated_at, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
 
-        // Insert follow-up for the new Territory Partner
-        const followupSql = `
-          INSERT INTO partnerFollowup 
-          (partnerId, role, followUp, followUpText, created_at, updated_at)
-          VALUES (?, ?, ?, ?, ?, ?)
-        `;
-
-        db.query(
-          followupSql,
-          [
-            insertResult.insertId,
-            "Territory Partner",
-            "New",
-            "Newly Added Territory Partner",
-            currentdate,
-            currentdate,
-          ],
-          (followupErr, followupResult) => {
-            if (followupErr) {
-              console.error("Error adding follow-up:", followupErr);
-              return res.status(500).json({
-                message: "Follow-up insert failed",
-                error: followupErr,
-              });
-            }
-
-            return res.status(201).json({
-              message: "Territory Partner added successfully",
-              Id: insertResult.insertId,
+      db.query(
+        insertSql,
+        [
+          fullname,
+          contact,
+          email,
+          intrest,
+          refrence,
+          referralCode,
+          address,
+          state,
+          city,
+          pincode,
+          experience,
+          adharno,
+          panno,
+          rerano,
+          bankname,
+          accountholdername,
+          accountnumber,
+          ifsc,
+          adharImageUrl,
+          panImageUrl,
+          reraImageUrl,
+          currentdate,
+          currentdate,
+        ],
+        (insertErr, insertResult) => {
+          if (insertErr) {
+            console.error("Error inserting Territory Partner:", insertErr);
+            return res.status(500).json({
+              message: "Database error during insertion",
+              error: insertErr,
             });
           }
-        );
-      }
-    );
+
+          // Insert follow-up for the new Territory Partner
+          const followupSql = `
+            INSERT INTO partnerFollowup 
+            (partnerId, role, followUp, followUpText, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+          `;
+
+          db.query(
+            followupSql,
+            [
+              insertResult.insertId,
+              "Territory Partner",
+              "New",
+              "Newly Added Territory Partner",
+              currentdate,
+              currentdate,
+            ],
+            (followupErr) => {
+              if (followupErr) {
+                console.error("Error adding follow-up:", followupErr);
+                return res.status(500).json({
+                  message: "Follow-up insert failed",
+                  error: followupErr,
+                });
+              }
+
+              return res.status(201).json({
+                message: "Territory Partner added successfully",
+                Id: insertResult.insertId,
+              });
+            }
+          );
+        }
+      );
+    });
   });
 };
 
@@ -308,7 +358,7 @@ export const edit = (req, res) => {
     ifsc,
   } = req.body;
 
-  if (!fullname || !contact || !email || !intrest) {
+  if (!fullname || !contact || !email) {
     return res.status(400).json({ message: "All fields are required" });
   }
 

@@ -15,21 +15,26 @@ export const getAll = (req, res) => {
 
   let sql;
 
+  const followUpJoin = `
+    LEFT JOIN (
+      SELECT p1.*
+      FROM partnerFollowup p1
+      INNER JOIN (
+        SELECT partnerId, MAX(created_at) AS latest
+        FROM partnerFollowup
+        WHERE role = 'Project Partner'
+        GROUP BY partnerId
+      ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+      WHERE p1.role = 'Project Partner'
+    ) pf ON projectpartner.id = pf.partnerId
+  `;
+
   switch (paymentStatus) {
     case "Success":
-      sql = `SELECT projectpartner.*, pf.followUp, pf.created_at AS followUpDate
+      sql = `
+        SELECT projectpartner.*, pf.followUp, pf.created_at AS followUpDate
         FROM projectpartner
-        LEFT JOIN (
-          SELECT p1.*
-          FROM partnerFollowup p1
-          INNER JOIN (
-            SELECT partnerId, MAX(created_at) AS latest
-            FROM partnerFollowup
-            WHERE role = 'Project Partner'
-            GROUP BY partnerId
-          ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-          WHERE p1.role = 'Project Partner'
-        ) pf ON projectpartner.id = pf.partnerId
+        ${followUpJoin}
         WHERE projectpartner.paymentstatus = 'Success'
         ORDER BY projectpartner.created_at DESC`;
       break;
@@ -38,37 +43,27 @@ export const getAll = (req, res) => {
       sql = `
         SELECT projectpartner.*, pf.followUp, pf.created_at AS followUpDate
         FROM projectpartner
-        LEFT JOIN (
-          SELECT p1.*
-          FROM partnerFollowup p1
-          INNER JOIN (
-            SELECT partnerId, MAX(created_at) AS latest
-            FROM partnerFollowup
-            WHERE role = 'Project Partner'
-            GROUP BY partnerId
-          ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-          WHERE p1.role = 'Project Partner'
-        ) pf ON projectpartner.id = pf.partnerId
-        WHERE projectpartner.paymentstatus = 'Follow Up'
-        ORDER BY projectpartner.updated_at DESC
-      `;
+        ${followUpJoin}
+        WHERE projectpartner.paymentstatus = 'Follow Up' AND projectpartner.loginstatus = 'Inactive'
+        ORDER BY projectpartner.updated_at DESC`;
       break;
 
     case "Pending":
-      sql = `SELECT projectpartner.*, pf.followUp, pf.created_at AS followUpDate
+      sql = `
+        SELECT projectpartner.*, pf.followUp, pf.created_at AS followUpDate
         FROM projectpartner
-        LEFT JOIN (
-          SELECT p1.*
-          FROM partnerFollowup p1
-          INNER JOIN (
-            SELECT partnerId, MAX(created_at) AS latest
-            FROM partnerFollowup
-            WHERE role = 'Project Partner'
-            GROUP BY partnerId
-          ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-          WHERE p1.role = 'Project Partner'
-        ) pf ON projectpartner.id = pf.partnerId
+        ${followUpJoin}
         WHERE projectpartner.paymentstatus = 'Pending'
+        ORDER BY projectpartner.created_at DESC`;
+      break;
+
+    case "Free":
+      sql = `
+        SELECT projectpartner.*, pf.followUp, pf.created_at AS followUpDate
+        FROM projectpartner
+        ${followUpJoin}
+        WHERE projectpartner.paymentstatus != 'Success' 
+          AND projectpartner.loginstatus = 'Active'
         ORDER BY projectpartner.created_at DESC`;
       break;
 
@@ -82,12 +77,23 @@ export const getAll = (req, res) => {
       return res.status(500).json({ message: "Database error", error: err });
     }
 
-    // Now fetch status counts
+    // Accurate count logic including "Free"
     const countQuery = `
-      SELECT paymentstatus, COUNT(*) AS count 
-      FROM projectpartner 
-      WHERE paymentstatus IS NOT NULL
-      GROUP BY paymentstatus
+      SELECT 'Success' AS status, COUNT(*) AS count
+      FROM projectpartner
+      WHERE paymentstatus = 'Success'
+      UNION ALL
+      SELECT 'Pending', COUNT(*)
+      FROM projectpartner
+      WHERE paymentstatus = 'Pending'
+      UNION ALL
+      SELECT 'Follow Up', COUNT(*)
+      FROM projectpartner
+      WHERE paymentstatus = 'Follow Up' AND loginstatus = 'Inactive'
+      UNION ALL
+      SELECT 'Free', COUNT(*)
+      FROM projectpartner
+      WHERE paymentstatus != 'Success' AND loginstatus = 'Active'
     `;
 
     db.query(countQuery, (countErr, counts) => {
@@ -108,12 +114,10 @@ export const getAll = (req, res) => {
           : null,
       }));
 
-      const paymentStatusCounts = Array.isArray(counts)
-        ? counts.reduce((acc, item) => {
-            acc[item.paymentstatus || "Unknown"] = item.count;
-            return acc;
-          }, {})
-        : {};
+      const paymentStatusCounts = {};
+      counts.forEach((item) => {
+        paymentStatusCounts[item.status] = item.count;
+      });
 
       res.json({
         data: formatted,
@@ -156,12 +160,12 @@ export const getById = (req, res) => {
 // **Add New Project Partner **
 export const add = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-
   const {
     fullname,
     contact,
     email,
     intrest,
+    refrence,
     address,
     state,
     city,
@@ -176,12 +180,33 @@ export const add = (req, res) => {
     ifsc,
   } = req.body;
 
-  // Basic validation
   if (!fullname || !contact || !email || !intrest) {
     return res.status(400).json({ message: "All fields are required!" });
   }
 
-  // Handle uploaded files
+  const createReferralCode = () => {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*";
+    let code = "";
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return "REF-" + code;
+  };
+
+  const generateUniqueReferralCode = (callback) => {
+    const code = createReferralCode();
+    db.query(
+      "SELECT referral FROM projectpartner WHERE referral = ?",
+      [code],
+      (err, results) => {
+        if (err) return callback(err, null);
+        if (results.length > 0) return generateUniqueReferralCode(callback);
+        return callback(null, code);
+      }
+    );
+  };
+
   const adharImageFile = req.files?.["adharImage"]?.[0];
   const panImageFile = req.files?.["panImage"]?.[0];
   const reraImageFile = req.files?.["reraImage"]?.[0];
@@ -194,7 +219,6 @@ export const add = (req, res) => {
     ? `/uploads/${reraImageFile.filename}`
     : null;
 
-  // Check for duplicates
   const checkSql = `SELECT * FROM projectpartner WHERE contact = ? OR email = ?`;
 
   db.query(checkSql, [contact, email], (checkErr, checkResult) => {
@@ -212,81 +236,91 @@ export const add = (req, res) => {
       });
     }
 
-    // Insert new project partner
-    const insertSql = `
-      INSERT INTO projectpartner 
-      (fullname, contact, email, intrest, address, state, city, pincode, experience, adharno, panno, rerano, bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, reraimage, updated_at, created_at) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+    generateUniqueReferralCode((referralErr, referralCode) => {
+      if (referralErr) {
+        console.error("Referral code generation failed:", referralErr);
+        return res.status(500).json({
+          message: "Error generating unique referral code",
+          error: referralErr,
+        });
+      }
 
-    db.query(
-      insertSql,
-      [
-        fullname,
-        contact,
-        email,
-        intrest,
-        address,
-        state,
-        city,
-        pincode,
-        experience,
-        adharno,
-        panno,
-        rerano,
-        bankname,
-        accountholdername,
-        accountnumber,
-        ifsc,
-        adharImageUrl,
-        panImageUrl,
-        reraImageUrl,
-        currentdate,
-        currentdate,
-      ],
-      (insertErr, insertResult) => {
-        if (insertErr) {
-          console.error("Error inserting Project Partner:", insertErr);
-          return res.status(500).json({
-            message: "Database error during insert",
-            error: insertErr,
-          });
-        }
+      const insertSql = `
+        INSERT INTO projectpartner 
+        (fullname, contact, email, intrest, refrence, referral, address, state, city, pincode, experience, adharno, panno, rerano, bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, reraimage, updated_at, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
 
-        // Insert follow-up entry for new partner
-        const followupSql = `
-          INSERT INTO partnerFollowup 
-          (partnerId, role, followUp, followUpText, created_at, updated_at) 
-          VALUES (?, ?, ?, ?, ?, ?)
-        `;
-
-        db.query(
-          followupSql,
-          [
-            insertResult.insertId,
-            "Project Partner",
-            "New",
-            "Newly Added Project Partner",
-            currentdate,
-            currentdate,
-          ],
-          (followupErr, followupResult) => {
-            if (followupErr) {
-              console.error("Error adding follow-up:", followupErr);
-              return res.status(500).json({
-                message: "Follow-up insert failed",
-                error: followupErr,
-              });
-            }
-
-            return res.status(201).json({
-              message: "Project Partner added successfully",
-              Id: insertResult.insertId,
+      db.query(
+        insertSql,
+        [
+          fullname,
+          contact,
+          email,
+          intrest,
+          refrence,
+          referralCode,
+          address,
+          state,
+          city,
+          pincode,
+          experience,
+          adharno,
+          panno,
+          rerano,
+          bankname,
+          accountholdername,
+          accountnumber,
+          ifsc,
+          adharImageUrl,
+          panImageUrl,
+          reraImageUrl,
+          currentdate,
+          currentdate,
+        ],
+        (insertErr, insertResult) => {
+          if (insertErr) {
+            console.error("Error inserting Project Partner:", insertErr);
+            return res.status(500).json({
+              message: "Database error during insert",
+              error: insertErr,
             });
           }
-        );
-      }
-    );
+
+          const followupSql = `
+            INSERT INTO partnerFollowup 
+            (partnerId, role, followUp, followUpText, created_at, updated_at) 
+            VALUES (?, ?, ?, ?, ?, ?)
+          `;
+
+          db.query(
+            followupSql,
+            [
+              insertResult.insertId,
+              "Project Partner",
+              "New",
+              "Newly Added Project Partner",
+              currentdate,
+              currentdate,
+            ],
+            (followupErr) => {
+              if (followupErr) {
+                console.error("Error adding follow-up:", followupErr);
+                return res.status(500).json({
+                  message: "Follow-up insert failed",
+                  error: followupErr,
+                });
+              }
+
+              return res.status(201).json({
+                message: "Project Partner added successfully",
+                Id: insertResult.insertId,
+              });
+            }
+          );
+        }
+      );
+    });
   });
 };
 
@@ -315,7 +349,7 @@ export const edit = (req, res) => {
     ifsc,
   } = req.body;
 
-  if (!fullname || !contact || !email || !intrest) {
+  if (!fullname || !contact || !email) {
     return res.status(400).json({ message: "All fields are required" });
   }
 

@@ -26,6 +26,13 @@ const PartnerFilter = ({ counts = {} }) => {
       text: "text-green-600",
       count: counts?.Success || 0,
     },
+    {
+      name: "Free",
+      label: "Free",
+      bg: "bg-yellow-100",
+      text: "text-yellow-500",
+      count: counts?.Free || 0,
+    },
   ];
 
   return (

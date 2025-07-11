@@ -13,6 +13,7 @@ const RegistrationForm = () => {
     state: "",
     city: "",
     intrest: "",
+    refrence: "",
   });
 
   const [states, setStates] = useState([]);
@@ -118,6 +119,7 @@ const RegistrationForm = () => {
             state: "",
             city: "",
             intrest: "",
+            refrence: "",
           });
         } catch (paymentError) {
           console.error("Payment Error:", paymentError.message);
@@ -253,10 +255,23 @@ const RegistrationForm = () => {
             type="text"
             required
             minLength={3}
-            placeholder="Why are You Interested?"
+            placeholder="Why are You Interested ?"
             value={newPartner.intrest}
             onChange={(e) =>
               setNewPartner({ ...newPartner, intrest: e.target.value })
+            }
+            className="w-full  bg-white text-sm sm:text-base font-medium px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600"
+          />
+        </div>
+
+        <div className="w-full mb-5">
+          <input
+            type="text"
+            minLength={10}
+            placeholder="Referral Code (optional)"
+            value={newPartner.refrence}
+            onChange={(e) =>
+              setNewPartner({ ...newPartner, refrence: e.target.value })
             }
             className="w-full  bg-white text-sm sm:text-base font-medium px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600"
           />

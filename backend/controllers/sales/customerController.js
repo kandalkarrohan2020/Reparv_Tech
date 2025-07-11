@@ -4,6 +4,10 @@ import moment from "moment";
 // **Fetch All **
 export const getAll = (req, res) => {
   const userId = req.user.id;
+  if (!userId) {
+    console.log("Invalid User Id: " + userId);
+    return res.status(400).json({ message: "Invalid User Id" });
+  }
   const sql = `
     SELECT 
       enquirers.*, 
@@ -19,7 +23,7 @@ export const getAll = (req, res) => {
     LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
     LEFT JOIN territorypartner ON enquirers.territorypartnerid = territorypartner.id
     LEFT JOIN propertyfollowup ON propertyfollowup.enquirerid = enquirers.enquirersid
-    WHERE enquirers.status = 'Token' AND propertyfollowup.status = 'Token' AND enquirers.salespersonsid = ?
+    WHERE enquirers.status = 'Token' AND propertyfollowup.status = 'Token' AND enquirers.salespersonid = ?
     ORDER BY propertyfollowup.created_at DESC
   `;
 

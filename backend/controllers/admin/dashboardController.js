@@ -6,14 +6,36 @@ export const getCount = (req, res) => {
         (SELECT IFNULL(SUM(pf.dealamount), 0)
          FROM propertyfollowup pf
          JOIN enquirers e ON pf.enquirerid = e.enquirersid
-         WHERE pf.status = 'Token') AS totalDealAmount,
+         WHERE pf.status = 'Token'
+        ) AS totalDealAmount,
 
         (SELECT COUNT(enquirersid) FROM enquirers WHERE status = 'Token') AS totalCustomer,
+        
+        (SELECT IFNULL(SUM(pf.totalcommission), 0)
+         FROM propertyfollowup pf
+         WHERE pf.status = 'Token'
+        ) AS totalCommission,
 
         (SELECT IFNULL(SUM(p.carpetArea), 0)
          FROM enquirers e
          JOIN properties p ON e.propertyid = p.propertyid
-         WHERE e.status = 'Token') AS totalDealInSquareFeet,
+         WHERE e.status = 'Token'
+        ) AS totalDealInSquareFeet,
+        
+        (SELECT IFNULL(SUM(pf.reparvcommission), 0)
+         FROM propertyfollowup pf
+         WHERE pf.status = 'Token'
+        ) AS totalReparvCommission,
+
+        (SELECT IFNULL(SUM(pf.salescommission), 0)
+         FROM propertyfollowup pf
+         WHERE pf.status = 'Token'
+        ) AS totalSalesCommission,
+
+        (SELECT IFNULL(SUM(pf.territorycommission), 0)
+         FROM propertyfollowup pf
+         WHERE pf.status = 'Token'
+        ) AS totalTerritoryCommission,
 
         (SELECT COUNT(enquirersid) FROM enquirers) AS totalEnquiry,
         (SELECT COUNT(propertyid) FROM properties) AS totalProperty,

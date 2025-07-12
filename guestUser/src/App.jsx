@@ -17,7 +17,7 @@ const App = () => {
         <Route path="" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-         <Route path="/kyc" element={<KYC />} />
+        <Route path="/kyc/:userid" element={<KYC />} />
         <Route path="/" element={<Layout />}>
           <Route path="/dashboard" element={<Overview />} />
           <Route path="/properties" element={<Properties />} />

@@ -7,8 +7,9 @@ import { useAuth } from "../store/auth";
 import { useNavigate } from "react-router-dom";
 
 export default function KYC() {
+  const {userid} = useParams();
   const navigate = useNavigate();
-  const { URI, user, setLoading } = useAuth();
+  const { URI, setLoading } = useAuth();
 
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
@@ -91,7 +92,7 @@ export default function KYC() {
   //fetch data on form
   const showDetails = async () => {
     try {
-      const response = await fetch(URI + `/admin/guestuser/${user.id}`, {
+      const response = await fetch(URI + `/admin/guestuser/${userid}`, {
         method: "GET",
         credentials: "include",
         headers: {

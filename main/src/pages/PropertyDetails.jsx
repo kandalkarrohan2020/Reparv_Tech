@@ -22,7 +22,7 @@ function PropertyDetails() {
   const { id } = useParams();
   const [propertyInfo, setPropertyInfo] = useState({});
   const [propertyImages, setPropertyImages] = useState([]);
-  const { setShowSiteVisitPopup, URI, setPropertyImage, setPropertyId } =
+  const { setShowSiteVisitPopup, URI, setPropertyCategory, setPropertyId } =
     useAuth();
 
   // Fetch Property Info
@@ -37,6 +37,7 @@ function PropertyDetails() {
       const data = await response.json();
       console.log("Property Info", data);
       setPropertyInfo(data);
+      setPropertyCategory(data.propertyCategory);
     } catch (err) {
       console.error("Error fetching property info:", err);
     }
@@ -97,7 +98,9 @@ function PropertyDetails() {
                 <h2 className="text-base font-semibold mb-4">
                   Property Details
                 </h2>
-                <div className="text-sm text-gray-600 ">{propertyInfo.propertyDescription}</div>
+                <div className="text-sm text-gray-600 ">
+                  {propertyInfo.propertyDescription}
+                </div>
               </div>
             </div>
 
@@ -120,6 +123,8 @@ function PropertyDetails() {
             onClick={() => {
               setShowSiteVisitPopup(true);
               setPropertyImages(JSON.parse(propertyInfo.frontView)[0]);
+              setPropertyId(JSON.parse(propertyInfo.propertyid));
+              setPropertyCategory(propertyInfo.propertyCategory);
             }}
             className="w-full flex items-center justify-center sm:hidden rounded-md bg-[#0BB501] text-white font-semibold py-3 text-base active:scale-95 cursor-pointer"
           >

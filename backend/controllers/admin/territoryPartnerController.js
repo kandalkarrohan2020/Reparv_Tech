@@ -143,6 +143,9 @@ export const getAllActive = (req, res) => {
 // **Fetch Single by ID**
 export const getById = (req, res) => {
   const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Partner ID" });
+  }
   const sql = "SELECT * FROM territorypartner WHERE id = ?";
 
   db.query(sql, [Id], (err, result) => {
@@ -334,8 +337,8 @@ export const add = (req, res) => {
 };
 
 export const edit = (req, res) => {
-  const partnerid = req.params.id;
-  if (!partnerid) {
+  const partnerid = parseInt(req.params.id);
+  if (isNaN(partnerid)) {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");

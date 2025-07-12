@@ -142,6 +142,9 @@ export const getAllActive = (req, res) => {
 // **Fetch Single by ID**
 export const getById = (req, res) => {
   const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Partner ID" });
+  }
 
   if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Sales person ID" });
@@ -360,7 +363,10 @@ export const edit = (req, res) => {
     accountnumber,
     ifsc,
   } = req.body;
-  const salespersonsid = req.params.id;
+  const salespersonsid = parseInt(req.params.id);
+  if (isNaN(salespersonsid)) {
+    return res.status(400).json({ message: "Invalid Partner ID" });
+  }
 
   if (!fullname || !contact || !email) {
     return res.status(400).json({ message: "All fields are required" });

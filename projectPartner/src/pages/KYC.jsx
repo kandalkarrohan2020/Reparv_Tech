@@ -7,10 +7,10 @@ import { useAuth } from "../store/auth";
 import { useNavigate } from "react-router-dom";
 
 export default function KYC() {
+  const {userid} = useParams();
   const navigate = useNavigate();
   const {
     URI,
-    user,
     setLoading,
   } = useAuth();
 
@@ -97,7 +97,7 @@ export default function KYC() {
   //fetch data on form
   const showDetails = async () => {
     try {
-      const response = await fetch(URI + `/admin/projectpartner/get/${user.id}`, {
+      const response = await fetch(`${URI}/admin/projectpartner/get/${userid}`, {
         method: "GET",
         credentials: "include",
         headers: {

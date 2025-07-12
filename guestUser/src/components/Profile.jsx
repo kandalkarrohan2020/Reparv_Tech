@@ -185,7 +185,7 @@ const Profile = () => {
         </div>
 
         <Link
-          to="/kyc"
+          to={`/kyc/${user?.id}`}
           className="userOtherDetails cursor-pointer text-[#076300] active:scale-95 w-[320px] h-[40px] bg-[#FFFFFF] hover:bg-[#00760c] hover:text-[#FFFFFF] flex flex-col items-center justify-center p-5 gap-3 rounded-[20px] shadow-[#0000001A] "
         >
           <h2 className="text-[16px] leading-5 font-semibold flex gap-2 items-center justify-center">

@@ -14,7 +14,7 @@ function PropertyDetails() {
   const { id } = useParams();
   const [propertyInfo, setPropertyInfo] = useState({});
   const [propertyImages, setPropertyImages] = useState([]);
-  const { setShowSiteVisitPopup, URI, setPropertyImage } = useAuth();
+  const { setShowSiteVisitPopup, URI, setPropertyCategory } = useAuth();
 
   // Fetch Property Info
   const fetchData = async () => {
@@ -82,6 +82,7 @@ function PropertyDetails() {
         <button
           onClick={() => {
             setShowSiteVisitPopup(true);
+            setPropertyCategory(propertyInfo.propertyCategory);
             setPropertyImages(JSON.parse(propertyInfo.frontView)[0]);
           }}
           className="w-full flex items-center justify-center sm:hidden rounded-md bg-[#0BB501] text-white font-semibold py-3 text-base active:scale-95 cursor-pointer"

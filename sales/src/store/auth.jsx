@@ -44,6 +44,7 @@ const [showCustomerPaymentForm, setShowCustomerPaymentForm] = useState(false);
 
 const [priceSummery, setPriceSummery] = useState({});
 const [selectedCity, setSelectedCity] = useState("");
+const [propertyCategory, setPropertyCategory] = useState(null);
 const [propertyImage, setPropertyImage] = useState("");
 const [propertyType, setPropertyType] = useState("properties");
 const [propertySearch, setPropertySearch] = useState("");
@@ -77,6 +78,7 @@ return <AuthContext.Provider
         showCustomerPaymentForm, setShowCustomerPaymentForm,
 
         priceSummery, setPriceSummery,
+        propertyCategory, setPropertyCategory,
         propertyImage, setPropertyImage,
         propertyType, setPropertyType,
         propertySearch, setPropertySearch,

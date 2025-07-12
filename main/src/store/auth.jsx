@@ -8,6 +8,7 @@ export const AuthProvider = ({children}) => {
 const [loading, setLoading] = useState(false);
 const [isActive, setIsActive] = useState(false);
 const [propertyId, setPropertyId] = useState(null);
+const [propertyCategory, setPropertyCategory] = useState("");
 const [successScreen, setSuccessScreen] = useState({
     show: false,
     label: "Thank You For Registering!",
@@ -32,6 +33,7 @@ return <AuthContext.Provider
     {  
         isActive, setIsActive,
         propertyId, setPropertyId,
+        propertyCategory, setPropertyCategory,
         successScreen, setSuccessScreen,
         priceSummery, setPriceSummery,
         propertyImage, setPropertyImage,

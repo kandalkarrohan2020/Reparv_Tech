@@ -9,9 +9,10 @@ import { useParams } from "react-router-dom";
 export default function SiteVisitPopup() {
   const {
     URI,
-    setLoading, 
+    setLoading,
     setShowSiteVisitPopup,
     propertyId,
+    propertyCategory,
     propertyImage,
     successScreen,
     setSuccessScreen,
@@ -20,6 +21,27 @@ export default function SiteVisitPopup() {
   const location = useLocation();
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
+
+  const rentMinBudgetOptions = [
+    5000, 10000, 15000, 20000, 30000, 40000, 50000, 75000, 100000,
+  ];
+  const rentMaxBudgetOptions = [
+    10000, 15000, 20000, 30000, 40000, 50000, 75000, 100000, 125000,
+  ];
+
+  const saleMinBudgetOptions = [
+    1000000, 2500000, 5000000, 7500000, 10000000, 20000000, 30000000, 40000000,
+  ];
+  const saleMaxBudgetOptions = [
+    2500000, 5000000, 7500000, 10000000, 20000000, 30000000, 40000000, 50000000,
+  ];
+
+  const isRental = ["RentalFlat", "RentalPlot", "RentalShop", "RentalOffice"].includes(
+    propertyCategory
+  );
+
+  const minOptions = isRental ? rentMinBudgetOptions : saleMinBudgetOptions;
+  const maxOptions = isRental ? rentMaxBudgetOptions : saleMaxBudgetOptions;
 
   //Inquiry Form Data
   const [formData, setFormData] = useState({
@@ -234,39 +256,65 @@ export default function SiteVisitPopup() {
                 ))}
               </select>
             </div>
-            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
-              <label htmlFor="fullName" className="ml-1 text-xs">
+            {/* Min Budget */}
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066]">
+              <label htmlFor="minbudget" className="ml-1 text-xs">
                 Min Budget
               </label>
-              <input
-                type="number"
+              <select
                 name="minbudget"
                 id="minbudget"
-                placeholder="Enter Min-budget"
                 value={formData.minbudget}
-                onChange={(e) => {
-                  setFormData({ ...formData, minbudget: e.target.value });
-                }}
-                className="w-full font-medium p-3 border border-[#00000033] rounded-md focus:outline-0"
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    minbudget: parseInt(e.target.value),
+                    maxbudget: "",
+                  })
+                }
+                className="w-full font-medium p-3 border border-[#00000033] rounded-md focus:outline-0 appearance-none bg-white"
+                style={{ backgroundImage: "none" }}
                 required
-              />
+              >
+                <option value="">Select Min Budget</option>
+                {minOptions.map((value) => (
+                  <option key={value} value={value}>
+                    ₹{value.toLocaleString("en-IN")}
+                  </option>
+                ))}
+              </select>
             </div>
-            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
-              <label htmlFor="fullName" className="ml-1 text-xs">
+
+            {/* Max Budget */}
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066]">
+              <label htmlFor="maxbudget" className="ml-1 text-xs">
                 Max Budget
               </label>
-              <input
-                type="number"
+              <select
                 name="maxbudget"
                 id="maxbudget"
-                placeholder="Enter Max-budget"
                 value={formData.maxbudget}
-                onChange={(e) => {
-                  setFormData({ ...formData, maxbudget: e.target.value });
-                }}
-                className="w-full font-medium p-3 border border-[#00000033] rounded-md focus:outline-0"
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    maxbudget: parseInt(e.target.value),
+                  })
+                }
+                className="w-full font-medium p-3 border border-[#00000033] rounded-md focus:outline-0 appearance-none bg-white"
+                style={{ backgroundImage: "none" }}
                 required
-              />
+              >
+                <option value="">Select Max Budget</option>
+                {maxOptions
+                  .filter(
+                    (value) => !formData.minbudget || value > formData.minbudget
+                  )
+                  .map((value) => (
+                    <option key={value} value={value}>
+                      ₹{value.toLocaleString("en-IN")}
+                    </option>
+                  ))}
+              </select>
             </div>
           </div>
           <div className="w-full flex items-center justify-center">

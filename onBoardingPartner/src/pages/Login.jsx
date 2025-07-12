@@ -51,7 +51,7 @@ function Login() {
         if (response.data.user.adharId != null) {
           navigate("/dashboard", { replace: true });
         } else {
-          navigate("/kyc", { replace: true });
+          navigate(`/kyc/${response.data.user.id}`, { replace: true });
         }
       } else {
         setErrorMessage("Invalid login credentials.");

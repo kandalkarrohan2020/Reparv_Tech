@@ -15,7 +15,7 @@ function LogoutButton() {
       );
       delTokenInCookie();
       localStorage.removeItem("user");
-      navigate("/",{replace:true});
+      navigate("/", { replace: true });
     } catch (error) {
       console.log("Logout failed:", error);
     }

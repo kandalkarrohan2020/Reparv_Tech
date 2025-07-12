@@ -14,6 +14,7 @@ const PropertyBookingCard = ({ propertyInfo }) => {
     setShowBenefitsPopup,
     setShowSiteVisitPopup,
     setPropertyImage,
+    setPropertyCategory,
     setPropertyId,
   } = useAuth();
   return (
@@ -168,6 +169,7 @@ const PropertyBookingCard = ({ propertyInfo }) => {
           setShowSiteVisitPopup(true);
           setPropertyImage(JSON.parse(propertyInfo.frontView)[0]);
           setPropertyId(JSON.parse(propertyInfo.propertyid));
+          setPropertyCategory(propertyInfo.propertyCategory);
         }}
         className="w-full hidden sm:block bg-[#0BB501] text-white font-semibold py-3 mt-4 rounded-lg text-lg sm:text-2xl active:scale-95 cursor-pointer"
       >

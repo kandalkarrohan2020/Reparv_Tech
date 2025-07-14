@@ -249,17 +249,42 @@ const RegistrationForm = () => {
         </div>
 
         <div className="w-full mb-5">
-          <input
-            type="text"
+          <select
             required
-            minLength={3}
-            placeholder="Why are You Interested ?"
             value={newPartner.intrest}
             onChange={(e) =>
               setNewPartner({ ...newPartner, intrest: e.target.value })
             }
-            className="w-full  bg-white text-sm sm:text-base font-medium px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600"
-          />
+            className="w-full bg-white text-sm sm:text-base font-medium px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none"
+          >
+            <option value="" disabled>
+              Why are You Interested ?
+            </option>
+            <option value="Mutual Growth Opportunity">
+              Mutual Growth Opportunity
+            </option>
+            <option value="Strong Interest in Infrastructure and Development">
+              Strong Interest in Infrastructure and Development
+            </option>
+            <option value="Complementary Skills and Experience">
+              Complementary Skills and Experience
+            </option>
+            <option value="Market Expansion Vision">
+              Market Expansion Vision
+            </option>
+            <option value="Long-Term Value Creation">
+              Long-Term Value Creation
+            </option>
+            <option value="Collaborative Approach">
+              Collaborative Approach
+            </option>
+            <option value="Technology Integration">
+              Technology Integration
+            </option>
+            <option value="Interest in Sustainable and Smart Projects">
+              Interest in Sustainable and Smart Projects
+            </option>
+          </select>
         </div>
 
         <div className="w-full mb-5">

@@ -4,7 +4,7 @@ import territoryMobileFigure from "../assets/joinOurTeam/territoryPartner/territ
 import territoryMobileBackImage from "../assets/joinOurTeam/territoryPartner/territoryMobileBack.png";
 import territoryBackImage from "../assets/joinOurTeam/territoryPartner/territoryBack.png";
 import RegistrationForm from "../components/territoryPartner/RegistrationForm";
-import StepSection from "../components/salesPartner/StepSection";
+import { IoMdDownload } from "react-icons/io";
 
 import WhoIsTerritoryPartner from "../components/territoryPartner/WhoIsTerritoryPartner";
 import VideoReviewSection from "../components/VideoReviewSection";
@@ -58,6 +58,20 @@ function TerritoryPertner() {
           {/* Why Join Reparv Section */}
           <div className="py-10">
             <WhoIsTerritoryPartner />
+          </div>
+
+          {/* Download Application */}
+          <div className="w-full pt-0 pb-10 sm:pb-4  flex items-center justify-center">
+            <a
+              href="/territory.apk"
+              download
+              className="w-full sm:w-[350px] cursor-pointer"
+            >
+              <div className="w-full flex gap-2 items-center justify-center text-base sm:text-xl font-semibold text-white bg-[#0BB501] px-12 py-2 sm:py-3 rounded-lg active:scale-95 ">
+                <span>Territory Partner Apk</span>{" "}
+                <IoMdDownload className="w-5 h-5 sm:w-6 sm:h-6 " />
+              </div>
+            </a>
           </div>
 
           <div className="flex flex-col gap-2 sm:gap-4 items-center justify-center pb-10 sm:py-10">

@@ -15,9 +15,7 @@ import SuccessScreen from "../SuccessScreen";
 import { Link } from "react-router-dom";
 
 function Layout() {
-  const {
-    successScreen, 
-  } = useAuth();
+  const { successScreen } = useAuth();
 
   const location = useLocation();
   const [showSidebar, setShowSidebar] = useState(false);
@@ -57,7 +55,9 @@ function Layout() {
                 onClick={() => {
                   setShowSidebar(false);
                 }}
-                className={`${getNavLinkClass("/sales-partner")} ${getNavLinkClass("/")}`}
+                className={`${getNavLinkClass(
+                  "/sales-partner"
+                )} ${getNavLinkClass("/")}`}
               >
                 Sales Partner
               </NavLink>
@@ -112,7 +112,12 @@ function Layout() {
         </div>
 
         <div className="navlink hidden md:flex items-center justify-start gap-7 lg:gap-7 xl:gap-15 text-base xl:text-lg leading-[22px] tracking-[0.1em] font-bold text-[#110229]">
-          <NavLink to="/sales-partner" className={`${getNavLinkClass("/sales-partner")} ${getNavLinkClass("/")}`}>
+          <NavLink
+            to="/sales-partner"
+            className={`${getNavLinkClass("/sales-partner")} ${getNavLinkClass(
+              "/"
+            )}`}
+          >
             Sales Partner
           </NavLink>
           <NavLink
@@ -145,10 +150,11 @@ function Layout() {
       <div className="w-full md:block hidden bg-black">
         <div className="footer w-full max-w-7xl mx-auto  md:flex flex-col gap-8 bg-[#000000] text-white py-15 px-18 lg:px-25">
           <div className="footerTop flex items-center justify-start ">
-            <Link onClick={() => {window.open(
-                  "https://www.reparv.in",
-                  "_blank"
-                )}}>
+            <Link
+              onClick={() => {
+                window.open("https://www.reparv.in", "_blank");
+              }}
+            >
               <img src={footerLogo} alt="" className="w-[135px]" />
             </Link>
           </div>
@@ -157,28 +163,40 @@ function Layout() {
             <div className="leftBody flex flex-col gap-5 text-lg font-medium">
               <h3 className="text-xl font-bold">Company</h3>
               <p className="cursor-pointer">
-                <Link onClick={() => {window.open(
-                  "https://www.reparv.in/blogs",
-                  "_blank"
-                )}} >Blogs</Link>
+                <Link
+                  onClick={() => {
+                    window.open("https://www.reparv.in/blogs", "_blank");
+                  }}
+                >
+                  Blogs
+                </Link>
               </p>
               <p className="cursor-pointer">
-                <Link onClick={() => {window.open(
-                  "https://www.reparv.in/properties",
-                  "_blank"
-                )}}>Properties</Link>
+                <Link
+                  onClick={() => {
+                    window.open("https://www.reparv.in/properties", "_blank");
+                  }}
+                >
+                  Properties
+                </Link>
               </p>
               <p className="cursor-pointer">
-                <Link onClick={() => {window.open(
-                  "https://www.reparv.in/about-us",
-                  "_blank"
-                )}}>About Us</Link>
+                <Link
+                  onClick={() => {
+                    window.open("https://www.reparv.in/about-us", "_blank");
+                  }}
+                >
+                  About Us
+                </Link>
               </p>
               <p className="cursor-pointer">
-                <Link onClick={() => {window.open(
-                  "https://www.reparv.in/contact-us",
-                  "_blank"
-                )}}>Contact Us</Link>
+                <Link
+                  onClick={() => {
+                    window.open("https://www.reparv.in/contact-us", "_blank");
+                  }}
+                >
+                  Contact Us
+                </Link>
               </p>
             </div>
 
@@ -195,6 +213,28 @@ function Layout() {
               </p>
               <p className="cursor-pointer">
                 <Link to="/onboarding-partner">Onboarding Partner</Link>
+              </p>
+            </div>
+
+            <div className="downloadBody hidden lg:flex flex-col gap-5 text-lg font-medium !text-White">
+              <h3 className="text-xl font-bold">Download Apps</h3>
+              <p className="cursor-pointer">
+                <a
+                  href="/sales.apk"
+                  download
+                  className="hover:text-[#0BB501]"
+                >
+                  Sales.apk
+                </a>
+              </p>
+              <p className="cursor-pointer">
+                <a
+                  href="/territory.apk"
+                  download
+                  className="hover:text-[#0BB501]"
+                >
+                  Territory.apk
+                </a>
               </p>
             </div>
 
@@ -248,26 +288,40 @@ function Layout() {
       <div className="footer  md:hidden w-full flex flex-col items-center justify-start gap-4 bg-[#000000] text-white py-15 px-10">
         <div className="footerContainer w-full flex items-start justify-between py-2">
           <div className="footerLeft flex items-center justify-start ">
-            <Link to="/"><img src={footerLogo} alt="" className="w-[135px]" /></Link>
+            <Link to="/">
+              <img src={footerLogo} alt="" className="w-[135px]" />
+            </Link>
           </div>
 
           <div className="footerRight flex flex-col gap-5 text-xs leading-1.5 sm:text-lg font-medium">
-            <Link onClick={() => {window.open(
-                  "https://www.reparv.in/blogs",
-                  "_blank"
-                )}}>Blogs</Link>
-            <Link onClick={() => {window.open(
-                  "https://www.reparv.in/properties",
-                  "_blank"
-                )}}>Properties</Link>
-            <Link onClick={() => {window.open(
-                  "https://www.reparv.in/about-us",
-                  "_blank"
-                )}}>About Us</Link>
-            <Link onClick={() => {window.open(
-                  "https://www.reparv.in/contact-us",
-                  "_blank"
-                )}}>Contact Us</Link>
+            <Link
+              onClick={() => {
+                window.open("https://www.reparv.in/blogs", "_blank");
+              }}
+            >
+              Blogs
+            </Link>
+            <Link
+              onClick={() => {
+                window.open("https://www.reparv.in/properties", "_blank");
+              }}
+            >
+              Properties
+            </Link>
+            <Link
+              onClick={() => {
+                window.open("https://www.reparv.in/about-us", "_blank");
+              }}
+            >
+              About Us
+            </Link>
+            <Link
+              onClick={() => {
+                window.open("https://www.reparv.in/contact-us", "_blank");
+              }}
+            >
+              Contact Us
+            </Link>
           </div>
         </div>
 
@@ -316,9 +370,9 @@ function Layout() {
           </div>
         </div>
       </div>
-    
-    {/* Show Success Screen */}
-    {successScreen?.show && <SuccessScreen />}
+
+      {/* Show Success Screen */}
+      {successScreen?.show && <SuccessScreen />}
     </div>
   );
 }

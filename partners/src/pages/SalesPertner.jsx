@@ -2,7 +2,7 @@ import React from "react";
 import salesBackImage from "../assets/joinOurTeam/salesPartner/salesBack.svg";
 import salesMobileBackImage from "../assets/joinOurTeam/salesPartner/salesMobileBack.png";
 import WhyJoinReparv from "../components/salesPartner/WhyJoinReparv";
-import RegisterForm from "../components/salesPartner/RegisterForm";
+import { IoMdDownload } from "react-icons/io";
 import StepSection from "../components/salesPartner/StepSection";
 import SalesTestimonial from "../components/salesPartner/SalesTestimonial";
 import SEO from "../components/SEO";
@@ -56,9 +56,17 @@ function SalesPartner() {
           </div>
 
           {/* Step Section */}
-          <div className="py-10">
+          <div className="pt-10 pb-4">
             <StepSection />
           </div>
+        </div>
+
+        <div className="w-full pt-4 pb-12 flex items-center justify-center">
+            <a href="/sales.apk" download className="w-full sm:w-[350px] px-4 cursor-pointer">
+              <div className="w-full flex gap-2 items-center justify-center text-lg sm:text-xl font-semibold text-white bg-[#076300] px-12 py-3 rounded-lg active:scale-95 ">
+                <span>Sales Partner Apk</span> <IoMdDownload className="w-6 h-6"/>
+              </div>
+            </a>
         </div>
 
         {/* Sales Testimonial */}

@@ -12,6 +12,7 @@ import MultiStepForm from "../components/propertyForm/MultiStepForm";
 import propertyPicture from "../assets/propertyPicture.svg";
 import Loader from "../components/Loader";
 import { IoMdClose } from "react-icons/io";
+import DownloadCSV from "../components/DownloadCSV";
 
 const Properties = () => {
   const {
@@ -94,6 +95,28 @@ const Properties = () => {
     nearestLandmark: [],
     developedAmenities: [],
   });
+
+  const additionalInfoCSVFileFormat = [
+    {
+      wing: "",
+      floor: "",
+      flatno: "",
+      flatfacing: "",
+      type: "",
+      carpetarea: "",
+      superbuiltup: "",
+      facing: "",
+      sqftprice: "",
+      mouza: "",
+      khasrano: "",
+      clubhousecharge: "",
+      parkingcharge: "",
+      watercharge: "",
+      societydeposit: "",
+      maintanance: "",
+      documentcharge: "",
+    },
+  ];
 
   //Single Image Upload
   const [selectedImage, setSelectedImage] = useState(null);
@@ -605,9 +628,13 @@ const Properties = () => {
               </div>
             </div>
             <div className="flex mt-8 md:mt-6 justify-center gap-6">
+              <DownloadCSV
+                data={additionalInfoCSVFileFormat}
+                filename={"Additional_Info_File_Format.csv"}
+              />
               <button
                 type="submit"
-                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+                className="px-4 py-2 text-white font-semibold bg-[#076300] rounded active:scale-[0.98]"
               >
                 Add CSV File
               </button>

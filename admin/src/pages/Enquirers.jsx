@@ -1266,7 +1266,7 @@ const Enquirers = () => {
           !showAssignSalesForm && "hidden"
         } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto`}
       >
-        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[750px] max-h-[60vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] max-h-[60vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">
               Assign Enquiry to Sales Person
@@ -1279,7 +1279,7 @@ const Enquirers = () => {
             />
           </div>
           <form onSubmit={assignSalesPerson}>
-            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
+            <div className="w-full grid gap-4 place-items-center grid-cols-1">
               <input
                 type="hidden"
                 value={enquiryId}

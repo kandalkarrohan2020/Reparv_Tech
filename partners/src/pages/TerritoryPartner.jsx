@@ -1,4 +1,7 @@
 import React from "react";
+import { useState } from "react";
+import { useEffect } from "react";
+import { useAuth } from "../store/auth";
 import territoryFigure from "../assets/joinOurTeam/territoryPartner/territoryFig.svg";
 import territoryMobileFigure from "../assets/joinOurTeam/territoryPartner/territoryMobileFig.png";
 import territoryMobileBackImage from "../assets/joinOurTeam/territoryPartner/territoryMobileBack.png";
@@ -12,6 +15,33 @@ import MarketRealitySlider from "../components/territoryPartner/MarketRealitySli
 import SEO from "../components/SEO";
 
 function TerritoryPertner() {
+  const { URI } = useAuth();
+  const [apks, setApks] = useState([]);
+  const territoryApkUrl =
+    apks?.find((apk) => apk.apkName === "Territory Partner")?.filePath || null;
+
+  // **Fetch Data from API**
+  const fetchData = async () => {
+    try {
+      const response = await fetch(URI + "/admin/apk", {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch apps.");
+      const data = await response.json();
+      console.log(data);
+      setApks(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <>
       <SEO
@@ -63,8 +93,8 @@ function TerritoryPertner() {
           {/* Download Application */}
           <div className="w-full pt-0 pb-10 sm:pb-4  flex items-center justify-center">
             <a
-              href="/territory.apk"
-              download
+              href={`${URI}/${territoryApkUrl}`}
+              download="Territory.apk"
               className="w-full sm:w-[350px] cursor-pointer"
             >
               <div className="w-full flex gap-2 items-center justify-center text-base sm:text-xl font-semibold text-white bg-[#0BB501] px-12 py-2 sm:py-3 rounded-lg active:scale-95 ">

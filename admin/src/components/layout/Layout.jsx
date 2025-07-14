@@ -99,6 +99,8 @@ function Layout() {
     setShowCustomer,
     showCustomerPaymentForm,
     setShowCustomerPaymentForm,
+    showApkUploadForm,
+    setShowApkUploadForm,
     isLoggedIn,
   } = useAuth();
 
@@ -139,6 +141,7 @@ function Layout() {
     { state: showCommissionForm, setter: setShowCommissionForm },
     { state: showCustomer, setter: setShowCustomer },
     { state: showCustomerPaymentForm, setter: setShowCustomerPaymentForm },
+    { state: showApkUploadForm, setter: setShowApkUploadForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -263,6 +266,7 @@ function Layout() {
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
               { to: "/map", icon: mapIcon, label: "Map" },
               { to: "/calender", icon: calenderIcon, label: "Calendar" },
+              { to: "/apk-upload", icon: marketingIcon, label: "Apk Upload" },
               { to: "/blogs", icon: marketingIcon, label: "Blogs" },
               { to: "/slider", icon: marketingIcon, label: "Slider" },
               { to: "/testimonial", icon: marketingIcon, label: "Testimonial" },

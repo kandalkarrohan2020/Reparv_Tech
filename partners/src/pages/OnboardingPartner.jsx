@@ -1,4 +1,7 @@
 import React from "react";
+import { useState } from "react";
+import { useEffect } from "react";
+import { useAuth } from "../store/auth";
 import partnerMobileBackImage from "../assets/joinOurTeam/onboardingPartner/partnerMobileBack.svg";
 import partnerBackImage from "../assets/joinOurTeam/onboardingPartner/partnerBack.svg";
 import RegisterForm from "../components/onboardingPartner/RegisterForm";
@@ -11,6 +14,33 @@ import SEO from "../components/SEO";
 import RegistrationForm from "../components/onboardingPartner/RegistrationForm";
 
 function OnboardingPartner() {
+  const { URI } = useAuth();
+  const [apks, setApks] = useState([]);
+  const onboardingApkUrl = apks?.find((apk) => apk.apkName === "Onboarding Partner")?.filePath || null;
+
+  // **Fetch Data from API**
+  const fetchData = async () => {
+    try {
+      const response = await fetch(URI + "/admin/apk", {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch apps.");
+      const data = await response.json();
+      console.log(data);
+      setApks(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  useEffect(() => {
+    //fetchData();
+  }, []);
+
   return (
     <>
       <SEO
@@ -55,8 +85,8 @@ function OnboardingPartner() {
                   </h2>
                   <a href="#registrationForm">
                     <button className="w-[300px] h-[50px] md:h-[60px] mt-3 xl:mt-5 text-base md:text-xl text-white bg-[#0BB501] cursor-pointer active:scale-95 rounded-lg font-semibold transition">
-                    Register Now
-                  </button>
+                      Register Now
+                    </button>
                   </a>
                 </div>
               </div>

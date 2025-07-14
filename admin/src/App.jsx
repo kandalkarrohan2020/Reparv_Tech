@@ -27,6 +27,7 @@ import ProjectPartner from "./pages/projectPartner.jsx";
 import TerritoryPartner from "./pages/TerritoryPartner.jsx";
 import GuestUser from "./pages/guestUser.jsx";
 import Blogs from "./pages/Blogs.jsx";
+import ApkUpload from "./pages/ApkUpload.jsx";
 
 const App = () => {
   return (
@@ -54,6 +55,7 @@ const App = () => {
           <Route path="/tickets" element={<Ticketing />} />
           <Route path="/slider" element={<Slider/>} />
           <Route path="/testimonial" element={<Testimonial/>} />
+           <Route path="/apk-upload" element={<ApkUpload />} />
           <Route path="/blogs" element={<Blogs/>} />
           <Route path="/raw-materials" element={<RawMaterials />} />
           <Route path="/marketing" element={<Marketing />} />

@@ -251,17 +251,42 @@ const RegistrationForm = () => {
         </div>
 
         <div className="w-full mb-5">
-          <input
-            type="text"
+          <select
             required
-            minLength={3}
-            placeholder="Why are You Interested ?"
             value={newPartner.intrest}
             onChange={(e) =>
               setNewPartner({ ...newPartner, intrest: e.target.value })
             }
-            className="w-full  bg-white text-sm sm:text-base font-medium px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600"
-          />
+            className="w-full bg-white text-sm sm:text-base font-medium px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none"
+          >
+            <option value="" disabled>
+              Why are You Interested ?
+            </option>
+            <option value="Passion for Real Estate Industry">
+              Passion for Real Estate Industry
+            </option>
+            <option value="Opportunity to Work with a Growing Company">
+              Opportunity to Work with a Growing Company
+            </option>
+            <option value="Learning & Career Growth">
+              Learning & Career Growth
+            </option>
+            <option value="Strong Communication & Negotiation Skills">
+              Strong Communication & Negotiation Skills
+            </option>
+            <option value="Interest in Marketing & Sales">
+              Interest in Marketing & Sales
+            </option>
+            <option value="Local Market Knowledge">
+              Local Market Knowledge
+            </option>
+            <option value="Financial Rewards & Performance-Driven Role">
+              Financial Rewards & Performance-Driven Role
+            </option>
+            <option value="Helping People Make Life-Changing Decisions">
+              Helping People Make Life-Changing Decisions
+            </option>
+          </select>
         </div>
 
         <div className="w-full mb-5">

@@ -6,6 +6,7 @@ import propertyPicture from "../assets/property/propertyPicture.svg";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import FilterData from "../components/FilterData";
 import DataTable from "react-data-table-component";
+import Select from "react-select";
 import { FiMoreVertical } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import { useAuth } from "../store/auth";
@@ -1452,9 +1453,9 @@ const Enquirers = () => {
       <div
         className={` ${
           !showAssignTerritory && "hidden"
-        } z-[61] overflow-scroll scrollbar-hide flex fixed`}
+        } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto`}
       >
-        <div className="w-[330px] h-[350px] sm:w-[600px] sm:h-[300px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[300px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] max-h-[50vh] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">
               Assign Enquiry to Territory Partner
@@ -1467,7 +1468,7 @@ const Enquirers = () => {
             />
           </div>
           <form onSubmit={assignTerritoryPartner}>
-            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
+            <div className="w-full grid gap-4 place-items-center grid-cols-1">
               <input
                 type="hidden"
                 value={enquiryId}
@@ -1475,37 +1476,40 @@ const Enquirers = () => {
                   setEnquiryId(e.target.value);
                 }}
               />
-
               <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-[10px]">
                   Territory Partner
                 </label>
-                <select
+                <Select
                   required
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
-                  style={{ backgroundImage: "none" }}
-                  value={territoryPartnerToAssign.territorypartnerid}
-                  onChange={(e) => {
+                  className="text-[16px] font-medium"
+                  options={territoryPartnerList
+                    ?.filter((tp) => tp.status === "Active")
+                    .map((tp) => ({
+                      label: `${tp.fullname} | ${tp.contact}`,
+                      value: tp.id,
+                    }))}
+                  placeholder="Select Territory Partner"
+                  value={
+                    territoryPartnerList
+                      ?.filter((tp) => tp.status === "Active")
+                      .map((tp) => ({
+                        label: `${tp.fullname} | ${tp.contact}`,
+                        value: tp.id,
+                      }))
+                      .find(
+                        (opt) =>
+                          opt.value ===
+                          territoryPartnerToAssign.territorypartnerid
+                      ) || null
+                  }
+                  onChange={(selected) =>
                     setTerritoryPartnerToAssign({
                       ...territoryPartnerToAssign,
-                      territorypartnerid: e.target.value,
-                    });
-                  }}
-                >
-                  <option value="">Select Territory Partner</option>
-                  {territoryPartnerList
-                    .filter(
-                      (territoryPartner) => territoryPartner.status === "Active"
-                    )
-                    .map((territoryPartner, index) => {
-                      return (
-                        <option key={index} value={territoryPartner.id}>
-                          {territoryPartner.fullname} |{" "}
-                          {territoryPartner.contact}
-                        </option>
-                      );
-                    })}
-                </select>
+                      territorypartnerid: selected?.value || "",
+                    })
+                  }
+                />
               </div>
 
               <div className="w-full">
@@ -1515,7 +1519,7 @@ const Enquirers = () => {
                 <input
                   type="date"
                   required
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full mt-[10px] text-[14px] font-medium p-2 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={territoryPartnerToAssign.territorypartnerdate}
                   onChange={(e) => {
                     const selectedDate = e.target.value; // Get full date

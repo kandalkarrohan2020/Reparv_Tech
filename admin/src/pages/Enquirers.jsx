@@ -13,6 +13,7 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import AddButton from "../components/AddButton";
 import propertyPicture from "../assets/propertyPicture.svg";
 import FormatPrice from "../components/FormatPrice";
+import Select from "react-select";
 import DownloadCSV from "../components/DownloadCSV";
 
 const Enquirers = () => {
@@ -52,6 +53,8 @@ const Enquirers = () => {
     salespersonid: "",
     salesperson: "",
     salespersoncontact: "",
+    state: "",
+    city: "",
   });
   const [followUpRemark, setFollowUpRemark] = useState("");
   const [cancelledRemark, setCancelledRemark] = useState("");
@@ -78,6 +81,20 @@ const Enquirers = () => {
     location: "",
     message: "",
   });
+
+  const enquirersCSVFileFormat = [
+    {
+      customer: "",
+      contact: "",
+      minbudget: "",
+      maxbudget: "",
+      category: "",
+      state: "",
+      city: "",
+      location: "",
+      message: "",
+    },
+  ];
 
   //Single Image Upload
   const [selectedImage, setSelectedImage] = useState(null);
@@ -114,7 +131,7 @@ const Enquirers = () => {
   // **Fetch States from API**
   const fetchCities = async () => {
     try {
-      const response = await fetch(`${URI}/admin/cities/${newEnquiry?.state}`, {
+      const response = await fetch(`${URI}/admin/cities/${newEnquiry?.state || salesPersonAssign?.state}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -616,10 +633,10 @@ const Enquirers = () => {
   }, []);
 
   useEffect(() => {
-    if (newEnquiry.state != "") {
+    if (newEnquiry.state != "" || salesPersonAssign.state != "") {
       fetchCities();
     }
-  }, [newEnquiry.state]);
+  }, [newEnquiry.state, salesPersonAssign.state]);
 
   const [range, setRange] = useState([
     {
@@ -969,9 +986,13 @@ const Enquirers = () => {
               </div>
             </div>
             <div className="flex mt-8 md:mt-6 justify-center gap-6">
+              <DownloadCSV
+                data={enquirersCSVFileFormat}
+                filename={"Enquirers_File_Format.csv"}
+              />
               <button
                 type="submit"
-                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+                className="px-4 py-2 text-white font-semibold bg-[#076300] rounded active:scale-[0.98]"
               >
                 Add CSV File
               </button>
@@ -1243,9 +1264,9 @@ const Enquirers = () => {
       <div
         className={` ${
           !showAssignSalesForm && "hidden"
-        } z-[61] overflow-scroll scrollbar-hide flex fixed`}
+        } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto`}
       >
-        <div className="w-[330px] h-[350px] sm:w-[600px] sm:h-[300px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[300px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[750px] max-h-[60vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">
               Assign Enquiry to Sales Person
@@ -1257,57 +1278,131 @@ const Enquirers = () => {
               className="w-6 h-6 cursor-pointer"
             />
           </div>
-          <form
-            onSubmit={assignSalesPerson}
-            className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2"
-          >
-            <input
-              type="hidden"
-              value={enquiryId}
-              onChange={(e) => {
-                setEnquiryId(e.target.value);
-              }}
-            />
-
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Sales Person
-              </label>
-              <select
-                required
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
-                style={{ backgroundImage: "none" }}
-                value={
-                  salesPersonAssign ? JSON.stringify(salesPersonAssign) : ""
-                }
+          <form onSubmit={assignSalesPerson}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
+              <input
+                type="hidden"
+                value={enquiryId}
                 onChange={(e) => {
-                  const selected = JSON.parse(e.target.value);
-                  setSalesPersonAssign(selected);
+                  setEnquiryId(e.target.value);
                 }}
-              >
-                <option value="">Select Sales Person</option>
-                {Array.isArray(salesPersonList) &&
-                  salesPersonList
-                    .filter((salesPerson) => salesPerson.status === "Active")
-                    .map((salesPerson) => {
-                      const optionValue = JSON.stringify({
-                        salespersonid: salesPerson.salespersonsid,
-                        salesperson: salesPerson.fullname,
-                        salespersoncontact: salesPerson.contact,
-                      });
+              />
 
-                      return (
-                        <option
-                          key={salesPerson.salespersonsid}
-                          value={optionValue}
-                        >
-                          {salesPerson.fullname} | {salesPerson.contact}
-                        </option>
-                      );
-                    })}
-              </select>
+              {/* State */}
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-[10px]">
+                  Select State
+                </label>
+                <Select
+                  className="text-[16px] font-medium"
+                  options={
+                    states?.map((state) => ({
+                      value: state.state,
+                      label: state.state,
+                    })) || []
+                  }
+                  placeholder="Select Your State"
+                  value={
+                    states
+                      ?.map((state) => ({
+                        value: state.state,
+                        label: state.state,
+                      }))
+                      .find((opt) => opt.value === salesPersonAssign.state) || null
+                  }
+                  onChange={(selected) =>
+                    setSalesPersonAssign({
+                      ...salesPersonAssign,
+                      state: selected?.value || "",
+                    })
+                  }
+                />
+              </div>
+
+              {/* City */}
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-[10px]">
+                  Select City
+                </label>
+                <Select
+                  className="text-[16px] font-medium"
+                  options={
+                    cities?.map((city) => ({
+                      value: city.city,
+                      label: city.city,
+                    })) || []
+                  }
+                  placeholder="Select Your City"
+                  value={
+                    cities
+                      ?.map((city) => ({
+                        value: city.city,
+                        label: city.city,
+                      }))
+                      .find((opt) => opt.value === salesPersonAssign.city) || null
+                  }
+                  onChange={(selected) =>
+                    setSalesPersonAssign({
+                      ...salesPersonAssign,
+                      city: selected?.value || "",
+                    })
+                  }
+                />
+              </div>
+
+              {/* Sales Person */}
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-[10px]">
+                  Select Sales Person <span className="text-red-600">*</span>
+                </label>
+                <Select
+                  required
+                  className="text-[16px] font-medium"
+                  options={
+                    salesPersonList
+                      ?.filter(
+                        (sp) =>
+                          sp.status === "Active" &&
+                          (!salesPersonAssign.state ||
+                            sp.state === salesPersonAssign.state) &&
+                          (!salesPersonAssign.city ||
+                            sp.city === salesPersonAssign.city)
+                      )
+                      .map((sp) => ({
+                        value: {
+                          salespersonid: sp.salespersonsid,
+                          salesperson: sp.fullname,
+                          salespersoncontact: sp.contact,
+                        },
+                        label: `${sp.fullname} | ${sp.contact}`,
+                      })) || []
+                  }
+                  placeholder="Select Sales Person"
+                  value={
+                    salesPersonAssign
+                      ? salesPersonList
+                          ?.filter((sp) => sp.status === "Active")
+                          .map((sp) => ({
+                            value: {
+                              salespersonid: sp.salespersonsid,
+                              salesperson: sp.fullname,
+                              salespersoncontact: sp.contact,
+                            },
+                            label: `${sp.fullname} | ${sp.contact}`,
+                          }))
+                          .find(
+                            (opt) =>
+                              opt.value.salespersonid ===
+                              salesPersonAssign.salespersonid
+                          ) || null
+                      : null
+                  }
+                  onChange={(selected) =>
+                    setSalesPersonAssign(selected?.value || null)
+                  }
+                />
+              </div>
             </div>
-
             <div className="flex mt-8 md:mt-6 justify-end gap-6">
               <button
                 type="button"

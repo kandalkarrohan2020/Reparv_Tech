@@ -27,6 +27,7 @@ import enquirerRoutes from "./routes/admin/enquirerRoutes.js";
 import addEnquiryRoutes from "./routes/admin/enquiryRoutes.js";
 import auctionmembersRoutes from "./routes/admin/auctionmemberRoutes.js";
 import ticketRoutes from "./routes/admin/ticketRoutes.js";
+import apkUploadRoutes from "./routes/admin/apkUploadRoutes.js";
 import blogRoutes from "./routes/admin/blogRoutes.js";
 import sliderRoutes from "./routes/admin/sliderRoutes.js";
 import testimonialRoutes from "./routes/admin/testimonialRoutes.js";
@@ -206,6 +207,7 @@ const verifyToken = (req, res, next) => {
     "/admin/partner/add",
     "/admin/projectpartner/add",
     "/admin/territorypartner/add",
+    "/admin/apk",
     "/api/payment/create-order",
     "/api/payment/verify-payment",
     "/frontend/properties",
@@ -306,6 +308,7 @@ app.use("/admin/enquirers", enquirerRoutes);
 app.use("/admin/enquiries", verifyToken, addEnquiryRoutes);
 app.use("/admin/auctionmembers", auctionmembersRoutes);
 app.use("/admin/tickets", ticketRoutes);
+app.use("/admin/apk", apkUploadRoutes);
 app.use("/admin/blog", blogRoutes);
 app.use("/admin/slider", sliderRoutes);
 app.use("/admin/testimonial", testimonialRoutes);

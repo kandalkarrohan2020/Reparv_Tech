@@ -15,13 +15,42 @@ import SuccessScreen from "../SuccessScreen";
 import { Link } from "react-router-dom";
 
 function Layout() {
-  const { successScreen } = useAuth();
-
+  const { successScreen, URI } = useAuth();
+  const [apks, setApks] = useState();
   const location = useLocation();
   const [showSidebar, setShowSidebar] = useState(false);
   const getNavLinkClass = (path) => {
     return location.pathname === path ? "font-bold text-[#0BB501]" : "";
   };
+
+  const customerApkUrl = apks?.find((apk) => apk.apkName === "Customer")?.filePath || null;
+  const salesApkUrl = apks?.find((apk) => apk.apkName === "Sales Partner")?.filePath || null;
+  const projectApkUrl = apks?.find((apk) => apk.apkName === "Project Partner")?.filePath || null;
+  const territoryApkUrl = apks?.find((apk) => apk.apkName === "Territory Partner")?.filePath || null;
+  const onboardingApkUrl = apks?.find((apk) => apk.apkName === "Onboarding Partner")?.filePath || null;
+  
+  // **Fetch Data from API**
+  const fetchData = async () => {
+    try {
+      const response = await fetch(URI + "/admin/apk", {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch apps.");
+      const data = await response.json();
+      console.log(data);
+      setApks(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className="layout w-full flex flex-col bg-white overflow-hidden ">
@@ -219,18 +248,14 @@ function Layout() {
             <div className="downloadBody hidden lg:flex flex-col gap-5 text-lg font-medium !text-White">
               <h3 className="text-xl font-bold">Download Apps</h3>
               <p className="cursor-pointer">
-                <a
-                  href="/sales.apk"
-                  download
-                  className="hover:text-[#0BB501]"
-                >
+                <a href={`${URI}/${salesApkUrl}`} download="Sales.apk" className="hover:text-[#0BB501]">
                   Sales.apk
                 </a>
               </p>
               <p className="cursor-pointer">
                 <a
-                  href="/territory.apk"
-                  download
+                  href={`${URI}/${territoryApkUrl}`}
+                  download="Territory.apk"
                   className="hover:text-[#0BB501]"
                 >
                   Territory.apk

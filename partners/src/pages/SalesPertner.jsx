@@ -1,4 +1,7 @@
 import React from "react";
+import { useState } from "react";
+import { useEffect } from "react";
+import { useAuth } from "../store/auth";
 import salesBackImage from "../assets/joinOurTeam/salesPartner/salesBack.svg";
 import salesMobileBackImage from "../assets/joinOurTeam/salesPartner/salesMobileBack.png";
 import WhyJoinReparv from "../components/salesPartner/WhyJoinReparv";
@@ -9,6 +12,33 @@ import SEO from "../components/SEO";
 import RegistrationForm from "../components/salesPartner/RegistrationForm";
 
 function SalesPartner() {
+  const { URI } = useAuth();
+  const [apks, setApks] = useState([]);
+  const salesApkUrl = apks?.find((apk) => apk.apkName === "Sales Partner")?.filePath || null;
+
+  // **Fetch Data from API**
+  const fetchData = async () => {
+    try {
+      const response = await fetch(URI + "/admin/apk", {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch apps.");
+      const data = await response.json();
+      console.log(data);
+      setApks(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <>
       <SEO
@@ -62,11 +92,16 @@ function SalesPartner() {
         </div>
 
         <div className="w-full pt-4 pb-12 flex items-center justify-center">
-            <a href="/sales.apk" download className="w-full sm:w-[350px] px-4 cursor-pointer">
-              <div className="w-full flex gap-2 items-center justify-center text-lg sm:text-xl font-semibold text-white bg-[#076300] px-12 py-3 rounded-lg active:scale-95 ">
-                <span>Sales Partner Apk</span> <IoMdDownload className="w-6 h-6"/>
-              </div>
-            </a>
+          <a
+            href={`${URI}/${salesApkUrl}`}
+            download="Sales.apk"
+            className="w-full sm:w-[350px] px-4 cursor-pointer"
+          >
+            <div className="w-full flex gap-2 items-center justify-center text-lg sm:text-xl font-semibold text-white bg-[#076300] px-12 py-3 rounded-lg active:scale-95 ">
+              <span>Sales Partner Apk</span>{" "}
+              <IoMdDownload className="w-6 h-6" />
+            </div>
+          </a>
         </div>
 
         {/* Sales Testimonial */}

@@ -4,6 +4,7 @@ import {
   addLike,
   getAll,
   getAllByUser,
+  updatePost,
 } from "../../controllers/territoryApp/PostController.js";
 import multer from "multer";
 import path from "path";
@@ -33,5 +34,24 @@ router.get("/", getAll);
 router.get("/getUserPosts", getAllByUser);
 router.post("/add", upload.single("image"), add);
 router.put("/addlike", addLike);
+router.put('/updated',updatePost)
+router.delete('/deletepost/:id', (req, res) => {
+  const postId = req.params.id;
+
+  const sql = 'DELETE FROM territorypartnerposts WHERE id = ?';
+
+  db.query(sql, [postId], (err, result) => {
+    if (err) {
+      console.error('Error deleting post:', err);
+      return res.status(500).json({ error: 'Failed to delete post' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    res.status(200).json({ message: 'Post deleted successfully' });
+  });
+});
 
 export default router;

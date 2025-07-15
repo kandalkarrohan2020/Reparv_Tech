@@ -123,6 +123,12 @@ import territorypostRoute from "./routes/territoryAppRoute/postRoutes.js";
 import territoryBooking from "./routes/territoryPartner/propertyBookingRoute.js";
 import territoryClientRoute from "./routes/territoryAppRoute/profileRoute.js";
 
+//Onboarding App
+import onboardingAppRoute from './routes/onboardingAppRoute/userRoute.js'
+
+//ProjectPartner App
+import projectPartnerAppRoute from './routes/projectPartnerAppRoute/userRoute.js'
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -290,7 +296,7 @@ app.use(verifyToken);
 app.use("/admin/profile", profileRoutes);
 app.use("/admin/dashboard", dashboardRoutes);
 app.use("/admin/employees", employeeRoutes);
-app.use("/admin/properties", verifyToken, propertyRoutes);
+app.use("/admin/properties", propertyRoutes);
 app.use("/admin/builders", builderRoutes);
 app.use("/admin/customers", customerRoutes);
 app.use("/admin/roles", roleRoutes);
@@ -393,6 +399,12 @@ app.use("/territoryapp/client", territoryClientRoute);
 app.use("/api/booking", bookPropertyRoute);
 //get territory Book Enquiry Property
 app.use("/api/booking/territory", territoryBooking);
+
+//onboarding Partner 
+app.use('/onboardingapp/user',onboardingAppRoute);
+
+//ProjectPartner App
+app.use('/projectpartnerRoute/user',projectPartnerAppRoute);
 
 //  Start Server
 app.listen(PORT, () => {

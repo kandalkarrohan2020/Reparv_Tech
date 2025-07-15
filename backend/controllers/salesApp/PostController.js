@@ -160,3 +160,46 @@ export const addLike = async (req, res) => {
     }
   );
 };
+// Update Post Controller
+export const updatePost = (req, res) => {
+  const postId = req.params.id;
+  const { userId, postContent} = req.body;
+  const image = req.file ? req.file.filename : null;
+  const currentDate = new Date();
+
+  // Build query based on whether image is updated
+  let sql;
+  let values;
+
+  if (image) {
+    sql = `
+      UPDATE salespersonposts
+      SET  image = ?, postContent = ?
+      WHERE id = ?
+    `;
+    values = [image, postContent, postId];
+  } else {
+    sql = `
+      UPDATE salespersonposts
+      SET postContent = ?
+      WHERE id = ?
+    `;
+    values = [ postContent, postId];
+  }
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error('Error updating post:', err);
+      return res.status(500).json({ message: 'Database error', error: err });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    res.status(200).json({
+      message: 'Post updated successfully',
+      updatedRows: result.affectedRows,
+    });
+  });
+};

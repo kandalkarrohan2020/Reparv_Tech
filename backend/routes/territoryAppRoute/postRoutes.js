@@ -1,3 +1,4 @@
+import db from "../../config/dbconnect.js";
 import express from "express";
 import {
   add,
@@ -34,7 +35,7 @@ router.get("/", getAll);
 router.get("/getUserPosts", getAllByUser);
 router.post("/add", upload.single("image"), add);
 router.put("/addlike", addLike);
-router.put('/updated',updatePost)
+router.put('/updated/:id',updatePost)
 router.delete('/deletepost/:id', (req, res) => {
   const postId = req.params.id;
 

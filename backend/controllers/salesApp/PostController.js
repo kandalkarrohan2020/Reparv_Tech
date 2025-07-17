@@ -162,47 +162,53 @@ export const addLike = async (req, res) => {
 };
 // Update Post Controller
 export const updatePost = (req, res) => {
- 
   const postId = req.params.id;
-  const {postContent} = req.body;
-  console.log(req.body);
-  
+  const { postContent } = req.body;
   const image = req.file ? req.file.filename : null;
-  const currentDate = new Date();
- console.log(postContent,'sssssss');
-  
-  // Build query based on whether image is updated
+  console.log(postContent, "ss", req.file);
+
   let sql;
   let values;
 
-  if (image) {
+  if (image && postContent) {
     sql = `
       UPDATE salespersonposts
-      SET  image = ?, postContent = ?
+      SET image = ?, postContent = ?
       WHERE postId = ?
     `;
     values = [image, postContent, postId];
-  } else {
+  } else if (image) {
+    sql = `
+      UPDATE salespersonposts
+      SET image = ?
+      WHERE postId = ?
+    `;
+    values = [image, postId];
+  } else if (postContent) {
     sql = `
       UPDATE salespersonposts
       SET postContent = ?
       WHERE postId = ?
     `;
-    values = [ postContent, postId];
+    values = [postContent, postId];
+  } else {
+    // console.log('ffffffffffff');
+
+    return res.status(400).json({ message: "Nothing to update" });
   }
 
   db.query(sql, values, (err, result) => {
     if (err) {
-      console.error('Error updating post:', err);
-      return res.status(500).json({ message: 'Database error', error: err });
+      console.error("Error updating post:", err);
+      return res.status(500).json({ message: "Database error", error: err });
     }
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Post not found' });
+      return res.status(404).json({ message: "Post not found" });
     }
 
     res.status(200).json({
-      message: 'Post updated successfully',
+      message: "Post updated successfully",
       updatedRows: result.affectedRows,
     });
   });

@@ -101,8 +101,10 @@ function Layout() {
     setShowCustomerPaymentForm,
     showApkUploadForm,
     setShowApkUploadForm,
-    showLoanEligibilityForm,
-    setShowLoanEligibilityForm,
+    showEMIForm,
+    setShowEMIForm,
+    showEMI,
+    setShowEMI,
     isLoggedIn,
   } = useAuth();
 
@@ -144,7 +146,8 @@ function Layout() {
     { state: showCustomer, setter: setShowCustomer },
     { state: showCustomerPaymentForm, setter: setShowCustomerPaymentForm },
     { state: showApkUploadForm, setter: setShowApkUploadForm },
-     { state: showLoanEligibilityForm, setter: setShowLoanEligibilityForm },
+    { state: showEMI, setter: setShowEMI },
+    { state: showEMIForm, setter: setShowEMIForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -263,7 +266,11 @@ function Layout() {
               },
               { to: "/guest-users", icon: partnerIcon, label: "Guest Users" },
               //{ to: "/auctionmembers", icon: partnerIcon, label: "Auction Members" },
-              { to: "/users-loan-eligibility", icon: partnerIcon, label: "Users Loan Eligibility" },
+              {
+                to: "/users-loan-eligibility",
+                icon: partnerIcon,
+                label: "Users Loan Eligibility",
+              },
               { to: "/role", icon: employeeIcon, label: "Roles" },
               { to: "/department", icon: employeeIcon, label: "Departments" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },

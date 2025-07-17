@@ -163,7 +163,7 @@ export default function SiteVisitPopup() {
 
         <form onSubmit={handleSubmit} className="w-full space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 ">
-            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#000000bf] ">
               <label htmlFor="fullName" className="ml-1 text-xs">
                 Full Name
               </label>
@@ -180,7 +180,7 @@ export default function SiteVisitPopup() {
                 required
               />
             </div>
-            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#000000bf] ">
               <label htmlFor="fullName" className="ml-1 text-xs">
                 Enter Phone Number
               </label>
@@ -203,7 +203,7 @@ export default function SiteVisitPopup() {
             </div>
             {/* State Select Input */}
             <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
-              <label htmlFor="state" className="ml-1 text-xs">
+              <label htmlFor="state" className="ml-1 text-xs text-[#000000bf]">
                 Select State
               </label>
               <select
@@ -231,7 +231,7 @@ export default function SiteVisitPopup() {
 
             {/* City Select Input */}
             <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
-              <label htmlFor="city" className="ml-1 text-xs">
+              <label htmlFor="city" className="ml-1 text-xs text-[#000000bf]">
                 Select City
               </label>
               <select
@@ -258,7 +258,7 @@ export default function SiteVisitPopup() {
             </div>
             {/* Min Budget */}
             <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066]">
-              <label htmlFor="minbudget" className="ml-1 text-xs">
+              <label htmlFor="minbudget" className="ml-1 text-xs text-[#000000bf]">
                 Min Budget
               </label>
               <select
@@ -287,7 +287,7 @@ export default function SiteVisitPopup() {
 
             {/* Max Budget */}
             <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066]">
-              <label htmlFor="maxbudget" className="ml-1 text-xs">
+              <label htmlFor="maxbudget" className="ml-1 text-xs text-[#000000bf]">
                 Max Budget
               </label>
               <select

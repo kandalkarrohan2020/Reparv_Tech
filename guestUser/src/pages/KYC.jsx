@@ -258,7 +258,7 @@ export default function KYC() {
             >
               <option value="">Select Your City</option>
               {cities.map((city, index) => (
-                <option key={index} value={city.id}>
+                <option key={index} value={city.city}>
                   {city.city}
                 </option>
               ))}

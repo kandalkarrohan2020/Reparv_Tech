@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+*.zip
 
 # Editor directories and files
 .vscode/*
@@ -22,3 +23,29 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# OS
+Thumbs.db
+ehthumbs.db
+
+# dotenv environment files
+.env
+.env.*.local
+
+# parcel / Vite
+.cache/
+.parcel-cache/
+
+# coverage reports
+coverage/
+
+# firebase
+.firebaserc
+.firebase/
+
+# next.js / Nuxt.js
+.next/
+.nuxt/
+
+# Mac system file (optional if you're not on macOS)
+.AppleDouble

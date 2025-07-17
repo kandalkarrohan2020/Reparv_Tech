@@ -18,6 +18,7 @@ import Profile from "../Profile";
 import { useAuth } from "../../store/auth";
 import LogoutButton from "../LogoutButton";
 import { FaUserCircle } from "react-icons/fa";
+import Agreement from "../Agreement";
 
 function Layout() {
   const location = useLocation();
@@ -25,20 +26,32 @@ function Layout() {
   const [isShortBar, setIsShortbar] = useState(false);
   const [heading, setHeading] = useState(localStorage.getItem("head"));
   const {
+    URI,
+    user,
     showProfile,
     setShowProfile,
     giveAccess,
     setGiveAccess,
-    showBuilder, setShowBuilder,
-    showBuilderForm, setShowBuilderForm,
-    showPropertyForm, setShowPropertyForm,
-    showUploadImagesForm, setShowUploadImagesForm,
-    showAdditionalInfoForm, setShowAdditionalInfoForm,
-    showPropertyInfo, setShowPropertyInfo,
-    showTicketForm, setShowTicketForm,
-    showResponseForm, setShowResponseForm,
-    showTicket, setShowTicket,
-    showCustomer, setShowCustomer,
+    showBuilder,
+    setShowBuilder,
+    showBuilderForm,
+    setShowBuilderForm,
+    showPropertyForm,
+    setShowPropertyForm,
+    showUploadImagesForm,
+    setShowUploadImagesForm,
+    showAdditionalInfoForm,
+    setShowAdditionalInfoForm,
+    showPropertyInfo,
+    setShowPropertyInfo,
+    showTicketForm,
+    setShowTicketForm,
+    showResponseForm,
+    setShowResponseForm,
+    showTicket,
+    setShowTicket,
+    showCustomer,
+    setShowCustomer,
     showCustomerPaymentForm,
     setShowCustomerPaymentForm,
     isLoggedIn,
@@ -69,6 +82,33 @@ function Layout() {
     setHeading(label);
     localStorage.setItem("head", label);
   };
+
+  const [agreementData, setAgreementData] = useState("");
+  // Fetch Agreement Status
+  const fetchAgreement = async () => {
+    try {
+      const response = await fetch(
+        `${URI}/admin/projectpartner/get/${user?.id}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch Agreement.");
+      const data = await response.json();
+      console.log(data);
+      setAgreementData(data);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAgreement();
+  }, []);
 
   return (
     <div className="flex flex-col w-full h-screen bg-[#F5F5F6]">
@@ -152,7 +192,7 @@ function Layout() {
               { to: "/builders", icon: partnerIcon, label: "Builders" },
               { to: "/customers", icon: customersIcon, label: "Customers" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
-              
+
               {
                 to: "/raw-materials",
                 icon: materialIcon,
@@ -203,7 +243,7 @@ function Layout() {
         </div>
       </div>
       {showProfile && <Profile />}
-      
+
       {overlays.map(({ state, setter }, index) =>
         state ? (
           <div
@@ -213,6 +253,13 @@ function Layout() {
           ></div>
         ) : null
       )}
+
+      {/* Show Agreement Form Screen */}
+      <Agreement
+        fetchAgreement={fetchAgreement}
+        agreementData={agreementData}
+        setAgreementData={setAgreementData}
+      />
     </div>
   );
 }

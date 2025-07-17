@@ -62,6 +62,8 @@ const [showCustomer, setShowCustomer] = useState(false);
 const [showCustomerPaymentForm, setShowCustomerPaymentForm] = useState(false);
 const [showApkUploadForm, setShowApkUploadForm] = useState(false);
 const [partnerPaymentStatus, setPartnerPaymentStatus] = useState("Pending");
+const [showLoanEligibilityForm, setShowLoanEligibilityForm] = useState(false);
+
 return <AuthContext.Provider
  value={
     {   URI, loading, setLoading,
@@ -109,6 +111,7 @@ return <AuthContext.Provider
         showCustomer, setShowCustomer,
         showApkUploadForm, setShowApkUploadForm,
         showCustomerPaymentForm, setShowCustomerPaymentForm,
+        showLoanEligibilityForm, setShowLoanEligibilityForm,
     }
 }>
     {children}

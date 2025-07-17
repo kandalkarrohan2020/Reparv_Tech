@@ -72,7 +72,7 @@ function Overview() {
       <div className="overview-card-container px-4 md:px-0 gap-2 sm:gap-5 w-full grid place-items-center grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 my-5">
         <div className="overview-card w-full max-w-[272px] h-[132px] flex gap-1 flex-col items-center justify-center rounded-[24px] p-6 bg-transperent">
           <div className="upside w-full max-w-[224px] h-[40px] flex items-center justify-between gap-3 text-[24px] font-normal text-black">
-            <p>Hii Franchise, </p>
+            <p>Hii Partner, </p>
           </div>
           <div className="downside w-[224px] h-[40px] flex items-center text-[40px] font-semibold text-black">
             <p className="flex items-center justify-center">Welcome</p>

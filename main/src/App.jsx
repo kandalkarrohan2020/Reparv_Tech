@@ -16,6 +16,7 @@ import PropertyDetails from "./pages/PropertyDetails";
 import Blog from "./pages/Blog";
 import BlogDetails from "./pages/BlogDetails";
 import ErrorPage from "./pages/ErrorPage";
+import CheckEligibility from "./pages/CheckEligibility";
 
 function App() {
   return (
@@ -39,6 +40,8 @@ function App() {
           <Route path="/cancellation-policy" element={<RefundPolicy />} />
           <Route path="/blogs" element={<Blog />} />
           <Route path="/blog/:blogId" element={<BlogDetails />} />
+
+          <Route path="/check-eligibility" element={<CheckEligibility />} />
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>
       </Routes>

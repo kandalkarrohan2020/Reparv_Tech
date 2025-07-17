@@ -1,4 +1,3 @@
-import db from "../../config/dbconnect.js";
 import express from "express";
 import {
   add,
@@ -9,7 +8,7 @@ import {
 } from "../../controllers/salesApp/PostController.js";
 import multer from "multer";
 import path from "path";
-
+import db from "../../config/dbconnect.js";
 const router = express.Router();
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -35,12 +34,12 @@ router.get("/", getAll);
 router.get("/getUserPosts", getAllByUser);
 router.post("/add", upload.single("image"), add);
 router.put("/addlike", addLike);
-router.put('/updated/:id',updatePost)
+router.put('/updated/:id', upload.single('image'),updatePost)
 // DELETE POST API
 router.delete('/deletepost/:id', (req, res) => {
   const postId = req.params.id;
 
-  const sql = 'DELETE FROM salespersonposts WHERE id = ?';
+  const sql = 'DELETE FROM salespersonposts WHERE postId = ?';
 
   db.query(sql, [postId], (err, result) => {
     if (err) {

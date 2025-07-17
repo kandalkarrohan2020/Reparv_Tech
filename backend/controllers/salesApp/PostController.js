@@ -162,11 +162,15 @@ export const addLike = async (req, res) => {
 };
 // Update Post Controller
 export const updatePost = (req, res) => {
+ 
   const postId = req.params.id;
-  const { userId, postContent} = req.body;
+  const {postContent} = req.body;
+  console.log(req.body);
+  
   const image = req.file ? req.file.filename : null;
   const currentDate = new Date();
-
+ console.log(postContent,'sssssss');
+  
   // Build query based on whether image is updated
   let sql;
   let values;
@@ -175,14 +179,14 @@ export const updatePost = (req, res) => {
     sql = `
       UPDATE salespersonposts
       SET  image = ?, postContent = ?
-      WHERE id = ?
+      WHERE postId = ?
     `;
     values = [image, postContent, postId];
   } else {
     sql = `
       UPDATE salespersonposts
       SET postContent = ?
-      WHERE id = ?
+      WHERE postId = ?
     `;
     values = [ postContent, postId];
   }

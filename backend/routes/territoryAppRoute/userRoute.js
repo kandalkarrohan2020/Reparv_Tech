@@ -146,14 +146,13 @@ router.get("/:id/following-posts", (req, res) => {
   });
 });
 
-
 //new onw
 
-router.post('/add/follow', (req, res) => {
+router.post("/add/follow", (req, res) => {
   const { follower_id, follower_type, following_id, following_type } = req.body;
 
   if (!follower_id || !following_id || !follower_type || !following_type) {
-    return res.status(400).json({ error: 'Missing follow data' });
+    return res.status(400).json({ error: "Missing follow data" });
   }
 
   const sql = `
@@ -161,21 +160,25 @@ router.post('/add/follow', (req, res) => {
     VALUES (?, ?, ?, ?)
   `;
 
-  db.query(sql, [follower_id, follower_type, following_id, following_type], (err) => {
-    if (err) {
-      console.error('Follow error:', err);
-      return res.status(500).json({ error: 'Database error' });
-    }
+  db.query(
+    sql,
+    [follower_id, follower_type, following_id, following_type],
+    (err) => {
+      if (err) {
+        console.error("Follow error:", err);
+        return res.status(500).json({ error: "Database error" });
+      }
 
-    res.json({ status: 'Followed successfully' });
-  });
+      res.json({ status: "Followed successfully" });
+    }
+  );
 });
 
-router.post('/add/unfollow', (req, res) => {
+router.post("/add/unfollow", (req, res) => {
   const { follower_id, follower_type, following_id, following_type } = req.body;
 
   if (!follower_id || !following_id || !follower_type || !following_type) {
-    return res.status(400).json({ error: 'Missing unfollow data' });
+    return res.status(400).json({ error: "Missing unfollow data" });
   }
 
   const sql = `
@@ -183,34 +186,38 @@ router.post('/add/unfollow', (req, res) => {
     WHERE follower_id = ? AND follower_type = ? AND following_id = ? AND following_type = ?
   `;
 
-  db.query(sql, [follower_id, follower_type, following_id, following_type], (err, result) => {
-    if (err) {
-      console.error('Unfollow error:', err);
-      return res.status(500).json({ error: 'Database error' });
-    }
+  db.query(
+    sql,
+    [follower_id, follower_type, following_id, following_type],
+    (err, result) => {
+      if (err) {
+        console.error("Unfollow error:", err);
+        return res.status(500).json({ error: "Database error" });
+      }
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Not following this user' });
-    }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Not following this user" });
+      }
 
-    res.json({ status: 'Unfollowed successfully' });
-  });
+      res.json({ status: "Unfollowed successfully" });
+    }
+  );
 });
 
-router.get('/add/:id/:type/followers', (req, res) => {
+router.get("/add/:id/:type/followers", (req, res) => {
   const { id, type } = req.params;
 
   // Map user type to table and ID field
   const tableMap = {
-    sales: { table: 'salespersons', idField: 'salespersonsid' },
-    territory: { table: 'territorypartner', idField: 'id' },
-    onboarding: { table: 'onboardingpartner', idField: 'partnerid' },
-    projectpartner: { table: 'projectpartner', idField: 'id' },
+    sales: { table: "salespersons", idField: "salespersonsid" },
+    territory: { table: "territorypartner", idField: "id" },
+    onboarding: { table: "onboardingpartner", idField: "partnerid" },
+    projectpartner: { table: "projectpartner", idField: "id" },
   };
 
   const userMeta = tableMap[type];
   if (!userMeta) {
-    return res.status(400).json({ error: 'Invalid user type' });
+    return res.status(400).json({ error: "Invalid user type" });
   }
 
   const sql = `
@@ -222,27 +229,27 @@ router.get('/add/:id/:type/followers', (req, res) => {
 
   db.query(sql, [id, type], (err, results) => {
     if (err) {
-      console.error('Fetch followers error:', err);
-      return res.status(500).json({ error: 'Internal server error' });
+      console.error("Fetch followers error:", err);
+      return res.status(500).json({ error: "Internal server error" });
     }
 
     res.json(results);
   });
 });
 
-router.get('/add/:id/:type/following-posts', (req, res) => {
+router.get("/add/:id/:type/following-posts", (req, res) => {
   const { id, type } = req.params;
 
   const postMap = {
     sales: {
-      postTable: 'salespersonposts',
-      userTable: 'salespersons',
-      userIdField: 'salespersonsid',
+      postTable: "salespersonposts",
+      userTable: "salespersons",
+      userIdField: "salespersonsid",
     },
     territory: {
-      postTable: 'territorypartnerposts',
-      userTable: 'territorypartner',
-      userIdField: 'territorypartnerid',
+      postTable: "territorypartnerposts",
+      userTable: "territorypartner",
+      userIdField: "territorypartnerid",
     },
     // onboarding: {
     //   postTable: 'onboardingposts',
@@ -256,9 +263,8 @@ router.get('/add/:id/:type/following-posts', (req, res) => {
     // },
   };
 
-  
   const map = postMap[type];
-  if (!map) return res.status(400).json({ error: 'Invalid user type' });
+  if (!map) return res.status(400).json({ error: "Invalid user type" });
 
   const query = `
     SELECT
@@ -280,13 +286,49 @@ router.get('/add/:id/:type/following-posts', (req, res) => {
 
   db.query(query, [type, id, type], (err, result) => {
     if (err) {
-      console.error('Fetch following posts error:', err);
-      return res.status(500).json({ error: 'Internal server error' });
+      console.error("Fetch following posts error:", err);
+      return res.status(500).json({ error: "Internal server error" });
     }
 
     res.json(result);
   });
 });
 
+router.get("/add/:id/:type/following", (req, res) => {
+  const { id, type } = req.params;
+  console.log(id, type, "ggggggggggggggg");
+
+  // Map user type to table and ID field
+  const tableMap = {
+    sales: { table: "salespersons", idField: "salespersonsid" },
+    territory: { table: "territorypartner", idField: "id" },
+    onboarding: { table: "onboardingpartner", idField: "partnerid" },
+    projectpartner: { table: "projectpartner", idField: "id" },
+  };
+
+  const userMeta = tableMap[type];
+  if (!userMeta) {
+    console.log("Invalid user type");
+
+    return res.status(400).json({ error: "Invalid user type" });
+  }
+
+  const sql = `
+    SELECT u.${userMeta.idField} AS id, u.fullname, u.userimage
+    FROM userFollowers f
+    JOIN ${userMeta.table} u 
+      ON u.${userMeta.idField} = f.following_id
+    WHERE f.follower_id = ? AND f.follower_type = ?
+  `;
+
+  db.query(sql, [id, type], (err, results) => {
+    if (err) {
+      console.error("Fetch following error:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+
+    res.json(results);
+  });
+});
 
 export default router;

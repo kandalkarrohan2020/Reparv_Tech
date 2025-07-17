@@ -11,6 +11,7 @@ import Profile from "../Profile";
 import { useAuth } from "../../store/auth";
 import LogoutButton from "../LogoutButton";
 import { FaUserCircle } from "react-icons/fa";
+import Agreement from "../Agreement";
 
 function Layout() {
   const location = useLocation();
@@ -18,7 +19,9 @@ function Layout() {
   const [isShortBar, setIsShortbar] = useState(false);
   const [heading, setHeading] = useState(localStorage.getItem("head"));
   const {
-    showProfile, URI,
+    URI,
+    user,
+    showProfile,
     setShowProfile,
     showPropertyForm,
     setShowPropertyForm,
@@ -54,6 +57,31 @@ function Layout() {
     setHeading(label);
     localStorage.setItem("head", label);
   };
+
+  const [agreementData, setAgreementData] = useState("");
+
+  // Fetch Agreement Status
+  const fetchAgreement = async (id) => {
+    try {
+      const response = await fetch(`${URI}/admin/partner/get/${id}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch Agreement.");
+      const data = await response.json();
+      console.log(data);
+      setAgreementData(data);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAgreement(user?.id);
+  }, []);
 
   return (
     <div className="flex flex-col w-full h-screen bg-[#F5F5F6]">
@@ -174,6 +202,7 @@ function Layout() {
           <Outlet />
         </div>
       </div>
+
       {showProfile && <Profile />}
 
       {overlays.map(({ state, setter }, index) =>
@@ -185,6 +214,13 @@ function Layout() {
           ></div>
         ) : null
       )}
+
+      {/* Show Agreement Form Screen */}
+      <Agreement
+        fetchAgreement={fetchAgreement}
+        agreementData={agreementData}
+        setAgreementData={setAgreementData}
+      />
     </div>
   );
 }

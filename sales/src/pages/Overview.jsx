@@ -60,7 +60,7 @@ function Overview() {
       });
       if (!response.ok) throw new Error("Failed to fetch Count.");
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       setOverviewCountData(data);
     } catch (err) {
       console.error("Error fetching :", err);

@@ -5,8 +5,10 @@ import CardAssuredTag from "../../assets/property/cardAssuredTag.svg";
 import { useAuth } from "../../store/auth";
 import FormatPrice from "../FormatPrice";
 import { IoMdDoneAll } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 const PropertyBookingCard = ({ propertyInfo }) => {
+  const navigate = useNavigate();
   const {
     priceSummery,
     setPriceSummery,
@@ -129,7 +131,7 @@ const PropertyBookingCard = ({ propertyInfo }) => {
               <span className="text-base font-medium">/mo</span>
             </p>
           </div>
-          <button className="flex items-center text-black text-xs sm:text-sm font-medium gap-1 cursor-pointer">
+          <button onClick={()=>{navigate("/check-eligibility")}} className="flex items-center text-black text-xs sm:text-sm font-medium gap-1 hover:text-[#0BB501] transition cursor-pointer">
             Check eligibility{" "}
             <HiOutlineArrowNarrowRight className="text-xl font-normal" />
           </button>
@@ -159,7 +161,7 @@ const PropertyBookingCard = ({ propertyInfo }) => {
               setPriceSummery(propertyInfo);
               console.log(priceSummery);
             }}
-            className="flex items-center text-xs sm:text-sm font-medium gap-1 cursor-pointer"
+            className="flex items-center text-xs sm:text-sm font-medium gap-1 hover:text-[#0BB501] transition cursor-pointer"
           >
             Pricing Breakup{" "}
             <HiOutlineArrowNarrowRight className="text-xl font-normal" />

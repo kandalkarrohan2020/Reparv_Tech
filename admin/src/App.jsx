@@ -29,6 +29,7 @@ import GuestUser from "./pages/guestUser.jsx";
 import Blogs from "./pages/Blogs.jsx";
 import ApkUpload from "./pages/ApkUpload.jsx";
 import UsersLoanEligibility from "./pages/UsersLoanEligibility.jsx";
+import UpdateEMI from "./components/usersLoanEligibility/UpdateEMI.jsx";
 
 const App = () => {
   return (
@@ -57,6 +58,7 @@ const App = () => {
           <Route path="/slider" element={<Slider/>} />
           <Route path="/testimonial" element={<Testimonial/>} />
           <Route path="/users-loan-eligibility" element={<UsersLoanEligibility />} />
+          <Route path="/user-loan-eligibility-data-update/:id" element={<UpdateEMI />} />
           <Route path="/apk-upload" element={<ApkUpload />} />
           <Route path="/blogs" element={<Blogs/>} />
           <Route path="/raw-materials" element={<RawMaterials />} />

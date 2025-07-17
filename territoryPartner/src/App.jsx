@@ -14,6 +14,7 @@ import Property from "./propertyPages/Properties.jsx";
 import PropertyDetails from "./propertyPages/PropertyDetails.jsx";
 import KYC from "./pages/KYC.jsx";
 import DownloadApk from "./pages/DownloadApk.jsx";
+import CheckEligibility from "./pages/CheckEligibility.jsx";
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const App = () => {
           
           <Route path="/property" element={<Property />} />
           <Route path="/property-info/:id" element={<PropertyDetails />} />
+          <Route path="/check-eligibility" element={<CheckEligibility />} />
           
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>

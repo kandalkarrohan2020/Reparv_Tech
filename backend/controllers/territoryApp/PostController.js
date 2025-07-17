@@ -161,50 +161,61 @@ export const addLike = async (req, res) => {
   );
 };
 
-
-
 export const updatePost = (req, res) => {
- 
   const postId = req.params.id;
-  const {postContent} = req.body;
- 
-  
+  const { postContent } = req.body;
+
+  // If a file was uploaded by multer, get the filename
   const image = req.file ? req.file.filename : null;
-  const currentDate = new Date();
- console.log(postContent,'sssssss');
-  
-  // Build query based on whether image is updated
+
+  console.log("Updating post:", { postContent, image });
+
   let sql;
   let values;
 
-  if (image) {
+  if (image && postContent) {
+    // Both image and content updated
     sql = `
       UPDATE territorypartnerposts
-      SET  image = ?, postContent = ?
+      SET image = ?, postContent = ?
       WHERE postId = ?
     `;
     values = [image, postContent, postId];
-  } else {
+  } else if (image) {
+    // Only image updated
+    sql = `
+      UPDATE territorypartnerposts
+      SET image = ?
+      WHERE postId = ?
+    `;
+    values = [image, postId];
+  } else if (postContent) {
+    // Only text updated
     sql = `
       UPDATE territorypartnerposts
       SET postContent = ?
       WHERE postId = ?
     `;
-    values = [ postContent, postId];
+    values = [postContent, postId];
+  } else {
+    // Nothing to update
+    return res.status(400).json({
+      message: "No data provided to update",
+    });
   }
 
   db.query(sql, values, (err, result) => {
     if (err) {
-      console.error('Error updating post:', err);
-      return res.status(500).json({ message: 'Database error', error: err });
+      console.error("Error updating post:", err);
+      return res.status(500).json({ message: "Database error", error: err });
     }
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Post not found' });
+      return res.status(404).json({ message: "Post not found" });
     }
 
     res.status(200).json({
-      message: 'Post updated successfully',
+      message: "Post updated successfully",
       updatedRows: result.affectedRows,
     });
   });

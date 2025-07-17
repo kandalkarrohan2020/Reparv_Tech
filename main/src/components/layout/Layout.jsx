@@ -172,7 +172,7 @@ function Layout() {
         </div>
         <div
           className={`selectCity ${
-            location.pathname !== "/about" ? "sm:inline-block" : "hidden"
+            location.pathname !== "/check-eligibility" ? "sm:inline-block" : "hidden"
           } hidden min-w-[50px] max-w-[180px] relative`}
         >
           <div className="flex lg:gap-1 items-center justify-center text-lg font-semibold text-black lg:p-1">

@@ -62,7 +62,10 @@ const [showCustomer, setShowCustomer] = useState(false);
 const [showCustomerPaymentForm, setShowCustomerPaymentForm] = useState(false);
 const [showApkUploadForm, setShowApkUploadForm] = useState(false);
 const [partnerPaymentStatus, setPartnerPaymentStatus] = useState("Pending");
-const [showLoanEligibilityForm, setShowLoanEligibilityForm] = useState(false);
+const [showEMIForm, setShowEMIForm] = useState(false);
+const [filterStatus, setFilterStatus] = useState("New");
+const [showEMI, setShowEMI] = useState(false);
+const [enquiryFilter, setEnquiryFilter] = useState("New");
 
 return <AuthContext.Provider
  value={
@@ -111,7 +114,10 @@ return <AuthContext.Provider
         showCustomer, setShowCustomer,
         showApkUploadForm, setShowApkUploadForm,
         showCustomerPaymentForm, setShowCustomerPaymentForm,
-        showLoanEligibilityForm, setShowLoanEligibilityForm,
+        filterStatus, setFilterStatus,
+        showEMI, setShowEMI,
+        showEMIForm, setShowEMIForm,
+        enquiryFilter, setEnquiryFilter,
     }
 }>
     {children}

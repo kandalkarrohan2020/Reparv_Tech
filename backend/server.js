@@ -32,6 +32,7 @@ import blogRoutes from "./routes/admin/blogRoutes.js";
 import sliderRoutes from "./routes/admin/sliderRoutes.js";
 import testimonialRoutes from "./routes/admin/testimonialRoutes.js";
 import calenderRoutes from "./routes/admin/calenderRoutes.js";
+import emiRoutes from "./routes/admin/emiRoutes.js";
 //import marketingRoutes from "./routes/admin/marketingRoutes.js";
 //import rawmaterialRoutes from "./routes/admin/rawmaterialRoutes.js";
 
@@ -44,6 +45,7 @@ import enquiryRoutes from "./routes/frontend/enquiryRoutes.js";
 import frontendBlogRoutes from "./routes/frontend/blogRoutes.js";
 import sliderImagesRoutes from "./routes/frontend/sliderRoutes.js";
 import testimonialFeedbackRoutes from "./routes/frontend/testimonialRoutes.js";
+import frontendEmiRoutes from "./routes/frontend/emiRoutes.js";
 
 // Payment Route
 import paymentRoutes from "./routes/paymentRoutes.js";
@@ -128,13 +130,13 @@ import territoryBooking from "./routes/territoryPartner/propertyBookingRoute.js"
 import territoryClientRoute from "./routes/territoryAppRoute/profileRoute.js";
 
 //Onboarding App
-import onboardingAppRoute from './routes/onboardingAppRoute/userRoute.js'
+import onboardingAppRoute from "./routes/onboardingAppRoute/userRoute.js";
 
 //ProjectPartner App
-import projectPartnerAppRoute from './routes/projectPartnerAppRoute/userRoute.js'
+import projectPartnerAppRoute from "./routes/projectPartnerAppRoute/userRoute.js";
 
 //Customer App
-import customerEmi from './routes/customerAppRoute/EmiRoute.js'
+import customerEmi from "./routes/customerAppRoute/EmiRoute.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -232,6 +234,7 @@ const verifyToken = (req, res, next) => {
     "/frontend/blog/details/",
     "/frontend/slider",
     "/frontend/testimonial",
+    "/frontend/emi",
     //i addedd
     "/api/booking",
     //salesPerson APP Routes
@@ -248,7 +251,7 @@ const verifyToken = (req, res, next) => {
     "/territoryapp/post",
     "/territoryapp/post/get",
     "/customerapp",
-    "/customerapp/emiform"
+    "/customerapp/emiform",
   ];
 
   //  Allow public routes to pass through
@@ -297,6 +300,7 @@ app.use("/frontend/enquiry", enquiryRoutes);
 app.use("/frontend/blog", frontendBlogRoutes);
 app.use("/frontend/slider", sliderImagesRoutes);
 app.use("/frontend/testimonial", testimonialFeedbackRoutes);
+app.use("/frontend/emi", frontendEmiRoutes);
 // Payment Call
 app.use("/api/payment", paymentRoutes);
 
@@ -327,6 +331,7 @@ app.use("/admin/blog", blogRoutes);
 app.use("/admin/slider", sliderRoutes);
 app.use("/admin/testimonial", testimonialRoutes);
 app.use("/admin/calender", calenderRoutes);
+app.use("/admin/emi", emiRoutes);
 // app.use("/admin/marketing", marketingRoutes);
 
 // Guest User Routes
@@ -412,15 +417,14 @@ app.use("/api/booking", bookPropertyRoute);
 //get territory Book Enquiry Property
 app.use("/api/booking/territory", territoryBooking);
 
-//onboarding Partner 
-app.use('/onboardingapp/user',onboardingAppRoute);
+//onboarding Partner
+app.use("/onboardingapp/user", onboardingAppRoute);
 
 //ProjectPartner App
-app.use('/projectpartnerRoute/user',projectPartnerAppRoute);
+app.use("/projectpartnerRoute/user", projectPartnerAppRoute);
 
 //Customer app
-app.use('/customerapp',customerEmi)
-
+app.use("/customerapp", customerEmi);
 
 //  Start Server
 app.listen(PORT, () => {

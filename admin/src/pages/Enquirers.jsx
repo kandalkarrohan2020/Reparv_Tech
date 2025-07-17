@@ -15,6 +15,7 @@ import propertyPicture from "../assets/propertyPicture.svg";
 import FormatPrice from "../components/FormatPrice";
 import Select from "react-select";
 import DownloadCSV from "../components/DownloadCSV";
+import EnquiryFilter from "../components/enquiryFilter";
 
 const Enquirers = () => {
   const {
@@ -34,6 +35,8 @@ const Enquirers = () => {
     setShowEnquiryUpdateForm,
     showEnquirerPropertyForm,
     setShowEnquirerPropertyForm,
+    enquiryFilter,
+    setEnquiryFilter,
   } = useAuth();
 
   const [datas, setDatas] = useState([]);
@@ -131,13 +134,16 @@ const Enquirers = () => {
   // **Fetch States from API**
   const fetchCities = async () => {
     try {
-      const response = await fetch(`${URI}/admin/cities/${newEnquiry?.state || salesPersonAssign?.state}`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${URI}/admin/cities/${newEnquiry?.state || salesPersonAssign?.state}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch cities.");
       const data = await response.json();
       console.log(data);
@@ -638,6 +644,24 @@ const Enquirers = () => {
     }
   }, [newEnquiry.state, salesPersonAssign.state]);
 
+  const getEnquiryCounts = (data) => {
+    return data.reduce(
+      (acc, item) => {
+        if (!item.salespersonid && !item.territorypartnerid) {
+          acc.New++;
+        } else if (item.salespersonid && !item.territorypartnerid) {
+          acc.Alloted++;
+        } else if (item.salespersonid && item.territorypartnerid) {
+          acc.Assign++;
+        }
+        return acc;
+      },
+      { New: 0, Alloted: 0, Assign: 0 }
+    );
+  };
+
+  const enquiryCounts = getEnquiryCounts(datas);
+
   const [range, setRange] = useState([
     {
       startDate: null,
@@ -675,7 +699,18 @@ const Enquirers = () => {
       (!startDate && !endDate) ||
       (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
 
-    return matchesStatus && matchesSearch && matchesDate;
+    // Enquiry filter logic: New, Alloted, Assign
+    const getEnquiryStatus = () => {
+      if (!item.salespersonid && !item.territorypartnerid) return "New";
+      if (item.salespersonid && !item.territorypartnerid) return "Alloted";
+      if (item.salespersonid && item.territorypartnerid) return "Assign";
+      return "";
+    };
+
+    const matchesEnquiry =
+      !enquiryFilter || getEnquiryStatus() === enquiryFilter;
+
+    return matchesStatus && matchesSearch && matchesDate && matchesEnquiry;
   });
 
   const columns = [
@@ -700,8 +735,33 @@ const Enquirers = () => {
           {index + 1}
         </span>
       ),
-      width: "80px",
+      width: "70px",
     },
+
+    {
+      name: "Status",
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 rounded-md ${
+            row.status === "New"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : row.status === "Visit Scheduled"
+              ? "bg-[#E9F2FF] text-[#0068FF]"
+              : row.status === "Token"
+              ? "bg-[#FFF8DD] text-[#FFCA00]"
+              : row.status === "Cancelled"
+              ? "bg-[#FFEAEA] text-[#ff2323]"
+              : row.status === "Follow Up"
+              ? "bg-[#F4F0FB] text-[#5D00FF]"
+              : "text-[#000000]"
+          }`}
+        >
+          {row.status}
+        </span>
+      ),
+      minWidth: "150px",
+    },
+
     {
       name: "Intrested Property",
       cell: (row) => {
@@ -735,6 +795,7 @@ const Enquirers = () => {
       omit: false,
       width: "130px",
     },
+
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
       name: "Customer",
@@ -750,29 +811,6 @@ const Enquirers = () => {
     {
       name: "Contact",
       selector: (row) => row.contact,
-      minWidth: "150px",
-    },
-    {
-      name: "Status",
-      cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.status === "New"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : row.status === "Visit Scheduled"
-              ? "bg-[#E9F2FF] text-[#0068FF]"
-              : row.status === "Token"
-              ? "bg-[#FFF8DD] text-[#FFCA00]"
-              : row.status === "Cancelled"
-              ? "bg-[#FFEAEA] text-[#ff2323]"
-              : row.status === "Follow Up"
-              ? "bg-[#F4F0FB] text-[#5D00FF]"
-              : "text-[#000000]"
-          }`}
-        >
-          {row.status}
-        </span>
-      ),
       minWidth: "150px",
     },
     {
@@ -902,6 +940,7 @@ const Enquirers = () => {
               <option value="CSV">CSV File</option>
             </select>
           </div>
+
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
             <DownloadCSV data={filteredData} filename={"Enquirers.csv"} />
             <AddButton label={"Add "} func={setShowEnquiryForm} />
@@ -919,7 +958,7 @@ const Enquirers = () => {
             />
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
-            <div className="flex flex-wrap items-center justify-end gap-3 px-2">
+            <div className="flex items-center justify-end gap-3 px-2">
               <FilterData
                 selectedFilter={selectedFilter}
                 setSelectedFilter={setSelectedFilter}
@@ -933,6 +972,9 @@ const Enquirers = () => {
               <AddButton label={"Add "} func={setShowEnquiryForm} />
             </div>
           </div>
+        </div>
+        <div className="filterContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
+          <EnquiryFilter counts={enquiryCounts} />
         </div>
         <h2 className="text-[16px] font-semibold">Enquiry List</h2>
         <div className="overflow-scroll scrollbar-hide">
@@ -1308,7 +1350,8 @@ const Enquirers = () => {
                         value: state.state,
                         label: state.state,
                       }))
-                      .find((opt) => opt.value === salesPersonAssign.state) || null
+                      .find((opt) => opt.value === salesPersonAssign.state) ||
+                    null
                   }
                   onChange={(selected) =>
                     setSalesPersonAssign({
@@ -1339,7 +1382,8 @@ const Enquirers = () => {
                         value: city.city,
                         label: city.city,
                       }))
-                      .find((opt) => opt.value === salesPersonAssign.city) || null
+                      .find((opt) => opt.value === salesPersonAssign.city) ||
+                    null
                   }
                   onChange={(selected) =>
                     setSalesPersonAssign({

@@ -3,155 +3,125 @@ import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
-import AddButton from "../components/AddButton";
 import { IoMdClose } from "react-icons/io";
-import EmployeeFilter from "../components/employee/EmployeeFilter";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
 import DownloadCSV from "../components/DownloadCSV";
 import FormatPrice from "../components/FormatPrice";
-import UsersLoanEligibilityFilter from "../components/UsersLoanEligibilityFilter";
+import UsersLoanEligibilityFilter from "../components/usersLoanEligibility/UsersLoanEligibilityFilter";
+import { useNavigate } from "react-router-dom";
 
 const UsersLoanEligibility = () => {
+  const navigate = useNavigate();
   const {
-    showEplDetailsForm,
-    setShowEplDetailsForm,
-    action,
+    showEMI,
+    setShowEMI,
+    showEMIForm,
+    setShowEMIForm,
     giveAccess,
     setGiveAccess,
-    token,
-    showLoanEligibilityForm,
-    setShowLoanEligibilityForm,
+    filterStatus,
     URI,
-    loading,
     setLoading,
   } = useAuth();
-  const [users, setUsers] = useState([]);
-  const [roleData, setRoleData] = useState([]);
-  const [departmentData, setDepartmentData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null); // Stores employee ID
-  const [newEmployee, setEmployeeData] = useState({
-    name: "",
-    uid: "",
-    contact: "",
-    email: "",
-    address: "",
-    dob: "",
-    departmentid: "",
-    roleid: "",
-    salary: "",
-    doj: "",
-    status: "",
-  });
 
-  // *Fetch Data from API*
+  const [users, setUsers] = useState([]);
+  const [userId, setUserId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [formData, setFormData] = useState({});
+  const [status, setStatus] = useState("");
+  const [statusCounts, setStatusCounts] = useState({});
+
+  // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/admin/users/", {
+      const response = await fetch(`${URI}/admin/emi/${filterStatus}`, {
+        method: "GET",
+        credentials: "include", // Sends cookies
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch Users");
+
+      const result = await response.json();
+      console.log("Fetched Users Data:", result);
+
+      setUsers(result?.data ?? []);
+      setStatusCounts(result?.statusCounts ?? {});
+    } catch (err) {
+      console.error("Error fetching partner data:", err);
+      setUsers([]); // clear previous data on error
+      setStatusCounts({}); // clear previous counts on error
+    }
+  };
+
+  //fetch data on form
+  const view = async (id) => {
+    try {
+      const response = await fetch(URI + `/admin/emi/get/${id}`, {
         method: "GET",
         credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
       });
-
-      if (!response.ok) throw new Error("Failed to fetch employees.");
-
+      if (!response.ok) throw new Error("Failed to fetch User.");
       const data = await response.json();
-      setUsers(data);
-    } catch (err) {
-      console.error("Error fetching:", err);
-    }
-  };
-
-  const add = async (e) => {
-    e.preventDefault();
-
-    const endpoint = newEmployee.id ? `edit/${newEmployee.id}` : "add";
-
-    try {
-      setLoading(true);
-      const response = await fetch(`${URI}/admin/employees/${endpoint}`, {
-        method: newEmployee.id ? "PUT" : "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newEmployee),
-      });
-
-      if (response.status === 409) {
-        alert("Employee already exists!");
-      } else if (!response.ok) {
-        throw new Error(`Failed to save employee. Status: ${response.status}`);
-      } else {
-        alert(
-          newEmployee.id
-            ? "Employee updated successfully!"
-            : "Employee added successfully!"
-        );
-      }
-
-      // Clear form only after successful fetch
-      setEmployeeData({
-        name: "",
-        uid: "",
-        contact: "",
-        email: "",
-        address: "",
-        dob: "",
-        departmentid: "",
-        roleid: "",
-        salary: "",
-        doj: "",
-        status: "",
-      });
-
-      setShowEplDetailsForm(false);
-
-      await fetchData(); // Ensure latest data is fetched
-    } catch (err) {
-      console.error("Error saving employee:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  //fetch data on form
-  const edit = async (id) => {
-    try {
-      const response = await fetch(URI + `/admin/employees/${id}`, {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch employee.");
-      const data = await response.json();
-      setEmployeeData(data);
-      setShowEplDetailsForm(true);
+      setFormData(data);
+      setShowEMIForm(true);
     } catch (err) {
       console.error("Error fetching :", err);
     }
   };
 
+  // change status record
+  const changeStatus = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const response = await fetch(URI + `/admin/emi/status/${userId}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status }),
+      });
+      const data = await response.json();
+      console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      setStatus("");
+      setUserId(null);
+      setShowEMI(false);
+      fetchData();
+    } catch (error) {
+      console.error("Error deleting :", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Delete record
   const del = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this employee?"))
-      return;
+    if (!window.confirm("Are you sure you want to delete this entry?")) return;
 
     try {
-      const response = await fetch(URI + `/admin/employees/delete/${id}`, {
+      const response = await fetch(URI + `/admin/emi/delete/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
 
       const data = await response.json();
       if (response.ok) {
-        alert("Employee deleted successfully!");
-        // Refresh employee list
+        alert("user deleted successfully!");
+        // Refresh list
         fetchData();
       } else {
         alert(`Error: ${data.message}`);
@@ -163,65 +133,9 @@ const UsersLoanEligibility = () => {
     }
   };
 
-  // change eligibility status record
-  const status = async (id) => {
-    try {
-      const response = await fetch(URI + `/admin/users/eligibility/${id}`, {
-        method: "PUT",
-        credentials: "include",
-      });
-      const data = await response.json();
-      console.log(response);
-      if (response.ok) {
-        alert(`Success: ${data.message}`);
-      } else {
-        alert(`Error: ${data.message}`);
-      }
-      fetchData();
-    } catch (error) {
-      console.error("Error Changing Eligibility :", error);
-    }
-  };
-
-  // change status record
-  const assignLogin = async (e) => {
-    e.preventDefault();
-
-    try {
-      setLoading(true);
-      const response = await fetch(
-        URI + `/admin/employees/assignlogin/${selectedEmployeeId}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ selectedEmployeeId, username, password }),
-        }
-      );
-      const data = await response.json();
-      console.log(response);
-      if (response.ok) {
-        alert(`Success: ${data.message}`);
-      } else {
-        alert(`Error: ${data.message}`);
-      }
-      setSelectedEmployeeId(null);
-      setUsername("");
-      setPassword("");
-      setGiveAccess(false);
-      fetchData();
-    } catch (error) {
-      console.error("Error deleting :", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [filterStatus]);
 
   const [range, setRange] = useState([
     {
@@ -236,9 +150,10 @@ const UsersLoanEligibility = () => {
 
     const matchesSearch =
       item.fullname?.toLowerCase().includes(search) ||
-      item.adharno?.toLowerCase().includes(search) ||
-      item.contact?.toLowerCase().includes(search) ||
-      item.panno?.toLowerCase().includes(search) ||
+      item.email?.toLowerCase().includes(search) ||
+      item.aadhaarNumber?.toLowerCase().includes(search) ||
+      item.contactNo?.toLowerCase().includes(search) ||
+      item.panNumber?.toLowerCase().includes(search) ||
       item.state?.toLowerCase().includes(search) ||
       item.city?.toLowerCase().includes(search);
 
@@ -263,43 +178,22 @@ const UsersLoanEligibility = () => {
   });
 
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, width: "50px" },
-    { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
-      name: "Name",
-      selector: (row) => row.fullname,
-      sortable: true,
-      minWidth: "150px",
-    },
-    {
-      name: "Contact",
-      selector: (row) => row.contact,
-      sortable: true,
-      minWidth: "120px",
-    },
-    {
-      name: "ADHAR No",
-      selector: (row) => row.adharno,
-      sortable: true,
-      minWidth: "140px",
-    },
-    {
-      name: "PAN No",
-      selector: (row) => row.panno,
-      sortable: true,
-      minWidth: "150px",
-    },
-    {
-      name: "State",
-      selector: (row) => <FormatPrice price={parseFloat(row.state)} />,
-      sortable: true,
-      minWidth: "150px",
-    },
-    {
-      name: "City",
-      selector: (row) => row.city,
-      sortable: true,
-      minWidth: "130px",
+      name: "SN",
+      cell: (row, index) => (
+        <span
+          className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md ${
+            row.status === "Eligible"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : row.status === "Not Eligible"
+              ? "bg-[#FBE9E9] text-[#FF0000]"
+              : "bg-blue-100 text-blue-600"
+          }`}
+        >
+          {index + 1}
+        </span>
+      ),
+      width: "80px",
     },
     {
       name: "Status",
@@ -317,6 +211,43 @@ const UsersLoanEligibility = () => {
         </span>
       ),
     },
+    { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
+    {
+      name: "Name",
+      selector: (row) => row.fullname,
+      sortable: true,
+      minWidth: "150px",
+    },
+    {
+      name: "Contact",
+      selector: (row) => row.contactNo,
+      sortable: true,
+      minWidth: "120px",
+    },
+    {
+      name: "ADHAR No",
+      selector: (row) => row.aadhaarNumber,
+      sortable: true,
+      minWidth: "140px",
+    },
+    {
+      name: "PAN No",
+      selector: (row) => row.panNumber,
+      sortable: true,
+      minWidth: "150px",
+    },
+    {
+      name: "State",
+      selector: (row) => row.state,
+      sortable: true,
+      minWidth: "150px",
+    },
+    {
+      name: "City",
+      selector: (row) => row.city,
+      sortable: true,
+      minWidth: "130px",
+    },
     {
       name: "",
       cell: (row) => <ActionDropdown row={row} />,
@@ -328,18 +259,19 @@ const UsersLoanEligibility = () => {
 
     const handleActionSelect = (action, id) => {
       switch (action) {
+        case "view":
+          view(id);
+          break;
         case "status":
-          status(id);
+          setShowEMI(true);
+          setUserId(id);
+          changeStatus();
           break;
         case "update":
-          edit(id);
+          navigate(`/user-loan-eligibility-data-update/${id}`);
           break;
         case "delete":
           del(id);
-          break;
-        case "assignlogin":
-          setSelectedEmployeeId(id);
-          setGiveAccess(true);
           break;
         default:
           console.log("Invalid action");
@@ -363,9 +295,9 @@ const UsersLoanEligibility = () => {
           <option value="" disabled>
             Select Action
           </option>
+          <option value="view">View</option>
           <option value="status">Status</option>
           <option value="update">Update</option>
-          <option value="assignlogin">Assign Login</option>
           <option value="delete">Delete</option>
         </select>
       </div>
@@ -396,7 +328,7 @@ const UsersLoanEligibility = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <UsersLoanEligibilityFilter counts={0} />
+              <UsersLoanEligibilityFilter counts={statusCounts} />
               <div className="block">
                 <CustomDateRangePicker range={range} setRange={setRange} />
               </div>
@@ -418,307 +350,181 @@ const UsersLoanEligibility = () => {
         </div>
       </div>
 
+      {/* Change Status Form */}
       <div
         className={` ${
-          showLoanEligibilityForm ? "flex" : "hidden"
-        } z-[61] employeeForm overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed `}
+          !showEMI && "hidden"
+        } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
       >
-        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] md:max-h-[50vh] bg-white py-8 pb-10 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Employee Details</h2>
+            <h2 className="text-[16px] font-semibold">
+              Change Eligibility Status
+            </h2>
             <IoMdClose
               onClick={() => {
-                setShowLoanEligibilityForm(false);
+                setShowEMI(false);
               }}
               className="w-6 h-6 cursor-pointer"
             />
           </div>
-          <form
-            onSubmit={add}
-            className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2"
-          >
-            <div className="w-full">
-              <input
-                type="hidden"
-                value={newEmployee.id || ""}
-                onChange={(e) =>
-                  setEmployeeData({ ...newEmployee, id: e.target.value })
-                }
-              />
-
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Full Name (As per UID)
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="Enter Full Name"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newEmployee.name}
-                onChange={(e) =>
-                  setEmployeeData({ ...newEmployee, name: e.target.value })
-                }
-              />
-            </div>
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                UID No.
-              </label>
-              <input
-                type="number"
-                required
-                placeholder="Enter UID No"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newEmployee.uid}
-                onChange={(e) => {
-                  const input = e.target.value;
-                  if (/^\d{0,12}$/.test(input)) {
-                    // Allows only up to 12 digits
-                    setEmployeeData({ ...newEmployee, uid: input });
-                  }
-                }}
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Contact Number
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="Enter Contact Number"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newEmployee.contact}
-                onChange={(e) => {
-                  const input = e.target.value;
-                  if (/^\d{0,10}$/.test(input)) {
-                    // Allows only up to 12 digits
-                    setEmployeeData({ ...newEmployee, contact: input });
-                  }
-                }}
-              />
-            </div>
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                E-mail
-              </label>
-              <input
-                type="email"
-                required
-                placeholder="Enter Mail"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newEmployee.email}
-                onChange={(e) =>
-                  setEmployeeData({ ...newEmployee, email: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Address
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="Enter Complete Address"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newEmployee.address}
-                onChange={(e) =>
-                  setEmployeeData({ ...newEmployee, address: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Date of Birth
-              </label>
-              <input
-                type="date"
-                required
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newEmployee.dob?.split("T")[0]}
-                onChange={(e) => {
-                  const selectedDate = e.target.value; // Get full date
-                  const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
-                  setEmployeeData({ ...newEmployee, dob: formattedDate });
-                }}
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Department
-              </label>
-              <select
-                required
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
-                style={{ backgroundImage: "none" }}
-                value={newEmployee.departmentid}
-                onChange={(e) =>
-                  setEmployeeData({
-                    ...newEmployee,
-                    departmentid: e.target.value,
-                  })
-                }
-              >
-                <option value="">Select Department</option>
-                {departmentData.map((department, index) => (
-                  <option key={index} value={department.departmentid}>
-                    {department.department}
+          <form onSubmit={changeStatus}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1">
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Eligibility Status
+                </label>
+                <select
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={status}
+                  onChange={(e) => {
+                    setStatus(e.target.value);
+                  }}
+                >
+                  <option value="" disabled>
+                    Select Eligibility Status
                   </option>
-                ))}
-              </select>
+                  <option value="Eligible">Eligible</option>
+                  <option value="Not Eligible">Not Eligible</option>
+                </select>
+              </div>
             </div>
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Role
-              </label>
-              <select
-                required
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
-                style={{ backgroundImage: "none" }}
-                value={newEmployee.roleid}
-                onChange={(e) =>
-                  setEmployeeData({ ...newEmployee, roleid: e.target.value })
-                }
-              >
-                <option value="user1">Select Role</option>
-                {roleData.map((role, index) => (
-                  <option key={index} value={role.roleid}>
-                    {role.role}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Salary
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="Enter Salary"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newEmployee.salary}
-                onChange={(e) =>
-                  setEmployeeData({ ...newEmployee, salary: e.target.value })
-                }
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Date of Joining
-              </label>
-              <input
-                type="date"
-                required
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newEmployee.doj?.split("T")[0]}
-                onChange={(e) => {
-                  const selectedDate = e.target.value; // Get full date
-                  const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
-                  setEmployeeData({ ...newEmployee, doj: formattedDate });
-                }}
-              />
-            </div>
-
-            <div className="flex mt-8 md:mt-6 justify-end gap-6">
-              <button
-                onClick={() => {
-                  setShowLoanEligibilityForm(false);
-                }}
-                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
-              >
-                Cancel
-              </button>
+            <div className="w-full flex mt-4 justify-end gap-6">
               <button
                 type="submit"
-                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+                className="w-full px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
               >
-                Save
-              </button>
-              <Loader />
-            </div>
-          </form>
-        </div>
-      </div>
-
-      {/* Give Access Form */}
-      <div
-        className={` ${
-          !giveAccess && "hidden"
-        } z-[61] overflow-scroll scrollbar-hide flex fixed`}
-      >
-        <div className="w-[330px] h-[450px] sm:w-[600px] sm:h-[400px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[300px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Give Access</h2>
-            <IoMdClose
-              onClick={() => {
-                setGiveAccess(false);
-              }}
-              className="w-6 h-6 cursor-pointer"
-            />
-          </div>
-          <form
-            onSubmit={assignLogin}
-            className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2"
-          >
-            <input
-              type="hidden"
-              value={selectedEmployeeId || ""}
-              onChange={(e) => setSelectedEmployeeId(e.target.value)}
-            />
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                User Name
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="Enter UserName"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                }}
-              />
-            </div>
-            <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Password
-              </label>
-              <input
-                type="password"
-                required
-                placeholder="Enter Password"
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-              />
-            </div>
-            <div className="flex mt-8 md:mt-6 justify-end gap-6">
-              <button
-                onClick={() => {
-                  setGiveAccess(false);
-                }}
-                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
-              >
-                Give Access
+                Change Status
               </button>
               <Loader></Loader>
             </div>
           </form>
         </div>
       </div>
+
+      {showEMIForm && (
+        <div className="z-[61] fixed w-[400px] h-[70vh] md:w-[700px] overflow-scroll scrollbar-hide property-form flex">
+          <div className="w-[330px] sm:w-[600px] md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg overflow-scroll scrollbar-hide">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[16px] font-semibold">EMI Form Details</h2>
+              <IoMdClose
+                onClick={() => setShowEMIForm(false)}
+                className="w-6 h-6 cursor-pointer"
+              />
+            </div>
+
+            <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
+              {[
+                { label: "Status", value: formData.status },
+                { label: "Employment Type", value: formData.employmentType },
+                { label: "Full Name", value: formData.fullname },
+                { label: "Contact Number", value: formData.contactNo },
+                { label: "Email", value: formData.email },
+                { label: "Date of Birth", value: formData.dateOfBirth },
+                { label: "PAN Number", value: formData.panNumber },
+                { label: "Aadhaar Number", value: formData.aadhaarNumber },
+                { label: "State", value: formData.state },
+                { label: "City", value: formData.city },
+                { label: "Pincode", value: formData.pincode },
+              ]
+                .filter(({ value }) => value !== null && value !== "")
+                .map(({ label, value }) => (
+                  <div key={label} className="w-full">
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      {label}
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] bg-gray-100 cursor-not-allowed"
+                      value={value}
+                      readOnly
+                    />
+                  </div>
+                ))}
+
+              {(formData.employmentType === "Job"
+                ? [
+                    {
+                      label: "Employment Sector",
+                      value: formData.employmentSector,
+                    },
+                    {
+                      label: "Work Experience (Years)",
+                      value: formData.workexperienceYear,
+                    },
+                    {
+                      label: "Work Experience (Months)",
+                      value: formData.workexperienceMonth,
+                    },
+                    { label: "Salary Type", value: formData.salaryType },
+                    { label: "Gross Pay", value: formData.grossPay },
+                    { label: "Net Pay", value: formData.netPay },
+                    { label: "PF Deduction", value: formData.pfDeduction },
+                  ]
+                : [
+                    {
+                      label: "Business Sector",
+                      value: formData.businessSector,
+                    },
+                    {
+                      label: "Business Category",
+                      value: formData.businessCategory,
+                    },
+                    {
+                      label: "Business Exp (Years)",
+                      value: formData.businessExperienceYears,
+                    },
+                    {
+                      label: "Business Exp (Months)",
+                      value: formData.businessExperienceMonths,
+                    },
+                    {
+                      label: "Business Other Income",
+                      value: formData.businessOtherIncome,
+                    },
+                  ]
+              )
+                .filter(({ value }) => value !== null && value !== "")
+                .map(({ label, value }) => (
+                  <div key={label} className="w-full">
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      {label}
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] bg-gray-100 cursor-not-allowed"
+                      value={value}
+                      readOnly
+                    />
+                  </div>
+                ))}
+
+              {[
+                { label: "Other Income", value: formData.otherIncome },
+                { label: "Annual Income", value: formData.yearIncome },
+                { label: "Monthly Income", value: formData.monthIncome },
+                { label: "Ongoing EMI", value: formData.ongoingEmi },
+              ]
+                .filter(({ value }) => value !== null && value !== "")
+                .map(({ label, value }) => (
+                  <div key={label} className="w-full">
+                    <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                      {label}
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] bg-gray-100 cursor-not-allowed"
+                      value={value}
+                      readOnly
+                    />
+                  </div>
+                ))}
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

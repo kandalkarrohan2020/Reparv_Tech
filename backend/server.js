@@ -67,6 +67,7 @@ import employeeEnquirersRoutes from "./routes/employee/employeeEnquirersRoutes.j
 //sales
 import salesLoginRoutes from "./routes/sales/salesLoginRoutes.js";
 import salesProfileRoutes from "./routes/sales/salesProfileRoutes.js";
+import salesAgreementRoutes from "./routes/sales/agreementRoutes.js";
 import salesDashboardRoutes from "./routes/sales/dashboardRoutes.js";
 import salesPropertyRoutes from "./routes/sales/salesPropertyRoutes.js";
 import salesTicketRoutes from "./routes/sales/salesTicketRoutes.js";
@@ -80,6 +81,7 @@ import salesPropertyinfoRoutes from "./routes/sales/propertyinfoRoutes.js";
 // import onBarding Partner Routes
 import partnerLoginRoutes from "./routes/onboardingPartner/partnerLoginRoutes.js";
 import partnerProfileRoutes from "./routes/onboardingPartner/partnerProfileRoutes.js";
+import partnerAgreementRoutes from "./routes/onboardingPartner/agreementRoutes.js";
 import partnerDashboardRoutes from "./routes/onboardingPartner/dashboardRoutes.js";
 import partnerPropertyRoutes from "./routes/onboardingPartner/partnerPropertyRoutes.js";
 import partnerBuilderRoutes from "./routes/onboardingPartner/partnerBuilderRoutes.js";
@@ -88,6 +90,7 @@ import partnerTicketRoutes from "./routes/onboardingPartner/partnerTicketRoutes.
 // import Project Partner Routes
 import projectPartnerLoginRoutes from "./routes/projectPartner/loginRoutes.js";
 import projectPartnerProfileRoutes from "./routes/projectPartner/profileRoutes.js";
+import projectPartnerAgreementRoutes from "./routes/projectPartner/agreementRoutes.js";
 import projectPartnerDashboardRoutes from "./routes/projectPartner/dashboardRoutes.js";
 import projectPartnerPropertyRoutes from "./routes/projectPartner/propertyRoutes.js";
 import projectPartnerCustomerRoutes from "./routes/projectPartner/customerRoutes.js";
@@ -97,6 +100,7 @@ import projectPartnerTicketRoutes from "./routes/projectPartner/ticketRoutes.js"
 // import Territory Partner Routes
 import territoryPartnerLoginRoutes from "./routes/territoryPartner/loginRoutes.js";
 import territoryPartnerProfileRoutes from "./routes/territoryPartner/profileRoutes.js";
+import territoryPartnerAgreementRoutes from "./routes/territoryPartner/agreementRoutes.js";
 import territoryPartnerDashboardRoutes from "./routes/territoryPartner/dashboardRoutes.js";
 //import territoryPartnerPropertyRoutes from "./routes/territoryPartner/propertyRoutes.js";
 import territoryPartnerBuilderRoutes from "./routes/territoryPartner/builderRoutes.js";
@@ -129,6 +133,8 @@ import onboardingAppRoute from './routes/onboardingAppRoute/userRoute.js'
 //ProjectPartner App
 import projectPartnerAppRoute from './routes/projectPartnerAppRoute/userRoute.js'
 
+//Customer App
+import customerEmi from './routes/customerAppRoute/EmiRoute.js'
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -241,6 +247,8 @@ const verifyToken = (req, res, next) => {
     "/territoryapp/user",
     "/territoryapp/post",
     "/territoryapp/post/get",
+    "/customerapp",
+    "/customerapp/emiform"
   ];
 
   //  Allow public routes to pass through
@@ -340,6 +348,7 @@ app.use("/employee/tickets", employeeTicketRoutes);
 //Sales Person Routes
 app.use("/sales", salesLoginRoutes);
 app.use("/sales/profile", salesProfileRoutes);
+app.use("/sales/agreement", salesAgreementRoutes);
 app.use("/sales/enquirers", salesEnquirersRoutes);
 app.use("/sales/dashboard", salesDashboardRoutes);
 app.use("/sales/properties", salesPropertyRoutes);
@@ -354,6 +363,7 @@ app.use("/sales/propertyinfo", salesPropertyinfoRoutes);
 // On Boarding Partner Routes
 app.use("/partner", partnerLoginRoutes);
 app.use("/partner/profile", partnerProfileRoutes);
+app.use("/partner/agreement", partnerAgreementRoutes);
 app.use("/partner/dashboard", partnerDashboardRoutes);
 app.use("/partner/properties", partnerPropertyRoutes);
 app.use("/partner/builders", partnerBuilderRoutes);
@@ -362,6 +372,7 @@ app.use("/partner/tickets", partnerTicketRoutes);
 // Project Partner Routes
 app.use("/project-partner", projectPartnerLoginRoutes);
 app.use("/project-partner/profile", projectPartnerProfileRoutes);
+app.use("/project-partner/agreement", projectPartnerAgreementRoutes);
 app.use("/project-partner/dashboard", projectPartnerDashboardRoutes);
 app.use("/project-partner/properties", projectPartnerPropertyRoutes);
 app.use("/project-partner/customers", projectPartnerCustomerRoutes);
@@ -371,6 +382,7 @@ app.use("/project-partner/tickets", projectPartnerTicketRoutes);
 // Territory Partner Routes
 app.use("/territory-partner", territoryPartnerLoginRoutes);
 app.use("/territory-partner/profile", territoryPartnerProfileRoutes);
+app.use("/territory-partner/agreement", territoryPartnerAgreementRoutes);
 app.use("/territory-partner/dashboard", territoryPartnerDashboardRoutes);
 //app.use("/territory-partner/properties", territoryPartnerPropertyRoutes);
 app.use("/territory-partner/builders", territoryPartnerBuilderRoutes);
@@ -405,6 +417,10 @@ app.use('/onboardingapp/user',onboardingAppRoute);
 
 //ProjectPartner App
 app.use('/projectpartnerRoute/user',projectPartnerAppRoute);
+
+//Customer app
+app.use('/customerapp',customerEmi)
+
 
 //  Start Server
 app.listen(PORT, () => {

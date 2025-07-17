@@ -40,6 +40,7 @@ const [showEnquiryForm, setShowEnquiryForm] = useState(false);
 const [showTicket, setShowTicket] = useState(false);
 const [showSuccess, setShowSuccess] = useState(false);
 const [showCustomer, setShowCustomer] = useState(false);
+const [showAgreement, setShowAgreement] = useState(false);
 const [showCustomerPaymentForm, setShowCustomerPaymentForm] = useState(false);
 
 const [priceSummery, setPriceSummery] = useState({});
@@ -75,6 +76,7 @@ return <AuthContext.Provider
         showEnquiry, setShowEnquiry,
         showTicket, setShowTicket,
         showCustomer, setShowCustomer,
+        showAgreement, setShowAgreement,
         showCustomerPaymentForm, setShowCustomerPaymentForm,
 
         priceSummery, setPriceSummery,

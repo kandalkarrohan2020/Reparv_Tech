@@ -14,6 +14,7 @@ import Profile from "../Profile";
 import { useAuth } from "../../store/auth";
 import LogoutButton from "../LogoutButton";
 import { FaUserCircle } from "react-icons/fa";
+import Agreement from "../Agreement";
 
 import SuccessScreen from "../property/SuccessScreen";
 import SiteVisitPopup from "../property/SiteVisitPopup";
@@ -28,8 +29,9 @@ function Layout() {
   const [heading, setHeading] = useState(localStorage.getItem("head"));
   const [propertyPath, setPropertyPath] = useState("");
   const {
-    showProfile,
     URI,
+    user,
+    showProfile,
     setShowProfile,
     showTicket,
     setShowTicket,
@@ -41,9 +43,12 @@ function Layout() {
     setShowSuccess,
     showEnquiry,
     setShowEnquiry,
-    showEnquiryStatusForm, setShowEnquiryStatusForm,
-    showEnquirerPropertyForm, setShowEnquirerPropertyForm,
-    showEnquiryForm, setShowEnquiryForm,
+    showEnquiryStatusForm,
+    setShowEnquiryStatusForm,
+    showEnquirerPropertyForm,
+    setShowEnquirerPropertyForm,
+    showEnquiryForm,
+    setShowEnquiryForm,
     showSiteVisitPopup,
     setShowSiteVisitPopup,
     setShowBenefitsPopup,
@@ -91,16 +96,38 @@ function Layout() {
       });
       if (!response.ok)
         throw new Error(`Error ${response.status}: ${response.statusText}`);
-      const data = await response.json(); 
+      const data = await response.json();
       setPropertyPath(data.propertytype.toLowerCase());
     } catch (err) {
       console.error("Error fetching profile:", err);
     }
   };
 
-  useEffect(()=> {
+  const [agreementData, setAgreementData] = useState("");
+
+  // Fetch Agreement Status
+  const fetchAgreement = async (id) => {
+    try {
+      const response = await fetch(`${URI}/admin/territorypartner/get/${id}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch Agreement.");
+      const data = await response.json();
+      console.log(data);
+      setAgreementData(data);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  useEffect(() => {
     fetchPropertyPath();
-  },[]);
+    fetchAgreement(user?.id);
+  }, []);
 
   return (
     <div className="flex flex-col w-full h-screen bg-[#F5F5F6]">
@@ -226,7 +253,7 @@ function Layout() {
         </div>
       </div>
       {showProfile && <Profile />}
-      
+
       {overlays.map(({ state, setter }, index) =>
         state ? (
           <div
@@ -237,9 +264,14 @@ function Layout() {
         ) : null
       )}
 
+      {/* Show Agreement Form Screen */}
+      <Agreement
+        fetchAgreement={fetchAgreement}
+        agreementData={agreementData}
+        setAgreementData={setAgreementData}
+      />
 
       {/* Show Book Site Form Screen */}
-      
       {showSiteVisitPopup && (
         <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
           <div className="w-full flex flex-col items-center justify-end sm:justify-center h-[90vh] absolute bottom-0">
@@ -247,7 +279,7 @@ function Layout() {
           </div>
         </div>
       )}
-      
+
       {/* Show Success Screen */}
       {showSuccess && <SuccessScreen />}
 
@@ -261,7 +293,7 @@ function Layout() {
           <PriceSummery />
         </div>
       )}
-     
+
       {showBenefitsPopup && (
         <div
           onClick={() => {

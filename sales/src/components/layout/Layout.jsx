@@ -22,6 +22,7 @@ import PriceSummery from "../property/PriceSummery";
 import FilterSidebar from "../FilterSidebar";
 import BenefitsPopup from "../property/BenefitsPopup";
 import KYC from "../userVerification/KYC";
+import Agreement from "../Agreement";
 
 function Layout() {
   const { id } = useParams();
@@ -30,8 +31,9 @@ function Layout() {
   const [isShortBar, setIsShortbar] = useState(false);
   const [heading, setHeading] = useState(localStorage.getItem("head"));
   const {
-    showProfile,
     URI,
+    user,
+    showProfile,
     setShowProfile,
     showKYC,
     setShowKYC,
@@ -100,6 +102,31 @@ function Layout() {
     setHeading(label);
     localStorage.setItem("head", label);
   };
+
+  const [agreementData, setAgreementData] = useState("");
+
+  // Fetch Agreement Status
+  const fetchAgreement = async (id) => {
+    try {
+      const response = await fetch(`${URI}/admin/salespersons/get/${id}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch Agreement.");
+      const data = await response.json();
+      console.log(data);
+      setAgreementData(data);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAgreement(user?.id);
+  }, []);
 
   return (
     <div className="flex flex-col w-full h-screen bg-[#F5F5F6]">
@@ -236,8 +263,14 @@ function Layout() {
         ) : null
       )}
 
-      {/* Show Book Site Form Screen */}
+      {/* Show Agreement Form Screen */}
+      <Agreement
+        fetchAgreement={fetchAgreement}
+        agreementData={agreementData}
+        setAgreementData={setAgreementData}
+      />
 
+      {/* Show Book Site Form Screen */}
       {showSiteVisitPopup && (
         <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
           <div className="w-full flex flex-col items-center justify-end sm:justify-center h-[90vh] absolute bottom-0">

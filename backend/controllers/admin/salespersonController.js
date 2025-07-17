@@ -145,11 +145,6 @@ export const getById = (req, res) => {
   if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
-
-  if (isNaN(Id)) {
-    return res.status(400).json({ message: "Invalid Sales person ID" });
-  }
-
   const sql = "SELECT * FROM salespersons WHERE salespersonsid = ?";
 
   db.query(sql, [Id], (err, result) => {

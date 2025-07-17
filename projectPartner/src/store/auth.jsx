@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
   //const URI = "http://localhost:3000";
   const URI = "https://api.reparv.in";
 
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [loading, setLoading] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showBuilderForm, setShowBuilderForm] = useState(false);
@@ -41,6 +42,8 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         URI,
+        user,
+        setUser,
         loading,
         setLoading,
         isLoggedIn,
@@ -72,7 +75,8 @@ export const AuthProvider = ({ children }) => {
         setShowTicket,
         showCustomer,
         setShowCustomer,
-        showCustomerPaymentForm, setShowCustomerPaymentForm,
+        showCustomerPaymentForm,
+        setShowCustomerPaymentForm,
         showResponseForm,
         setShowResponseForm,
         isActive,

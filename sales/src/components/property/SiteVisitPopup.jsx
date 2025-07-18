@@ -161,7 +161,7 @@ export default function SiteVisitPopup() {
 
         <form onSubmit={handleSubmit} className="w-full space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 ">
-            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#000000bf] ">
               <label htmlFor="fullName" className="ml-1 text-xs">
                 Full Name
               </label>
@@ -174,11 +174,11 @@ export default function SiteVisitPopup() {
                 onChange={(e) => {
                   setFormData({ ...formData, fullname: e.target.value });
                 }}
-                className="w-full font-medium p-3 border border-[#00000033] rounded-md focus:outline-0"
+                className="w-full font-medium p-3 border border-[#00000033] placeholder:text-[#000000bf] rounded-md focus:outline-0"
                 required
               />
             </div>
-            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#000000bf] ">
               <label htmlFor="fullName" className="ml-1 text-xs">
                 Enter Phone Number
               </label>
@@ -195,12 +195,12 @@ export default function SiteVisitPopup() {
                     setFormData({ ...formData, phone: input });
                   }
                 }}
-                className="w-full font-medium p-3 border border-[#00000033] rounded-md focus:outline-0"
+                className="w-full font-medium p-3 border border-[#00000033] placeholder:text-[#000000bf] rounded-md focus:outline-0"
                 required
               />
             </div>
             {/* State Select Input */}
-            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#000000bf] ">
               <label htmlFor="state" className="ml-1 text-xs">
                 Select State
               </label>
@@ -228,7 +228,7 @@ export default function SiteVisitPopup() {
             </div>
 
             {/* City Select Input */}
-            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066] ">
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#000000bf] ">
               <label htmlFor="city" className="ml-1 text-xs">
                 Select City
               </label>
@@ -255,7 +255,7 @@ export default function SiteVisitPopup() {
               </select>
             </div>
             {/* Min Budget */}
-            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066]">
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#000000bf]">
               <label htmlFor="minbudget" className="ml-1 text-xs">
                 Min Budget
               </label>
@@ -284,7 +284,7 @@ export default function SiteVisitPopup() {
             </div>
 
             {/* Max Budget */}
-            <div className="flex flex-col gap-1 text-sm font-semibold text-[#00000066]">
+            <div className="flex flex-col gap-1 text-sm font-semibold text-[#000000bf]">
               <label htmlFor="maxbudget" className="ml-1 text-xs">
                 Max Budget
               </label>

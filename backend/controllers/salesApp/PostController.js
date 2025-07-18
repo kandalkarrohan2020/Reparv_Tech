@@ -160,40 +160,28 @@ export const addLike = async (req, res) => {
     }
   );
 };
+
 // Update Post Controller
 export const updatePost = (req, res) => {
   const postId = req.params.id;
   const { postContent } = req.body;
   const image = req.file ? req.file.filename : null;
-  console.log(postContent, "ss", req.file);
 
   let sql;
   let values;
 
   if (image && postContent) {
-    sql = `
-      UPDATE salespersonposts
-      SET image = ?, postContent = ?
-      WHERE postId = ?
-    `;
-    values = [image, postContent, postId];
+    const finalImagePath = `/uploads/${image}`;
+    sql = "UPDATE salespersonposts SET image = ?, postContent = ? WHERE postId = ?";
+    values = [finalImagePath, postContent, postId];
   } else if (image) {
-    sql = `
-      UPDATE salespersonposts
-      SET image = ?
-      WHERE postId = ?
-    `;
-    values = [image, postId];
+    const finalImagePath = `/uploads/${image}`;
+    sql = "UPDATE salespersonposts SET image = ? WHERE postId = ?";
+    values = [finalImagePath, postId];
   } else if (postContent) {
-    sql = `
-      UPDATE salespersonposts
-      SET postContent = ?
-      WHERE postId = ?
-    `;
+    sql = "UPDATE salespersonposts SET postContent = ? WHERE postId = ?";
     values = [postContent, postId];
   } else {
-    // console.log('ffffffffffff');
-
     return res.status(400).json({ message: "Nothing to update" });
   }
 

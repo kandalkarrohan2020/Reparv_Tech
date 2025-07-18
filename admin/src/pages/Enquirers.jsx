@@ -628,6 +628,18 @@ const Enquirers = () => {
     }
   };
 
+  const customStyle = {
+    menu: (provided) => ({
+      ...provided,
+    }),
+    menuList: (provided) => ({
+      ...provided,
+      maxHeight: "200px", // Default is ~160px — increase as needed
+      paddingTop: 0,
+      paddingBottom: 0,
+    }),
+  };
+
   useEffect(() => {
     fetchData();
   }, [selectedSource]);
@@ -713,6 +725,33 @@ const Enquirers = () => {
     return matchesStatus && matchesSearch && matchesDate && matchesEnquiry;
   });
 
+  const customStyles = {
+    rows: {
+      style: {
+        
+        padding: "5px 0px",
+        fontSize: "14px",
+        fontWeight: 500,
+        color: "#111827",
+      },
+    },
+    headCells: {
+      style: {
+        fontSize: "14px",
+        fontWeight: "600",
+        backgroundColor: "#F9FAFB",
+        backgroundColor: "#00000007",
+        color: "#374151",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "13px",
+        color: "#1F2937",
+      },
+    },
+  };
+
   const columns = [
     {
       name: "SN",
@@ -787,7 +826,7 @@ const Enquirers = () => {
                   "_blank"
                 );
               }}
-              className="w-full h-[90%] object-cover cursor-pointer"
+              className="w-full h-[100%] object-cover cursor-pointer"
             />
           </div>
         );
@@ -980,9 +1019,17 @@ const Enquirers = () => {
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"
+            customStyles={customStyles}
             columns={columns}
             data={filteredData}
             pagination
+            paginationPerPage={15}
+            paginationComponentOptions={{
+              rowsPerPageText: "Rows per page:",
+              rangeSeparatorText: "of",
+              selectAllRowsItem: true,
+              selectAllRowsItemText: "All",
+            }}
           />
         </div>
       </div>
@@ -1308,7 +1355,7 @@ const Enquirers = () => {
           !showAssignSalesForm && "hidden"
         } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto`}
       >
-        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] max-h-[60vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] h-[70vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">
               Assign Enquiry to Sales Person
@@ -1401,6 +1448,7 @@ const Enquirers = () => {
                 </label>
                 <Select
                   required
+                  styles={customStyle}
                   className="text-[16px] font-medium"
                   options={
                     salesPersonList

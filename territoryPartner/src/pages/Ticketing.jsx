@@ -288,6 +288,32 @@ const Ticketing = () => {
     return matchesStatus && matchesSearch && matchesDate;
   });
 
+  const customStyles = {
+    rows: {
+      style: {
+        padding: "5px 0px",
+        fontSize: "14px",
+        fontWeight: 500,
+        color: "#111827",
+      },
+    },
+    headCells: {
+      style: {
+        fontSize: "14px",
+        fontWeight: "600",
+        backgroundColor: "#F9FAFB",
+        backgroundColor: "#00000007",
+        color: "#374151",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "13px",
+        color: "#1F2937",
+      },
+    },
+  };
+
   const baseColumns = [
     {
       name: "SN",
@@ -482,9 +508,17 @@ const Ticketing = () => {
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"
+            customStyles={customStyles}
             columns={finalColumns}
             data={filteredData}
             pagination
+            paginationPerPage={15}
+            paginationComponentOptions={{
+              rowsPerPageText: "Rows per page:",
+              rangeSeparatorText: "of",
+              selectAllRowsItem: true,
+              selectAllRowsItemText: "All",
+            }}
           />
         </div>
       </div>

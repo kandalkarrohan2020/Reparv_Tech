@@ -7,19 +7,23 @@ import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import AddButton from "../components/AddButton";
 import { IoMdClose } from "react-icons/io";
 import EmployeeFilter from "../components/employee/EmployeeFilter";
-import DataTable  from "react-data-table-component";
+import DataTable from "react-data-table-component";
 import Loader from "../components/Loader";
 
 const Department = () => {
-  const { showDepartmentForm, setShowDepartmentForm, action, URI, setLoading} = useAuth();
+  const { showDepartmentForm, setShowDepartmentForm, action, URI, setLoading } =
+    useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [newDepartment, setNewDepartment] = useState({ departmentid:"",department: "" });
- 
+  const [newDepartment, setNewDepartment] = useState({
+    departmentid: "",
+    department: "",
+  });
+
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI+"/admin/departments", {
+      const response = await fetch(URI + "/admin/departments", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -34,47 +38,48 @@ const Department = () => {
     }
   };
 
-   //Add or update record
-   const addOrUpdate = async (e) => {
+  //Add or update record
+  const addOrUpdate = async (e) => {
     e.preventDefault();
-       
-    const endpoint = newDepartment.departmentid ? `edit/${newDepartment.departmentid}` : "add";
-    
+
+    const endpoint = newDepartment.departmentid
+      ? `edit/${newDepartment.departmentid}`
+      : "add";
+
     try {
       setLoading(true);
-      const response = await fetch(URI+`/admin/departments/${endpoint}`, {
+      const response = await fetch(URI + `/admin/departments/${endpoint}`, {
         method: newDepartment.departmentid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newDepartment),
       });
-  
+
       if (!response.ok) throw new Error("Failed to save department.");
-      
-      if(newDepartment.departmentid){
+
+      if (newDepartment.departmentid) {
         alert(`Department updated successfully!`);
-      }else if(response.status === 202){
+      } else if (response.status === 202) {
         alert(`Department already Exit!!`);
-      }else{
+      } else {
         alert(`Department added successfully!`);
       }
-      
+
       setNewDepartment({ department: "" });
-                
+
       setShowDepartmentForm(false);
       fetchData();
     } catch (err) {
       console.error("Error saving :", err);
-    } 
-    finally {
+    } finally {
       setLoading(false);
     }
   };
-  
+
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI+`/admin/departments/${id}`,{
+      const response = await fetch(URI + `/admin/departments/${id}`, {
         method: "GET",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -87,21 +92,22 @@ const Department = () => {
       console.error("Error fetching :", err);
     }
   };
-  
+
   // Delete record
   const del = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this department?")) return;
-    
+    if (!window.confirm("Are you sure you want to delete this department?"))
+      return;
+
     try {
-      const response = await fetch(URI+`/admin/departments/delete/${id}`, {
+      const response = await fetch(URI + `/admin/departments/delete/${id}`, {
         method: "DELETE",
-        credentials: "include"
+        credentials: "include",
       });
-      
+
       const data = await response.json();
       if (response.ok) {
         alert("Department deleted successfully!");
-        
+
         fetchData();
       } else {
         alert(`Error: ${data.message}`);
@@ -113,12 +119,15 @@ const Department = () => {
 
   // change status record
   const status = async (id) => {
-    if (!window.confirm("Are you sure you want to change this department status?")) return;
-    
+    if (
+      !window.confirm("Are you sure you want to change this department status?")
+    )
+      return;
+
     try {
-      const response = await fetch(URI+`/admin/departments/status/${id}`, {
+      const response = await fetch(URI + `/admin/departments/status/${id}`, {
         method: "PUT",
-        credentials: "include"
+        credentials: "include",
       });
       const data = await response.json();
       console.log(response);
@@ -135,32 +144,82 @@ const Department = () => {
 
   useEffect(() => {
     fetchData();
-    }, []);
+  }, []);
 
-  const filteredData = datas.filter((item) =>
-    item.department.toLowerCase().includes(searchTerm.toLowerCase())|| 
-    item.status.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = datas.filter(
+    (item) =>
+      item.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const customStyles = {
+    rows: {
+      style: {
+        padding: "5px 0px",
+        fontSize: "14px",
+        fontWeight: 500,
+        color: "#111827",
+      },
+    },
+    headCells: {
+      style: {
+        fontSize: "14px",
+        fontWeight: "600",
+        backgroundColor: "#F9FAFB",
+        backgroundColor: "#00000007",
+        color: "#374151",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "13px",
+        color: "#1F2937",
+      },
+    },
+  };
+
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, sortable: true },
-    { name: "Name", selector: (row) => row.department, sortable: true },
-    { name: "Status", 
+    {
+      name: "SN",
+      cell: (row, index) => (
+        <div className="relative group flex items-center w-full">
+          {/* Serial Number Box */}
+          <span
+            className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md cursor-pointer ${
+              row.status === "Active"
+                ? "bg-[#EAFBF1] text-[#0BB501]"
+                : "bg-[#FFEAEA] text-[#ff2323]"
+            }`}
+          >
+            {index + 1}
+          </span>
+
+          {/* Tooltip */}
+          <div className="absolute w-[65px] text-center -top-12 left-[30px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+            {row.status === "Active" ? "Active" : "Inactive"}
+          </div>
+        </div>
+      ),
+      width: "70px",
+    },
+    {
+      name: "Name",
+      selector: (row) => row.department,
+      sortable: true,
+      width: "200px",
+    },
+
+    {
+      name: "",
       cell: (row) => (
-        <span className={`px-2 py-1 rounded-md ${row.status === "Active" ? "bg-[#EAFBF1] text-[#0BB501]" : "bg-[#FBE9E9] text-[#FF0000]"}`}>
-          {row.status}
-        </span>
-      )},
-    { 
-      name: "", 
-      cell: (row) => 
-        <ActionSelect 
-          statusAction={() =>status(row.departmentid)}
-          editAction={() =>edit(row.departmentid)}  // Dynamic edit route
+        <ActionSelect
+          statusAction={() => status(row.departmentid)}
+          editAction={() => edit(row.departmentid)} // Dynamic edit route
           deleteAction={() => del(row.departmentid)} // Delete function
         />
-      
-    }
+      ),
+      width: "120px",
+    },
   ];
   // const handleMethod = () => {
   //   console.log("add");
@@ -186,18 +245,27 @@ const Department = () => {
                 />
               </div>
               <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
-                <AddButton
-                  label={"Add"}
-                  func={setShowDepartmentForm}
-                />
+                <AddButton label={"Add"} func={setShowDepartmentForm} />
               </div>
             </div>
             <h2 className="text-[16px] font-semibold">Department List</h2>
             <div className="overflow-scroll scrollbar-hide">
-              <DataTable columns={columns} data={filteredData} pagination />
+              <DataTable
+                className="scrollbar-hide"
+                customStyles={customStyles}
+                columns={columns}
+                data={filteredData}
+                pagination
+                paginationPerPage={15}
+                paginationComponentOptions={{
+                  rowsPerPageText: "Rows per page:",
+                  rangeSeparatorText: "of",
+                  selectAllRowsItem: true,
+                  selectAllRowsItemText: "All",
+                }}
+              />
             </div>
           </div>
-          
         </>
       ) : (
         <div className="z-[61] roleForm overflow-scroll scrollbar-hide w-[400px] h-[300px] md:w-[700px] flex fixed">
@@ -211,11 +279,19 @@ const Department = () => {
                 className="w-6 h-6 cursor-pointer"
               />
             </div>
-            <form onSubmit={addOrUpdate} className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
-            <input 
+            <form
+              onSubmit={addOrUpdate}
+              className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2"
+            >
+              <input
                 type="hidden"
                 value={newDepartment.departmentid || ""}
-                onChange={(e) => setNewDepartment({ ...newDepartment, departmentid: e.target.value })}
+                onChange={(e) =>
+                  setNewDepartment({
+                    ...newDepartment,
+                    departmentid: e.target.value,
+                  })
+                }
               />
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
@@ -227,10 +303,15 @@ const Department = () => {
                   placeholder="Enter Department"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newDepartment.department}
-                  onChange={(e) => setNewDepartment({ ...newDepartment, department: e.target.value })}
+                  onChange={(e) =>
+                    setNewDepartment({
+                      ...newDepartment,
+                      department: e.target.value,
+                    })
+                  }
                 />
               </div>
-           
+
               <div className="flex mt-8 md:mt-6 justify-end gap-6">
                 <button
                   onClick={() => {

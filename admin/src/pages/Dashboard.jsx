@@ -25,6 +25,33 @@ function Dashboard() {
       item.builderName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.dealAmount.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const customStyles = {
+    rows: {
+      style: {
+        padding: "5px",
+        fontSize: "14px",
+        fontWeight: 500,
+        color: "#111827",
+      },
+    },
+    headCells: {
+      style: {
+        fontSize: "14px",
+        fontWeight: "600",
+        backgroundColor: "#F9FAFB",
+        backgroundColor: "#00000007",
+        color: "#374151",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "13px",
+        color: "#1F2937",
+      },
+    },
+  };
+
   const columns = [
     { name: "SN", selector: (row, index) => index + 1, sortable: true },
     {
@@ -75,7 +102,10 @@ function Dashboard() {
         {[
           {
             label: "Total Deal Amount",
-            value: (Number(overviewCountData?.totalDealAmount) / 10000000).toFixed(2) + " cr" || "00",
+            value:
+              (Number(overviewCountData?.totalDealAmount) / 10000000).toFixed(
+                2
+              ) + " cr" || "00",
             icon: card1,
           },
           {
@@ -86,7 +116,9 @@ function Dashboard() {
           },
           {
             label: "Total Share",
-            value: (Number(overviewCountData?.totalCommission) / 100000).toFixed(2) + " Lac" || "00",
+            value:
+              (Number(overviewCountData?.totalCommission) / 100000).toFixed(2) +
+                " Lac" || "00",
             icon: card1,
           },
           {
@@ -96,17 +128,26 @@ function Dashboard() {
           },
           {
             label: "Reparv Share",
-            value: (Number(overviewCountData?.totalReparvCommission) / 100000).toFixed(2) + " Lac" || "00",
+            value:
+              (
+                Number(overviewCountData?.totalReparvCommission) / 100000
+              ).toFixed(2) + " Lac" || "00",
             icon: card1,
           },
           {
             label: "Sales Share",
-            value: (Number(overviewCountData?.totalSalesCommission) / 100000).toFixed(2) + " Lac" || "00",
+            value:
+              (
+                Number(overviewCountData?.totalSalesCommission) / 100000
+              ).toFixed(2) + " Lac" || "00",
             icon: card1,
           },
           {
             label: "Territory Share",
-            value: (Number(overviewCountData?.totalTerritoryCommission) / 100000).toFixed(2) + " Lac" || "00",
+            value:
+              (
+                Number(overviewCountData?.totalTerritoryCommission) / 100000
+              ).toFixed(2) + " Lac" || "00",
             icon: card1,
           },
           {
@@ -187,7 +228,13 @@ function Dashboard() {
             </div>
             <div className="downside w-full h-[30px] sm:w-[224px] sm:h-[40px] flex items-center text-xl sm:text-[32px] font-semibold text-white">
               <p className="flex items-center justify-center">
-                {["Total Deal Amount", "Reparv Share", "Total Share", "Sales Share", "Territory Share"].includes(card.label) && <FaRupeeSign />}
+                {[
+                  "Total Deal Amount",
+                  "Reparv Share",
+                  "Total Share",
+                  "Sales Share",
+                  "Territory Share",
+                ].includes(card.label) && <FaRupeeSign />}
                 {card.value}
               </p>
             </div>
@@ -217,9 +264,17 @@ function Dashboard() {
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"
+            customStyles={customStyles}
             columns={columns}
             data={filteredData}
             pagination
+            paginationPerPage={15}
+            paginationComponentOptions={{
+              rowsPerPageText: "Rows per page:",
+              rangeSeparatorText: "of",
+              selectAllRowsItem: true,
+              selectAllRowsItemText: "All",
+            }}
           />
         </div>
       </div>

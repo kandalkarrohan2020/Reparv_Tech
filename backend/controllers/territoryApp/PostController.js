@@ -168,29 +168,26 @@ export const updatePost = (req, res) => {
   // If a file was uploaded by multer, get the filename
   const image = req.file ? req.file.filename : null;
 
-  console.log("Updating post:", { postContent, image });
-
   let sql;
   let values;
 
   if (image && postContent) {
-    // Both image and content updated
+    const finalImagePath = `/uploads/${image}`;
     sql = `
       UPDATE territorypartnerposts
       SET image = ?, postContent = ?
       WHERE postId = ?
     `;
-    values = [image, postContent, postId];
+    values = [finalImagePath, postContent, postId];
   } else if (image) {
-    // Only image updated
+    const finalImagePath = `/uploads/${image}`;
     sql = `
       UPDATE territorypartnerposts
       SET image = ?
       WHERE postId = ?
     `;
-    values = [image, postId];
+    values = [finalImagePath, postId];
   } else if (postContent) {
-    // Only text updated
     sql = `
       UPDATE territorypartnerposts
       SET postContent = ?
@@ -198,7 +195,6 @@ export const updatePost = (req, res) => {
     `;
     values = [postContent, postId];
   } else {
-    // Nothing to update
     return res.status(400).json({
       message: "No data provided to update",
     });

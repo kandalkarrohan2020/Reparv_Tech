@@ -8,6 +8,8 @@ import { IoMdClose } from "react-icons/io";
 import EmployeeFilter from "../components/employee/EmployeeFilter";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
+import { RxCross2 } from "react-icons/rx";
+import { MdDone } from "react-icons/md";
 import Loader from "../components/Loader";
 import DownloadCSV from "../components/DownloadCSV";
 import FormatPrice from "../components/FormatPrice";
@@ -306,26 +308,97 @@ const Employee = () => {
     return matchesSearch && matchesDate;
   });
 
+  const customStyles = {
+    rows: {
+      style: {
+        padding: "5px 0px",
+        fontSize: "14px",
+        fontWeight: 500,
+        color: "#111827",
+      },
+    },
+    headCells: {
+      style: {
+        fontSize: "14px",
+        fontWeight: "600",
+        backgroundColor: "#F9FAFB",
+        backgroundColor: "#00000007",
+        color: "#374151",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "13px",
+        color: "#1F2937",
+      },
+    },
+  };
+
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, width: "50px" },
+    {
+      name: "SN",
+      cell: (row, index) => (
+        <div className="relative group flex items-center w-full">
+          {/* Serial Number Box */}
+          <span
+            className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md cursor-pointer ${
+              row.status === "Active"
+                ? "bg-[#EAFBF1] text-[#0BB501]"
+                : "bg-[#FFEAEA] text-[#ff2323]"
+            }`}
+          >
+            {index + 1}
+          </span>
+
+          {/* Tooltip */}
+          <div className="absolute w-[65px] text-center -top-12 left-[30px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+            {row.status === "Active" ? "Active" : "Inactive"}
+          </div>
+        </div>
+      ),
+      width: "70px",
+    },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
-      name: "Name",
-      selector: (row) => row.name,
-      sortable: true,
-      minWidth: "150px",
+      name: "Full Name",
+      cell: (row) => (
+        <div className={`flex gap-1 items-center justify-center`}>
+          <div className="relative group cursor-pointer">
+            <div
+              className={`px-[2px] py-[2px] rounded-md flex items-center justify-center ${
+                row.loginstatus === "Active"
+                  ? "bg-[#EAFBF1] text-[#0BB501]"
+                  : "bg-[#FBE9E9] text-[#FF0000]"
+              }`}
+              onClick={() => {
+                setSelectedEmployeeId(row.id);
+                setGiveAccess(true);
+              }}
+            >
+              {row.loginstatus === "Active" ? <MdDone /> : <RxCross2 />}
+            </div>
+            <div className="absolute w-[150px] text-center -top-12 left-[75px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+              {row.loginstatus === "Active"
+                ? "Login Status Active"
+                : "Login Status Inactive"}
+            </div>
+          </div>
+          {row.name}
+        </div>
+      ),
+      width: "200px",
     },
     {
       name: "Adhar No",
       selector: (row) => row.uid,
       sortable: true,
-      minWidth: "140px",
+      width: "150px",
     },
     {
       name: "Contact",
       selector: (row) => row.contact,
       sortable: true,
-      minWidth: "120px",
+      width: "150px",
     },
     {
       name: "Email",
@@ -337,51 +410,23 @@ const Employee = () => {
       name: "Salary",
       selector: (row) => <FormatPrice price={parseFloat(row.salary)} />,
       sortable: true,
-      minWidth: "150px",
+      width: "150px",
     },
     {
       name: "Role",
       selector: (row) => row.role,
       sortable: true,
-      minWidth: "130px",
+      width: "130px",
     },
     {
       name: "Department",
       selector: (row) => row.department,
       sortable: true,
-      minWidth: "150px",
+      width: "150px",
     },
     {
-      name: "Status",
-      cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.status === "Active"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FBE9E9] text-[#FF0000]"
-          }`}
-        >
-          {row.status}
-        </span>
-      ),
-    },
-    {
-      name: "Assign Login",
-      cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.loginstatus === "Active"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FBE9E9] text-[#FF0000]"
-          }`}
-        >
-          {row.loginstatus}
-        </span>
-      ),
-    },
-    {
-      name: "",
-      cell: (row) => <ActionDropdown row={row} />,
+      name: "Action",
+      cell: (row) => <ActionDropdown row={row} />, width:"120px"
     },
   ];
 
@@ -472,14 +517,22 @@ const Employee = () => {
                 </div>
               </div>
             </div>
-            
+
             <h2 className="text-[16px] font-semibold">Employee List</h2>
             <div className="overflow-scroll scrollbar-hide">
               <DataTable
-                className="overflow-scroll scrollbar-hide"
+                className="scrollbar-hide"
+                customStyles={customStyles}
                 columns={columns}
                 data={filteredData}
                 pagination
+                paginationPerPage={15}
+                paginationComponentOptions={{
+                  rowsPerPageText: "Rows per page:",
+                  rangeSeparatorText: "of",
+                  selectAllRowsItem: true,
+                  selectAllRowsItemText: "All",
+                }}
               />
             </div>
           </div>

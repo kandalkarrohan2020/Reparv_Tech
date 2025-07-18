@@ -94,11 +94,10 @@ const Testimonial = () => {
 
       setShowFeedbackForm(false);
 
-      await fetchData(); 
+      await fetchData();
     } catch (err) {
       console.error("Error saving employee:", err);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -141,8 +140,7 @@ const Testimonial = () => {
       }
     } catch (error) {
       console.error("Error deleting :", error);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -184,8 +182,56 @@ const Testimonial = () => {
       item.client.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const customStyles = {
+    rows: {
+      style: {
+        padding: "5px 0px",
+        fontSize: "14px",
+        fontWeight: 500,
+        color: "#111827",
+      },
+    },
+    headCells: {
+      style: {
+        fontSize: "14px",
+        fontWeight: "600",
+        backgroundColor: "#F9FAFB",
+        backgroundColor: "#00000007",
+        color: "#374151",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "13px",
+        color: "#1F2937",
+      },
+    },
+  };
+
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, width:"50px"},
+    {
+      name: "SN",
+      cell: (row, index) => (
+        <div className="relative group flex items-center w-full">
+          {/* Serial Number Box */}
+          <span
+            className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md cursor-pointer ${
+              row.status === "Active"
+                ? "bg-[#EAFBF1] text-[#0BB501]"
+                : "bg-[#FFEAEA] text-[#ff2323]"
+            }`}
+          >
+            {index + 1}
+          </span>
+
+          {/* Tooltip */}
+          <div className="absolute w-[65px] text-center -top-12 left-[30px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+            {row.status === "Active" ? "Active" : "Inactive"}
+          </div>
+        </div>
+      ),
+      width: "70px",
+    },
     {
       name: "Client Image",
       cell: (row) => (
@@ -198,28 +244,31 @@ const Testimonial = () => {
             className="w-[55px] h-[90%] object- cursor-pointer"
           />
         </div>
-      ), width: "120px" 
+      ),
+      width: "120px",
     },
-    { name: "Client Name", selector: (row) => row.client, sortable: true ,minWidth: "150px" },
-    { name: "Message", selector: (row) => row.message, sortable: true , minWidth: "150px" },
-    { name: "Video URL", selector: (row) => row.url, sortable: true , minWidth: "250px" },
     {
-      name: "Status",
-      cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.status === "Active"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FBE9E9] text-[#FF0000]"
-          }`}
-        >
-          {row.status}
-        </span>
-      ), width: "120px"
+      name: "Client Name",
+      selector: (row) => row.client,
+      sortable: true,
+      maxWidth: "250px",
+    },
+    {
+      name: "Message",
+      selector: (row) => row.message,
+      sortable: true,
+      maxWidth: "250px",
+    },
+    {
+      name: "Video URL",
+      selector: (row) => row.url,
+      sortable: true,
+      maxWidth: "300px",
     },
     {
       name: "Action",
-      cell: (row) => <ActionDropdown row={row} />, width: "120px"
+      cell: (row) => <ActionDropdown row={row} />,
+      width: "120px",
     },
   ];
 
@@ -292,7 +341,20 @@ const Testimonial = () => {
         </div>
         <h2 className="text-[16px] font-semibold">Testimonial List</h2>
         <div className="overflow-scroll scrollbar-hide">
-          <DataTable columns={columns} data={filteredData} pagination />
+          <DataTable
+            className="scrollbar-hide"
+            customStyles={customStyles}
+            columns={columns}
+            data={filteredData}
+            pagination
+            paginationPerPage={15}
+            paginationComponentOptions={{
+              rowsPerPageText: "Rows per page:",
+              rangeSeparatorText: "of",
+              selectAllRowsItem: true,
+              selectAllRowsItemText: "All",
+            }}
+          />
         </div>
       </div>
 
@@ -303,7 +365,9 @@ const Testimonial = () => {
       >
         <div className="w-[330px] sm:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Add Testimonial. Image Size (237px / 400px)</h2>
+            <h2 className="text-[16px] font-semibold">
+              Add Testimonial. Image Size (237px / 400px)
+            </h2>
             <IoMdClose
               onClick={() => {
                 setShowFeedbackForm(false);

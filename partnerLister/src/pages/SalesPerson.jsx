@@ -464,6 +464,32 @@ const SalesPerson = () => {
     return matchesSearch && matchesDate;
   });
 
+  const customStyles = {
+    rows: {
+      style: {
+        padding: "5px 0px",
+        fontSize: "14px",
+        fontWeight: 500,
+        color: "#111827",
+      },
+    },
+    headCells: {
+      style: {
+        fontSize: "14px",
+        fontWeight: "600",
+        backgroundColor: "#F9FAFB",
+        backgroundColor: "#00000007",
+        color: "#374151",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "13px",
+        color: "#1F2937",
+      },
+    },
+  };
+
   const columns = [
     {
       name: "SN",
@@ -662,7 +688,9 @@ const SalesPerson = () => {
     >
       <div className="sales-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
         <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
-          <p className="block md:hidden text-lg font-semibold">Sales Partners</p>
+          <p className="block md:hidden text-lg font-semibold">
+            Sales Partners
+          </p>
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
             <AddButton label={"Add"} func={setShowSalesForm} />
           </div>
@@ -693,10 +721,18 @@ const SalesPerson = () => {
         <h2 className="text-[16px] font-semibold">Sales Person List</h2>
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
-            className="overflow-scroll scrollbar-hide"
+            className="scrollbar-hide"
+            customStyles={customStyles}
             columns={columns}
             data={filteredData}
             pagination
+            paginationPerPage={15}
+            paginationComponentOptions={{
+              rowsPerPageText: "Rows per page:",
+              rangeSeparatorText: "of",
+              selectAllRowsItem: true,
+              selectAllRowsItemText: "All",
+            }}
           />
         </div>
       </div>

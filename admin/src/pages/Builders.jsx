@@ -10,6 +10,8 @@ import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
 import { RiArrowDropDownLine } from "react-icons/ri";
+import { RxCross2 } from "react-icons/rx";
+import { MdDone } from "react-icons/md";
 import DownloadCSV from "../components/DownloadCSV";
 
 const Builders = () => {
@@ -230,7 +232,7 @@ const Builders = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include", //  Ensures cookies are sent
           body: JSON.stringify({ selectedBuilderId, username, password }),
         }
       );
@@ -296,24 +298,90 @@ const Builders = () => {
     return matchesSearch && matchesDate;
   });
 
+  const customStyles = {
+    rows: {
+      style: {
+        padding: "5px 0px",
+        fontSize: "14px",
+        fontWeight: 500,
+        color: "#111827",
+      },
+    },
+    headCells: {
+      style: {
+        fontSize: "14px",
+        fontWeight: "600",
+        backgroundColor: "#F9FAFB",
+        backgroundColor: "#00000007",
+        color: "#374151",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "13px",
+        color: "#1F2937",
+      },
+    },
+  };
+
   const columns = [
     {
       name: "SN",
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: "50px",
+      cell: (row, index) => (
+        <div className="relative group flex items-center w-full">
+          {/* Serial Number Box */}
+          <span
+            className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md cursor-pointer ${
+              row.status === "Active"
+                ? "bg-[#EAFBF1] text-[#0BB501]"
+                : "bg-[#FFEAEA] text-[#ff2323]"
+            }`}
+          >
+            {index + 1}
+          </span>
+
+          {/* Tooltip */}
+          <div className="absolute w-[65px] text-center -top-12 left-[30px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+            {row.status === "Active" ? "Active" : "Inactive"}
+          </div>
+        </div>
+      ),
+      width: "70px",
     },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
       name: "Company Name",
-      selector: (row) => row.company_name,
-      sortable: true,
-      minWidth: "150px",
+      cell: (row) => (
+        <div className={`flex gap-1 items-center justify-center`}>
+          <div className="relative group cursor-pointer">
+            <div
+              className={`px-[2px] py-[2px] rounded-md flex items-center justify-center ${
+                row.loginstatus === "Active"
+                  ? "bg-[#EAFBF1] text-[#0BB501]"
+                  : "bg-[#FBE9E9] text-[#FF0000]"
+              }`}
+              onClick={() => {
+                setSelectedBuilderId(row.builderid);
+                setGiveAccess(true);
+              }}
+            >
+              {row.loginstatus === "Active" ? <MdDone /> : <RxCross2 />}
+            </div>
+            <div className="absolute w-[150px] text-center -top-12 left-[75px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+              {row.loginstatus === "Active"
+                ? "Login Status Active"
+                : "Login Status Inactive"}
+            </div>
+          </div>
+          {row.company_name}
+        </div>
+      ),
+      minWidth: "250px",
     },
     {
       name: "Contact Person",
       selector: (row) => row.contact_person,
-      minWidth: "150px",
+      width: "200px",
     },
     {
       name: "Builder Lister",
@@ -326,45 +394,17 @@ const Builders = () => {
       omit: false,
       width: "180px",
     },
-    { name: "Contact", selector: (row) => row.contact, minWidth: "150px" },
+    { name: "Contact", selector: (row) => row.contact, width: "150px" },
     { name: "Email", selector: (row) => row.email, minWidth: "150px" },
-    { name: "Office address", selector: (row) => row.office_address },
+    { name: "Office address", selector: (row) => row.office_address, width: "200px", },
     {
       name: "Registration No",
       selector: (row) => row.registration_no,
-      minWidth: "150px",
+      width: "200px",
     },
     {
-      name: "Status",
-      cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.status === "Active"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FBE9E9] text-[#FF0000]"
-          }`}
-        >
-          {row.status}
-        </span>
-      ),
-    },
-    {
-      name: "Login Status",
-      cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.loginstatus === "Active"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FBE9E9] text-[#FF0000]"
-          }`}
-        >
-          {row.loginstatus}
-        </span>
-      ),
-    },
-    {
-      name: "",
-      cell: (row) => <ActionDropdown row={row} />,
+      name: "Action",
+      cell: (row) => <ActionDropdown row={row} />, width:"120px"
     },
   ];
 
@@ -488,10 +528,18 @@ const Builders = () => {
             <h2 className="text-[16px] font-semibold">Builders List</h2>
             <div className="overflow-scroll scrollbar-hide">
               <DataTable
-                className="overflow-scroll scrollbar-hide"
+                className="scrollbar-hide"
+                customStyles={customStyles}
                 columns={finalColumns}
                 data={filteredData}
                 pagination
+                paginationPerPage={15}
+                paginationComponentOptions={{
+                  rowsPerPageText: "Rows per page:",
+                  rangeSeparatorText: "of",
+                  selectAllRowsItem: true,
+                  selectAllRowsItemText: "All",
+                }}
               />
             </div>
           </div>
@@ -789,6 +837,30 @@ const Builders = () => {
           <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
             <div className="w-full ">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Status
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={builder.status}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Login Status
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={builder.loginstatus}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Company Name
               </label>
               <input
@@ -892,30 +964,6 @@ const Builders = () => {
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={builder.notes}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Status
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={builder.status}
-                readOnly
-              />
-            </div>
-            <div className="w-full ">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Login Status
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={builder.loginstatus}
                 readOnly
               />
             </div>

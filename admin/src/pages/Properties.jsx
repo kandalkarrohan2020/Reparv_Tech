@@ -880,12 +880,55 @@ const Properties = () => {
     return matchesSearch && matchesDate;
   });
 
+  const customStyles = {
+    rows: {
+      style: {
+        padding: "5px 0px",
+        fontSize: "14px",
+        fontWeight: 500,
+        color: "#111827",
+      },
+    },
+    headCells: {
+      style: {
+        fontSize: "14px",
+        fontWeight: "600",
+        backgroundColor: "#F9FAFB",
+        backgroundColor: "#00000007",
+        color: "#374151",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "13px",
+        color: "#1F2937",
+      },
+    },
+  };
+
   const columns = [
-    {
+   {
       name: "SN",
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: "50px",
+      cell: (row, index) => (
+        <div className="relative group flex items-center w-full">
+          {/* Serial Number Box */}
+          <span
+            className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md cursor-pointer ${
+              row.status === "Active"
+                ? "bg-[#EAFBF1] text-[#0BB501]"
+                : "bg-[#FFEAEA] text-[#ff2323]"
+            }`}
+          >
+            {index + 1}
+          </span>
+
+          {/* Tooltip */}
+          <div className="absolute w-[65px] text-center -top-12 left-[30px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+            {row.status === "Active" ? "Active" : "Inactive"}
+          </div>
+        </div>
+      ),
+      width: "70px",
     },
     {
       name: "Image",
@@ -912,7 +955,7 @@ const Properties = () => {
                   "_blank"
                 );
               }}
-              className="w-full h-[90%] object-cover cursor-pointer"
+              className="w-full h-[100%] object-cover cursor-pointer"
             />
           </div>
         );
@@ -955,21 +998,6 @@ const Properties = () => {
       selector: (row) => row.city,
       sortable: true,
       width: "150px",
-    },
-    {
-      name: "Status",
-      cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.status === "Active"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FBE9E9] text-[#FF0000]"
-          }`}
-        >
-          {row.status}
-        </span>
-      ),
-      width: "120px",
     },
     {
       name: "Approve",
@@ -1146,9 +1174,17 @@ const Properties = () => {
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"
+            customStyles={customStyles}
             columns={finalColumns}
             data={filteredData}
             pagination
+            paginationPerPage={15}
+            paginationComponentOptions={{
+              rowsPerPageText: "Rows per page:",
+              rangeSeparatorText: "of",
+              selectAllRowsItem: true,
+              selectAllRowsItemText: "All",
+            }}
           />
         </div>
       </div>

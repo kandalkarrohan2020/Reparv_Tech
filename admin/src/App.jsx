@@ -8,7 +8,7 @@ import Calender from "./pages/Calender.jsx";
 import Customers from "./pages/Customers.jsx";
 import Ticketing from "./pages/Ticketing.jsx";
 import RawMaterials from "./pages/RawMaterials.jsx";
-import Marketing from "./pages/Marketing.jsx";
+import MarketingContent from "./pages/MarketingContent.jsx";
 import Login from "./pages/Login.jsx";
 import Employee from "./pages/Employee.jsx";
 import Builders from "./pages/Builders.jsx";
@@ -55,14 +55,20 @@ const App = () => {
           <Route path="/role" element={<Role />} />
           <Route path="/department" element={<Department />} />
           <Route path="/tickets" element={<Ticketing />} />
-          <Route path="/slider" element={<Slider/>} />
-          <Route path="/testimonial" element={<Testimonial/>} />
-          <Route path="/users-loan-eligibility" element={<UsersLoanEligibility />} />
-          <Route path="/user-loan-eligibility-data-update/:id" element={<UpdateEMI />} />
+          <Route path="/slider" element={<Slider />} />
+          <Route path="/testimonial" element={<Testimonial />} />
+          <Route
+            path="/users-loan-eligibility"
+            element={<UsersLoanEligibility />}
+          />
+          <Route
+            path="/user-loan-eligibility-data-update/:id"
+            element={<UpdateEMI />}
+          />
           <Route path="/apk-upload" element={<ApkUpload />} />
-          <Route path="/blogs" element={<Blogs/>} />
+          <Route path="/blogs" element={<Blogs />} />
           <Route path="/raw-materials" element={<RawMaterials />} />
-          <Route path="/marketing" element={<Marketing />} />
+          <Route path="/marketing-content" element={<MarketingContent />} />
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>
       </Routes>

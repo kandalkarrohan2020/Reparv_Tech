@@ -101,6 +101,8 @@ function Layout() {
     setShowCustomerPaymentForm,
     showApkUploadForm,
     setShowApkUploadForm,
+    showContentUploadForm,
+    setShowContentUploadForm,
     showEMIForm,
     setShowEMIForm,
     showEMI,
@@ -146,6 +148,7 @@ function Layout() {
     { state: showCustomer, setter: setShowCustomer },
     { state: showCustomerPaymentForm, setter: setShowCustomerPaymentForm },
     { state: showApkUploadForm, setter: setShowApkUploadForm },
+    { state: showContentUploadForm, setter: setShowContentUploadForm },
     { state: showEMI, setter: setShowEMI },
     { state: showEMIForm, setter: setShowEMIForm },
   ];
@@ -286,9 +289,9 @@ function Layout() {
                 label: "Raw Materials",
               },
               {
-                to: "/marketing",
+                to: "/marketing-content",
                 icon: marketingIcon,
-                label: "Marketing Templates",
+                label: "Marketing Content",
               },
             ].map(({ to, icon, label }) => (
               <NavLink

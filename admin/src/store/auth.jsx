@@ -66,7 +66,7 @@ const [showEMIForm, setShowEMIForm] = useState(false);
 const [filterStatus, setFilterStatus] = useState("New");
 const [showEMI, setShowEMI] = useState(false);
 const [enquiryFilter, setEnquiryFilter] = useState("New");
-
+const [showContentUploadForm, setShowContentUploadForm] = useState(false);
 return <AuthContext.Provider
  value={
     {   URI, loading, setLoading,
@@ -118,6 +118,7 @@ return <AuthContext.Provider
         showEMI, setShowEMI,
         showEMIForm, setShowEMIForm,
         enquiryFilter, setEnquiryFilter,
+        showContentUploadForm, setShowContentUploadForm,
     }
 }>
     {children}

@@ -33,7 +33,7 @@ import sliderRoutes from "./routes/admin/sliderRoutes.js";
 import testimonialRoutes from "./routes/admin/testimonialRoutes.js";
 import calenderRoutes from "./routes/admin/calenderRoutes.js";
 import emiRoutes from "./routes/admin/emiRoutes.js";
-//import marketingRoutes from "./routes/admin/marketingRoutes.js";
+import marketingContentRoutes from "./routes/admin/marketingContentRoutes.js";
 //import rawmaterialRoutes from "./routes/admin/rawmaterialRoutes.js";
 
 //frontend
@@ -332,7 +332,7 @@ app.use("/admin/slider", sliderRoutes);
 app.use("/admin/testimonial", testimonialRoutes);
 app.use("/admin/calender", calenderRoutes);
 app.use("/admin/emi", emiRoutes);
-// app.use("/admin/marketing", marketingRoutes);
+app.use("/admin/marketing-content", marketingContentRoutes);
 
 // Guest User Routes
 app.use("/guest-user", guestUserLoginRoutes);

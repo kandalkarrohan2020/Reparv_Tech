@@ -92,8 +92,6 @@ const Agreement = ({ fetchAgreement, agreementData, setAgreementData }) => {
           </p>
 
           <p className="mt-4">
-            <strong>AND</strong>
-            <br />
             <p>
               <strong>AND</strong>
               <br />

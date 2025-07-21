@@ -1,12 +1,6 @@
 import React from "react";
 
-const StepOne = ({
-  newProperty,
-  setPropertyData,
-  builderData,
-  states,
-  cities,
-}) => {
+const StepOne = ({ newProperty, setPropertyData, builderData, states, cities }) => {
   return (
     <div className="bg-white h-[55vh] overflow-scroll scrollbar-x-hidden p-2">
       <h2 className="text-base font-semibold mb-4">Step 1: Property Details</h2>
@@ -15,7 +9,7 @@ const StepOne = ({
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Builder/Company <span className="text-red-600">*</span>
           </label>
-          <select
+          <select 
             required
             className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
             style={{ backgroundImage: "none" }}
@@ -68,7 +62,7 @@ const StepOne = ({
           </select>
         </div>
 
-        <div className={`${newProperty.propertyCategory === "FarmLand" ? "hidden":"block"} w-full`} >
+        <div className={`${newProperty.propertyCategory === "FarmLand" ? "hidden":"block"} w-full`}>
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Property Approved by <span className="text-red-600">*</span>
           </label>
@@ -122,6 +116,7 @@ const StepOne = ({
             }
           />
         </div>
+
         {/* State Select Input */}
         <div className="w-full">
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
@@ -189,6 +184,7 @@ const StepOne = ({
             className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501]"
           />
         </div>
+
         <div className="w-full ">
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Location <span className="text-red-600">*</span>

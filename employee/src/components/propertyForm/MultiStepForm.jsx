@@ -13,8 +13,7 @@ const MultiStepForm = ({
   imageFiles,
   setImageFiles,
   builderData,
-  states,
-  cities,
+  states, cities,
 }) => {
   const { URI, setLoading, showPropertyForm, setShowPropertyForm } = useAuth();
   const [step, setStep] = useState(1);
@@ -68,7 +67,7 @@ const MultiStepForm = ({
 
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/employee/properties/${endpoint}`, {
+      const response = await fetch(`${URI}/admin/properties/${endpoint}`, {
         method: newProperty.propertyid ? "PUT" : "POST",
         credentials: "include",
         body: formData, // Use FormData instead of JSON
@@ -94,9 +93,9 @@ const MultiStepForm = ({
         propertyApprovedBy: "",
         propertyName: "",
         address: "",
-        state: "",
+        state:"",
         city: "",
-        pincode: "",
+        pincode:"",
         location: "",
         distanceFromCityCenter: "",
         totalSalesPrice: "",

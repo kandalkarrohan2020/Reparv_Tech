@@ -131,7 +131,7 @@ const Profile = () => {
       }
   
       const data = await response.json();
-      alert("Password Changed Successfully!");
+      console.log("Password changed successfully:", data);
   
       // Update user state
       fetchProfile();
@@ -139,7 +139,6 @@ const Profile = () => {
       setUser(data);
       setShowChangePass(false);
       setErrorMessage(""); 
-      
     } catch (err) {
       console.error("Error changing password:", err);
       setErrorMessage(err.message || "Password change failed. Please try again.");

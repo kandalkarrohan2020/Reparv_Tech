@@ -88,8 +88,8 @@ const MarketingContent = () => {
         contentName: "",
         contentFile: null,
       });
-      setShowContentUploadForm(false);
       fetchData();
+      setShowContentUploadForm(false);
     } catch (err) {
       console.error("Error saving:", err);
     } finally {
@@ -204,48 +204,9 @@ const MarketingContent = () => {
         case "delete":
           del(id);
           break;
-        case "download":
-          downloadFile(`${URI}/${url}`);
-          break;
         default:
           console.log("Invalid action");
       }
-    };
-
-    const downloadFile = async (fileUrl, filename = "downloaded-file") => {
-      try {
-        const response = await fetch(fileUrl, {
-          mode: "cors", // Required for cross-origin requests
-        });
-
-        if (!response.ok) throw new Error("Failed to fetch file");
-
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-
-        // Cleanup
-        link.remove();
-        window.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Error downloading file:", error);
-        alert("Failed to download file.");
-      }
-    };
-
-    const DownloadFile = (imageUrl) => {
-      const link = document.createElement("a");
-      link.download;
-      link.href = imageUrl;
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
     };
 
     return (
@@ -265,7 +226,6 @@ const MarketingContent = () => {
           <option value="view">View</option>
           <option value="update">Update</option>
           <option value="delete">Delete</option>
-          <option value="download">Download</option>
         </select>
       </div>
     );
@@ -329,9 +289,9 @@ const MarketingContent = () => {
                     </p>
 
                     <div className="flex gap-2 items-center justify-center">
-                      <a href={`${URI}/${content.contentFile}`} download>
+                      {/* <a href={`${URI}/${content.contentFile}`} download >
                         <FaDownload />
-                      </a>
+                      </a> */}
                       <ActionDropdown content={content} />
                     </div>
                   </div>

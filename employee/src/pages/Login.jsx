@@ -8,14 +8,19 @@ import { IoMdEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../store/auth";
-import Cookies from "js-cookie";
+import Loader from "../components/Loader";
 
 function Login() {
-  const { user, setUser, storeTokenInCookie, URI } = useAuth();
+  const {
+    storeTokenInCookie,
+    URI,
+    setLoading,
+  } = useAuth();
+  
   const [isPasswordShow, setIsPasswordShow] = useState(false);
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,37 +29,33 @@ function Login() {
 
   const userLogin = async (e) => {
     e.preventDefault();
-    setErrorMessage(""); // Reset error message
+    setErrorMessage(""); 
 
     if (!emailOrUsername || !password) {
       setErrorMessage("All fields are required.");
       return;
     }
 
-    const url = `${URI}/employee/login`; // Ensure correct API URL
-
     try {
+      setLoading(true);
       const response = await axios.post(
-        url,
-        { emailOrUsername, password }, // ✅ Sending emailOrUsername instead of email
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "application/json" },
-        }
+        `${URI}/employee/login`, 
+        { emailOrUsername, password },
+        { withCredentials: true, headers: { "Content-Type": "application/json" } }
       );
 
       if (response.data.token) {
         console.log("Login Successful", response.data);
         localStorage.setItem("user", JSON.stringify(response.data.user));
         storeTokenInCookie(response.data.token);
-        navigate("/dashboard", { replace: true });
+        navigate("/dashboard", { replace: true }); 
       } else {
         setErrorMessage("Invalid login credentials.");
       }
     } catch (error) {
-      setErrorMessage(
-        error.response?.data?.message || "Login failed. Please try again."
-      );
+      setErrorMessage(error.response?.data?.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,34 +66,29 @@ function Login() {
         <div className="relative md:-left-[40px] top-[20px] md:top-[30px]">
           <img src={ReparvMainLogo} alt="Reparv Logo" className="w-[180px]" />
         </div>
-        <img
-          src={LoginLeftIMG}
-          alt="Login Left"
-          className="mt-4 md:w-[400px]"
-        />
+        <img src={LoginLeftIMG} alt="Login Left" className="mt-4 md:w-[400px]" />
       </div>
 
       {/* Right Section */}
       <div className="w-full md:w-1/2 h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#0BB501] to-[#076300] rounded-tl-[20px] md:rounded-l-[20px] relative p-4">
         <div className="w-full max-w-[364px] bg-white shadow-md rounded-[12px] py-[24px] px-[32px] flex flex-col items-start gap-[22px]">
-          <h2 className="text-[26px] font-bold text-black">Login..!</h2>
-          <p className="text-[18px] font-normal text-black">
-            Enter Your Login Credentials
-          </p>
+          <div className="w-full flex items-center justify-between gap-2">
+            <h2 className="text-[26px] font-bold text-black">Login..!</h2>
+            <Loader />
+          </div>
+          <p className="text-[18px] font-normal text-black">Enter Your Login Credentials</p>
 
           {/* Show Error Message */}
-          {errorMessage && (
-            <p className="text-red-500 text-sm">{errorMessage}</p>
-          )}
+          {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
 
-          {/* Email or Username Input */}
+          {/* Username or Email Input */}
           <div className="group w-full max-w-[300px] h-[60px] flex items-center border border-black/20 rounded-full px-[26px] focus-within:border-[#0BB501]">
             <FaUser className="text-black/20 w-[20px] h-[20px] mr-[10px] group-focus-within:text-[#0BB501]" />
             <input
               value={emailOrUsername}
+              required
               onChange={(e) => setEmailOrUsername(e.target.value)}
               type="text"
-              required
               placeholder="Email Address OR Username"
               className="w-full border-none outline-none text-[14px]"
             />
@@ -103,9 +99,9 @@ function Login() {
             <FaLock className="text-black/20 w-[20px] h-[20px] group-focus-within:text-[#0BB501]" />
             <input
               value={password}
-              required
               onChange={(e) => setPassword(e.target.value)}
               type={isPasswordShow ? "text" : "password"}
+              required
               placeholder="Password"
               className="w-full border-none mx-[10px] outline-none text-[14px]"
             />
@@ -122,7 +118,7 @@ function Login() {
             )}
           </div>
 
-          {/*  Login Button */}
+          {/* Login Button */}
           <button
             onClick={userLogin}
             className="w-full max-w-[300px] h-[53px] bg-[#0BB501] text-white rounded-full text-[16px] font-semibold transition hover:text-[#fffcfc] active:scale-95"
@@ -136,11 +132,7 @@ function Login() {
           </p>
         </div>
 
-        <img
-          src={LoginLine}
-          alt="Login Line"
-          className="absolute bottom-0 right-0 w-[100px] md:w-[200px]"
-        />
+        <img src={LoginLine} alt="Login Line" className="absolute bottom-0 right-0 w-[100px] md:w-[200px]" />
       </div>
     </div>
   );

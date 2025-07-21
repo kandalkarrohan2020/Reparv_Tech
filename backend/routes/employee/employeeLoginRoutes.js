@@ -23,8 +23,10 @@ router.post("/login", async (req, res) => {
          AND employees.status='Active'`,
         [emailOrUsername, emailOrUsername], // Bind both email and username
         (err, results) => {
-          if (err) reject({ status: 500, message: "Database error", error: err });
-          else if (results.length === 0) reject({ status: 401, message: "Invalid Email | Username" });
+          if (err)
+            reject({ status: 500, message: "Database error", error: err });
+          else if (results.length === 0)
+            reject({ status: 401, message: "Invalid Email | Username" });
           else resolve(results[0]);
         }
       );
@@ -37,18 +39,29 @@ router.post("/login", async (req, res) => {
     }
 
     //  Generate JWT Token
-    const token = jwt.sign({ id: user.id, username: user.username, email: user.email, adharId: user.uid }, process.env.JWT_SECRET, {
-      expiresIn: "10d",
-    });
+    const token = jwt.sign(
+      {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        adharId: user.uid,
+        assignMenus: JSON.parse(user.menus),
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "10d",
+      }
+    );
 
     //  Store session data
     req.session.user = {
       id: user.id,
       email: user.email,
-      username: user.username, // Store username as well
+      username: user.username,
       name: user.name,
       contact: user.contact,
       role: user.role,
+      assignMenus: JSON.parse(user.menus),
     };
 
     //  Set secure cookie
@@ -64,10 +77,11 @@ router.post("/login", async (req, res) => {
       token,
       user: req.session.user,
     });
-
   } catch (error) {
     console.error("Login Error:", error);
-    return res.status(error.status || 500).json({ message: error.message || "Internal server error" });
+    return res
+      .status(error.status || 500)
+      .json({ message: error.message || "Internal server error" });
   }
 });
 
@@ -82,10 +96,10 @@ router.get("/session-data", (req, res) => {
 
 //  Logout Route
 router.post("/logout", (req, res) => {
-  res.clearCookie("token", { 
-    httpOnly: true, 
-    secure: true, 
-    sameSite: "none" 
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
   });
   console.log("Logout Successfully");
   return res.json({ message: "Logout successful." });

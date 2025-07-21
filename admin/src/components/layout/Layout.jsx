@@ -31,8 +31,11 @@ function Layout() {
     setShowPaymentIdForm,
     giveAccess,
     setGiveAccess,
+    showAssignTaskForm,
+    setShowAssignTaskForm,
     showSalesForm,
     setShowSalesForm,
+    showEmployee, setShowEmployee,
     showEplDetailsForm,
     setShowEplDetailsForm,
     showBuilderForm,
@@ -112,7 +115,9 @@ function Layout() {
 
   const overlays = [
     { state: giveAccess, setter: setGiveAccess },
+    { state: showAssignTaskForm, setter: setShowAssignTaskForm },
     { state: showSalesForm, setter: setShowSalesForm },
+    { state: showEmployee, setter: setShowEmployee},
     { state: showEplDetailsForm, setter: setShowEplDetailsForm },
     { state: showAuctionForm, setter: setShowAuctionForm },
     { state: showBuilderForm, setter: setShowBuilderForm },

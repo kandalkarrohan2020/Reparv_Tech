@@ -8,6 +8,11 @@ import FilterData from "../components/FilterData";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
+import Loader from "../components/Loader";
+import { RiArrowDropDownLine } from "react-icons/ri";
+import { RxCross2 } from "react-icons/rx";
+import { MdDone } from "react-icons/md";
+import DownloadCSV from "../components/DownloadCSV";
 
 const Builders = () => {
   const {
@@ -16,15 +21,20 @@ const Builders = () => {
     action,
     giveAccess,
     setGiveAccess,
+    setShowBuilder,
+    showBuilder,
     URI,
+    loading,
+    setLoading,
   } = useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [builder, setBuilder] = useState({});
   const [selectedBuilderId, setSelectedBuilderId] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [selectedLister, setSelectedLister] = useState("Select Builder Lister");
   const [newBuilder, setNewBuilder] = useState({
-    builderid: "",
     company_name: "",
     contact_person: "",
     contact: "",
@@ -38,62 +48,21 @@ const Builders = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/employee/builders", {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + "/admin/builders/get/" + selectedLister,
+        {
+          method: "GET",
+          credentials: "include", // ✅ Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch builders.");
       const data = await response.json();
-
       setDatas(data);
     } catch (err) {
       console.error("Error fetching builders:", err);
-    }
-  };
-
-  //Add or update record
-  const add2 = async (e) => {
-    e.preventDefault();
-
-    const endpoint = newBuilder.builderid
-      ? `edit/${newBuilder.builderid}`
-      : "add";
-    try {
-      const response = await fetch(URI + `/employee/builders/${endpoint}`, {
-        method: action === "Add" ? "POST" : "PUT",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newBuilder),
-      });
-
-      if (!response.ok) throw new Error("Failed to save builders.");
-
-      if (newBuilder.builderid) {
-        alert("Builder updated successfully!");
-      } else if (response.status === 202) {
-        alert("Builder already Exit!!");
-      } else {
-        alert("Builder added successfully!");
-      }
-
-      setNewBuilder({
-        company_name: "",
-        contact_person: "",
-        contact: "",
-        email: "",
-        office_address: "",
-        registration_no: "",
-        dor: "",
-        website: "",
-        notes: "",
-      });
-      setShowBuilderForm(false);
-      fetchData();
-    } catch (err) {
-      console.error("Error saving Builder:", err);
     }
   };
 
@@ -105,7 +74,8 @@ const Builders = () => {
       : "add";
 
     try {
-      const response = await fetch(`${URI}/employee/builders/${endpoint}`, {
+      setLoading(true);
+      const response = await fetch(`${URI}/admin/builders/${endpoint}`, {
         method: newBuilder.builderid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -142,13 +112,15 @@ const Builders = () => {
       await fetchData(); // Ensure latest data is fetched
     } catch (err) {
       console.error("Error saving builder:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   //fetch data on form
   const edit = async (builderid) => {
     try {
-      const response = await fetch(URI + `/employee/builders/${builderid}`, {
+      const response = await fetch(URI + `/admin/builders/${builderid}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -164,14 +136,32 @@ const Builders = () => {
     }
   };
 
+  //fetch data on form
+  const viewBuilder = async (builderid) => {
+    try {
+      const response = await fetch(URI + `/admin/builders/${builderid}`, {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch builders.");
+      const data = await response.json();
+      setBuilder(data);
+      setShowBuilder(true);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
   //Delete record
   const del = async (builderid) => {
     if (!window.confirm("Are you sure you want to delete this builder?"))
       return;
-
     try {
       const response = await fetch(
-        URI + `/employee/builders/delete/${builderid}`,
+        URI + `/admin/builders/delete/${builderid}`,
         {
           method: "DELETE",
           credentials: "include", // ✅ Ensures cookies are sent
@@ -191,6 +181,8 @@ const Builders = () => {
       }
     } catch (error) {
       console.error("Error deleting Builder:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -201,7 +193,7 @@ const Builders = () => {
 
     try {
       const response = await fetch(
-        URI + `/employee/builders/status/${builderid}`,
+        URI + `/admin/builders/status/${builderid}`,
         {
           method: "PUT",
           credentials: "include", // ✅ Ensures cookies are sent
@@ -232,14 +224,15 @@ const Builders = () => {
       return;
 
     try {
+      setLoading(true);
       const response = await fetch(
-        URI + `/employee/builders/assignlogin/${selectedBuilderId}`,
+        URI + `/admin/builders/assignlogin/${selectedBuilderId}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include", //  Ensures cookies are sent
           body: JSON.stringify({ selectedBuilderId, username, password }),
         }
       );
@@ -257,12 +250,14 @@ const Builders = () => {
       fetchData();
     } catch (error) {
       console.error("Error deleting :", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [selectedLister]);
 
   const [range, setRange] = useState([
     {
@@ -353,41 +348,82 @@ const Builders = () => {
       ),
       width: "70px",
     },
+    { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
       name: "Company Name",
-      selector: (row) => row.company_name,
-      sortable: true,
-    },
-    { name: "Contact Person", selector: (row) => row.contact_person },
-    { name: "Contact", selector: (row) => row.contact },
-    { name: "Email", selector: (row) => row.email },
-    { name: "Office address", selector: (row) => row.office_address },
-    { name: "Registration No", selector: (row) => row.registration_no },
-    {
-      name: "Login Status",
       cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.loginstatus === "Active"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : "bg-[#FBE9E9] text-[#FF0000]"
-          }`}
-        >
-          {row.loginstatus}
-        </span>
+        <div className={`flex gap-1 items-center justify-center`}>
+          <div className="relative group cursor-pointer">
+            <div
+              className={`px-[2px] py-[2px] rounded-md flex items-center justify-center ${
+                row.loginstatus === "Active"
+                  ? "bg-[#EAFBF1] text-[#0BB501]"
+                  : "bg-[#FBE9E9] text-[#FF0000]"
+              }`}
+              onClick={() => {
+                setSelectedBuilderId(row.builderid);
+                setGiveAccess(true);
+              }}
+            >
+              {row.loginstatus === "Active" ? <MdDone /> : <RxCross2 />}
+            </div>
+            <div className="absolute w-[150px] text-center -top-12 left-[75px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+              {row.loginstatus === "Active"
+                ? "Login Status Active"
+                : "Login Status Inactive"}
+            </div>
+          </div>
+          {row.company_name}
+        </div>
       ),
+      minWidth: "250px",
     },
     {
-      name: "",
-      cell: (row) => <ActionDropdown row={row} />,
+      name: "Contact Person",
+      selector: (row) => row.contact_person,
+      width: "200px",
+    },
+    {
+      name: "Builder Lister",
+      cell: (row) => (
+        <div className="w-full flex flex-col gap-[2px]">
+          <p>{row.listerName}</p>
+          <p>{row.listerContact}</p>
+        </div>
+      ),
+      omit: false,
+      width: "180px",
+    },
+    { name: "Contact", selector: (row) => row.contact, width: "150px" },
+    { name: "Email", selector: (row) => row.email, minWidth: "150px" },
+    { name: "Office address", selector: (row) => row.office_address, width: "200px", },
+    {
+      name: "Registration No",
+      selector: (row) => row.registration_no,
+      width: "200px",
+    },
+    {
+      name: "Action",
+      cell: (row) => <ActionDropdown row={row} />, width:"120px"
     },
   ];
+
+  const hasBuilderLister = datas.some((row) => !!row.listerName);
+
+  const finalColumns = columns.map((col) => {
+    if (col.name === "Builder Lister")
+      return { ...col, omit: !hasBuilderLister };
+    return col;
+  });
 
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
 
     const handleActionSelect = (action, id) => {
       switch (action) {
+        case "view":
+          viewBuilder(id);
+          break;
         case "status":
           status(id);
           break;
@@ -424,6 +460,7 @@ const Builders = () => {
           <option value="" disabled>
             Select Action
           </option>
+          <option value="view">View</option>
           <option value="status">Status</option>
           <option value="update">Update</option>
           <option value="assignlogin">Assign Login</option>
@@ -439,10 +476,29 @@ const Builders = () => {
     >
       {!showBuilderForm ? (
         <>
-          <div className="builder-table w-full h-[550px] sm:h-[578px] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
-            <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
-              <p className="block md:hidden text-lg font-semibold">Builders</p>
+          <div className="builder-table overflow-scroll scrollbar-hide w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+            <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
+              <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+                <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+                  <span>{selectedLister || "Select Lister"}</span>
+                  <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+                </div>
+                <select
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  value={selectedLister}
+                  onChange={(e) => {
+                    setSelectedLister(e.target.value);
+                  }}
+                >
+                  <option value="Select Builder Lister">
+                    Select Builder Lister
+                  </option>
+                  <option value="Reparv Employee">Reparv Employee</option>
+                  <option value="Project Partner">Project Partner</option>
+                </select>
+              </div>
               <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+                <DownloadCSV data={filteredData} filename={"Builders.csv"} />
                 <AddButton label={"Add"} func={setShowBuilderForm} />
               </div>
             </div>
@@ -464,6 +520,7 @@ const Builders = () => {
                   </div>
                 </div>
                 <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+                  <DownloadCSV data={filteredData} filename={"Builders.csv"} />
                   <AddButton label={"Add"} func={setShowBuilderForm} />
                 </div>
               </div>
@@ -473,7 +530,7 @@ const Builders = () => {
               <DataTable
                 className="scrollbar-hide"
                 customStyles={customStyles}
-                columns={columns}
+                columns={finalColumns}
                 data={filteredData}
                 pagination
                 paginationPerPage={15}
@@ -488,8 +545,8 @@ const Builders = () => {
           </div>
         </>
       ) : (
-        <div className="z-[61] builder-form overflow-scroll scrollbar-hide w-[400px] h-[600px] md:w-[700px] md:h-[650px] flex fixed">
-          <div className="w-[330px] sm:w-[600px] sm:h-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[650px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="z-[61] builder-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] flex fixed">
+          <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[16px] font-semibold">Builders</h2>
               <IoMdClose
@@ -559,7 +616,7 @@ const Builders = () => {
                   onChange={(e) => {
                     const input = e.target.value;
                     if (/^\d{0,10}$/.test(input)) {
-                      // Allows only up to 12 digits
+                      // Allows only up to 10 digits
                       setNewBuilder({ ...newBuilder, contact: input });
                     }
                   }}
@@ -626,7 +683,7 @@ const Builders = () => {
                   type="date"
                   required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newBuilder.dor}
+                  value={newBuilder.dor?.split("T")[0]}
                   onChange={(e) => {
                     const selectedDate = e.target.value; // Get full date
                     const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
@@ -655,6 +712,7 @@ const Builders = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter notes"
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newBuilder.notes}
@@ -678,6 +736,7 @@ const Builders = () => {
                 >
                   Save
                 </button>
+                <Loader />
               </div>
             </form>
           </div>
@@ -754,6 +813,159 @@ const Builders = () => {
               >
                 Give Access
               </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* Show Builder Info */}
+      <div
+        className={`${
+          showBuilder ? "flex" : "hidden"
+        } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
+      >
+        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">Builder Details</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowBuilder(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Status
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={builder.status}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Login Status
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={builder.loginstatus}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Company Name
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={builder.company_name}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Contact Person
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={builder.contact_person}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Contact Number
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={builder.contact}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Email
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={builder.email}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Office Address
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={builder.office_address}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Resgistration Date
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={builder.dor?.split("T")[0]}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Resgistration No.
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={builder.registration_no}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Website
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={builder.website}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Notes
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={builder.notes}
+                readOnly
+              />
             </div>
           </form>
         </div>

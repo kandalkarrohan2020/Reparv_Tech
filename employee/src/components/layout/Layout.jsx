@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import reparvMainLogo from "../../assets/layout/reparvMainLogo.svg";
+import calenderIcon from "../../assets/layout/calenderIcon.svg";
+import customersIcon from "../../assets/layout/customersIcon.svg";
 import enquirersIcon from "../../assets/layout/enquirersIcon.svg";
+import mapIcon from "../../assets/layout/mapIcon.svg";
+import materialIcon from "../../assets/layout/materialIcon.svg";
 import overviewIcon from "../../assets/layout/overviewIcon.svg";
 import partnerIcon from "../../assets/layout/partnerIcon.svg";
+import employeeIcon from "../../assets/layout/employeeIcon.svg";
 import ticketingIcon from "../../assets/layout/ticketingIcon.svg";
+import marketingIcon from "../../assets/layout/marketingIcon.svg";
 import { Outlet } from "react-router-dom";
 import { IoMenu } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
@@ -19,33 +25,140 @@ function Layout() {
   const [isShortBar, setIsShortbar] = useState(false);
   const [heading, setHeading] = useState(localStorage.getItem("head"));
   const {
+    URI,
+    user,
     showProfile,
     setShowProfile,
+    showPaymentIdForm,
+    setShowPaymentIdForm,
+    giveAccess,
+    setGiveAccess,
+    showAssignTaskForm,
+    setShowAssignTaskForm,
+    showSalesForm,
+    setShowSalesForm,
+    showEmployee,
+    setShowEmployee,
+    showEplDetailsForm,
+    setShowEplDetailsForm,
     showBuilderForm,
     setShowBuilderForm,
+    showAuctionForm,
+    setShowAuctionForm,
     showPropertyForm,
     setShowPropertyForm,
+    showPropertyTypeForm,
+    setShowPropertyTypeForm,
+    showRoleForm,
+    setShowRoleForm,
+    showDepartmentForm,
+    setShowDepartmentForm,
+    showUploadImagesForm,
+    setShowUploadImagesForm,
+    showAdditionalInfoForm,
+    setShowAdditionalInfoForm,
+    showAssignSalesForm,
+    setShowAssignSalesForm,
+    showEnquiryForm,
+    setShowEnquiryForm,
+    showEnquiryUpdateForm,
+    setShowEnquiryUpdateForm,
+    showEnquiryStatusForm,
+    setShowEnquiryStatusForm,
     showPropertyInfo,
     setShowPropertyInfo,
-    showUploadImagesForm, setShowUploadImagesForm,
-    showAdditionalInfoForm, setShowAdditionalInfoForm,
-    showResponseForm, setShowResponseForm,
-    showTicket,
-    setShowTicket,
+    showSliderForm,
+    setShowSliderForm,
+    showFeedbackForm,
+    setShowFeedbackForm,
+    showPartnerForm,
+    setShowPartnerForm,
     showTicketForm,
     setShowTicketForm,
+    showResponseForm,
+    setShowResponseForm,
+    showRejectReasonForm,
+    setShowRejectReasonForm,
+    showTicket,
+    setShowTicket,
+    showEnquiry,
+    setShowEnquiry,
+    showBuilder,
+    setShowBuilder,
+    showPartner,
+    setShowPartner,
+    showSalesPerson,
+    setShowSalesPerson,
+    showAddMobileImage,
+    setShowAddMobileImage,
+    showEnquirerPropertyForm,
+    setShowEnquirerPropertyForm,
+    showFollowUpList,
+    setShowFollowUpList,
+    showSeoForm,
+    setShowSeoForm,
+    showBlogForm,
+    setShowBlogForm,
+    showCommissionForm,
+    setShowCommissionForm,
+    showCustomer,
+    setShowCustomer,
+    showCustomerPaymentForm,
+    setShowCustomerPaymentForm,
+    showApkUploadForm,
+    setShowApkUploadForm,
+    showContentUploadForm,
+    setShowContentUploadForm,
+    showEMIForm,
+    setShowEMIForm,
+    showEMI,
+    setShowEMI,
     isLoggedIn,
   } = useAuth();
 
   const overlays = [
+    { state: giveAccess, setter: setGiveAccess },
+    { state: showAssignTaskForm, setter: setShowAssignTaskForm },
+    { state: showSalesForm, setter: setShowSalesForm },
+    { state: showEmployee, setter: setShowEmployee },
+    { state: showEplDetailsForm, setter: setShowEplDetailsForm },
+    { state: showAuctionForm, setter: setShowAuctionForm },
     { state: showBuilderForm, setter: setShowBuilderForm },
+    { state: showDepartmentForm, setter: setShowDepartmentForm },
     { state: showPropertyForm, setter: setShowPropertyForm },
-    { state: showPropertyInfo, setter: setShowPropertyInfo },
+    { state: showPropertyTypeForm, setter: setShowPropertyTypeForm },
+    { state: showRoleForm, setter: setShowRoleForm },
     { state: showUploadImagesForm, setter: setShowUploadImagesForm },
+    { state: showAssignSalesForm, setter: setShowAssignSalesForm },
     { state: showAdditionalInfoForm, setter: setShowAdditionalInfoForm },
-    { state: showResponseForm, setter: setShowResponseForm },
+    { state: showEnquiryForm, setter: setShowEnquiryForm },
+    { state: showEnquiryUpdateForm, setter: setShowEnquiryUpdateForm },
+    { state: showEnquiryStatusForm, setter: setShowEnquiryStatusForm },
+    { state: showRejectReasonForm, setter: setShowRejectReasonForm },
+    { state: showPropertyInfo, setter: setShowPropertyInfo },
+    { state: showSliderForm, setter: setShowSliderForm },
+    { state: showFeedbackForm, setter: setShowFeedbackForm },
+    { state: showPartnerForm, setter: setShowPartnerForm },
     { state: showTicketForm, setter: setShowTicketForm },
+    { state: showResponseForm, setter: setShowResponseForm },
     { state: showTicket, setter: setShowTicket },
+    { state: showEnquiry, setter: setShowEnquiry },
+    { state: showBuilder, setter: setShowBuilder },
+    { state: showSalesPerson, setter: setShowSalesPerson },
+    { state: showPartner, setter: setShowPartner },
+    { state: showAddMobileImage, setter: setShowAddMobileImage },
+    { state: showPaymentIdForm, setter: setShowPaymentIdForm },
+    { state: showEnquirerPropertyForm, setter: setShowEnquirerPropertyForm },
+    { state: showFollowUpList, setter: setShowFollowUpList },
+    { state: showSeoForm, setter: setShowSeoForm },
+    { state: showBlogForm, setter: setShowBlogForm },
+    { state: showCommissionForm, setter: setShowCommissionForm },
+    { state: showCustomer, setter: setShowCustomer },
+    { state: showCustomerPaymentForm, setter: setShowCustomerPaymentForm },
+    { state: showApkUploadForm, setter: setShowApkUploadForm },
+    { state: showContentUploadForm, setter: setShowContentUploadForm },
+    { state: showEMI, setter: setShowEMI },
+    { state: showEMIForm, setter: setShowEMIForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -58,6 +171,59 @@ function Layout() {
     setHeading(label);
     localStorage.setItem("head", label);
   };
+
+  const menus = [
+    { to: "/enquirers", icon: enquirersIcon, label: "Enquirers" },
+    { to: "/customers", icon: customersIcon, label: "Customers" },
+    { to: "/properties", icon: enquirersIcon, label: "Properties" },
+    { to: "/builders", icon: partnerIcon, label: "Builders" },
+    { to: "/employees", icon: employeeIcon, label: "Employees" },
+    {
+      to: "/salespersons",
+      icon: partnerIcon,
+      label: "Sales Persons",
+    },
+    {
+      to: "/onboardingpartner",
+      icon: partnerIcon,
+      label: "Onboarding Partners",
+    },
+    {
+      to: "/projectpartner",
+      icon: partnerIcon,
+      label: "Project Partners",
+    },
+    {
+      to: "/territorypartner",
+      icon: partnerIcon,
+      label: "Territory Partners",
+    },
+    { to: "/guest-users", icon: partnerIcon, label: "Guest Users" },
+    {
+      to: "/users-loan-eligibility",
+      icon: partnerIcon,
+      label: "Users Loan Eligibility",
+    },
+    { to: "/role", icon: employeeIcon, label: "Roles" },
+    { to: "/department", icon: employeeIcon, label: "Departments" },
+    { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
+    { to: "/map", icon: mapIcon, label: "Map" },
+    { to: "/calender", icon: calenderIcon, label: "Calendar" },
+    { to: "/apk-upload", icon: marketingIcon, label: "Apk Upload" },
+    { to: "/blogs", icon: marketingIcon, label: "Blogs" },
+    { to: "/slider", icon: marketingIcon, label: "Slider" },
+    { to: "/testimonial", icon: marketingIcon, label: "Testimonial" },
+    {
+      to: "/raw-materials",
+      icon: materialIcon,
+      label: "Raw Materials",
+    },
+    {
+      to: "/marketing-content",
+      icon: marketingIcon,
+      label: "Marketing Content",
+    },
+  ];
 
   return (
     <div className="flex flex-col w-full h-screen bg-[#F5F5F6]">
@@ -135,39 +301,62 @@ function Layout() {
               className="md:hidden block"
             />
             {/* Navigation Links */}
-            {[
-              { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
-              { to: "/builders", icon: partnerIcon, label: "Builders" },
-              { to: "/properties", icon: enquirersIcon, label: "Properties" },
-              { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
-            ].map(({ to, icon, label }) => (
-              <NavLink
-                onClick={() => {
-                  setIsSidebarOpen(false);
-                  getHeading(label);
-                }}
-                key={to}
-                to={isLoggedIn === true ? to : "/"}
-                className={`flex items-center gap-3 w-full p-3 rounded-[20px] transition-all duration-300 text-black ${getNavLinkClass(
-                  to
-                )}`}
+            <NavLink
+              onClick={() => {
+                setIsSidebarOpen(false);
+                getHeading("Dashboard");
+              }}
+              key={"/dashboard"}
+              to={isLoggedIn === true ? "/dashboard" : "/"}
+              className={`flex items-center gap-3 w-full p-3 rounded-[20px] transition-all duration-300 text-black ${getNavLinkClass(
+                "/dashboard"
+              )}`}
+            >
+              <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-[12px] bg-white">
+                <img
+                  src={overviewIcon}
+                  alt={`${"Dashboard"} Icon`}
+                  className="md:h-6 md:w-6 w-5 h-5"
+                />
+              </div>
+              <span
+                className={`text-sm md:text-base ${
+                  isShortBar ? "md:hidden" : "block"
+                }`}
               >
-                <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-[12px] bg-white">
-                  <img
-                    src={icon}
-                    alt={`${label} Icon`}
-                    className="md:h-6 md:w-6 w-5 h-5"
-                  />
-                </div>
-                <span
-                  className={`text-sm md:text-base ${
-                    isShortBar ? "md:hidden" : "block"
-                  }`}
+                {"Dashboard"}
+              </span>
+            </NavLink>
+            {menus
+              .filter((menu) => user?.assignMenus?.includes(menu.label))
+              .map(({ to, icon, label }) => (
+                <NavLink
+                  onClick={() => {
+                    setIsSidebarOpen(false);
+                    getHeading(label);
+                  }}
+                  key={to}
+                  to={isLoggedIn === true ? to : "/"}
+                  className={`flex items-center gap-3 w-full p-3 rounded-[20px] transition-all duration-300 text-black ${getNavLinkClass(
+                    to
+                  )}`}
                 >
-                  {label}
-                </span>
-              </NavLink>
-            ))}
+                  <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-[12px] bg-white">
+                    <img
+                      src={icon}
+                      alt={`${label} Icon`}
+                      className="md:h-6 md:w-6 w-5 h-5"
+                    />
+                  </div>
+                  <span
+                    className={`text-sm md:text-base ${
+                      isShortBar ? "md:hidden" : "block"
+                    }`}
+                  >
+                    {label}
+                  </span>
+                </NavLink>
+              ))}
           </div>
         </div>
 
@@ -180,7 +369,7 @@ function Layout() {
         </div>
       </div>
       {showProfile && <Profile />}
-      
+
       {overlays.map(({ state, setter }, index) =>
         state ? (
           <div
@@ -195,4 +384,3 @@ function Layout() {
 }
 
 export default Layout;
-

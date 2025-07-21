@@ -11,6 +11,7 @@ import { FiMoreVertical } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import Loader from "../components/Loader";
 import { RiArrowDropDownLine } from "react-icons/ri";
+import DownloadCSV from "../components/DownloadCSV";
 
 const Ticketing = () => {
   const {
@@ -42,8 +43,8 @@ const Ticketing = () => {
   const [selectedGenerator, setSelectedGenerator] = useState(
     "Select Ticket Generator"
   );
-  const [ticketResponse, setTicketResponse] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [ticketResponse, setTicketResponse] = useState("");
   const [ticketId, setTicketId] = useState("");
 
   useEffect(() => {
@@ -77,7 +78,7 @@ const Ticketing = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${URI}/employee/tickets/get/${selectedGenerator}`,
+        `${URI}/admin/tickets/get/${selectedGenerator}`,
         {
           method: "GET",
           credentials: "include",
@@ -101,7 +102,7 @@ const Ticketing = () => {
   //Fetch department data
   const fetchAdminData = async () => {
     try {
-      const response = await fetch(URI + "/employee/tickets/admins", {
+      const response = await fetch(URI + "/admin/tickets/admins", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -119,7 +120,7 @@ const Ticketing = () => {
   //Fetch department data
   const fetchDepartmentData = async () => {
     try {
-      const response = await fetch(URI + "/employee/tickets/departments", {
+      const response = await fetch(URI + "/admin/tickets/departments", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -137,7 +138,7 @@ const Ticketing = () => {
   //Fetch department data
   const fetchEmployeeData = async (id) => {
     try {
-      const response = await fetch(URI + "/employee/tickets/employees/" + id, {
+      const response = await fetch(URI + "/admin/tickets/employees/" + id, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -158,7 +159,7 @@ const Ticketing = () => {
     const endpoint = newTicket.ticketid ? `edit/${newTicket.ticketid}` : "add";
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/employee/tickets/${endpoint}`, {
+      const response = await fetch(`${URI}/admin/tickets/${endpoint}`, {
         method: newTicket.ticketid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -198,17 +199,14 @@ const Ticketing = () => {
 
   const changeStatus = async (id, label) => {
     try {
-      const response = await fetch(
-        `${URI}/employee/tickets/status/change/${id}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status: label }),
-        }
-      );
+      const response = await fetch(`${URI}/admin/tickets/status/change/${id}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: label }),
+      });
 
       if (!response.ok) throw new Error("Failed to Update Status.");
 
@@ -230,7 +228,7 @@ const Ticketing = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(`${URI}/employee/tickets/${id}`, {
+      const response = await fetch(`${URI}/admin/tickets/${id}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -250,9 +248,9 @@ const Ticketing = () => {
   //fetch data on form
   const viewTicket = async (id) => {
     try {
-      const response = await fetch(`${URI}/employee/tickets/${id}`, {
+      const response = await fetch(`${URI}/admin/tickets/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -269,7 +267,7 @@ const Ticketing = () => {
   //fetch data on form
   const fetchResponse = async (id) => {
     try {
-      const response = await fetch(`${URI}/employee/tickets/${id}`, {
+      const response = await fetch(`${URI}/admin/tickets/${id}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -293,7 +291,7 @@ const Ticketing = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${URI}/employee/tickets/response/add/${ticketId}`,
+        `${URI}/admin/tickets/response/add/${ticketId}`,
         {
           method: "PUT",
           credentials: "include",
@@ -323,7 +321,7 @@ const Ticketing = () => {
     if (!window.confirm("Are you sure you want to delete this ticket?")) return;
 
     try {
-      const response = await fetch(URI + `/employee/tickets/delete/${id}`, {
+      const response = await fetch(URI + `/admin/tickets/delete/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -417,13 +415,13 @@ const Ticketing = () => {
       name: "SN",
       cell: (row, index) => (
         <span
-          className={`px-2 py-1 rounded-md ${
+          className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md ${
             row.status === "Resolved"
               ? "bg-[#EAFBF1] text-[#0BB501]"
               : row.status === "Open"
               ? "bg-[#E9F2FF] text-[#0068FF]"
               : row.status === "In Progress"
-              ? "bg-[#FFF8DD] text-[#FFCA00]"
+              ? "bg-[#fff8e3] text-[#ffbc21]"
               : row.status === "Pending"
               ? "bg-[#FFEAEA] text-[#ff2323]"
               : "text-[#000000]"
@@ -448,7 +446,7 @@ const Ticketing = () => {
               : row.status === "Open"
               ? "bg-[#E9F2FF] text-[#0068FF]"
               : row.status === "In Progress"
-              ? "bg-[#FFF8DD] text-[#FFCA00]"
+              ? "bg-[#fff8e3] text-[#ffbc21]"
               : row.status === "Pending"
               ? "bg-[#FFEAEA] text-[#ff2323]"
               : "text-[#000000]"
@@ -459,6 +457,11 @@ const Ticketing = () => {
       ),
       sortable: false,
       width: "120px",
+    },
+    {
+      name: "Status",
+      cell: (row) => <StatusDropdown row={row} />,
+      width: "130px",
     },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
 
@@ -502,11 +505,6 @@ const Ticketing = () => {
       width: "180px",
     },
 
-    {
-      name: "Status",
-      cell: (row) => <StatusDropdown row={row} />,
-      width: "130px",
-    },
     {
       name: "Action",
       cell: (row) => <ActionDropdown row={row} />,
@@ -605,7 +603,7 @@ const Ticketing = () => {
               : row.status === "Open"
               ? "bg-[#E9F2FF] text-[#0068FF]"
               : row.status === "In Progress"
-              ? "bg-[#FFF8DD] text-[#FFCA00]"
+              ? "bg-[#fff8e3] text-[#ffbc21]"
               : row.status === "Pending"
               ? "bg-[#FFEAEA] text-[#ff2323]"
               : "text-[#000000]"
@@ -639,7 +637,7 @@ const Ticketing = () => {
         {/* <p className="block md:hidden text-lg font-semibold">Tickets</p> */}
         <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
           <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
-            <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+            <div className="flex gap-1 sm:gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
               <span>{selectedGenerator || "Select Ticket Generator"}</span>
               <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
             </div>
@@ -662,6 +660,7 @@ const Ticketing = () => {
             </select>
           </div>
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+            <DownloadCSV data={filteredData} filename={"Ticket.csv"} />
             <AddButton label={"Add"} func={setShowTicketForm} />
           </div>
         </div>
@@ -687,6 +686,7 @@ const Ticketing = () => {
               </div>
             </div>
             <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+              <DownloadCSV data={filteredData} filename={"Ticket.csv"} />
               <AddButton label={"Add"} func={setShowTicketForm} />
             </div>
           </div>

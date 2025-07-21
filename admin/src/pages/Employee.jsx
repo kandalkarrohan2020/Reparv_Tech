@@ -21,12 +21,23 @@ const Employee = () => {
     action,
     giveAccess,
     setGiveAccess,
+    showAssignTaskForm,
+    setShowAssignTaskForm,
+    showEmployee,
+    setShowEmployee,
     token,
     URI,
     loading,
     setLoading,
   } = useAuth();
   const [datas, setDatas] = useState([]);
+  const [employee, setEmployee] = useState({});
+  const [menus, setMenus] = useState([]);
+  const [task, setTask] = useState({
+    menus: [],
+  });
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
   const [roleData, setRoleData] = useState([]);
   const [departmentData, setDepartmentData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,6 +50,8 @@ const Employee = () => {
     contact: "",
     email: "",
     address: "",
+    state: "",
+    city: "",
     dob: "",
     departmentid: "",
     roleid: "",
@@ -47,12 +60,51 @@ const Employee = () => {
     status: "",
   });
 
+  // **Fetch States from API**
+  const fetchStates = async () => {
+    try {
+      const response = await fetch(URI + "/admin/states", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch States.");
+      const data = await response.json();
+      setStates(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // **Fetch States from API**
+  const fetchCities = async () => {
+    try {
+      const response = await fetch(
+        `${URI}/admin/cities/${newEmployee?.state}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch cities.");
+      const data = await response.json();
+      setCities(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
   // *Fetch Data from API*
   const fetchData = async () => {
     try {
       const response = await fetch(URI + "/admin/employees", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -67,12 +119,67 @@ const Employee = () => {
     }
   };
 
+  //fetch data on form
+  const viewEmployee = async (id) => {
+    try {
+      const response = await fetch(URI + `/admin/employees/${id}`, {
+        method: "GET",
+        credentials: "include", //  Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch employee.");
+      const data = await response.json();
+      setEmployee(data);
+      setShowEmployee(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  //fetch data on Tasks form
+  const viewEmployeeTasks = async (id) => {
+    try {
+      const response = await fetch(URI + `/admin/employees/${id}`, {
+        method: "GET",
+        credentials: "include", //  Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch employee.");
+      const data = await response.json();
+      setTask({ ...task, menus: JSON.parse(data.menus) });
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  //Fetch Menus
+  const fetchMenus = async () => {
+    try {
+      const response = await fetch(URI + "/admin/employees/get/menus", {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch menus.");
+      const data = await response.json();
+      setMenus(data); // Store the fetched data
+    } catch (err) {
+      console.error("Error fetching Menus:", err);
+    }
+  };
+
   //Fetch roles data
   const fetchRoleData = async () => {
     try {
       const response = await fetch(URI + "/admin/roles", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -90,7 +197,7 @@ const Employee = () => {
     try {
       const response = await fetch(URI + "/admin/departments", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -136,6 +243,8 @@ const Employee = () => {
         contact: "",
         email: "",
         address: "",
+        state: "",
+        city: "",
         dob: "",
         departmentid: "",
         roleid: "",
@@ -158,7 +267,7 @@ const Employee = () => {
     try {
       const response = await fetch(URI + `/admin/employees/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -223,6 +332,39 @@ const Employee = () => {
     }
   };
 
+  const assignTask = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      const response = await fetch(
+        URI + `/admin/employees/assign/tasks/${selectedEmployeeId}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(task),
+        }
+      );
+      const data = await response.json();
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      setSelectedEmployeeId(null);
+      setTask({ ...task, menus: [] });
+      setShowAssignTaskForm(false);
+      fetchData();
+    } catch (error) {
+      console.error("Error assigning tasks :", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // change status record
   const assignLogin = async (e) => {
     e.preventDefault();
@@ -257,7 +399,7 @@ const Employee = () => {
       setGiveAccess(false);
       fetchData();
     } catch (error) {
-      console.error("Error deleting :", error);
+      console.error("Error assign login :", error);
     } finally {
       setLoading(false);
     }
@@ -265,9 +407,17 @@ const Employee = () => {
 
   useEffect(() => {
     fetchData();
+    fetchStates();
+    fetchMenus();
     fetchRoleData();
     fetchDepartmentData();
   }, []);
+
+  useEffect(() => {
+    if (newEmployee.state != "") {
+      fetchCities();
+    }
+  }, [newEmployee.state]);
 
   const [range, setRange] = useState([
     {
@@ -426,7 +576,8 @@ const Employee = () => {
     },
     {
       name: "Action",
-      cell: (row) => <ActionDropdown row={row} />, width:"120px"
+      cell: (row) => <ActionDropdown row={row} />,
+      width: "120px",
     },
   ];
 
@@ -435,6 +586,9 @@ const Employee = () => {
 
     const handleActionSelect = (action, id) => {
       switch (action) {
+        case "view":
+          viewEmployee(id);
+          break;
         case "status":
           status(id);
           break;
@@ -444,7 +598,13 @@ const Employee = () => {
         case "delete":
           del(id);
           break;
-        case "assignlogin":
+        case "assignTask":
+          viewEmployeeTasks(id);
+          fetchMenus();
+          setSelectedEmployeeId(id);
+          setShowAssignTaskForm(true);
+          break;
+        case "assignLogin":
           setSelectedEmployeeId(id);
           setGiveAccess(true);
           break;
@@ -470,9 +630,11 @@ const Employee = () => {
           <option value="" disabled>
             Select Action
           </option>
+          <option value="view">View</option>
           <option value="status">Status</option>
           <option value="update">Update</option>
-          <option value="assignlogin">Assign Login</option>
+          <option value="assignTask">Assign Task</option>
+          <option value="assignLogin">Assign Login</option>
           <option value="delete">Delete</option>
         </select>
       </div>
@@ -576,25 +738,24 @@ const Employee = () => {
                   }
                 />
               </div>
-              <div className="w-full">
+
+              <div className="w-full ">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  UID No.
+                  Date of Birth
                 </label>
                 <input
-                  type="number"
+                  type="date"
                   required
-                  placeholder="Enter UID No"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newEmployee.uid}
+                  value={newEmployee.dob?.split("T")[0]}
                   onChange={(e) => {
-                    const input = e.target.value;
-                    if (/^\d{0,12}$/.test(input)) {
-                      // Allows only up to 12 digits
-                      setEmployeeData({ ...newEmployee, uid: input });
-                    }
+                    const selectedDate = e.target.value; // Get full date
+                    const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
+                    setEmployeeData({ ...newEmployee, dob: formattedDate });
                   }}
                 />
               </div>
+
               <div className="w-full ">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
                   Contact Number
@@ -632,6 +793,26 @@ const Employee = () => {
 
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Aadhaar Number
+                </label>
+                <input
+                  type="number"
+                  required
+                  placeholder="Enter Aadhaar No"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newEmployee.uid}
+                  onChange={(e) => {
+                    const input = e.target.value;
+                    if (/^\d{0,12}$/.test(input)) {
+                      // Allows only up to 12 digits
+                      setEmployeeData({ ...newEmployee, uid: input });
+                    }
+                  }}
+                />
+              </div>
+
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
                   Address
                 </label>
                 <input
@@ -646,22 +827,55 @@ const Employee = () => {
                 />
               </div>
 
-              <div className="w-full ">
+              {/* State Select Input */}
+              <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Date of Birth
+                  Select State
                 </label>
-                <input
-                  type="date"
+                <select
                   required
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newEmployee.dob?.split("T")[0]}
-                  onChange={(e) => {
-                    const selectedDate = e.target.value; // Get full date
-                    const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
-                    setEmployeeData({ ...newEmployee, dob: formattedDate });
-                  }}
-                />
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={newEmployee.state}
+                  onChange={(e) =>
+                    setEmployeeData({ ...newEmployee, state: e.target.value })
+                  }
+                >
+                  <option value="">Select Your State</option>
+                  {states?.map((state, index) => (
+                    <option key={index} value={state.state}>
+                      {state.state}
+                    </option>
+                  ))}
+                </select>
               </div>
+
+              {/* City Select Input */}
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Select City
+                </label>
+                <select
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={newEmployee.city}
+                  onChange={(e) =>
+                    setEmployeeData({
+                      ...newEmployee,
+                      city: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Select Your City</option>
+                  {cities?.map((city, index) => (
+                    <option key={index} value={city.city}>
+                      {city.city}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div className="w-full ">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
                   Department
@@ -760,6 +974,88 @@ const Employee = () => {
           </div>
         </div>
       )}
+
+      {/* Assign Task Form */}
+      <div
+        className={` ${
+          !showAssignTaskForm && "hidden"
+        } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
+      >
+        <div className="w-full md:w-[500px] lg:w-[750px] max-h-[70vh] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">Assign Tasks</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowAssignTaskForm(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={assignTask}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
+              <input
+                type="hidden"
+                value={selectedEmployeeId || ""}
+                onChange={(e) => setSelectedEmployeeId(e.target.value)}
+              />
+              <div className="w-full col-span-2">
+                <label className="block text-sm leading-4 text-[#0000009b] font-medium">
+                  Select Menus
+                </label>
+
+                <div className="grid grid-cols-2 lg:grid-cols-3 mt-[10px] p-2 border border-[#00000033] rounded-[4px]">
+                  {menus?.map((menu, index) => (
+                    <div key={index} className="flex items-center mb-2">
+                      <input
+                        type="checkbox"
+                        id={`menu-${index}`}
+                        value={menu.menuName}
+                        checked={task.menus?.includes(menu.menuName)}
+                        onChange={(e) => {
+                          const { checked, value } = e.target;
+                          const updatedMenus = checked
+                            ? [...(task.menus || []), value]
+                            : (task.menus || []).filter(
+                                (menu) => menu !== value
+                              );
+                          setTask({
+                            ...task,
+                            menus: updatedMenus,
+                          });
+                        }}
+                        className="mr-2"
+                      />
+                      <label
+                        htmlFor={`menu-${index}`}
+                        className="text-xs md:text-[14px] font-medium"
+                      >
+                        {menu.menuName}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-center md:justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => setTask({ ...task, menus: [] })}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Reset Tasks
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Assign Tasks
+              </button>
+              <Loader></Loader>
+            </div>
+          </form>
+        </div>
+      </div>
+
       {/* Give Access Form */}
       <div
         className={` ${
@@ -831,6 +1127,196 @@ const Employee = () => {
                 Give Access
               </button>
               <Loader></Loader>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* Show Employee details */}
+      <div
+        className={`${
+          showEmployee ? "flex" : "hidden"
+        } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
+      >
+        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">Employee Details</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowEmployee(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Status
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.status}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Login Status
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.loginstatus}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Department
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.department}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Role
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.role}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Date of Joining
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.dateOfJoining}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Salary
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.salary}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Full Name
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.name}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Date of Birth
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.dateOfBirth}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Contact
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.contact}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Email
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.email}
+                readOnly
+              />
+            </div>
+
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Aadhaar No
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.uid}
+                readOnly
+              />
+            </div>
+            <div className="w-full col-span-2">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Address
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.address}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                State
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.state}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                City
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.city}
+                readOnly
+              />
             </div>
           </form>
         </div>

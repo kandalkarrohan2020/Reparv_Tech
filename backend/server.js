@@ -137,6 +137,8 @@ import projectPartnerAppRoute from "./routes/projectPartnerAppRoute/userRoute.js
 
 //Customer App
 import customerEmi from "./routes/customerAppRoute/EmiRoute.js";
+import customerSignUp from "./routes/customerAppRoute/userRoute.js";
+import customerPropertyRoute from "./routes/customerAppRoute/propertyRoute.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -425,6 +427,8 @@ app.use("/projectpartnerRoute/user", projectPartnerAppRoute);
 
 //Customer app
 app.use("/customerapp", customerEmi);
+app.use("/customerapp/user", customerSignUp);
+app.use("/customerapp/property", customerPropertyRoute);
 
 //  Start Server
 app.listen(PORT, () => {

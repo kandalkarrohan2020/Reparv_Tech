@@ -56,6 +56,10 @@ const App = () => {
       menu: <Route path="/customers" element={<Customers />} />,
     },
     {
+      name: "Employees",
+      menu: <Route path="/employees" element={<Employee />} />,
+    },
+    {
       name: "Guest Users",
       menu: <Route path="/guest-users" element={<GuestUser />} />,
     },
@@ -64,19 +68,19 @@ const App = () => {
       menu: <Route path="/builders" element={<Builders />} />,
     },
     {
-      name: "sales Persons",
+      name: "Sales Persons",
       menu: <Route path="/salespersons" element={<SalesPerson />} />,
     },
     {
-      name: "Onboarding Partner",
+      name: "Onboarding Partners",
       menu: <Route path="/onboardingpartner" element={<OnBoardingPartner />} />,
     },
     {
-      name: "Project Partner",
+      name: "Project Partners",
       menu: <Route path="/projectpartner" element={<ProjectPartner />} />,
     },
     {
-      name: "Territory Partner",
+      name: "Territory Partners",
       menu: <Route path="/territorypartner" element={<TerritoryPartner />} />,
     },
     { name: "Roles", menu: <Route path="/role" element={<Role />} /> },

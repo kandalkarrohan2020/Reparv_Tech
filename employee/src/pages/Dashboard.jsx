@@ -81,6 +81,12 @@ function Dashboard() {
       to: "/guest-users",
     },
     {
+      label: "Blogs",
+      value: overviewCountData?.totalBlog || "00",
+      //icon: card4,
+      to: "/blogs",
+    },
+    {
       label: "Tickets",
       value: overviewCountData?.totalTicket || "00",
       //icon: card4,

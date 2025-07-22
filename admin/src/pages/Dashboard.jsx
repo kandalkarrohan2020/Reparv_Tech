@@ -210,6 +210,13 @@ function Dashboard() {
             //icon: card4,
             to: "/tickets",
           },
+          {
+            label: "Total Blogs",
+            value: overviewCountData?.totalBlog || "00",
+            //icon: card4,
+            to: "/blogs",
+          },
+          
         ].map((card, index) => (
           <div
             key={index}

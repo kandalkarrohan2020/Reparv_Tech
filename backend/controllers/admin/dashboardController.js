@@ -46,7 +46,8 @@ export const getCount = (req, res) => {
         (SELECT COUNT(partnerid) FROM onboardingpartner WHERE status = 'Active' AND paymentstatus = 'Success') AS totalOnboardingPartner,
         (SELECT COUNT(id) FROM projectpartner WHERE status = 'Active' AND paymentstatus = 'Success') AS totalProjectPartner,
         (SELECT COUNT(id) FROM guestUsers WHERE status = 'Active') AS totalGuestUser,
-        (SELECT COUNT(ticketid) FROM tickets) AS totalTicket
+        (SELECT COUNT(ticketid) FROM tickets) AS totalTicket,
+        (SELECT COUNT(id) FROM blogs) AS totalBlog
   `;
 
   db.query(query, (err, results) => {

@@ -971,7 +971,7 @@ export const getImages = (req, res) => {
   });
 };
 
-// **Add Property**
+// ** Add Property **
 export const updateImages = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const Id = req.params.id;
@@ -1047,6 +1047,68 @@ export const updateImages = async (req, res) => {
       .status(500)
       .json({ message: "File conversion failed", error: err });
   }
+};
+
+// Delete Images
+export const deleteImages = (req, res) => {
+  const Id = parseInt(req.params.id);
+  const imageType = req.query.type; // use query param instead of req.body
+
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  if (!imageType) {
+    return res.status(400).json({ message: "Missing image type" });
+  }
+
+  // Fetch the image array string
+  db.query(
+    `SELECT ?? FROM properties WHERE propertyid = ?`,
+    [imageType, Id],
+    (err, result) => {
+      if (err) {
+        console.error("Error fetching images:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+
+      const images = JSON.parse(result[0][imageType] || "[]");
+
+      if (!images.length) {
+        return res.status(404).json({ message: "No images to delete" });
+      }
+
+      // Delete image files from filesystem
+      images.forEach((imgPath) => {
+        const fullPath = path.join(process.cwd(), imgPath);
+        fs.unlink(fullPath, (err) => {
+          if (err) {
+            console.warn(`Could not delete file: ${fullPath}`, err.message);
+          }
+        });
+      });
+
+      // Update DB to remove image references
+      db.query(
+        `UPDATE properties SET ?? = ? WHERE propertyid = ?`,
+        [imageType, JSON.stringify([]), Id],
+        (err) => {
+          if (err) {
+            console.error("Error updating DB:", err);
+            return res
+              .status(500)
+              .json({ message: "DB update failed", error: err });
+          }
+
+          res.status(200).json({ message: "Images deleted successfully" });
+        }
+      );
+    }
+  );
 };
 
 // ** New Additional Info Add API **
@@ -1244,58 +1306,6 @@ export const propertyInfo = (req, res) => {
     }
     res.json(result[0]);
   });
-};
-
-export const deleteImages = (req, res) => {
-  const Id = parseInt(req.params.id);
-  if (isNaN(Id)) {
-    return res.status(400).json({ message: "Invalid Property ID" });
-  }
-
-  // First, fetch the image path from the database
-  db.query(
-    "SELECT image FROM propertiesimages WHERE imageid = ?",
-    [Id],
-    (err, result) => {
-      if (err) {
-        console.error("Error fetching image:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-
-      if (result.length === 0) {
-        return res.status(404).json({ message: "Image not found" });
-      }
-
-      const imagePath = result[0].image; // Get the image path
-      if (imagePath) {
-        const filePath = path.join(process.cwd(), imagePath); // Full path to the file
-
-        // Delete the image file from the uploads folder
-        fs.unlink(filePath, (err) => {
-          if (err && err.code !== "ENOENT") {
-            console.error("Error deleting image:", err);
-          }
-
-          // Now delete the record from the database
-          db.query(
-            "DELETE FROM propertiesimages WHERE imageid = ?",
-            [Id],
-            (err) => {
-              if (err) {
-                console.error("Error deleting Image:", err);
-                return res
-                  .status(500)
-                  .json({ message: "Database error", error: err });
-              }
-              res.status(200).json({ message: "Image deleted successfully" });
-            }
-          );
-        });
-      } else {
-        res.status(404).json({ message: "Image path not found" });
-      }
-    }
-  );
 };
 
 export const addCsvFile = async (req, res) => {

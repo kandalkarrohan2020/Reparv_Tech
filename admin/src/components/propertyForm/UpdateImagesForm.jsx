@@ -4,6 +4,7 @@ import { IoMdClose } from "react-icons/io";
 import Loader from "../Loader";
 
 const UpdateImagesForm = ({
+  fetchImages,
   fetchData,
   propertyId,
   setPropertyId,
@@ -129,8 +130,8 @@ const UpdateImagesForm = ({
         nearestLandmark: [],
         developedAmenities: [],
       });
-      await fetchData();
-      setShowUpdateImagesForm(false);
+      await fetchImages(propertyId);
+      //setShowUpdateImagesForm();
     } catch (err) {
       console.error("Error saving property images:", err);
       if (err.response?.data?.error) {
@@ -140,6 +141,30 @@ const UpdateImagesForm = ({
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const deleteImages = async () => {
+    try {
+      const response = await fetch(
+        `${URI}/admin/properties/images/delete/${propertyId}?type=${selectedImageType}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert(result.message || "Images deleted successfully");
+        await fetchImages(propertyId);
+      } else {
+        alert(result.message || "Failed to delete images");
+      }
+    } catch (err) {
+      console.error("Image delete error:", err);
+      alert("Error occurred while deleting images.");
     }
   };
 
@@ -186,21 +211,58 @@ const UpdateImagesForm = ({
                   {" "}
                   Select Image Type{" "}
                 </option>
-                <option value="Front View">Front View</option>
-                <option value="Side View">Side View</option>
-                <option value="Hall View">Hall View</option>
-                <option value="Kitchen View">Kitchen View</option>
-                <option value="Bedroom View">Bedroom View</option>
-                <option value="Bathroom View">Bathroom View</option>
-                <option value="Balcony View">Balcony View</option>
-                <option value="Nearest Landmark">Nearest Landmark</option>
-                <option value="Developed Amenities">Developed Amenities</option>
+                <option value="frontView">Front View</option>
+
+                {newProperty.propertyCategory !== "CommercialPlot" ||
+                  newProperty.propertyCategory !== "NewPlot" ||
+                  (newProperty.propertyCategory !== "FarmLand" && (
+                    <option value="sideView">Side View</option>
+                  ))}
+
+                {newProperty.propertyCategory !== "CommercialPlot" ||
+                  newProperty.propertyCategory !== "NewPlot" ||
+                  (newProperty.propertyCategory !== "FarmLand" && (
+                    <option value="hallView">Hall View</option>
+                  ))}
+
+                {newProperty.propertyCategory !== "CommercialPlot" ||
+                  newProperty.propertyCategory !== "NewPlot" ||
+                  newProperty.propertyCategory !== "FarmLand" ||
+                  newProperty.propertyCategory !== "IndustrialSpace" ||
+                  (newProperty.propertyCategory !== "RentalShop" && (
+                    <option value="kitchenView">Kitchen View</option>
+                  ))}
+
+                {newProperty.propertyCategory !== "CommercialPlot" ||
+                  newProperty.propertyCategory !== "NewPlot" ||
+                  newProperty.propertyCategory !== "FarmLand" ||
+                  newProperty.propertyCategory !== "IndustrialSpace" ||
+                  (newProperty.propertyCategory !== "RentalShop" && (
+                    <option value="bedroomView">Bedroom View</option>
+                  ))}
+
+                {newProperty.propertyCategory !== "CommercialPlot" ||
+                  newProperty.propertyCategory !== "NewPlot" ||
+                  newProperty.propertyCategory !== "FarmLand" ||
+                  newProperty.propertyCategory !== "IndustrialSpace" ||
+                  (newProperty.propertyCategory !== "RentalShop" && (
+                    <option value="bathroomView">Bathroom View</option>
+                  ))}
+
+                {newProperty.propertyCategory !== "CommercialPlot" ||
+                  newProperty.propertyCategory !== "NewPlot" ||
+                  (newProperty.propertyCategory !== "FarmLand" && (
+                    <option value="balconyView">Balcony View</option>
+                  ))}
+
+                <option value="nearestLandmark">Nearest Landmark</option>
+                <option value="developedAmenities">Developed Amenities</option>
               </select>
             </div>
 
             <div
               className={`${
-                selectedImageType === "Front View" ? "block" : "hidden"
+                selectedImageType === "frontView" ? "block" : "hidden"
               } w-full`}
             >
               <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
@@ -278,7 +340,7 @@ const UpdateImagesForm = ({
 
             <div
               className={`${
-                selectedImageType === "Nearest Landmark" ? "block" : "hidden"
+                selectedImageType === "nearestLandmark" ? "block" : "hidden"
               } w-full`}
             >
               <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
@@ -357,7 +419,7 @@ const UpdateImagesForm = ({
 
             <div
               className={`${
-                selectedImageType === "Developed Amenities" ? "block" : "hidden"
+                selectedImageType === "developedAmenities" ? "block" : "hidden"
               } w-full`}
             >
               <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
@@ -439,7 +501,7 @@ const UpdateImagesForm = ({
                 newProperty.propertyCategory === "NewPlot" ||
                 newProperty.propertyCategory === "FarmLand"
                   ? "hidden"
-                  : selectedImageType === "Side View"
+                  : selectedImageType === "sideView"
                   ? "block"
                   : "hidden"
               } w-full`}
@@ -524,7 +586,7 @@ const UpdateImagesForm = ({
                 newProperty.propertyCategory === "NewPlot" ||
                 newProperty.propertyCategory === "FarmLand"
                   ? "hidden"
-                  : selectedImageType === "Hall View"
+                  : selectedImageType === "hallView"
                   ? "block"
                   : "hidden"
               } w-full`}
@@ -611,7 +673,7 @@ const UpdateImagesForm = ({
                 newProperty.propertyCategory === "IndustrialSpace" ||
                 newProperty.propertyCategory === "RentalShop"
                   ? "hidden"
-                  : selectedImageType === "Kitchen View"
+                  : selectedImageType === "kitchenView"
                   ? "block"
                   : "hidden"
               } w-full`}
@@ -698,7 +760,7 @@ const UpdateImagesForm = ({
                 newProperty.propertyCategory === "IndustrialSpace" ||
                 newProperty.propertyCategory === "RentalShop"
                   ? "hidden"
-                  : selectedImageType === "Bedroom View"
+                  : selectedImageType === "bedroomView"
                   ? "block"
                   : "hidden"
               } w-full`}
@@ -785,7 +847,7 @@ const UpdateImagesForm = ({
                 newProperty.propertyCategory === "IndustrialSpace" ||
                 newProperty.propertyCategory === "RentalShop"
                   ? "hidden"
-                  : selectedImageType === "Bathroom View"
+                  : selectedImageType === "bathroomView"
                   ? "block"
                   : "hidden"
               } w-full`}
@@ -870,7 +932,7 @@ const UpdateImagesForm = ({
                 newProperty.propertyCategory === "NewPlot" ||
                 newProperty.propertyCategory === "FarmLand"
                   ? "hidden"
-                  : selectedImageType === "Balcony View"
+                  : selectedImageType === "balconyView"
                   ? "block"
                   : "hidden"
               } w-full`}
@@ -949,14 +1011,13 @@ const UpdateImagesForm = ({
               </div>
             </div>
           </div>
-          <div className="flex justify-end mt-4">
-            <button
-              type="button"
-              onClick={()=>{}}
-              className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+          <div className="flex gap-4 justify-end mt-4">
+            <div
+              onClick={() => {deleteImages();}}
+              className="px-4 py-2 text-white bg-red-600 rounded active:scale-[0.98]"
             >
               Delete Images
-            </button>
+            </div>
             <button
               type="submit"
               className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"

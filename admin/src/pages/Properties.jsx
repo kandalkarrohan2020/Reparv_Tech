@@ -316,7 +316,7 @@ const Properties = () => {
     try {
       const response = await fetch(URI + "/admin/propertytypes/active", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -574,29 +574,6 @@ const Properties = () => {
       setShowUpdateImagesForm(true);
     } catch (err) {
       console.error("Error fetching :", err);
-    }
-  };
-
-  // delete Image from Database
-  const deleteImages = async (id, propertyid) => {
-    try {
-      const response = await fetch(
-        `${URI}/admin/properties/images/delete/${id}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to delete image: ${response.statusText}`);
-      }
-      await fetchImages(propertyid);
-    } catch (error) {
-      console.error("Error deleting image:", error);
     }
   };
 
@@ -1213,6 +1190,7 @@ const Properties = () => {
       {/* Upload Images Form */}
       <UpdateImagesForm
         fetchData={fetchData}
+        fetchImages={fetchImages}
         propertyId={propertyKey}
         setPropertyId={setPropertyKey}
         newProperty={newProperty}

@@ -729,6 +729,7 @@ const Properties = () => {
 
       {/* Upload Images Form */}
       <UpdateImagesForm
+        fetchImages={fetchImages}
         fetchData={fetchData}
         propertyId={propertyKey}
         setPropertyId={setPropertyKey}

@@ -745,13 +745,16 @@ const Employee = () => {
                 </label>
                 <input
                   type="date"
-                  required
+                  required={!newEmployee.id}
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newEmployee.dob?.split("T")[0]}
+                  value={
+                    newEmployee.dob
+                      ? new Date(newEmployee.dob).toLocaleDateString("en-CA")
+                      : ""
+                  }
                   onChange={(e) => {
                     const selectedDate = e.target.value; // Get full date
-                    const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
-                    setEmployeeData({ ...newEmployee, dob: formattedDate });
+                    setEmployeeData({ ...newEmployee, dob: selectedDate });
                   }}
                 />
               </div>
@@ -942,13 +945,16 @@ const Employee = () => {
                 </label>
                 <input
                   type="date"
-                  required
+                  required={!newEmployee.id}
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newEmployee.doj?.split("T")[0]}
+                  value={
+                    newEmployee.doj
+                      ? new Date(newEmployee.doj).toLocaleDateString("en-CA")
+                      : ""
+                  }
                   onChange={(e) => {
-                    const selectedDate = e.target.value; // Get full date
-                    const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
-                    setEmployeeData({ ...newEmployee, doj: formattedDate });
+                    const selectedDate = e.target.value;
+                    setEmployeeData({ ...newEmployee, doj: selectedDate });
                   }}
                 />
               </div>

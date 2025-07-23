@@ -67,31 +67,6 @@ export const getById = (req, res) => {
   });
 };
 
-// get all images
-export const getImages = (req, res) => {
-  const partnerId = req.user.id;
-  if (!partnerId) {
-    return res.status(400).json({ message: "Unauthorized Access" });
-  }
-
-  const Id = parseInt(req.params.id);
-  if (isNaN(Id)) {
-    return res.status(400).json({ message: "Invalid Property ID" });
-  }
-
-  const sql = "SELECT * FROM propertiesimages WHERE propertyid = ?";
-  db.query(sql, [Id], (err, result) => {
-    if (err) {
-      console.error("Error fetching property images:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Property not found" });
-    }
-    res.json(result);
-  });
-};
-
 export const addProperty = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const files = await convertImagesToWebp(req.files);
@@ -570,6 +545,118 @@ export const update = async (req, res) => {
       });
     }
   );
+};
+
+// Get all images for a specific property
+export const getImages = (req, res) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized access" });
+  }
+
+  const propertyId = parseInt(req.params.id);
+  if (isNaN(propertyId)) {
+    return res.status(400).json({ message: "Invalid property ID" });
+  }
+
+  const sql = `
+    SELECT frontView, sideView, hallView, kitchenView,
+           bedroomView, balconyView, nearestLandmark,
+           bathroomView, developedAmenities
+    FROM properties
+    WHERE propertyid = ?
+  `;
+
+  db.query(sql, [propertyId], (err, results) => {
+    if (err) {
+      console.error("Error fetching property images:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "Property not found" });
+    }
+
+    return res.status(200).json(results[0]);
+  });
+};
+
+// **Add Property**
+export const updateImages = async (req, res) => {
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const Id = req.params.id;
+
+  if (!Id || isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid property ID" });
+  }
+
+  try {
+    const files = await convertImagesToWebp(req.files);
+
+    // Fetch existing property to preserve old images if not replaced
+    db.query(
+      "SELECT * FROM properties WHERE propertyid = ?",
+      [Id],
+      (err, result) => {
+        if (err) {
+          console.error("DB error:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+
+        if (result.length === 0) {
+          return res.status(404).json({ message: "Property not found" });
+        }
+
+        const existing = result[0];
+
+        const getImagePaths = (field) =>
+          files[field]
+            ? JSON.stringify(files[field].map((f) => `/uploads/${f.filename}`))
+            : existing[field]; // preserve old image array
+
+        const updateSQL = `
+        UPDATE properties SET 
+          frontView = ?, sideView = ?, kitchenView = ?, hallView = ?, bedroomView = ?, bathroomView = ?, 
+          balconyView = ?, nearestLandmark = ?, developedAmenities = ?, updated_at = ?
+        WHERE propertyid = ?
+      `;
+
+        const values = [
+          getImagePaths("frontView"),
+          getImagePaths("sideView"),
+          getImagePaths("kitchenView"),
+          getImagePaths("hallView"),
+          getImagePaths("bedroomView"),
+          getImagePaths("bathroomView"),
+          getImagePaths("balconyView"),
+          getImagePaths("nearestLandmark"),
+          getImagePaths("developedAmenities"),
+          currentdate,
+          Id,
+        ];
+
+        db.query(updateSQL, values, (err) => {
+          if (err) {
+            console.error("Update error:", err);
+            return res
+              .status(500)
+              .json({ message: "Update failed", error: err });
+          }
+
+          res
+            .status(200)
+            .json({ message: "Property images updated successfully" });
+        });
+      }
+    );
+  } catch (err) {
+    console.error("Image conversion error:", err);
+    return res
+      .status(500)
+      .json({ message: "File conversion failed", error: err });
+  }
 };
 
 // **Add Property Images**

@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
   const [showBuilderForm, setShowBuilderForm] = useState(false);
   const [showBuilder, setShowBuilder] = useState(false);
   const [showPropertyForm, setShowPropertyForm] = useState(false);
-  const [showUploadImagesForm, setShowUploadImagesForm] = useState(false);
+  const [showUpdateImagesForm, setShowUpdateImagesForm] = useState(false);
   const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
   const [showPropertyInfo, setShowPropertyInfo] = useState(false);
   const [showTicketInfo, setShowTicketInfo] = useState(true);
@@ -61,8 +61,7 @@ export const AuthProvider = ({ children }) => {
         setShowBuilderForm,
         showPropertyForm,
         setShowPropertyForm,
-        showUploadImagesForm,
-        setShowUploadImagesForm,
+        showUpdateImagesForm, setShowUpdateImagesForm,
         showAdditionalInfoForm,
         setShowAdditionalInfoForm,
         showPropertyInfo,

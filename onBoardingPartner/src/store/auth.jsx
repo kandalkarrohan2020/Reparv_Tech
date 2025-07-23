@@ -27,7 +27,7 @@ const [showTicketInfo, setShowTicketInfo ] = useState(false);
 const [showTicketForm, setShowTicketForm ] = useState(false);
 const [isActive, setIsActive ] = useState(false);
 const [action, setAction ] = useState("Save Details");
-const [showUploadImagesForm, setShowUploadImagesForm] = useState(false);
+const [showUpdateImagesForm, setShowUpdateImagesForm] = useState(false);
 const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
 const [showTicket, setShowTicket] = useState(false);
@@ -44,7 +44,7 @@ return <AuthContext.Provider
         action, setAction,
         showPropertyForm, setShowPropertyForm,
         user, setUser,
-        showUploadImagesForm, setShowUploadImagesForm,
+        showUpdateImagesForm, setShowUpdateImagesForm,
         showAdditionalInfoForm, setShowAdditionalInfoForm,
         showTicket, setShowTicket,
         showPropertyInfo, setShowPropertyInfo,

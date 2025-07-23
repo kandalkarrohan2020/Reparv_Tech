@@ -15,14 +15,15 @@ import MultiStepForm from "../components/propertyForm/MultiStepForm";
 import { useLocation } from "react-router-dom";
 import propertyPicture from "../assets/propertyPicture.svg";
 import DownloadCSV from "../components/DownloadCSV";
+import UpdateImagesForm from "../components/propertyForm/UpdateImagesForm";
 
 const Properties = () => {
   const location = useLocation();
   const {
     setShowPropertyForm,
     showPropertyForm,
-    showUploadImagesForm,
-    setShowUploadImagesForm,
+    showUpdateImagesForm,
+    setShowUpdateImagesForm,
     showAdditionalInfoForm,
     setShowAdditionalInfoForm,
     showPropertyInfo,
@@ -556,18 +557,21 @@ const Properties = () => {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
+  //fetch data on form
   const fetchImages = async (id) => {
     try {
-      const response = await fetch(`${URI}/admin/properties/images/${id}`, {
+      const response = await fetch(URI + `/admin/properties/${id}`, {
         method: "GET",
-        credentials: "include", // Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch Images.");
+      if (!response.ok) throw new Error("Failed to fetch property.");
       const data = await response.json();
-      setPropertyImages(data);
+      setPropertyData(data);
+      //console.log(data);
+      setShowUpdateImagesForm(true);
     } catch (err) {
       console.error("Error fetching :", err);
     }
@@ -626,7 +630,7 @@ const Properties = () => {
 
       // Reset after upload
       setImages([]);
-      setShowUploadImagesForm(false);
+      setShowUpdateImagesForm(false);
       await fetchData(); // Refresh data
     } catch (err) {
       console.error("Error saving property:", err);
@@ -907,7 +911,7 @@ const Properties = () => {
   };
 
   const columns = [
-   {
+    {
       name: "SN",
       cell: (row, index) => (
         <div className="relative group flex items-center w-full">
@@ -1072,6 +1076,10 @@ const Properties = () => {
           setPropertyKey(propertyid);
           setShowAdditionalInfoForm(true);
           break;
+        case "updateImages":
+          setPropertyKey(propertyid);
+          fetchImages(propertyid);
+          break;
         default:
           console.log("Invalid action");
       }
@@ -1097,6 +1105,7 @@ const Properties = () => {
           <option value="view">View</option>
           <option value="status">Status</option>
           <option value="update">Update</option>
+          <option value="delete">Delete</option>
           <option value="approve">Approve</option>
           {row.propertyCategory === "NewFlat" ||
           row.propertyCategory === "NewPlot" ||
@@ -1108,8 +1117,8 @@ const Properties = () => {
           )}
           <option value="SEO">SEO Details</option>
           <option value="rejectReason">Reject Reason</option>
+          <option value="updateImages">Update Images</option>
           <option value="setCommission">Set Commission</option>
-          <option value="delete">Delete</option>
         </select>
       </div>
     );
@@ -1202,124 +1211,15 @@ const Properties = () => {
       />
 
       {/* Upload Images Form */}
-      <div
-        className={` ${
-          showUploadImagesForm ? "flex" : "hidden"
-        } z-[61] overflow-scroll scrollbar-hide fixed`}
-      >
-        <div className="w-[330px] sm:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">
-              Upload Images ( 600px / 360px )
-            </h2>
-            <IoMdClose
-              onClick={() => {
-                setShowUploadImagesForm(false);
-              }}
-              className="w-6 h-6 cursor-pointer"
-            />
-          </div>
-          <div className={`grid grid-cols-3 gap-2 mt-2`}>
-            {propertyImages?.map((image, index) => {
-              const imageUrl = `${URI}/uploads/${image.image}`;
-              return (
-                <div key={image.imageid} className="relative">
-                  <img
-                    src={imageUrl}
-                    alt="Uploaded preview"
-                    className={`w-full h-24 object-cover rounded-lg border ${
-                      index === 0
-                        ? "border-4 border-blue-500"
-                        : "border-gray-300"
-                    }`}
-                  />
-                  <button
-                    onClick={() => {
-                      deleteImages(image.imageid, image.propertyid);
-                      if (propertyImages.length === 1) {
-                        setPropertyImages([]);
-                      }
-                    }}
-                    className="absolute w-6 h-6 top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
-                  >
-                    ✕
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-          <form
-            onSubmit={addImages}
-            className="w-full grid gap-4 place-items-center grid-cols-1"
-          >
-            <input
-              type="hidden"
-              value={propertyId || ""}
-              onChange={(e) => {
-                setPropertyId(e.target.value);
-              }}
-            />
-            <div className="w-full">
-              <div className="w-full mt-2">
-                <input
-                  type="file"
-                  required
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageChange}
-                  className="hidden"
-                  id="images"
-                />
-                <label
-                  htmlFor="images"
-                  className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-                >
-                  <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                    Upload Images
-                  </span>
-                  <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
-                    Browse
-                  </div>
-                </label>
-              </div>
-              <div className="grid grid-cols-3 gap-2 mt-2">
-                {images.map((image, index) => {
-                  const imageUrl = URL.createObjectURL(image);
-                  return (
-                    <div key={index} className="relative">
-                      <img
-                        src={imageUrl}
-                        alt="Uploaded preview"
-                        className={`w-full h-24 object-cover rounded-lg border ${
-                          index === 0
-                            ? "border-4 border-blue-500"
-                            : "border-gray-300"
-                        }`}
-                      />
-                      <button
-                        onClick={() => removeImage(index)}
-                        className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
-              >
-                Upload Images
-              </button>
-              <Loader />
-            </div>
-          </form>
-        </div>
-      </div>
+      <UpdateImagesForm
+        fetchData={fetchData}
+        propertyId={propertyKey}
+        setPropertyId={setPropertyKey}
+        newProperty={newProperty}
+        setPropertyData={setPropertyData}
+        imageFiles={imageFiles}
+        setImageFiles={setImageFiles}
+      />
 
       <div
         className={`${

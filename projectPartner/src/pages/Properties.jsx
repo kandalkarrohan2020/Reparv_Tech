@@ -13,11 +13,14 @@ import propertyPicture from "../assets/propertyPicture.svg";
 import Loader from "../components/Loader";
 import { IoMdClose } from "react-icons/io";
 import DownloadCSV from "../components/DownloadCSV";
+import UpdateImagesForm from "../components/propertyForm/UpdateImagesForm";
 
 const Properties = () => {
   const {
     setShowPropertyForm,
     URI,
+    showUpdateImagesForm,
+    setShowUpdateImagesForm,
     showAdditionalInfoForm,
     setShowAdditionalInfoForm,
   } = useAuth();
@@ -333,6 +336,26 @@ const Properties = () => {
     }
   };
 
+  //fetch data on form
+  const fetchImages = async (id) => {
+    try {
+      const response = await fetch(URI + `/admin/properties/${id}`, {
+        method: "GET",
+        credentials: "include", //  Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch property.");
+      const data = await response.json();
+      setPropertyData(data);
+      //console.log(data);
+      setShowUpdateImagesForm(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
   // Add Additional Info as a CSV File
   const addCsv = async (e) => {
     e.preventDefault();
@@ -595,6 +618,10 @@ const Properties = () => {
         case "update":
           edit(propertyid);
           break;
+        case "updateImages":
+          setPropertyKey(propertyid);
+          fetchImages(propertyid);
+          break;
         case "additionalinfo":
           setPropertyKey(propertyid);
           setShowAdditionalInfoForm(true);
@@ -623,6 +650,7 @@ const Properties = () => {
           </option>
           <option value="view">View</option>
           <option value="update">Update</option>
+          <option value="updateImages">Update Images</option>
           {row.propertyCategory === "NewFlat" ||
           row.propertyCategory === "NewPlot" ||
           row.propertyCategory === "CommercialFlat" ||
@@ -697,6 +725,17 @@ const Properties = () => {
         builderData={builderData}
         states={states}
         cities={cities}
+      />
+
+      {/* Upload Images Form */}
+      <UpdateImagesForm
+        fetchData={fetchData}
+        propertyId={propertyKey}
+        setPropertyId={setPropertyKey}
+        newProperty={newProperty}
+        setPropertyData={setPropertyData}
+        imageFiles={imageFiles}
+        setImageFiles={setImageFiles}
       />
 
       {/* Aditional information Form */}

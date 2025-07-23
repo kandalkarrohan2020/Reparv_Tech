@@ -67,7 +67,7 @@ export const getById = (req, res) => {
   });
 };
 
-//** Add new employee **
+// ** Add new employee **
 export const add = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
 
@@ -86,6 +86,7 @@ export const add = (req, res) => {
     doj,
   } = req.body;
 
+  // Validation
   if (
     !name ||
     !uid ||
@@ -102,12 +103,11 @@ export const add = (req, res) => {
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
-  const joiningDate = moment(doj).isValid()
-    ? moment(doj).add(1, "days").format("YYYY-MM-DD")
-    : "";
-  const birthDate = moment(dob).isValid()
-    ? moment(dob).add(1, "days").format("YYYY-MM-DD")
-    : "";
+
+  // Format dates to remove time portion
+  const formattedDob = moment(dob).format("YYYY-MM-DD");
+  const formattedDoj = moment(doj).format("YYYY-MM-DD");
+
   db.query(
     "SELECT * FROM employees WHERE uid = ? OR contact = ? OR email = ?",
     [uid, contact, email],
@@ -116,8 +116,11 @@ export const add = (req, res) => {
         return res.status(500).json({ message: "Database error", error: err });
 
       if (result.length === 0) {
-        // **Add new employee**
-        const insertSQL = `INSERT INTO employees (name, uid, contact, email, address, state, city, dob, departmentid, roleid, salary, doj, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const insertSQL = `
+          INSERT INTO employees 
+          (name, uid, contact, email, address, state, city, dob, departmentid, roleid, salary, doj, updated_at, created_at) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
 
         db.query(
           insertSQL,
@@ -129,11 +132,11 @@ export const add = (req, res) => {
             address,
             state,
             city,
-            birthDate,
+            formattedDob,
             departmentid,
             roleid,
             salary,
-            joiningDate,
+            formattedDoj,
             currentdate,
             currentdate,
           ],
@@ -151,13 +154,12 @@ export const add = (req, res) => {
           }
         );
       } else {
-        return res.status(202).json({ message: "Employee already Exit!!" });
+        return res.status(202).json({ message: "Employee already exists!!" });
       }
     }
   );
 };
 
-// **Edit Employee **
 export const update = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const Id = req.body.id;
@@ -184,28 +186,30 @@ export const update = (req, res) => {
     !address ||
     !state ||
     !city ||
-    !dob ||
     !departmentid ||
     !roleid ||
-    !salary ||
-    !doj
+    !salary
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const joiningDate = moment(doj).isValid()
-    ? moment(doj).add(1, "days").format("YYYY-MM-DD")
-    : "";
-  const birthDate = moment(dob).isValid()
-    ? moment(dob).add(1, "days").format("YYYY-MM-DD")
-    : "";
-  db.query("SELECT * FROM employees WHERE id = ?", [Id], (err, result) => {
-    if (err)
-      return res.status(500).json({ message: "Database error", error: err });
-    if (result.length === 0)
-      return res.status(404).json({ message: "Employee not found" });
+  // Format dates to remove time (for MySQL DATE compatibility)
+  const formattedDob = dob ? moment(dob).format("YYYY-MM-DD") : null;
+  const formattedDoj = doj ? moment(doj).format("YYYY-MM-DD") : null;
 
-    const sql = `UPDATE employees SET name=?, uid=?, contact=?, email=?, address=?, state=?, city=?, dob=?, departmentid=?, roleid=?, salary=?, doj=?, updated_at=? WHERE id=?`;
+  db.query("SELECT * FROM employees WHERE id = ?", [Id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    const sql = `
+      UPDATE employees 
+      SET name=?, uid=?, contact=?, email=?, address=?, state=?, city=?, dob=?, departmentid=?, roleid=?, salary=?, doj=?, updated_at=? 
+      WHERE id=?
+    `;
 
     db.query(
       sql,
@@ -217,17 +221,17 @@ export const update = (req, res) => {
         address,
         state,
         city,
-        birthDate,
+        formattedDob,
         departmentid,
         roleid,
         salary,
-        joiningDate,
+        formattedDoj,
         currentdate,
         Id,
       ],
       (err) => {
         if (err) {
-          console.error("Error updating :", err);
+          console.error("Error updating employee:", err);
           return res
             .status(500)
             .json({ message: "Database error", error: err });
@@ -309,8 +313,8 @@ export const assignTask = async (req, res) => {
   try {
     const { menus } = req.body;
     const Id = parseInt(req.params.id);
-    
-    const menuString = JSON.stringify(menus); 
+
+    const menuString = JSON.stringify(menus);
 
     if (isNaN(Id)) {
       return res.status(400).json({ message: "Invalid Employee ID" });

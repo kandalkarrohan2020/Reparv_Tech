@@ -9,9 +9,15 @@ import AddButton from "../components/AddButton";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import MultiStepForm from "../components/propertyForm/MultiStepForm";
+import UpdateImagesForm from "../components/propertyForm/UpdateImagesForm";
 
 const Properties = () => {
-  const { setShowPropertyForm, URI } = useAuth();
+  const {
+    setShowPropertyForm,
+    URI,
+    showUpdateImagesForm,
+    setShowUpdateImagesForm,
+  } = useAuth();
   const [datas, setDatas] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
@@ -163,7 +169,7 @@ const Properties = () => {
     try {
       const response = await fetch(URI + `/partner/properties/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -172,6 +178,26 @@ const Properties = () => {
       const data = await response.json();
       setPropertyData(data);
       setShowPropertyForm(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  //fetch data on form
+  const fetchImages = async (id) => {
+    try {
+      const response = await fetch(URI + `/admin/properties/${id}`, {
+        method: "GET",
+        credentials: "include", //  Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch property.");
+      const data = await response.json();
+      setPropertyData(data);
+      //console.log(data);
+      setShowUpdateImagesForm(true);
     } catch (err) {
       console.error("Error fetching :", err);
     }
@@ -389,6 +415,10 @@ const Properties = () => {
         case "update":
           edit(propertyid);
           break;
+        case "updateImages":
+          setPropertyKey(propertyid);
+          fetchImages(propertyid);
+          break;
         default:
           console.log("Invalid action");
       }
@@ -413,6 +443,7 @@ const Properties = () => {
           </option>
           <option value="view">View</option>
           <option value="update">Update</option>
+          <option value="updateImages">Update Images</option>
         </select>
       </div>
     );
@@ -480,6 +511,18 @@ const Properties = () => {
         states={states}
         cities={cities}
       />
+
+      {/* Upload Images Form */}
+      <UpdateImagesForm
+        fetchData={fetchData}
+        propertyId={propertyKey}
+        setPropertyId={setPropertyKey}
+        newProperty={newProperty}
+        setPropertyData={setPropertyData}
+        imageFiles={imageFiles}
+        setImageFiles={setImageFiles}
+      />
+      
     </div>
   );
 };

@@ -25,8 +25,8 @@ function Layout() {
     setShowProfile,
     showPropertyForm,
     setShowPropertyForm,
-    showUploadImagesForm,
-    setShowUploadImagesForm,
+    showUpdateImagesForm,
+    setShowUpdateImagesForm,
     showAdditionalInfoForm,
     setShowAdditionalInfoForm,
     showPropertyInfo,
@@ -40,7 +40,7 @@ function Layout() {
 
   const overlays = [
     { state: showPropertyForm, setter: setShowPropertyForm },
-    { state: showUploadImagesForm, setter: setShowUploadImagesForm },
+    { state: showUpdateImagesForm, setter: setShowUpdateImagesForm },
     { state: showAdditionalInfoForm, setter: setShowAdditionalInfoForm },
     { state: showTicketForm, setter: setShowTicketForm },
     { state: showTicket, setter: setShowTicket },

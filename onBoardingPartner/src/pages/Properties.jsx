@@ -23,7 +23,7 @@ const Properties = () => {
   const [cities, setCities] = useState([]);
   const [builderData, setBuilderData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [propertyKey, setPropertyKey] = useState();
   const [newProperty, setPropertyData] = useState({
     builderid: "",
     propertyCategory: "",

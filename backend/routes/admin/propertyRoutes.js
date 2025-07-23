@@ -67,7 +67,6 @@ router.get("/get/:lister", getAll);
 router.get("/:id", getById);
 router.get("/images/get/:id", getImages);
 router.delete("/images/delete/:id", deleteImages);
-
 router.post(
   "/add",
   upload.fields([

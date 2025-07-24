@@ -269,7 +269,7 @@ const Ticketing = () => {
     try {
       const response = await fetch(`${URI}/admin/tickets/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -467,6 +467,18 @@ const Ticketing = () => {
 
     { name: "Issue", selector: (row) => row.issue, width: "160px" },
     {
+      name: "Ticket Generator",
+      cell: (row) => (
+        <div className="w-full flex flex-col gap-[2px]">
+          <p>{row.ticketadder_role}</p>
+          <p>{row.ticketadder_name}</p>
+          <p>{row.ticketadder_contact}</p>   
+        </div>
+      ),
+      omit: false,
+      width: "200px",
+    },
+    {
       name: "Description",
       selector: (row) => row.details,
       minWidth: "300px",
@@ -493,18 +505,6 @@ const Ticketing = () => {
       selector: (row) => row.employee_name || "--NON--",
       width: "180px",
     },
-    {
-      name: "Ticket Generator",
-      cell: (row) => (
-        <div className="w-full flex flex-col gap-[2px]">
-          <p>{row.ticketadder_name}</p>
-          <p>{row.ticketadder_contact}</p>
-        </div>
-      ),
-      omit: false,
-      width: "180px",
-    },
-
     {
       name: "Action",
       cell: (row) => <ActionDropdown row={row} />,
@@ -653,6 +653,7 @@ const Ticketing = () => {
                 Select Ticket Generator
               </option>
               <option value="Admin">Admin</option>
+              <option value="Employee">Employee</option>
               <option value="Sales Person">Sales Person</option>
               <option value="Onboarding Partner">Onboarding Partner</option>
               <option value="Territory Partner">Territory Partner</option>

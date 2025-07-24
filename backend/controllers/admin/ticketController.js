@@ -15,10 +15,20 @@ export const getAll = (req, res) => {
   }
 
   let sql;
-
-  if (ticketGenerator === "Sales Person") {
+  if (ticketGenerator === "Employee") {
+    sql = `SELECT tickets.*, users.name AS admin_name, departments.department, emp.name AS employee_name, emp.uid, 
+           ticketAdder.name AS ticketadder_name, ticketAdder.contact AS ticketadder_contact, roles.role AS ticketadder_role
+           FROM tickets 
+           INNER JOIN employees AS ticketAdder ON ticketAdder.uid = tickets.ticketadder
+           LEFT JOIN users ON tickets.adminid = users.id 
+           LEFT JOIN departments ON tickets.departmentid = departments.departmentid
+           LEFT JOIN employees AS emp ON tickets.employeeid = emp.id
+           LEFT JOIN roles ON ticketAdder.roleid = roles.roleid
+           ORDER BY tickets.created_at DESC`;
+  } else if (ticketGenerator === "Sales Person") {
     sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
-           employees.name AS employee_name, employees.uid , salespersons.fullname AS ticketadder_name, salespersons.contact AS ticketadder_contact
+           employees.name AS employee_name, employees.uid , 
+           salespersons.fullname AS ticketadder_name, salespersons.contact AS ticketadder_contact
            FROM tickets 
            INNER JOIN salespersons ON salespersons.adharno = tickets.ticketadder
            LEFT JOIN users ON tickets.adminid = users.id 
@@ -27,7 +37,8 @@ export const getAll = (req, res) => {
            ORDER BY created_at DESC`;
   } else if (ticketGenerator === "Onboarding Partner") {
     sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
-           employees.name AS employee_name, employees.uid ,  onboardingpartner.fullname AS ticketadder_name, onboardingpartner.contact AS ticketadder_contact
+           employees.name AS employee_name, employees.uid , 
+           onboardingpartner.fullname AS ticketadder_name, onboardingpartner.contact AS ticketadder_contact
            FROM tickets 
            INNER JOIN onboardingpartner ON onboardingpartner.adharno = tickets.ticketadder
            LEFT JOIN users ON tickets.adminid = users.id 
@@ -35,7 +46,8 @@ export const getAll = (req, res) => {
            LEFT JOIN employees ON tickets.employeeid = employees.id
            ORDER BY created_at DESC`;
   } else if (ticketGenerator === "Admin") {
-    sql = `SELECT tickets.*, creator.name AS ticketadder_name, creator.contact AS ticketadder_contact, admin.name AS admin_name, admin.contact,
+    sql = `SELECT tickets.*, creator.name AS ticketadder_name, creator.contact AS ticketadder_contact,
+           admin.name AS admin_name, admin.contact,
            departments.department, employees.name AS employee_name, employees.uid 
            FROM tickets 
            INNER JOIN users AS creator ON creator.adharno = tickets.ticketadder
@@ -45,7 +57,8 @@ export const getAll = (req, res) => {
            ORDER BY created_at DESC`;
   } else if (ticketGenerator === "Territory Partner") {
     sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
-           employees.name AS employee_name, employees.uid ,  territorypartner.fullname AS ticketadder_name, territorypartner.contact AS ticketadder_contact
+           employees.name AS employee_name, employees.uid ,  
+           territorypartner.fullname AS ticketadder_name, territorypartner.contact AS ticketadder_contact
            FROM tickets 
            INNER JOIN territorypartner ON territorypartner.adharno = tickets.ticketadder
            LEFT JOIN users ON tickets.adminid = users.id 
@@ -54,7 +67,8 @@ export const getAll = (req, res) => {
            ORDER BY created_at DESC`;
   } else if (ticketGenerator === "Project Partner") {
     sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
-           employees.name AS employee_name, employees.uid ,  projectpartner.fullname AS ticketadder_name, projectpartner.contact AS ticketadder_contact
+           employees.name AS employee_name, employees.uid , 
+           projectpartner.fullname AS ticketadder_name, projectpartner.contact AS ticketadder_contact
            FROM tickets 
            INNER JOIN projectpartner ON projectpartner.adharno = tickets.ticketadder
            LEFT JOIN users ON tickets.adminid = users.id 
@@ -321,28 +335,33 @@ export const addResponse = (req, res) => {
     return res.status(400).json({ message: "Ticket Status is required" });
   }
 
-  const updateQuery = "UPDATE tickets SET response = ?, status = ? WHERE ticketid = ?";
+  const updateQuery =
+    "UPDATE tickets SET response = ?, status = ? WHERE ticketid = ?";
 
-  db.query(updateQuery, [ticketResponse, selectedStatus, ticketId], (err, result) => {
-    if (err) {
-      console.error("Error updating ticket response:", err);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Ticket not found" });
-    }
-
-    const fetchQuery = "SELECT * FROM tickets WHERE ticketid = ?";
-    db.query(fetchQuery, [ticketId], (err, rows) => {
+  db.query(
+    updateQuery,
+    [ticketResponse, selectedStatus, ticketId],
+    (err, result) => {
       if (err) {
-        console.error("Error fetching updated ticket:", err);
+        console.error("Error updating ticket response:", err);
         return res.status(500).json({ message: "Internal Server Error" });
       }
 
-      res.status(200).json(rows[0]);
-    });
-  });
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Ticket not found" });
+      }
+
+      const fetchQuery = "SELECT * FROM tickets WHERE ticketid = ?";
+      db.query(fetchQuery, [ticketId], (err, rows) => {
+        if (err) {
+          console.error("Error fetching updated ticket:", err);
+          return res.status(500).json({ message: "Internal Server Error" });
+        }
+
+        res.status(200).json(rows[0]);
+      });
+    }
+  );
 };
 
 // **Delete **

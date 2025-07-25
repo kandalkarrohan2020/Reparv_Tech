@@ -36,6 +36,11 @@ export const getCount = (req, res) => {
          FROM propertyfollowup pf
          WHERE pf.status = 'Token'
         ) AS totalTerritoryCommission,
+        
+        (SELECT IFNULL(SUM(pf.tds), 0)
+         FROM propertyfollowup pf
+         WHERE pf.status = 'Token'
+        ) AS totalTDS,
 
         (SELECT COUNT(enquirersid) FROM enquirers) AS totalEnquiry,
         (SELECT COUNT(propertyid) FROM properties) AS totalProperty,

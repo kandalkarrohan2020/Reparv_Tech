@@ -61,6 +61,7 @@ export const AuthProvider = ({ children }) => {
   const [showFollowUpList, setShowFollowUpList] = useState(false);
   const [showSeoForm, setShowSeoForm] = useState(false);
   const [showBlogForm, setShowBlogForm] = useState(false);
+  const [showTrendForm, setShowTrendForm] = useState(false);
   const [showCommissionForm, setShowCommissionForm] = useState(false);
   const [showCustomer, setShowCustomer] = useState(false);
   const [showCustomerPaymentForm, setShowCustomerPaymentForm] = useState(false);
@@ -126,7 +127,8 @@ export const AuthProvider = ({ children }) => {
         setGiveAccess,
         showAssignTaskForm,
         setShowAssignTaskForm,
-        showUpdateImagesForm, setShowUpdateImagesForm,
+        showUpdateImagesForm,
+        setShowUpdateImagesForm,
         showAdditionalInfoForm,
         setShowAdditionalInfoForm,
         showAssignSalesForm,
@@ -161,6 +163,8 @@ export const AuthProvider = ({ children }) => {
         setShowSeoForm,
         showBlogForm,
         setShowBlogForm,
+        showTrendForm,
+        setShowTrendForm,
         showCommissionForm,
         setShowCommissionForm,
         partnerPaymentStatus,

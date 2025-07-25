@@ -71,6 +71,8 @@ export const AuthProvider = ({ children }) => {
   const [showEMI, setShowEMI] = useState(false);
   const [enquiryFilter, setEnquiryFilter] = useState("New");
   const [showContentUploadForm, setShowContentUploadForm] = useState(false);
+  const [showTrendForm, setShowTrendForm] = useState(false);
+
   return (
     <AuthContext.Provider
       value={{
@@ -180,6 +182,7 @@ export const AuthProvider = ({ children }) => {
         setEnquiryFilter,
         showContentUploadForm,
         setShowContentUploadForm,
+        showTrendForm, setShowTrendForm,
       }}
     >
       {children}

@@ -42,6 +42,7 @@ const [showSuccess, setShowSuccess] = useState(false);
 const [showCustomer, setShowCustomer] = useState(false);
 const [showAgreement, setShowAgreement] = useState(false);
 const [showCustomerPaymentForm, setShowCustomerPaymentForm] = useState(false);
+const [filterStatus, setFilterStatus] = useState(false);
 
 const [priceSummery, setPriceSummery] = useState({});
 const [selectedCity, setSelectedCity] = useState("");
@@ -78,6 +79,7 @@ return <AuthContext.Provider
         showCustomer, setShowCustomer,
         showAgreement, setShowAgreement,
         showCustomerPaymentForm, setShowCustomerPaymentForm,
+        filterStatus, setFilterStatus,
 
         priceSummery, setPriceSummery,
         propertyCategory, setPropertyCategory,

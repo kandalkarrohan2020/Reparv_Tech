@@ -208,10 +208,15 @@ function Layout() {
             {[
               { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/enquirers", icon: enquirersIcon, label: "Enquiries" },
+              { to: "/calender", icon: calenderIcon, label: "Calendar" },
               { to: "/customers", icon: customersIcon, label: "Customers" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
-              { to: "/calender", icon: calenderIcon, label: "Calender" },
+              {
+                to: "/marketing-content",
+                icon: marketingIcon,
+                label: "Marketing Content",
+              },
               { to: "/download-apk", icon: reparvAppLogo, label: "Download" },
             ].map(({ to, icon, label }) => (
               <NavLink

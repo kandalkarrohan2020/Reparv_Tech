@@ -375,9 +375,9 @@ const Slider = () => {
       <div
         className={`${
           showSliderForm ? "flex" : "hidden"
-        } z-[61] sliderForm overflow-scroll scrollbar-hide fixed`}
+        } z-[61] sliderForm overflow-scroll scrollbar-hide  w-full flex fixed bottom-0 md:bottom-auto `}
       >
-        <div className="w-[330px] sm:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-full md:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">
               Add Slider Images (1440px X 540px)
@@ -463,9 +463,9 @@ const Slider = () => {
       <div
         className={`${
           showAddMobileImage ? "flex" : "hidden"
-        } z-[61] FeedBackForm overflow-scroll scrollbar-hide min-h-[300px] fixed`}
+        } z-[61] FeedBackForm overflow-scroll scrollbar-hide  w-full flex fixed bottom-0 md:bottom-auto `}
       >
-        <div className="w-[330px] sm:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-full md:w-[500px] max-h-[70vh] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">
               Add Small Screen Image. (390px / 400px)

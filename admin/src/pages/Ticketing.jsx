@@ -717,9 +717,9 @@ const Ticketing = () => {
       <div
         className={`${
           showTicketForm ? "flex" : "hidden"
-        } z-[61] ticketForm overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
+        } z-[61] ticketForm overflow-scroll scrollbar-hide  w-full flex fixed bottom-0 md:bottom-auto `}
       >
-        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] max-h-[85vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">Ticket Details</h2>
             <IoMdClose
@@ -886,9 +886,9 @@ const Ticketing = () => {
       <div
         className={`${
           showResponseForm ? "flex" : "hidden"
-        } z-[61] ticketForm overflow-scroll scrollbar-hide w-[400px] min-h-[300px] max-h-[400px] md:w-[700px] fixed`}
+        } z-[61] ticketForm overflow-scroll scrollbar-hide  w-full flex fixed bottom-0 md:bottom-auto `}
       >
-        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] max-h-[70vh] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">Ticket Response</h2>
             <IoMdClose
@@ -979,9 +979,9 @@ const Ticketing = () => {
       <div
         className={`${
           showTicket ? "flex" : "hidden"
-        } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
+        } z-[61] property-form overflow-scroll scrollbar-hide  w-full flex fixed bottom-0 md:bottom-auto `}
       >
-        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] max-h-[70vh] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">Ticket Details</h2>
             <IoMdClose

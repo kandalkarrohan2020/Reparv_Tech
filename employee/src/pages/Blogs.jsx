@@ -499,9 +499,9 @@ const Blogs = () => {
       <div
         className={`${
           showBlogForm ? "flex" : "hidden"
-        } z-[61] sales-form overflow-scroll scrollbar-hide w-[400px] md:w-[700px] max-h-[70vh] fixed`}
+        } z-[61] sales-form overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
       >
-        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-10 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-10 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">ADD Blog </h2>
 
@@ -655,9 +655,9 @@ const Blogs = () => {
       <div
         className={` ${
           !showSeoForm && "hidden"
-        } z-[61] overflow-scroll scrollbar-hide flex fixed`}
+        } z-[61] overflow-scroll scrollbar-hide  w-full flex fixed bottom-0 md:bottom-auto `}
       >
-        <div className="w-[330px] max-h-[70vh] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-full max-h-[70vh] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">SEO Details</h2>
             <IoMdClose

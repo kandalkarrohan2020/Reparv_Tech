@@ -30,6 +30,7 @@ import Blogs from "./pages/Blogs.jsx";
 import ApkUpload from "./pages/ApkUpload.jsx";
 import UsersLoanEligibility from "./pages/UsersLoanEligibility.jsx";
 import UpdateEMI from "./components/usersLoanEligibility/UpdateEMI.jsx";
+import Trends from "./pages/Trends.jsx";
 
 const App = () => {
   return (
@@ -67,6 +68,7 @@ const App = () => {
           />
           <Route path="/apk-upload" element={<ApkUpload />} />
           <Route path="/blogs" element={<Blogs />} />
+          <Route path="/trends" element={<Trends />} />
           <Route path="/raw-materials" element={<RawMaterials />} />
           <Route path="/marketing-content" element={<MarketingContent />} />
         </Route>

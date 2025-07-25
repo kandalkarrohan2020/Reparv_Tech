@@ -645,76 +645,76 @@ const Employee = () => {
     <div
       className={`employee overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
     >
-      {!showEplDetailsForm ? (
-        <>
-          <div className="employee-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
-            <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
-              <p className="block md:hidden text-lg font-semibold">Employees</p>
-              <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
-                <DownloadCSV data={filteredData} filename={"Employee.csv"} />
-                <AddButton label={"Add"} func={setShowEplDetailsForm} />
+      <div className="employee-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+        <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
+          <p className="block md:hidden text-lg font-semibold">Employees</p>
+          <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+            <DownloadCSV data={filteredData} filename={"Employee.csv"} />
+            <AddButton label={"Add"} func={setShowEplDetailsForm} />
+          </div>
+        </div>
+        <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
+          <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
+            <CiSearch />
+            <input
+              type="text"
+              placeholder="Search Employee"
+              className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
+            <div className="flex flex-wrap items-center justify-end gap-3 px-2">
+              <EmployeeFilter />
+              <div className="block">
+                <CustomDateRangePicker range={range} setRange={setRange} />
               </div>
             </div>
-            <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
-              <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
-                <CiSearch />
-                <input
-                  type="text"
-                  placeholder="Search Employee"
-                  className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
-                <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-                  <EmployeeFilter />
-                  <div className="block">
-                    <CustomDateRangePicker range={range} setRange={setRange} />
-                  </div>
-                </div>
-                <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
-                  <DownloadCSV data={filteredData} filename={"Employee.csv"} />
-                  <AddButton label={"Add"} func={setShowEplDetailsForm} />
-                </div>
-              </div>
-            </div>
-
-            <h2 className="text-[16px] font-semibold">Employee List</h2>
-            <div className="overflow-scroll scrollbar-hide">
-              <DataTable
-                className="scrollbar-hide"
-                customStyles={customStyles}
-                columns={columns}
-                data={filteredData}
-                pagination
-                paginationPerPage={15}
-                paginationComponentOptions={{
-                  rowsPerPageText: "Rows per page:",
-                  rangeSeparatorText: "of",
-                  selectAllRowsItem: true,
-                  selectAllRowsItemText: "All",
-                }}
-              />
+            <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+              <DownloadCSV data={filteredData} filename={"Employee.csv"} />
+              <AddButton label={"Add"} func={setShowEplDetailsForm} />
             </div>
           </div>
-        </>
-      ) : (
-        <div className="z-[61] employeeForm overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] flex fixed">
-          <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[16px] font-semibold">Employee Details</h2>
-              <IoMdClose
-                onClick={() => {
-                  setShowEplDetailsForm(false);
-                }}
-                className="w-6 h-6 cursor-pointer"
-              />
-            </div>
-            <form
-              onSubmit={add}
-              className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2"
-            >
+        </div>
+
+        <h2 className="text-[16px] font-semibold">Employee List</h2>
+        <div className="overflow-scroll scrollbar-hide">
+          <DataTable
+            className="scrollbar-hide"
+            customStyles={customStyles}
+            columns={columns}
+            data={filteredData}
+            pagination
+            paginationPerPage={15}
+            paginationComponentOptions={{
+              rowsPerPageText: "Rows per page:",
+              rangeSeparatorText: "of",
+              selectAllRowsItem: true,
+              selectAllRowsItemText: "All",
+            }}
+          />
+        </div>
+      </div>
+
+      <div
+        className={` ${
+          !showEplDetailsForm && "hidden"
+        } z-[61] employeeForm overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] flex fixed`}
+      >
+        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">Employee Details</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowEplDetailsForm(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={add}>
+            {" "}
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
               <div className="w-full">
                 <input
                   type="hidden"
@@ -958,28 +958,28 @@ const Employee = () => {
                   }}
                 />
               </div>
-
-              <div className="flex mt-8 md:mt-6 justify-end gap-6">
-                <button
-                  onClick={() => {
-                    setShowEplDetailsForm(false);
-                  }}
-                  className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
-                >
-                  Save
-                </button>
-                <Loader />
-              </div>
-            </form>
-          </div>
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEplDetailsForm(false);
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Save
+              </button>
+              <Loader />
+            </div>
+          </form>
         </div>
-      )}
+      </div>
 
       {/* Assign Task Form */}
       <div

@@ -199,9 +199,9 @@ function Layout() {
                 label: "Raw Materials",
               },
               {
-                to: "/marketing",
+                to: "/marketing-content",
                 icon: marketingIcon,
-                label: "Marketing Templates",
+                label: "Marketing Content",
               },
             ].map(({ to, icon, label }) => (
               <NavLink

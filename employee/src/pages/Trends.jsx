@@ -14,35 +14,34 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import DownloadCSV from "../components/DownloadCSV";
 
-const Blogs = () => {
+const Trends = () => {
   const {
     URI,
     setLoading,
-    showBlogForm,
-    setShowBlogForm,
+    showTrendForm,
+    setShowTrendForm,
     showSeoForm,
     setShowSeoForm,
   } = useAuth();
 
-  const [blogs, setBlogs] = useState([]);
+  const [trends, setTrends] = useState([]);
+  const [trendId, setTrendId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [blogId, setBlogId] = useState(null);
-  const [newBlog, setNewBlog] = useState({
-    tittle: "",
-    description: "",
+  const [newTrend, setNewTrend] = useState({
+    trendName: "",
     content: "",
   });
   const [seoSlug, setSeoSlug] = useState("");
-  const [seoTittle, setSeoTittle] = useState("");
-  const [seoDescription, setSeoDescription] = useState("");
-
-  //Blog Image Upload
+    const [seoTittle, setSeoTittle] = useState("");
+    const [seoDescription, setSeoDescription] = useState("");
+  
+  //Trend Image Upload
   const [selectedImage, setSelectedImage] = useState(null);
   const singleImageChange = (event) => {
     const file = event.target.files[0];
     if (file && file.size <= 1 * 1024 * 1024) {
       setSelectedImage(file);
-      setNewBlog((prev) => ({ ...prev, blogImage: file }));
+      setNewTrend((prev) => ({ ...prev, trendImage: file }));
     } else {
       alert("File size must be less than 1MB");
     }
@@ -54,17 +53,17 @@ const Blogs = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/admin/blog", {
+      const response = await fetch(URI + "/admin/trend", {
         method: "GET",
         credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch Partner.");
+      if (!response.ok) throw new Error("Failed to fetch trends.");
       const data = await response.json();
-      console.log(data);
-      setBlogs(data);
+      //console.log(data);
+      setTrends(data);
     } catch (err) {
       console.error("Error fetching :", err);
     }
@@ -73,7 +72,7 @@ const Blogs = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/blog/${id}`, {
+      const response = await fetch(URI + `/admin/trend/${id}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -83,16 +82,14 @@ const Blogs = () => {
       if (!response.ok) throw new Error("Failed to fetch blog.");
       const data = await response.json();
 
-      setNewBlog({
+      setNewTrend({
         id: data.id || "",
-        tittle: data.tittle || "",
-        description: data.description || "",
+        trendName: data.trendName || "",
         content: data.content || "",
       });
-
+      
       // Only show form after blog data is loaded
-      setShowBlogForm(true);
-      setShowBlogForm(true);
+      setShowTrendForm(true);
     } catch (err) {
       console.error("Error fetching:", err);
     }
@@ -101,49 +98,45 @@ const Blogs = () => {
   const add = async (e) => {
     e.preventDefault();
 
-    const endpoint = newBlog.id ? `edit/${newBlog.id}` : "add";
-    const method = newBlog.id ? "PUT" : "POST";
+    const endpoint = newTrend.id ? `edit/${newTrend.id}` : "add";
+    const method = newTrend.id ? "PUT" : "POST";
 
     try {
       setLoading(true);
 
       const formData = new FormData();
-      formData.append("tittle", newBlog.tittle);
-      formData.append("description", newBlog.description);
-      formData.append("content", newBlog.content);
-
+      formData.append("trendName", newTrend.trendName);
+      formData.append("content", newTrend.content);
       // Append image if selected
       if (selectedImage) {
-        formData.append("blogImage", newBlog.blogImage);
+        formData.append("trendImage", newTrend.trendImage);
       }
 
-      const response = await fetch(`${URI}/admin/blog/${endpoint}`, {
+      const response = await fetch(`${URI}/admin/trend/${endpoint}`, {
         method,
         credentials: "include",
         body: formData, // No need for headers, browser sets it
       });
 
       if (response.status === 409) {
-        alert("Blog already exists!");
+        alert("Trend already exists!");
       } else if (!response.ok) {
-        throw new Error(`Failed to save blog. Status: ${response.status}`);
+        throw new Error(`Failed to save trend. Status: ${response.status}`);
       } else {
         alert(
-          newBlog.id ? "Blog updated successfully!" : "Blog added successfully!"
+          newTrend.id ? "Trend updated successfully!" : "Trend added successfully!"
         );
 
-        setNewBlog({
-          tittle: "",
-          description: "",
+        setNewTrend({
+          trendName: "",
           content: "",
         });
-
-        setShowBlogForm(false);
         setSelectedImage(null);
+        setShowTrendForm(false);
         await fetchData();
       }
     } catch (err) {
-      console.error("Error saving blog:", err);
+      console.error("Error saving trend:", err);
     } finally {
       setLoading(false);
     }
@@ -151,11 +144,11 @@ const Blogs = () => {
 
   // change status record
   const status = async (id) => {
-    if (!window.confirm("Are you sure you want to change this Blog status?"))
+    if (!window.confirm("Are you sure you want to change this Trend status?"))
       return;
 
     try {
-      const response = await fetch(URI + `/admin/blog/status/${id}`, {
+      const response = await fetch(URI + `/admin/trend/status/${id}`, {
         method: "PUT",
         credentials: "include", //  Ensures cookies are sent
         headers: {
@@ -163,7 +156,7 @@ const Blogs = () => {
         },
       });
       const data = await response.json();
-      console.log(response);
+      //console.log(response);
       if (response.ok) {
         alert(`Success: ${data.message}`);
       } else {
@@ -178,15 +171,16 @@ const Blogs = () => {
   //fetch data on form
   const showSEO = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/blog/${id}`, {
+      const response = await fetch(URI + `/admin/trend/${id}`, {
         method: "GET",
         credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch blog.");
+      if (!response.ok) throw new Error("Failed to fetch trend.");
       const data = await response.json();
+      console.log(data);
       setSeoSlug(data.seoSlug);
       setSeoTittle(data.seoTittle);
       setSeoDescription(data.seoDescription);
@@ -201,7 +195,7 @@ const Blogs = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await fetch(URI + `/admin/blog/seo/${blogId}`, {
+      const response = await fetch(URI + `/admin/trend/seo/${trendId}`, {
         method: "PUT",
         credentials: "include",
         headers: {
@@ -230,11 +224,11 @@ const Blogs = () => {
 
   //Delete record
   const del = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this Blog?")) return;
+    if (!window.confirm("Are you sure you want to delete this Trend?")) return;
 
     try {
       setLoading(true);
-      const response = await fetch(URI + `/admin/blog/delete/${id}`, {
+      const response = await fetch(URI + `/admin/trend/delete/${id}`, {
         method: "DELETE",
         credentials: "include", // Ensures cookies are sent
         headers: {
@@ -244,13 +238,13 @@ const Blogs = () => {
 
       const data = await response.json();
       if (response.ok) {
-        alert("Blog deleted successfully!");
+        alert("Trend deleted successfully!");
         fetchData();
       } else {
         alert(`Error: ${data.message}`);
       }
     } catch (error) {
-      console.error("Error deleting Blog:", error);
+      console.error("Error deleting Trend:", error);
     } finally {
       setLoading(false);
     }
@@ -268,7 +262,7 @@ const Blogs = () => {
     },
   ]);
 
-  const filteredData = blogs.filter((item) => {
+  const filteredData = trends.filter((item) => {
     const matchesSearch =
       item.tittle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.status?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -343,7 +337,7 @@ const Blogs = () => {
       width: "70px",
     },
     {
-      name: "Blog Image",
+      name: "Trend Image",
       cell: (row) => {
         let imageSrc =
           URI + row.image ||
@@ -368,21 +362,14 @@ const Blogs = () => {
     },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
-      name: "Blog Tittle",
-      selector: (row) => row.tittle,
+      name: "Trend Name",
+      selector: (row) => row.trendName,
       sortable: true,
       minWidth: "150px",
       maxWidth: "250px",
     },
     {
-      name: "Description",
-      selector: (row) => row.description,
-      sortable: true,
-      minWidth: "350px",
-      maxWidth: "600px",
-    },
-    {
-      name: "",
+      name: "Action",
       cell: (row) => <ActionDropdown row={row} />,
       width: "120px",
     },
@@ -400,11 +387,11 @@ const Blogs = () => {
           status(id);
           break;
         case "update":
-          setBlogId(id);
+          setTrendId(id);
           edit(id);
           break;
         case "SEO":
-          setBlogId(id);
+          setTrendId(id);
           showSEO(id);
           break;
         case "delete":
@@ -432,7 +419,7 @@ const Blogs = () => {
           <option value="" disabled>
             Select Action
           </option>
-          <option value="view">View</option>
+          {/* <option value="view">View</option> */}
           <option value="status">Status</option>
           <option value="update">Update</option>
           <option value="SEO">SEO Details</option>
@@ -448,10 +435,10 @@ const Blogs = () => {
     >
       <div className="sales-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
         <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
-          <p className="block md:hidden text-lg font-semibold">Blogs</p>
+          <p className="block md:hidden text-lg font-semibold">Trends</p>
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
-            <DownloadCSV data={filteredData} filename={"Blog.csv"} />
-            <AddButton label={"Add"} func={setShowBlogForm} />
+            <DownloadCSV data={filteredData} filename={"Trend.csv"} />
+            <AddButton label={"Add"} func={setShowTrendForm} />
           </div>
         </div>
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
@@ -459,7 +446,7 @@ const Blogs = () => {
             <CiSearch />
             <input
               type="text"
-              placeholder="Search Blog"
+              placeholder="Search Trend"
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -472,12 +459,12 @@ const Blogs = () => {
               </div>
             </div>
             <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
-              <DownloadCSV data={filteredData} filename={"Blog.csv"} />
-              <AddButton label={"Add"} func={setShowBlogForm} />
+              <DownloadCSV data={filteredData} filename={"Trend.csv"} />
+              <AddButton label={"Add"} func={setShowTrendForm} />
             </div>
           </div>
         </div>
-        <h2 className="text-[16px] font-semibold">Blog List</h2>
+        <h2 className="text-[16px] font-semibold"> Trends List</h2>
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"
@@ -498,19 +485,17 @@ const Blogs = () => {
 
       <div
         className={`${
-          showBlogForm ? "flex" : "hidden"
-        } z-[61] sales-form overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
+          showTrendForm ? "flex" : "hidden"
+        } z-[61] overflow-scroll scrollbar-hide w-full max-h-[80vh] fixed bottom-0 md:bottom-auto `}
       >
-        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-10 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-10 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">ADD Blog </h2>
+            <h2 className="text-[16px] font-semibold">ADD Trend </h2>
 
             <IoMdClose
               onClick={() => {
-                setShowBlogForm(false);
-                setNewBlog({
-                  tittle: "",
-                  description: "",
+                setShowTrendForm(false);
+                setNewTrend({
                   content: "",
                 });
               }}
@@ -519,10 +504,10 @@ const Blogs = () => {
           </div>
           <form onSubmit={add}>
             <div className="grid md:gap-2 grid-cols-1">
-              <input type="hidden" value={newBlog.id || ""} readOnly />
+              <input type="hidden" value={newTrend.id || ""} readOnly />
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-                  Upload Blog Image
+                  Upload Trend Image
                 </label>
 
                 <div className="w-full mt-2">
@@ -567,57 +552,40 @@ const Blogs = () => {
 
               <div className={`w-full `}>
                 <label
-                  htmlFor="blogTittle"
+                  htmlFor="trendName"
                   className="block text-sm leading-4 text-[#00000066] font-medium mt-2"
                 >
-                  Blog Tittle
+                  Trend Name
                 </label>
                 <textarea
                   rows={2}
                   cols={40}
-                  id="blogTittle"
-                  placeholder="Enter Blog Tittle"
+                  id="trendName"
+                  placeholder="Enter Trend Name"
                   required
                   className="w-full mt-[8px] mb-1 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newBlog?.tittle || ""}
+                  value={newTrend?.trendName || ""}
                   onChange={(e) => {
-                    setNewBlog({ ...newBlog, tittle: e.target.value });
-                  }}
-                />
-              </div>
-
-              <div className={`w-full `}>
-                <label className="block text-sm leading-4 text-[#00000066] font-medium ">
-                  Blog Description
-                </label>
-                <textarea
-                  rows={3}
-                  cols={40}
-                  placeholder="Enter Blog Description"
-                  required
-                  className="w-full mt-[8px] mb-1 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newBlog?.description || ""}
-                  onChange={(e) => {
-                    setNewBlog({ ...newBlog, description: e.target.value });
+                    setNewTrend({ ...newTrend, trendName: e.target.value });
                   }}
                 />
               </div>
 
               <div className="w-full mt-[10px]">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-                  Blog Content
+                  Trend Content
                 </label>
                 <div className="border border-[#00000033] rounded-[4px] overflow-hidden">
-                  {showBlogForm && newBlog.content !== undefined && (
+                  {showTrendForm && newTrend.content !== undefined && (
                     <CKEditor
-                      key={newBlog.id || "new"}
+                      key={newTrend.id || "new"}
                       editor={ClassicEditor}
-                      data={newBlog.content}
+                      data={newTrend.content}
                       onChange={(e, editor) => {
-                        setNewBlog({ ...newBlog, content: editor.getData() });
+                        setNewTrend({ ...newTrend, content: editor.getData() });
                       }}
                       config={{
-                        placeholder: "Enter Blog Content",
+                        placeholder: "Enter Trend Content",
                       }}
                     />
                   )}
@@ -628,12 +596,12 @@ const Blogs = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setShowBlogForm(false);
-                  setNewBlog({
-                    tittle: "",
-                    description: "",
+                  setShowTrendForm(false);
+                  setNewTrend({
+                    trendName: "",
                     content: "",
                   });
+                  setSelectedImage(null);
                 }}
                 className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
               >
@@ -655,9 +623,9 @@ const Blogs = () => {
       <div
         className={` ${
           !showSeoForm && "hidden"
-        } z-[61] overflow-scroll scrollbar-hide  w-full flex fixed bottom-0 md:bottom-auto `}
+        } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
       >
-        <div className="w-full max-h-[70vh] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+        <div className="w-full max-h-[80vh] overflow-scroll scrollbar-hide md:w-[500px] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">SEO Details</h2>
             <IoMdClose
@@ -671,11 +639,11 @@ const Blogs = () => {
             />
           </div>
           <form onSubmit={addSeoDetails}>
-            <div className="w-full grid md:gap-2 place-items-center grid-cols-1 lg:grid-cols-1">
+            <div className="w-full grid gap-2 place-items-center grid-cols-1 lg:grid-cols-1">
               <input
                 type="hidden"
-                value={blogId || ""}
-                onChange={(e) => setBlogId(e.target.value)}
+                value={trendId || ""}
+                onChange={(e) => setTrendId(e.target.value)}
               />
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium ">
@@ -726,6 +694,7 @@ const Blogs = () => {
                 type="button"
                 onClick={() => {
                   setShowSeoForm(false);
+                  setSeoSlug("");
                   setSeoTittle("");
                   setSeoDescription("");
                 }}
@@ -748,4 +717,4 @@ const Blogs = () => {
   );
 };
 
-export default Blogs;
+export default Trends;

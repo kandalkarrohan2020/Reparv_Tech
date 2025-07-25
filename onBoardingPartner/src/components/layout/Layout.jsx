@@ -163,6 +163,11 @@ function Layout() {
               { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
+              {
+                to: "/marketing-content",
+                icon: marketingIcon,
+                label: "Marketing Content",
+              },
             ].map(({ to, icon, label }) => (
               <NavLink
                 onClick={() => {

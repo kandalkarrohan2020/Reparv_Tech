@@ -32,6 +32,8 @@ const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
 const [showTicket, setShowTicket] = useState(false);
 const [showPropertyInfo, setShowPropertyInfo] = useState(false);
+const [filterStatus, setFilterStatus] = useState("New");
+
 return <AuthContext.Provider
  value={
     {   URI, loading, setLoading,
@@ -48,6 +50,7 @@ return <AuthContext.Provider
         showAdditionalInfoForm, setShowAdditionalInfoForm,
         showTicket, setShowTicket,
         showPropertyInfo, setShowPropertyInfo,
+        filterStatus, setFilterStatus,
     }
 }>
     {children}

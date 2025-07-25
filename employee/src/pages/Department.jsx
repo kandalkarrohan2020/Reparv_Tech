@@ -229,60 +229,59 @@ const Department = () => {
     <div
       className={`role overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
     >
-      {!showDepartmentForm ? (
-        <>
-          <div className="role-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
-            <p className="block md:hidden text-lg font-semibold">Department</p>
-            <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
-              <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
-                <CiSearch />
-                <input
-                  type="text"
-                  placeholder="Search Department"
-                  className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
-                <AddButton label={"Add"} func={setShowDepartmentForm} />
-              </div>
-            </div>
-            <h2 className="text-[16px] font-semibold">Department List</h2>
-            <div className="overflow-scroll scrollbar-hide">
-              <DataTable
-                className="scrollbar-hide"
-                customStyles={customStyles}
-                columns={columns}
-                data={filteredData}
-                pagination
-                paginationPerPage={15}
-                paginationComponentOptions={{
-                  rowsPerPageText: "Rows per page:",
-                  rangeSeparatorText: "of",
-                  selectAllRowsItem: true,
-                  selectAllRowsItemText: "All",
-                }}
-              />
-            </div>
+      <div className="role-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
+        <p className="block md:hidden text-lg font-semibold">Department</p>
+        <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
+          <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
+            <CiSearch />
+            <input
+              type="text"
+              placeholder="Search Department"
+              className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
-        </>
-      ) : (
-        <div className="z-[61] roleForm overflow-scroll scrollbar-hide w-[400px] h-[300px] md:w-[700px] flex fixed">
-          <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[16px] font-semibold">Department</h2>
-              <IoMdClose
-                onClick={() => {
-                  setShowDepartmentForm(false);
-                }}
-                className="w-6 h-6 cursor-pointer"
-              />
-            </div>
-            <form
-              onSubmit={addOrUpdate}
-              className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2"
-            >
+          <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
+            <AddButton label={"Add"} func={setShowDepartmentForm} />
+          </div>
+        </div>
+        <h2 className="text-[16px] font-semibold">Department List</h2>
+        <div className="overflow-scroll scrollbar-hide">
+          <DataTable
+            className="scrollbar-hide"
+            customStyles={customStyles}
+            columns={columns}
+            data={filteredData}
+            pagination
+            paginationPerPage={15}
+            paginationComponentOptions={{
+              rowsPerPageText: "Rows per page:",
+              rangeSeparatorText: "of",
+              selectAllRowsItem: true,
+              selectAllRowsItemText: "All",
+            }}
+          />
+        </div>
+      </div>
+
+      <div
+        className={`${
+          showDepartmentForm ? "block" : "hidden"
+        } z-[61] roleForm overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto`}
+      >
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">Department</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowDepartmentForm(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={addOrUpdate}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1">
               <input
                 type="hidden"
                 value={newDepartment.departmentid || ""}
@@ -311,28 +310,19 @@ const Department = () => {
                   }
                 />
               </div>
-
-              <div className="flex mt-8 md:mt-6 justify-end gap-6">
-                <button
-                  onClick={() => {
-                    setShowDepartmentForm(false);
-                  }}
-                  className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
-                >
-                  {action}
-                </button>
-                <Loader></Loader>
-              </div>
-            </form>
-          </div>
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                {action}
+              </button>
+              <Loader></Loader>
+            </div>
+          </form>
         </div>
-      )}
+      </div>
     </div>
   );
 };

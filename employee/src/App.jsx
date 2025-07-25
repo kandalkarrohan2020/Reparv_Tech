@@ -29,6 +29,7 @@ import ProjectPartner from "./pages/projectPartner.jsx";
 import TerritoryPartner from "./pages/TerritoryPartner.jsx";
 import GuestUser from "./pages/guestUser.jsx";
 import Blogs from "./pages/Blogs.jsx";
+import Trends from "./pages/Trends.jsx";
 import ApkUpload from "./pages/ApkUpload.jsx";
 import UsersLoanEligibility from "./pages/UsersLoanEligibility.jsx";
 import UpdateEMI from "./components/usersLoanEligibility/UpdateEMI.jsx";
@@ -111,6 +112,7 @@ const App = () => {
       menu: <Route path="/apk-upload" element={<ApkUpload />} />,
     },
     { name: "Blogs", menu: <Route path="/blogs" element={<Blogs />} /> },
+    { name: "Trends", menu: <Route path="/trends" element={<Trends />} /> },
     {
       name: "Raw Materials",
       menu: <Route path="/raw-materials" element={<RawMaterials />} />,

@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
   const [action, setAction] = useState("Save Details");
   const [isActive, setIsActive] = useState("Builders");
   const [giveAccess, setGiveAccess] = useState(false);
+  const [filterStatus, setFilterStatus] = useState("New");
 
   return (
     <AuthContext.Provider
@@ -82,6 +83,7 @@ export const AuthProvider = ({ children }) => {
         setIsActive,
         giveAccess,
         setGiveAccess,
+        filterStatus, setFilterStatus,
       }}
     >
       {children}

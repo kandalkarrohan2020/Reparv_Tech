@@ -396,7 +396,11 @@ const Builders = () => {
     },
     { name: "Contact", selector: (row) => row.contact, width: "150px" },
     { name: "Email", selector: (row) => row.email, minWidth: "150px" },
-    { name: "Office address", selector: (row) => row.office_address, width: "200px", },
+    {
+      name: "Office address",
+      selector: (row) => row.office_address,
+      width: "200px",
+    },
     {
       name: "Registration No",
       selector: (row) => row.registration_no,
@@ -404,7 +408,8 @@ const Builders = () => {
     },
     {
       name: "Action",
-      cell: (row) => <ActionDropdown row={row} />, width:"120px"
+      cell: (row) => <ActionDropdown row={row} />,
+      width: "120px",
     },
   ];
 
@@ -474,92 +479,92 @@ const Builders = () => {
     <div
       className={`builders overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
     >
-      {!showBuilderForm ? (
-        <>
-          <div className="builder-table overflow-scroll scrollbar-hide w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
-            <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
-              <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
-                <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
-                  <span>{selectedLister || "Select Lister"}</span>
-                  <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
-                </div>
-                <select
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  value={selectedLister}
-                  onChange={(e) => {
-                    setSelectedLister(e.target.value);
-                  }}
-                >
-                  <option value="Select Builder Lister">
-                    Select Builder Lister
-                  </option>
-                  <option value="Reparv Employee">Reparv Employee</option>
-                  <option value="Project Partner">Project Partner</option>
-                </select>
-              </div>
-              <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
-                <DownloadCSV data={filteredData} filename={"Builders.csv"} />
-                <AddButton label={"Add"} func={setShowBuilderForm} />
+      <div className="builder-table overflow-scroll scrollbar-hide w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+        <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
+          <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+            <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+              <span>{selectedLister || "Select Lister"}</span>
+              <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+            </div>
+            <select
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              value={selectedLister}
+              onChange={(e) => {
+                setSelectedLister(e.target.value);
+              }}
+            >
+              <option value="Select Builder Lister">
+                Select Builder Lister
+              </option>
+              <option value="Reparv Employee">Reparv Employee</option>
+              <option value="Project Partner">Project Partner</option>
+            </select>
+          </div>
+          <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+            <DownloadCSV data={filteredData} filename={"Builders.csv"} />
+            <AddButton label={"Add"} func={setShowBuilderForm} />
+          </div>
+        </div>
+        <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
+          <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
+            <CiSearch />
+            <input
+              type="text"
+              placeholder="Search Builder"
+              className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
+            <div className="flex flex-wrap items-center justify-end gap-3 px-2">
+              <div className="block">
+                <CustomDateRangePicker range={range} setRange={setRange} />
               </div>
             </div>
-            <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
-              <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
-                <CiSearch />
-                <input
-                  type="text"
-                  placeholder="Search Builder"
-                  className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
-                <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-                  <div className="block">
-                    <CustomDateRangePicker range={range} setRange={setRange} />
-                  </div>
-                </div>
-                <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
-                  <DownloadCSV data={filteredData} filename={"Builders.csv"} />
-                  <AddButton label={"Add"} func={setShowBuilderForm} />
-                </div>
-              </div>
-            </div>
-            <h2 className="text-[16px] font-semibold">Builders List</h2>
-            <div className="overflow-scroll scrollbar-hide">
-              <DataTable
-                className="scrollbar-hide"
-                customStyles={customStyles}
-                columns={finalColumns}
-                data={filteredData}
-                pagination
-                paginationPerPage={15}
-                paginationComponentOptions={{
-                  rowsPerPageText: "Rows per page:",
-                  rangeSeparatorText: "of",
-                  selectAllRowsItem: true,
-                  selectAllRowsItemText: "All",
-                }}
-              />
+            <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+              <DownloadCSV data={filteredData} filename={"Builders.csv"} />
+              <AddButton label={"Add"} func={setShowBuilderForm} />
             </div>
           </div>
-        </>
-      ) : (
-        <div className="z-[61] builder-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] flex fixed">
-          <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[16px] font-semibold">Builders</h2>
-              <IoMdClose
-                onClick={() => {
-                  setShowBuilderForm(false);
-                }}
-                className="w-6 h-6 cursor-pointer"
-              />
-            </div>
-            <form
-              onSubmit={add}
-              className="grid gap-4 grid-cols-1 lg:grid-cols-2"
-            >
+        </div>
+        <h2 className="text-[16px] font-semibold">Builders List</h2>
+        <div className="overflow-scroll scrollbar-hide">
+          <DataTable
+            className="scrollbar-hide"
+            customStyles={customStyles}
+            columns={finalColumns}
+            data={filteredData}
+            pagination
+            paginationPerPage={15}
+            paginationComponentOptions={{
+              rowsPerPageText: "Rows per page:",
+              rangeSeparatorText: "of",
+              selectAllRowsItem: true,
+              selectAllRowsItemText: "All",
+            }}
+          />
+        </div>
+      </div>
+
+      <div
+        className={` ${
+          !showBuilderForm && "hidden"
+        } z-[61] builder-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] flex fixed`}
+      >
+        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">Builders</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowBuilderForm(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={add}>
+            {" "}
+            <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
               <input
                 type="hidden"
                 value={newBuilder.builderid || ""}
@@ -721,27 +726,28 @@ const Builders = () => {
                   }
                 />
               </div>
-              <div className="flex mt-8 md:mt-6 justify-end gap-6">
-                <button
-                  onClick={() => {
-                    setShowBuilderForm(false);
-                  }}
-                  className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
-                >
-                  Save
-                </button>
-                <Loader />
-              </div>
-            </form>
-          </div>
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowBuilderForm(false);
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Save
+              </button>
+              <Loader />
+            </div>
+          </form>
         </div>
-      )}
+      </div>
 
       {/* Give Access Form */}
       <div

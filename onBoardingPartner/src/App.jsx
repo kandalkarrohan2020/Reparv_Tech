@@ -8,6 +8,8 @@ import Ticketing from "./pages/Ticketing.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import KYC from "./pages/KYC.jsx";
+import Trends from "./pages/Trends.jsx";
+import MarketingContent from "./pages/MarketingContent.jsx";
 
 const App = () => {
   return (
@@ -20,6 +22,7 @@ const App = () => {
           <Route path="/dashboard" element={<Overview />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/tickets" element={<Ticketing />} />
+          <Route path="/marketing-content" element={<MarketingContent />} />
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>
       </Routes>

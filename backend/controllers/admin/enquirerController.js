@@ -421,16 +421,22 @@ export const token = (req, res) => {
 
           // Split commission
           const reparvCommission = (finalCommissionAmount * 40) / 100;
-          const salesCommission = (finalCommissionAmount * 40) / 100;
-          const territoryCommission = (finalCommissionAmount * 20) / 100;
+          
+          const grossSalesCommission = (finalCommissionAmount * 40) / 100;
+          const salesCommission = grossSalesCommission - (grossSalesCommission * 2) / 100;
+
+          const grossTerritoryCommission = (finalCommissionAmount * 20) / 100;
+          const territoryCommission = grossTerritoryCommission - (grossTerritoryCommission * 2) / 100;
+
+          const TDS = (grossSalesCommission * 2) / 100 + (grossTerritoryCommission * 2) / 100;
 
           // Step 3: Insert into propertyfollowup
           const insertSQL = `
           INSERT INTO propertyfollowup (
             enquirerid, paymenttype, tokenamount, remark, dealamount, status, 
-            totalcommission, reparvcommission, salescommission, territorycommission, paymentimage,
+            totalcommission, reparvcommission, salescommission, territorycommission, tds, paymentimage,
             updated_at, created_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
           db.query(
@@ -446,6 +452,7 @@ export const token = (req, res) => {
               reparvCommission,
               salesCommission,
               territoryCommission,
+              TDS,
               imagePath,
               currentdate,
               currentdate,
@@ -463,7 +470,7 @@ export const token = (req, res) => {
                   totalCommission: finalCommissionAmount,
                   salesCommission,
                   reparvCommission,
-                  territoryCommission,
+                  territoryCommission
                 },
               });
             }
@@ -474,77 +481,6 @@ export const token = (req, res) => {
   );
 };
 
-export const tokenOld = (req, res) => {
-  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { paymenttype, tokenamount, remark, dealamount, enquiryStatus } =
-    req.body;
-
-  const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
-
-  if (
-    !paymenttype ||
-    !tokenamount ||
-    !remark ||
-    !dealamount ||
-    !enquiryStatus
-  ) {
-    return res
-      .status(400)
-      .json({ message: "Please add visit date and remark!" });
-  }
-
-  const Id = parseInt(req.params.id);
-  if (isNaN(Id)) {
-    return res.status(400).json({ message: "Invalid Enquiry ID" });
-  }
-
-  db.query(
-    "SELECT * FROM enquirers WHERE enquirersid = ?",
-    [Id],
-    (err, result) => {
-      if (err) {
-        console.error("Database error:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-
-      if (result.length === 0) {
-        return res.status(404).json({ message: "Enquirer not found" });
-      }
-
-      const insertSQL = `
-      INSERT INTO propertyfollowup (enquirerid, paymenttype, tokenamount, remark, dealamount, status, paymentimage, updated_at, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-      db.query(
-        insertSQL,
-        [
-          Id,
-          paymenttype,
-          tokenamount,
-          remark,
-          dealamount,
-          enquiryStatus,
-          imagePath,
-          currentdate,
-          currentdate,
-        ],
-        (err, insertResult) => {
-          if (err) {
-            console.error("Error inserting visit:", err);
-            return res
-              .status(500)
-              .json({ message: "Database error", error: err });
-          }
-
-          res.status(201).json({
-            message: "Token added successfully",
-            Id: insertResult.insertId,
-          });
-        }
-      );
-    }
-  );
-};
 
 export const followUp = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");

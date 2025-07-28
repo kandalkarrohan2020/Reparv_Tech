@@ -78,6 +78,9 @@ const StepOne = ({ newProperty, setPropertyData, builderData, states, cities }) 
             }
           >
             <option value="">Select Approved by</option>
+            <option value="PMC.">PMC</option>
+            <option value="PCMC">PCMC</option>
+            <option value="PMRDA">PMRDA</option>
             <option value="NMRDA">NMRDA</option>
             <option value="NA. TP.">NA. TP.</option>
           </select>

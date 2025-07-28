@@ -6,6 +6,7 @@ import overviewIcon from "../../assets/layout/overviewIcon.svg";
 import enquirersIcon from "../../assets/layout/enquirersIcon.svg";
 import customersIcon from "../../assets/layout/customersIcon.svg";
 import ticketingIcon from "../../assets/layout/ticketingIcon.svg";
+import marketingIcon from "../../assets/layout/marketingIcon.svg";
 import calenderIcon from "../../assets/layout/calenderIcon.svg";
 import { Outlet } from "react-router-dom";
 import { IoMenu } from "react-icons/io5";

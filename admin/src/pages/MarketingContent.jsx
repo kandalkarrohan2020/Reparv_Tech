@@ -311,7 +311,7 @@ const MarketingContent = () => {
           showContentUploadForm ? "flex" : "hidden"
         } z-[61] overflow-scroll scrollbar-hide w-full fixed  bottom-0 md:bottom-auto`}
       >
-        <div className="w-full md:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+        <div className="w-full md:w-[500px] max-h-[90vh] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">Upload Content</h2>
             <IoMdClose

@@ -66,3 +66,77 @@ export const add = (req, res) => {
     res.status(500).json({ message: "Internal server error", error });
   }
 };
+
+export const getProfile = (req, res) => {
+  const { contact } = req.query;
+
+  if (!contact) {
+    return res.status(400).json({ message: 'Contact number is required.' });
+  }
+
+  const sql = `SELECT fullname, email, contact, userimage FROM mobileusers WHERE contact = ?`;
+
+  db.query(sql, [contact], (err, results) => {
+    if (err) {
+      console.error('Error fetching profile:', err);
+      return res.status(500).json({ message: 'Database error', error: err });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    return res.status(200).json({
+      message: 'Profile fetched successfully!',
+      data: results[0],
+    });
+  });
+};
+
+export const update = (req, res) => {
+  try {
+    const { fullname, email, contact } = req.body;
+    const userimage = req.file ? `/uploads/${req.file.filename}` : null;
+    const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+
+    if (!fullname || !contact || !email) {
+      return res.status(400).json({ message: "All Fields are required." });
+    }
+
+    let sql = `
+      UPDATE mobileusers 
+      SET fullname = ?, contact = ?, email = ?, updated_at = ?
+    `;
+    const params = [fullname, contact, email, currentdate];
+
+    if (userimage) {
+      sql += `, userimage = ?`;
+      params.push(userimage);
+    }
+
+    sql += ` WHERE contact = ?`;
+    params.push(contact);
+
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        console.error("Error during profile update:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      return res.status(200).json({
+        message: "Profile updated successfully!",
+        data: {
+          fullname,
+          email,
+          contact,
+          userimage,
+        },
+      });
+    });
+  } catch (error) {
+    console.error("Unexpected error in Profile Update:", error);
+    res.status(500).json({ message: "Internal server error", error });
+  }
+};
+
+

@@ -9,7 +9,7 @@ const EMICalculator = ({ totalAmount }) => {
   //This is for the Slider Background
   const downPaymentPercentage =
     totalAmount === 0 ? 0 : (downPayment / totalAmount) * 100;
-  const tenurePercentage = ((tenure - 1) / (20 - 1)) * 100;
+  const tenurePercentage = ((tenure - 1) / (35 - 1)) * 100;
   const interestPercentage = (interest / 15) * 100;
 
   useEffect(() => {
@@ -97,7 +97,9 @@ const EMICalculator = ({ totalAmount }) => {
             <input
               type="number"
               value={tenure}
-              onChange={(e) => setTenure(e.target.value)}
+              onChange={(e) => {
+                setTenure(e.target.value);
+              }}
               className="w-18 outline-none px-2 py-2 bg-white border border-[#00000033] rounded-md text-sm font-medium "
             />
           </div>
@@ -105,7 +107,7 @@ const EMICalculator = ({ totalAmount }) => {
           <input
             type="range"
             min={1}
-            max={20}
+            max={35}
             step={1}
             value={tenure}
             onChange={(e) => setTenure(Number(e.target.value))}
@@ -120,7 +122,7 @@ const EMICalculator = ({ totalAmount }) => {
               1 Year
             </span>
             <span className="text-[#00000066] text-base font-medium ">
-              20 Years
+              35 Years
             </span>
           </div>
         </div>
@@ -132,7 +134,9 @@ const EMICalculator = ({ totalAmount }) => {
             <input
               type="number"
               value={interest}
-              onChange={(e) => setInterest(e.target.value)}
+              onChange={(e) => {
+                setInterest(e.target.value);
+              }}
               className="w-18 outline-none px-2 py-2 bg-white border border-[#00000033] rounded-md text-sm font-medium "
             />
           </div>

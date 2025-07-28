@@ -16,8 +16,8 @@ export const AuthProvider = ({ children }) => {
     setAccessToken();
     Cookies.remove("accessToken");
   };
-  //const URI = "http://localhost:3000";
-  const URI = "https://api.reparv.in";
+  const URI = "http://localhost:3000";
+  //const URI = "https://api.reparv.in";
 
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [loading, setLoading] = useState(false);
@@ -38,6 +38,9 @@ export const AuthProvider = ({ children }) => {
   const [isActive, setIsActive] = useState("Builders");
   const [giveAccess, setGiveAccess] = useState(false);
   const [filterStatus, setFilterStatus] = useState("New");
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [showOrders, setShowOrders] = useState(false);
+  const [showOrderForm, setShowOrderForm] = useState(false);
 
   return (
     <AuthContext.Provider
@@ -84,6 +87,9 @@ export const AuthProvider = ({ children }) => {
         giveAccess,
         setGiveAccess,
         filterStatus, setFilterStatus,
+        showOrders, setShowOrders,
+        showProductForm, setShowProductForm,
+        showOrderForm, setShowOrderForm,
       }}
     >
       {children}

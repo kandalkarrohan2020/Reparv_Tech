@@ -76,7 +76,7 @@ export default function FilterSidebar() {
 
       const response = await fetch(url, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },

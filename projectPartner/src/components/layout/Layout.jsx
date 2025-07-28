@@ -52,6 +52,12 @@ function Layout() {
     setShowTicket,
     showCustomer,
     setShowCustomer,
+    showOrders,
+    setShowOrders,
+    showOrderForm,
+    setShowOrderForm,
+    showProductForm,
+    setShowProductForm,
     showCustomerPaymentForm,
     setShowCustomerPaymentForm,
     isLoggedIn,
@@ -70,6 +76,9 @@ function Layout() {
     { state: showTicket, setter: setShowTicket },
     { state: showCustomer, setter: setShowCustomer },
     { state: showCustomerPaymentForm, setter: setShowCustomerPaymentForm },
+    { state: showOrders, setter: setShowOrders },
+    { state: showOrderForm, setter: setShowOrderForm },
+    { state: showProductForm, setter: setShowProductForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -99,7 +108,7 @@ function Layout() {
       );
       if (!response.ok) throw new Error("Failed to fetch Agreement.");
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       setAgreementData(data);
     } catch (err) {
       console.error("Error fetching:", err);
@@ -194,9 +203,9 @@ function Layout() {
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
 
               {
-                to: "/raw-materials",
+                to: "/brand-accessories",
                 icon: materialIcon,
-                label: "Raw Materials",
+                label: "Brand Accessories",
               },
               {
                 to: "/marketing-content",

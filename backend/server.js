@@ -35,7 +35,7 @@ import testimonialRoutes from "./routes/admin/testimonialRoutes.js";
 import calenderRoutes from "./routes/admin/calenderRoutes.js";
 import emiRoutes from "./routes/admin/emiRoutes.js";
 import marketingContentRoutes from "./routes/admin/marketingContentRoutes.js";
-//import rawmaterialRoutes from "./routes/admin/rawmaterialRoutes.js";
+import brandAccessoriesRoutes from "./routes/admin/brandAccessoriesRoutes.js";
 
 //frontend
 import allPropertiesRoutes from "./routes/frontend/allPropertiesRoutes.js";
@@ -140,6 +140,8 @@ import projectPartnerAppRoute from "./routes/projectPartnerAppRoute/userRoute.js
 import customerEmi from "./routes/customerAppRoute/EmiRoute.js";
 import customerSignUp from "./routes/customerAppRoute/userRoute.js";
 import customerPropertyRoute from "./routes/customerAppRoute/propertyRoute.js";
+import customerTrendRoute from "./routes/customerAppRoute/trendRoute.js"
+import customerEnquiryRoute from "./routes/customerAppRoute/enquiryRoute.js"
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -337,6 +339,7 @@ app.use("/admin/testimonial", testimonialRoutes);
 app.use("/admin/calender", calenderRoutes);
 app.use("/admin/emi", emiRoutes);
 app.use("/admin/marketing-content", marketingContentRoutes);
+app.use("/admin/brand-accessories", brandAccessoriesRoutes);
 
 // Guest User Routes
 app.use("/guest-user", guestUserLoginRoutes);
@@ -431,6 +434,8 @@ app.use("/projectpartnerRoute/user", projectPartnerAppRoute);
 app.use("/customerapp", customerEmi);
 app.use("/customerapp/user", customerSignUp);
 app.use("/customerapp/property", customerPropertyRoute);
+app.use("/customerapp/customerTrendRoute",customerTrendRoute)
+app.use("/customerapp/enquiry",customerEnquiryRoute)
 
 //  Start Server
 app.listen(PORT, () => {

@@ -15,6 +15,7 @@ import ErrorPage from "./pages/ErrorPage.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import KYC from "./pages/KYC.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
+import BrandAccessories from "./pages/BrandAccessories.jsx";
 
 
 const App = () => {
@@ -32,7 +33,7 @@ const App = () => {
           <Route path="/calender" element={<Calender />} />
           <Route path="/customers" element={<Customers />} />
           <Route path="/tickets" element={<Ticketing />} />
-          <Route path="/raw-materials" element={<RawMaterials />} />
+          <Route path="/brand-accessories" element={<BrandAccessories />} />
           <Route path="/marketing-content" element={<MarketingContent />} />
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>

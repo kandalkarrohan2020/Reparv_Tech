@@ -430,7 +430,7 @@ export default function KYC() {
                 value={userData.rerano}
                 onChange={(e) => {
                   const input = e.target.value.toUpperCase(); // Convert to uppercase
-                  if (/^[A-Z0-9]{0,10}$/.test(input)) {
+                  if (/^[A-Z0-9]{0,12}$/.test(input)) {
                     setUserData({ ...userData, rerano: input });
                   }
                 }}

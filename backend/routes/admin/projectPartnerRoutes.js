@@ -47,6 +47,7 @@ router.post(
   upload.fields([
     { name: "adharImage", maxCount: 1 },
     { name: "panImage", maxCount: 1 },
+    { name: "reraImage", maxCount: 1 },
   ]),
   add
 );
@@ -55,6 +56,7 @@ router.put(
   upload.fields([
     { name: "adharImage", maxCount: 1 },
     { name: "panImage", maxCount: 1 },
+    { name: "reraImage", maxCount: 1 },
   ]),
   edit
 );

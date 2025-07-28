@@ -9,7 +9,6 @@ import DataTable from "react-data-table-component";
 import Loader from "../components/Loader";
 import { MdOutlineWidthFull } from "react-icons/md";
 import { PiDotsThreeCircleVerticalFill } from "react-icons/pi";
-import propertyPicture from "../assets/propertyPicture.svg";
 import ContentFilter from "../components/ContentFilter";
 
 const MarketingContent = () => {

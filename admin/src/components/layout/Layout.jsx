@@ -110,6 +110,12 @@ function Layout() {
     setShowContentUploadForm,
     showEMIForm,
     setShowEMIForm,
+    showProduct,
+    setShowProduct,
+    showProductForm,
+    setShowProductForm,
+    showStockForm,
+    setShowStockForm,
     showEMI,
     setShowEMI,
     isLoggedIn,
@@ -159,6 +165,9 @@ function Layout() {
     { state: showContentUploadForm, setter: setShowContentUploadForm },
     { state: showEMI, setter: setShowEMI },
     { state: showEMIForm, setter: setShowEMIForm },
+    { state: showProduct, setter: setShowProduct },
+    { state: showProductForm, setter: setShowProductForm },
+    { state: showStockForm, setter: setShowStockForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -293,9 +302,9 @@ function Layout() {
               { to: "/slider", icon: marketingIcon, label: "Slider" },
               { to: "/testimonial", icon: marketingIcon, label: "Testimonial" },
               {
-                to: "/raw-materials",
+                to: "/brand-accessories",
                 icon: materialIcon,
-                label: "Raw Materials",
+                label: "Brand Accessories",
               },
               {
                 to: "/marketing-content",

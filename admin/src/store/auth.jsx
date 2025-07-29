@@ -16,8 +16,8 @@ export const AuthProvider = ({ children }) => {
     setAccessToken();
     Cookies.remove("accessToken");
   };
-  const URI = "http://localhost:3000";
-  //const URI = "https://api.reparv.in";
+  //const URI = "http://localhost:3000";
+  const URI = "https://api.reparv.in";
 
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [loading, setLoading] = useState(false);
@@ -70,6 +70,7 @@ export const AuthProvider = ({ children }) => {
   const [filterStatus, setFilterStatus] = useState("New");
   const [showEMI, setShowEMI] = useState(false);
   const [enquiryFilter, setEnquiryFilter] = useState("New");
+  const [propertyFilter, setPropertyFilter] = useState("Approved");
   const [showContentUploadForm, setShowContentUploadForm] = useState(false);
   const [showTrendForm, setShowTrendForm] = useState(false);
   const [showProduct, setShowProduct] = useState(false);
@@ -80,7 +81,8 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         URI,
-        user, setUser,
+        user,
+        setUser,
         loading,
         setLoading,
         isLoggedIn,
@@ -88,7 +90,8 @@ export const AuthProvider = ({ children }) => {
         delTokenInCookie,
         accessToken,
         setAccessToken,
-        showEmployee, setShowEmployee,
+        showEmployee,
+        setShowEmployee,
         showEplDetailsForm,
         setShowEplDetailsForm,
         action,
@@ -183,12 +186,18 @@ export const AuthProvider = ({ children }) => {
         setShowEMIForm,
         enquiryFilter,
         setEnquiryFilter,
+        propertyFilter,
+        setPropertyFilter,
         showContentUploadForm,
         setShowContentUploadForm,
-        showTrendForm, setShowTrendForm,
-        showProduct, setShowProduct,
-        showProductForm, setShowProductForm,
-        showStockForm, setShowStockForm,
+        showTrendForm,
+        setShowTrendForm,
+        showProduct,
+        setShowProduct,
+        showProductForm,
+        setShowProductForm,
+        showStockForm,
+        setShowStockForm,
       }}
     >
       {children}

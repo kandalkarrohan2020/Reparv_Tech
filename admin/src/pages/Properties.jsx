@@ -16,6 +16,7 @@ import { useLocation } from "react-router-dom";
 import propertyPicture from "../assets/propertyPicture.svg";
 import DownloadCSV from "../components/DownloadCSV";
 import UpdateImagesForm from "../components/propertyForm/UpdateImagesForm";
+import PropertyFilter from "../components/propertyFilter";
 
 const Properties = () => {
   const location = useLocation();
@@ -26,8 +27,8 @@ const Properties = () => {
     setShowUpdateImagesForm,
     showAdditionalInfoForm,
     setShowAdditionalInfoForm,
-    showPropertyInfo,
-    setShowPropertyInfo,
+    propertyFilter,
+    setPropertyFilter,
     showRejectReasonForm,
     setShowRejectReasonForm,
     showSeoForm,
@@ -820,6 +821,24 @@ const Properties = () => {
     }
   }, [newProperty.state]);
 
+  const getPropertyCounts = (data) => {
+    return data.reduce(
+      (acc, item) => {
+        if (item.approve === "Approved") {
+          acc.Approved++;
+        } else if (item.approve === "Not Approved") {
+          acc.NotApproved++;
+        } else if (item.approve === "Rejected") {
+          acc.Rejected++;
+        }
+        return acc;
+      },
+      { Approved: 0, NotApproved: 0, Rejected: 0 }
+    );
+  };
+  
+  const propertyCounts = getPropertyCounts(datas);
+
   const [range, setRange] = useState([
     {
       startDate: null,
@@ -857,8 +876,19 @@ const Properties = () => {
       (!startDate && !endDate) || // no filter
       (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
 
+    // Enquiry filter logic: New, Alloted, Assign
+    const getPropertyApprovedStatus = () => {
+      if (item.approve === "Approved") return "Approved";
+      if (item.approve === "Not Approved") return "Not Approved";
+      if (item.approve === "Rejected") return "Rejected";
+      return "";
+    };
+
+    const matchesProperty =
+      !propertyFilter || getPropertyApprovedStatus() === propertyFilter;
+
     // Final return
-    return matchesSearch && matchesDate;
+    return matchesSearch && matchesDate && matchesProperty;
   });
 
   const customStyles = {
@@ -1155,7 +1185,9 @@ const Properties = () => {
             </div>
           </div>
         </div>
-
+        <div className="filterContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
+          <PropertyFilter counts={propertyCounts} />
+        </div>
         <h2 className="text-[16px] font-semibold">Properties List</h2>
         <div className="overflow-scroll scrollbar-hide">
           <DataTable

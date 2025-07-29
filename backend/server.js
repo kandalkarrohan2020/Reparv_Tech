@@ -80,6 +80,7 @@ import salesEnquiryRoutes from "./routes/sales/salesEnquiryRoutes.js";
 import salesCalenderRoutes from "./routes/sales/calenderRoutes.js";
 import salesPropertiesRoutes from "./routes/sales/propertiesRoutes.js";
 import salesPropertyinfoRoutes from "./routes/sales/propertyinfoRoutes.js";
+import enquiryRoutesSaleApp from "./routes/salesAppRoute/enquiryRoute.js"
 
 // import onBarding Partner Routes
 import partnerLoginRoutes from "./routes/onboardingPartner/partnerLoginRoutes.js";
@@ -240,6 +241,7 @@ const verifyToken = (req, res, next) => {
     "/frontend/slider",
     "/frontend/testimonial",
     "/frontend/emi",
+    "/salesapp/enquiry",
     //i addedd
     "/api/booking",
     //salesPerson APP Routes
@@ -414,6 +416,7 @@ app.use("/salesapp/tickets", appTicketRoute);
 app.use("/salesapp/post", postRoute);
 app.use("/salesapp/user", userController);
 app.use("/salesapp/client", clientRoute);
+app.use("/salesapp/enquiry", enquiryRoutesSaleApp);
 
 //Territory App Route
 app.use("/territoryapp/user", territoryUserController);

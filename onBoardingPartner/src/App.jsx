@@ -8,7 +8,6 @@ import Ticketing from "./pages/Ticketing.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import KYC from "./pages/KYC.jsx";
-import Trends from "./pages/Trends.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
 
 const App = () => {

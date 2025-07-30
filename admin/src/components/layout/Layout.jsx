@@ -114,8 +114,12 @@ function Layout() {
     setShowProduct,
     showProductForm,
     setShowProductForm,
+    showOrder,
+    setShowOrder,
     showStockForm,
     setShowStockForm,
+    showStatusForm,
+    setShowStatusForm,
     showEMI,
     setShowEMI,
     isLoggedIn,
@@ -168,6 +172,8 @@ function Layout() {
     { state: showProduct, setter: setShowProduct },
     { state: showProductForm, setter: setShowProductForm },
     { state: showStockForm, setter: setShowStockForm },
+    { state: showOrder, setter: setShowOrder },
+    { state: showStatusForm, setter: setShowStatusForm },
   ];
 
   const getNavLinkClass = (path) => {

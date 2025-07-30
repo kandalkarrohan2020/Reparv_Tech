@@ -16,8 +16,8 @@ export const AuthProvider = ({ children }) => {
     setAccessToken();
     Cookies.remove("accessToken");
   };
-  //const URI = "http://localhost:3000";
-  const URI = "https://api.reparv.in";
+  const URI = "http://localhost:3000";
+  //const URI = "https://api.reparv.in";
 
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [loading, setLoading] = useState(false);
@@ -71,11 +71,14 @@ export const AuthProvider = ({ children }) => {
   const [showEMI, setShowEMI] = useState(false);
   const [enquiryFilter, setEnquiryFilter] = useState("New");
   const [propertyFilter, setPropertyFilter] = useState("Approved");
+  const [orderFilter, setOrderFilter] = useState("New");
   const [showContentUploadForm, setShowContentUploadForm] = useState(false);
   const [showTrendForm, setShowTrendForm] = useState(false);
   const [showProduct, setShowProduct] = useState(false);
   const [showProductForm, setShowProductForm] = useState(false);
   const [showStockForm, setShowStockForm] = useState(false);
+  const [showOrder, setShowOrder] = useState(false);
+  const [showStatusForm, setShowStatusForm] = useState(false);
 
   return (
     <AuthContext.Provider
@@ -188,6 +191,8 @@ export const AuthProvider = ({ children }) => {
         setEnquiryFilter,
         propertyFilter,
         setPropertyFilter,
+        orderFilter,
+        setOrderFilter,
         showContentUploadForm,
         setShowContentUploadForm,
         showTrendForm,
@@ -198,6 +203,10 @@ export const AuthProvider = ({ children }) => {
         setShowProductForm,
         showStockForm,
         setShowStockForm,
+        showOrder,
+        setShowOrder,
+        showStatusForm,
+        setShowStatusForm,
       }}
     >
       {children}

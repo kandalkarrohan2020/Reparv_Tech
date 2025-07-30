@@ -573,7 +573,7 @@ const Products = ({ selectedTable, setSelectedTable }) => {
         </div>
 
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
-          <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
+          <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] border rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
             <CiSearch />
             <input
               type="text"
@@ -741,7 +741,7 @@ const Products = ({ selectedTable, setSelectedTable }) => {
                   Product Size
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   id="productSize"
                   placeholder="Enter Size"
                   required
@@ -1025,7 +1025,7 @@ const Products = ({ selectedTable, setSelectedTable }) => {
                   Product Size
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   id="productSize"
                   placeholder="Enter Size"
                   required
@@ -1207,7 +1207,7 @@ const Products = ({ selectedTable, setSelectedTable }) => {
           {/* Stock List View */}
           <div className="w-full flex items-center justify-between">
             <h1 className="my-3 text-base font-semibold ">Stock List</h1>
-            <h1 className="my-3 text-base font-semibold ">{product?.availableQuantity + " Units"}</h1>
+            <h1 className="my-3 text-base font-semibold ">{product?.totalQuantity + " Units"}</h1>
           </div>
           <div className="grid grid-cols-1 gap-4">
             {stockList?.length > 0 ? (

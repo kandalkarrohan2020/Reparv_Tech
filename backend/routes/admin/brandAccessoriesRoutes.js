@@ -15,6 +15,8 @@ import {
   addStock,
   getStockList,
   status,
+  changeOrderStatus,
+  cancelOrderByPartner,
 } from "../../controllers/admin/brandAccessoriesController.js";
 
 const router = express.Router();
@@ -46,6 +48,7 @@ router.get("/products", getAll);
 router.get("/products/active", getAllActive);
 router.get("/product/:id", getById);
 router.get("/product/stock/list/:id", getStockList);
+router.get("/product/size/list/:id", getStockList);
 
 router.post(
   "/product/add",
@@ -70,17 +73,23 @@ router.put("/product/status/:id", status);
 // Delete Product
 router.delete("/product/delete/:id", del);
 
-// Order Routes 
+
+// ***  Orders Routes ***
 
 // get Routes
-router.get("/product/orders/get", getOrders);
+router.get("/product/orders/get/:role", getOrders);
 router.get("/product/order/:id", getOrderById);
 // partner Orders
-router.get("/partner/orders", getAllOrdersByUserId);
-
+router.get("/partner/orders/:role", getAllOrdersByUserId);
 
 // place order
 router.post("/product/buy/:id", placeOrder);
+
+// chnage order status
+router.put("/order/status/:id", changeOrderStatus);
+
+// Cancel Order Through Partner
+router.put("/partner/order/cancel/:id", cancelOrderByPartner);
 
 //router.delete("/product/order/cancel/:id", cancelOrder);
 export default router;

@@ -4,6 +4,7 @@ import reparvMainLogo from "../../assets/layout/reparvMainLogo.svg";
 import overviewIcon from "../../assets/layout/overviewIcon.svg";
 import enquirersIcon from "../../assets/layout/enquirersIcon.svg";
 import ticketingIcon from "../../assets/layout/ticketingIcon.svg";
+import marketingIcon from "../../assets/layout/marketingIcon.svg";
 import { Outlet } from "react-router-dom";
 import { IoMenu } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";

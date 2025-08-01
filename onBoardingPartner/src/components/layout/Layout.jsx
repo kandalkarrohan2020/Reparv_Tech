@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import reparvMainLogo from "../../assets/layout/reparvMainLogo.svg";
 import overviewIcon from "../../assets/layout/overviewIcon.svg";
+import materialIcon from "../../assets/layout/materialIcon.svg";
 import enquirersIcon from "../../assets/layout/enquirersIcon.svg";
 import ticketingIcon from "../../assets/layout/ticketingIcon.svg";
 import marketingIcon from "../../assets/layout/marketingIcon.svg";
@@ -36,6 +37,14 @@ function Layout() {
     setShowTicket,
     showTicketForm,
     setShowTicketForm,
+    showCart,
+    setShowCart,
+    showOrder,
+    setShowOrder,
+    showOrderForm,
+    setShowOrderForm,
+    showProductForm,
+    setShowProductForm,
     isLoggedIn,
   } = useAuth();
 
@@ -46,6 +55,10 @@ function Layout() {
     { state: showTicketForm, setter: setShowTicketForm },
     { state: showTicket, setter: setShowTicket },
     { state: showPropertyInfo, setter: setShowPropertyInfo },
+    { state: showCart, setter: setShowCart },
+    { state: showOrder, setter: setShowOrder },
+    { state: showOrderForm, setter: setShowOrderForm },
+    { state: showProductForm, setter: setShowProductForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -164,6 +177,11 @@ function Layout() {
               { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
+              {
+                to: "/brand-accessories",
+                icon: materialIcon,
+                label: "Brand Accessories",
+              },
               {
                 to: "/marketing-content",
                 icon: marketingIcon,

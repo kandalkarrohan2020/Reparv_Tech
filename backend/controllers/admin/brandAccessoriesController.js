@@ -127,14 +127,13 @@ export const getById = (req, res) => {
   });
 };
 
-// Fetch Product Size List
 export const getProductSizeList = (req, res) => {
   const Id = parseInt(req.params.id);
   if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Product ID" });
   }
 
-  const sql = `SELECT productSize FROM brandAccessoriesStock 
+  const sql = `SELECT DISTINCT productSize FROM brandAccessoriesStock 
                WHERE productId = ? 
                ORDER BY productSize`;
 
@@ -144,8 +143,7 @@ export const getProductSizeList = (req, res) => {
       return res.status(500).json({ message: "Database error", error: err });
     }
 
-    // Extract only productSize values and remove duplicates
-    const sizeList = [...new Set(result.map((row) => row.productSize))];
+    const sizeList = result.map((row) => row.productSize);
     res.json(sizeList);
   });
 };
@@ -908,16 +906,17 @@ export const placeOrder = (req, res) => {
 /* Change Order status */
 export const changeOrderStatus = (req, res) => {
   const { selectedStatus } = req.body;
+
   if (selectedStatus === "") {
     return res.status(400).json({ message: "Please Select Status!" });
   }
 
   const Id = parseInt(req.params.id);
-  //console.log(Id);
   if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid ID" });
   }
 
+  // Step 1: Get order details
   db.query(
     "SELECT * FROM brandAccessoriesOrders WHERE id = ?",
     [Id],
@@ -927,19 +926,48 @@ export const changeOrderStatus = (req, res) => {
         return res.status(500).json({ message: "Database error", error: err });
       }
 
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      const { productId, orderQuantity, status: currentStatus } = result[0];
+
+      // Step 2: Update status
       db.query(
         "UPDATE brandAccessoriesOrders SET status = ? WHERE id = ?",
         [selectedStatus, Id],
-        (err, result) => {
+        (err) => {
           if (err) {
-            console.error("Error changing Status :", err);
+            console.error("Error changing status:", err);
             return res
               .status(500)
               .json({ message: "Database error", error: err });
           }
-          res
-            .status(200)
-            .json({ message: "Order Status change successfully" });
+
+          // Step 3: If new status is Cancelled and not already cancelled, update stock
+          if (selectedStatus === "Cancelled" && currentStatus !== "Cancelled") {
+            const updateStockQuery = `
+            UPDATE brandAccessories 
+            SET productQuantity = productQuantity + ? 
+            WHERE productId = ?
+          `;
+            db.query(updateStockQuery, [orderQuantity, productId], (err) => {
+              if (err) {
+                return res.status(500).json({
+                  message: "Status changed but failed to update stock",
+                  warning: true,
+                });
+              }
+
+              return res.status(200).json({
+                message: "Order status changed and stock updated successfully",
+              });
+            });
+          } else {
+            return res
+              .status(200)
+              .json({ message: "Order status changed successfully" });
+          }
         }
       );
     }
@@ -949,13 +977,67 @@ export const changeOrderStatus = (req, res) => {
 /* Cancel Order through Partner */
 export const cancelOrderByPartner = (req, res) => {
   const Id = parseInt(req.params.id);
-  //console.log(Id);
+
   if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid ID" });
   }
 
+  // Step 1: Get order details first
+  const getOrderQuery = `SELECT productId, orderQuantity FROM brandAccessoriesOrders WHERE id = ?`;
+  db.query(getOrderQuery, [Id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    const { productId, orderQuantity } = result[0];
+
+    // Step 2: Cancel the order
+    const cancelOrderQuery = `UPDATE brandAccessoriesOrders SET status = ? WHERE id = ?`;
+    db.query(cancelOrderQuery, ["Cancelled", Id], (err) => {
+      if (err) {
+        console.error("Error cancelling order:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      // Step 3: Update the product quantity back
+      const updateStockQuery = `
+        UPDATE brandAccessories 
+        SET productQuantity = productQuantity + ? 
+        WHERE productId = ?
+      `;
+      db.query(updateStockQuery, [orderQuantity, productId], (err) => {
+        if (err) {
+          console.error("Error updating stock:", err);
+          return res.status(500).json({
+            message: "Order cancelled but failed to update stock",
+            warning: true,
+          });
+        }
+
+        res
+          .status(200)
+          .json({ message: "Order Cancelled and Stock Updated Successfully" });
+      });
+    });
+  });
+};
+
+// Delete Order
+export const deleteOrder = (req, res) => {
+  const Id = parseInt(req.params.id);
+
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Order ID" });
+  }
+
+  // Step 1: Get productId and orderQuantity from the order before deleting
   db.query(
-    "SELECT * FROM brandAccessoriesOrders WHERE id = ?",
+    "SELECT productId, orderQuantity FROM brandAccessoriesOrders WHERE id = ?",
     [Id],
     (err, result) => {
       if (err) {
@@ -963,21 +1045,467 @@ export const cancelOrderByPartner = (req, res) => {
         return res.status(500).json({ message: "Database error", error: err });
       }
 
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      const { productId, orderQuantity } = result[0];
+
+      // Step 2: Delete the order
       db.query(
-        "UPDATE brandAccessoriesOrders SET status = ? WHERE id = ?",
-        ["Cancelled", Id],
-        (err, result) => {
-          if (err) {
-            console.error("Error Cancellinhg Order :", err);
+        "DELETE FROM brandAccessoriesOrders WHERE id = ?",
+        [Id],
+        (delErr) => {
+          if (delErr) {
+            console.error("Error deleting order:", delErr);
             return res
               .status(500)
-              .json({ message: "Database error", error: err });
+              .json({ message: "Database error", error: delErr });
           }
-          res
-            .status(200)
-            .json({ message: "Order Cancelled Successfully" });
+
+          // Step 3: Restore product quantity
+          const updateQuery = `
+            UPDATE brandAccessories 
+            SET productQuantity = productQuantity + ? 
+            WHERE productId = ?
+          `;
+          db.query(updateQuery, [orderQuantity, productId], (stockErr) => {
+            if (stockErr) {
+              console.error("Failed to restore stock:", stockErr);
+              return res.status(500).json({
+                message: "Order deleted, but stock restore failed",
+                warning: true,
+              });
+            }
+
+            return res.status(200).json({
+              message: "Order deleted and stock restored successfully",
+            });
+          });
         }
       );
     }
   );
+};
+
+// Cart Controllers
+
+// Get Cart Products by Using User Id
+export const getProductsFromCart = (req, res) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    return res.status(400).json({ message: "Unauthorized. Please login!" });
+  }
+
+  const role = req.params?.role;
+
+  // Allow only specific column names to prevent SQL injection
+  const allowedRoles = [
+    "salesPartnerId",
+    "territoryPartnerId",
+    "onboardingPartnerId",
+    "projectPartnerId",
+    "promoterId",
+  ];
+
+  if (!role || !allowedRoles.includes(role)) {
+    return res.status(400).json({ message: "Invalid or missing role in URL" });
+  }
+
+  const sql = `
+    SELECT 
+      bac.*,
+      bac.productId AS cartProductId,
+      bac.created_at AS cartCreatedAt,
+      bac.updated_at AS cartUpdatedAt,
+      ba.*,
+      ba.productId AS productId,
+      ba.status AS productStatus,
+      ba.created_at AS productCreatedAt,
+      ba.updated_at AS productUpdatedAt
+    FROM brandAccessoriesCart AS bac
+    LEFT JOIN brandAccessories AS ba 
+      ON bac.productId = ba.productId
+    WHERE bac.${role} = ?
+    ORDER BY bac.created_at DESC
+  `;
+
+  db.query(sql, [userId], (err, result) => {
+    if (err) {
+      console.error("Error fetching products:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (result.length === 0) {
+      return res.status(200).json({ message: "Cart is empty", data: [] });
+    }
+
+    const formatted = result.map((row) => ({
+      ...row,
+      productCreatedAt: row.productCreatedAt
+        ? moment(row.productCreatedAt).format("DD MMM YYYY | hh:mm A")
+        : null,
+      productUpdatedAt: row.productUpdatedAt
+        ? moment(row.productUpdatedAt).format("DD MMM YYYY | hh:mm A")
+        : null,
+      orderCreatedAt: row.cartCreatedAt
+        ? moment(row.cartCreatedAt).format("DD MMM YYYY | hh:mm A")
+        : null,
+      orderUpdatedAt: row.cartUpdatedAt
+        ? moment(row.cartUpdatedAt).format("DD MMM YYYY | hh:mm A")
+        : null,
+    }));
+
+    res.status(200).json(formatted);
+  });
+};
+
+// Add Order To Cart
+export const addToCart = (req, res) => {
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+
+  const userId = req.user?.id;
+  if (!userId) {
+    return res.status(400).json({ message: "Unauthorized. Please login!" });
+  }
+
+  const productId = req.params.id;
+  if (!productId) {
+    return res.status(400).json({ message: "Invalid Product ID" });
+  }
+
+  const { role, productSize, orderQuantity, sellingPrice, gstPercentage } =
+    req.body;
+
+  if (
+    !role ||
+    !productSize ||
+    !orderQuantity ||
+    !sellingPrice ||
+    !gstPercentage
+  ) {
+    return res.status(400).json({
+      message: "Product Size and Order Quantity are required!",
+    });
+  }
+
+  const priceWithoutGST = sellingPrice * orderQuantity;
+  const billAmount = priceWithoutGST + (priceWithoutGST * gstPercentage) / 100;
+
+  let ordererIdName;
+  if (role === "Sales Person") {
+    ordererIdName = "salesPartnerId";
+  } else if (role === "Onboarding Partner") {
+    ordererIdName = "onboardingPartnerId";
+  } else if (role === "Project Partner") {
+    ordererIdName = "projectPartnerId";
+  } else if (role === "Territory Partner") {
+    ordererIdName = "territoryPartnerId";
+  } else if (role === "Promoter") {
+    ordererIdName = "promoterId";
+  } else {
+    return res.status(400).json({ message: "Invalid role" });
+  }
+
+  const checkStockQuery = `SELECT productQuantity FROM brandAccessories WHERE productId = ?`;
+  db.query(checkStockQuery, [productId], (err, results) => {
+    if (err)
+      return res.status(500).json({ message: "Database error", error: err });
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const availableQuantity = results[0].productQuantity;
+    if (availableQuantity < orderQuantity) {
+      return res.status(400).json({ message: "Insufficient stock available" });
+    }
+
+    const insertQuery = `
+      INSERT INTO brandAccessoriesCart 
+      (${ordererIdName}, productId, productSize, orderQuantity, billAmount, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+    db.query(
+      insertQuery,
+      [
+        userId,
+        productId,
+        productSize,
+        orderQuantity,
+        billAmount,
+        currentdate,
+        currentdate,
+      ],
+      (err) => {
+        if (err) {
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+
+        // No quantity update logic here
+
+        return res
+          .status(201)
+          .json({ message: "Order Add To Cart Successfully" });
+      }
+    );
+  });
+};
+
+// Remove Order From Cart
+export const removeFromCart = (req, res) => {
+  const cartId = parseInt(req.params.id);
+  const userId = req.user?.id;
+
+  if (!userId) {
+    return res.status(400).json({ message: "Unauthorized. Please login!" });
+  }
+
+  if (isNaN(cartId)) {
+    return res.status(400).json({ message: "Invalid Cart ID" });
+  }
+
+  const deleteQuery = `DELETE FROM brandAccessoriesCart WHERE cartId = ?`;
+  db.query(deleteQuery, [cartId], (err, result) => {
+    if (err) {
+      console.error("Error deleting cart item:", err);
+      return res
+        .status(500)
+        .json({ message: "Failed to remove from cart", error: err });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Cart item not found" });
+    }
+
+    return res.status(200).json({ message: "Removed from cart successfully" });
+  });
+};
+
+/// Convert All Cart Products into Orders by using Role and User Id
+export const placeAllCartItemsIntoOrders = (req, res) => {
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const userId = req.user?.id;
+  const { role } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ message: "Unauthorized. Please login!" });
+  }
+
+  if (!role) {
+    return res.status(400).json({ message: "Role is required" });
+  }
+
+  let ordererIdName;
+  switch (role) {
+    case "Sales Person":
+      ordererIdName = "salesPartnerId";
+      break;
+    case "Onboarding Partner":
+      ordererIdName = "onboardingPartnerId";
+      break;
+    case "Project Partner":
+      ordererIdName = "projectPartnerId";
+      break;
+    case "Territory Partner":
+      ordererIdName = "territoryPartnerId";
+      break;
+    case "Promoter":
+      ordererIdName = "promoterId";
+      break;
+    default:
+      return res.status(400).json({ message: "Invalid role" });
+  }
+
+  const generateOrderId = () => {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    return Array.from({ length: 15 }, () =>
+      chars.charAt(Math.floor(Math.random() * chars.length))
+    ).join("");
+  };
+
+  const generateUniqueOrderId = (callback) => {
+    const newId = generateOrderId();
+    db.query(
+      "SELECT * FROM brandAccessoriesOrders WHERE orderId = ?",
+      [newId],
+      (err, results) => {
+        if (err)
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        if (results.length > 0) {
+          generateUniqueOrderId(callback); // Retry
+        } else {
+          callback(newId);
+        }
+      }
+    );
+  };
+
+const getCartItemsQuery = `
+  SELECT 
+    cart.*, 
+    stock.sellingPrice, 
+    stock.gstPercentage 
+  FROM brandAccessoriesCart AS cart
+  LEFT JOIN (
+    SELECT * FROM brandAccessoriesStock AS s1
+    WHERE stockId = (
+      SELECT MAX(stockId) FROM brandAccessoriesStock 
+      WHERE productId = s1.productId AND productSize = s1.productSize
+    )
+  ) AS stock
+  ON cart.productId = stock.productId 
+  AND cart.productSize = stock.productSize
+  WHERE cart.${ordererIdName} = ?
+`;
+
+  db.query(getCartItemsQuery, [userId], (err, cartItems) => {
+    if (err)
+      return res.status(500).json({ message: "Database error", error: err });
+
+    if (cartItems.length === 0) {
+      return res.status(404).json({ message: "Cart is empty" });
+    }
+    
+    generateUniqueOrderId((orderId) => {
+      db.beginTransaction((err) => {
+        if (err)
+          return res
+            .status(500)
+            .json({ message: "Transaction error", error: err });
+
+        const processNextItem = (index) => {
+          if (index >= cartItems.length) {
+            const deleteCartQuery = `DELETE FROM brandAccessoriesCart WHERE ${ordererIdName} = ?`;
+            db.query(deleteCartQuery, [userId], (err) => {
+              if (err) {
+                return db.rollback(() =>
+                  res
+                    .status(500)
+                    .json({ message: "Failed to clear cart", error: err })
+                );
+              }
+
+              db.commit((err) => {
+                if (err) {
+                  return db.rollback(() =>
+                    res
+                      .status(500)
+                      .json({ message: "Commit failed", error: err })
+                  );
+                }
+
+                return res.status(201).json({
+                  message: "All cart items placed as orders successfully",
+                  orderId,
+                });
+              });
+            });
+            return;
+          }
+
+          const item = cartItems[index];
+          const {
+            productId,
+            productSize,
+            orderQuantity,
+            sellingPrice,
+            gstPercentage,
+          } = item;
+
+          // Ensure valid numbers
+          const price = parseFloat(sellingPrice);
+          const qty = parseInt(orderQuantity);
+          const gst = parseFloat(gstPercentage);
+
+          if (isNaN(price) || isNaN(qty) || isNaN(gst)) {
+            return db.rollback(() =>
+              res.status(400).json({
+                message: `Invalid pricing for product ID ${productId}`,
+                price,
+                qty,
+                gst,
+              })
+            );
+          }
+
+          // Calculate billAmount with GST
+          const priceWithoutGST = price * qty;
+          const billAmount = priceWithoutGST + (priceWithoutGST * gst) / 100;
+
+          const checkStockQuery = `SELECT productQuantity FROM brandAccessories WHERE productId = ?`;
+          db.query(checkStockQuery, [productId], (err, results) => {
+            if (err || results.length === 0) {
+              return db.rollback(() =>
+                res
+                  .status(500)
+                  .json({ message: "Stock check failed", error: err })
+              );
+            }
+
+            const availableQty = results[0].productQuantity;
+            if (availableQty < qty) {
+              return db.rollback(() =>
+                res.status(400).json({
+                  message: `Insufficient stock for product ${productId}`,
+                })
+              );
+            }
+
+            const insertOrderQuery = `
+              INSERT INTO brandAccessoriesOrders 
+              (${ordererIdName}, productId, orderId, productSize, orderQuantity, billAmount, created_at, updated_at)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            `;
+
+            db.query(
+              insertOrderQuery,
+              [
+                userId,
+                productId,
+                orderId,
+                productSize,
+                qty,
+                billAmount,
+                currentdate,
+                currentdate,
+              ],
+              (err) => {
+                if (err) {
+                  return db.rollback(() =>
+                    res
+                      .status(500)
+                      .json({ message: "Insert failed", error: err })
+                  );
+                }
+
+                const updateStockQuery = `
+                  UPDATE brandAccessories 
+                  SET productQuantity = productQuantity - ? 
+                  WHERE productId = ?
+                `;
+                db.query(updateStockQuery, [qty, productId], (err) => {
+                  if (err) {
+                    return db.rollback(() =>
+                      res
+                        .status(500)
+                        .json({ message: "Stock update failed", error: err })
+                    );
+                  }
+
+                  processNextItem(index + 1);
+                });
+              }
+            );
+          });
+        };
+
+        processNextItem(0);
+      });
+    });
+  });
 };

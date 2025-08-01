@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }) => {
   const [giveAccess, setGiveAccess] = useState(false);
   const [filterStatus, setFilterStatus] = useState("New");
   const [showProductForm, setShowProductForm] = useState(false);
+  const [showCart, setShowCart] = useState(false);
   const [showOrder, setShowOrder] = useState(false);
   const [showOrderForm, setShowOrderForm] = useState(false);
 
@@ -65,7 +66,8 @@ export const AuthProvider = ({ children }) => {
         setShowBuilderForm,
         showPropertyForm,
         setShowPropertyForm,
-        showUpdateImagesForm, setShowUpdateImagesForm,
+        showUpdateImagesForm,
+        setShowUpdateImagesForm,
         showAdditionalInfoForm,
         setShowAdditionalInfoForm,
         showPropertyInfo,
@@ -86,10 +88,16 @@ export const AuthProvider = ({ children }) => {
         setIsActive,
         giveAccess,
         setGiveAccess,
-        filterStatus, setFilterStatus,
-        showOrder, setShowOrder,
-        showProductForm, setShowProductForm,
-        showOrderForm, setShowOrderForm,
+        filterStatus,
+        setFilterStatus,
+        showCart,
+        setShowCart,
+        showOrder,
+        setShowOrder,
+        showProductForm,
+        setShowProductForm,
+        showOrderForm,
+        setShowOrderForm,
       }}
     >
       {children}

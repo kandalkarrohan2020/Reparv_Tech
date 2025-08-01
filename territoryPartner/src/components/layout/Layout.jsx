@@ -7,6 +7,7 @@ import enquirersIcon from "../../assets/layout/enquirersIcon.svg";
 import customersIcon from "../../assets/layout/customersIcon.svg";
 import ticketingIcon from "../../assets/layout/ticketingIcon.svg";
 import marketingIcon from "../../assets/layout/marketingIcon.svg";
+import materialIcon from "../../assets/layout/materialIcon.svg";
 import calenderIcon from "../../assets/layout/calenderIcon.svg";
 import { Outlet } from "react-router-dom";
 import { IoMenu } from "react-icons/io5";
@@ -62,6 +63,14 @@ function Layout() {
     setShowCustomer,
     showCustomerPaymentForm,
     setShowCustomerPaymentForm,
+    showCart,
+    setShowCart,
+    showOrder,
+    setShowOrder,
+    showOrderForm,
+    setShowOrderForm,
+    showProductForm,
+    setShowProductForm,
     isLoggedIn,
   } = useAuth();
 
@@ -75,6 +84,10 @@ function Layout() {
     { state: showEnquirerPropertyForm, setter: setShowEnquirerPropertyForm },
     { state: showCustomer, setter: setShowCustomer },
     { state: showCustomerPaymentForm, setter: setShowCustomerPaymentForm },
+    { state: showCart, setter: setShowCart },
+    { state: showOrder, setter: setShowOrder },
+    { state: showOrderForm, setter: setShowOrderForm },
+    { state: showProductForm, setter: setShowProductForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -213,6 +226,11 @@ function Layout() {
               { to: "/customers", icon: customersIcon, label: "Customers" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
+              {
+                to: "/brand-accessories",
+                icon: materialIcon,
+                label: "Brand Accessories",
+              },
               {
                 to: "/marketing-content",
                 icon: marketingIcon,

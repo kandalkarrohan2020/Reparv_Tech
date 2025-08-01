@@ -4,12 +4,10 @@ import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../../store/auth";
 import CustomDateRangePicker from "../CustomDateRangePicker";
-import AddButton from "../AddButton";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../Loader";
-import DownloadCSV from "../DownloadCSV";
 import FormatPrice from "../FormatPrice";
 import TableFilter from "./tableFilter";
 import { BsBagCheckFill } from "react-icons/bs";
@@ -26,19 +24,20 @@ const Products = ({ selectedTable, setSelectedTable }) => {
     setShowProduct,
     showProductForm,
     setShowProductForm,
-    showOrders,
-    setShowOrders,
+    showCart,
+    setShowCart,
     showOrderForm,
     setShowOrderForm,
   } = useAuth();
 
+  const [selectedPartner, setSelectedPartner] = useState("projectPartnerId");
   const [products, setProducts] = useState([]);
-  const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [product, setProduct] = useState({});
   const [productSizeList, setProductSizeList] = useState([]);
   const [productId, setProductId] = useState({});
-  const [orderId, setOrderId] = useState(null);
+  const [cart, setCart] = useState([]);
+  const [cartId, setCartId] = useState(null);
   const [newOrder, setNewOrder] = useState({
     role: "Project Partner",
     productSize: "",
@@ -64,27 +63,6 @@ const Products = ({ selectedTable, setSelectedTable }) => {
     }
   };
 
-  // Fetch Orders from API by Using Id
-  const fetchOrders = async () => {
-    try {
-      const response = await fetch(
-        URI + "/admin/brand-accessories/partner/orders",
-        {
-          method: "GET",
-          credentials: "include", // Ensures cookies are sent
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) throw new Error("Failed to fetch product.");
-      const data = await response.json();
-      setOrders(data);
-    } catch (err) {
-      console.error("Error fetching :", err);
-    }
-  };
-
   //fetch data on form
   const fetchProduct = async (id) => {
     try {
@@ -102,7 +80,6 @@ const Products = ({ selectedTable, setSelectedTable }) => {
       const data = await response.json();
 
       setProduct(data);
-      setShowOrderForm(true);
     } catch (err) {
       console.error("Error fetching:", err);
     }
@@ -127,6 +104,100 @@ const Products = ({ selectedTable, setSelectedTable }) => {
       setProductSizeList(data);
     } catch (err) {
       console.error("Error fetching Product Sizes:", err);
+    }
+  };
+
+  // Fetch Cart Products
+  const fetchCart = async () => {
+    try {
+      const response = await fetch(
+        URI + `/admin/brand-accessories/product/cart/get/${selectedPartner}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch products From Cart.");
+      const data = await response.json();
+      //console.log(data);
+      setCart(data);
+    } catch (err) {
+      console.error("Error fetching Cart Products:", err);
+    }
+  };
+
+  const addToCart = async () => {
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        `${URI}/admin/brand-accessories/product/cart/add/${productId}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newOrder),
+        }
+      );
+
+      if (response.status === 409) {
+        alert("Product already exists in the Cart!");
+      } else if (!response.ok) {
+        throw new Error(`Failed Add to cart. Status: ${response.status}`);
+      } else {
+        alert("Product Add to Cart Successfully");
+
+        setNewOrder({});
+
+        setShowOrderForm(false);
+        await fetchData();
+        setShowCart(true);
+        fetchCart();
+      }
+    } catch (err) {
+      console.error("Error Adding to Cart:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete Product From Cart
+  const removeFromCart = async (cartId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to remove this product from the cart?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(
+        `${URI}/admin/brand-accessories/product/cart/remove/${cartId}`,
+        {
+          method: "DELETE",
+          credentials: "include", // Include cookies (e.g., session ID)
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Product removed successfully!");
+        await fetchCart(); // Refresh cart or list after removal
+      } else {
+        alert(`Error: ${data.message || "Unable to remove product."}`);
+      }
+    } catch (error) {
+      console.error("Error removing product from cart:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -167,34 +238,40 @@ const Products = ({ selectedTable, setSelectedTable }) => {
     }
   };
 
-  // Cancel Order
-  const cancelOrder = async (id) => {
-    if (!window.confirm("Are You Sure to Cancel this Order ?")) return;
+  const cartToOrders = () => {
+    console.log("Buy All Products");
+  };
 
+  const placeAllCartOrders = async () => {
     try {
-      setLoading(true);
       const response = await fetch(
-        URI + `/admin/brand-accessories/product/order/cancel/${id}`,
+        `${URI}/admin/brand-accessories/product/cart/buy`,
         {
-          method: "DELETE",
-          credentials: "include", // Ensures cookies are sent
+          method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            role: "Project Partner",
+          }),
         }
       );
 
       const data = await response.json();
+
       if (response.ok) {
-        alert("Order Canceled successfully!");
-        fetchData();
+        console.log("Order placed successfully:", data);
+        alert(`Order placed! Order ID: ${data.orderId}`);
+        setShowCart(false);
+        setSelectedTable("Orders");
       } else {
+        console.error("Error placing order:", data.message);
         alert(`Error: ${data.message}`);
       }
     } catch (error) {
-      console.error("Error Cancelling Order:", error);
-    } finally {
-      setLoading(false);
+      console.error("Fetch error:", error);
+      alert("Something went wrong while placing the order.");
     }
   };
 
@@ -274,47 +351,6 @@ const Products = ({ selectedTable, setSelectedTable }) => {
 
   const columns = [
     {
-      name: "SN",
-      cell: (row, index) => (
-        <div className="relative group flex items-center w-full">
-          {/* Serial Number Box */}
-          <span
-            className={`min-w-6 flex items-center justify-center px-2 py-1 border rounded-md cursor-pointer ${
-              row.productQuantity > 0
-                ? "bg-[#EAFBF1] text-[#0BB501]"
-                : "bg-[#FFEAEA] text-[#ff2323]"
-            }`}
-          >
-            {index + 1}
-          </span>
-
-          {/* Tooltip */}
-          <div className="absolute w-[65px] text-center -top-12 left-[30px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
-            {row.totalQuantity > 0 ? "In Stock" : "Out of Stock"}
-          </div>
-        </div>
-      ),
-      width: "70px",
-    },
-    {
-      name: "Buy Now",
-      cell: (row) => (
-        <div
-          onClick={() => {
-            setProductId(row.productId);
-            fetchProductSize(row.productId);
-            fetchProduct(row.productId);
-          }}
-          className="orderButton z-10 px-2 lg:px-4 py-1 cursor-pointer flex items-center justify-center gap-1 border rounded-md bg-[#EAFBF1] text-green-600 font-semibold text-[12px] leading-5 active:scale-[0.98]"
-        >
-          {" "}
-          <p>{"Buy"}</p>
-          <BsBagPlusFill className="text-[13px]" />
-        </div>
-      ),
-      width: "120px",
-    },
-    {
       name: "Image",
       cell: (row) => {
         let imageSrc =
@@ -337,19 +373,31 @@ const Products = ({ selectedTable, setSelectedTable }) => {
     },
 
     {
+      name: "Buy Now",
+      cell: (row) => (
+        <div
+          onClick={() => {
+            setProductId(row.productId);
+            fetchProductSize(row.productId);
+            fetchProduct(row.productId);
+            setShowOrderForm(true);
+          }}
+          className="orderButton z-10 px-2 lg:px-4 py-1 cursor-pointer flex items-center justify-center gap-1 border rounded-md bg-[#EAFBF1] text-green-600 font-semibold text-[12px] leading-5 active:scale-[0.98]"
+        >
+          {" "}
+          <p>{"Buy"}</p>
+          <BsBagPlusFill className="text-[13px]" />
+        </div>
+      ),
+      width: "120px",
+    },
+    {
       name: "Product",
       selector: (row) => row.productName,
       sortable: true,
       minWidth: "180px",
       maxWidth: "200px",
     },
-
-    {
-      name: "GST %",
-      selector: (row) => row.gstPercentage + "%",
-      width: "100px",
-    },
-
     {
       name: "Unit Price",
       selector: (row) => <FormatPrice price={row.sellingPrice} />,
@@ -360,8 +408,8 @@ const Products = ({ selectedTable, setSelectedTable }) => {
     {
       name: "Total Price",
       selector: (row) => <FormatPrice price={row.totalPrice} />,
-      minWidth: "100px",
-      maxWidth: "150px",
+      minWidth: "150px",
+      maxWidth: "180px",
     },
 
     {
@@ -384,8 +432,8 @@ const Products = ({ selectedTable, setSelectedTable }) => {
           <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
             <div
               onClick={() => {
-                //fetchOrders();
-                //setShowOrders(true);
+                fetchCart();
+                setShowCart(true);
               }}
               className="orderButton z-10 px-2 lg:px-4 py-[6px] cursor-pointer flex items-center justify-center gap-2 border border-[#00000033] rounded-md bg-[#076300] font-semibold text-4 leading-5 text-[#FFFFFF] active:scale-[0.98]"
             >
@@ -580,9 +628,14 @@ const Products = ({ selectedTable, setSelectedTable }) => {
                   <option value="" disabled>
                     Select Product Size
                   </option>
-                  {productSizeList?.map((item, index) => (
-                    <option key={index} value={item.productSize}>
-                      {item.productSize}
+
+                  {[
+                    ...new Set(
+                      productSizeList?.map((item) => item.productSize)
+                    ),
+                  ].map((size, index) => (
+                    <option key={index} value={size}>
+                      {size}
                     </option>
                   ))}
                 </select>
@@ -627,16 +680,17 @@ const Products = ({ selectedTable, setSelectedTable }) => {
             <div className="flex h-10 mt-8 md:mt-6 justify-end gap-6">
               <button
                 type="button"
+                disabled={!newOrder.productSize || !newOrder.orderQuantity}
                 onClick={() => {
-                  setShowProductForm(false);
-                  setNewOrder({
-                    productId: "",
-                    orderQuantity: "",
-                  });
+                  addToCart();
                 }}
-                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+                className={`px-4 py-2 leading-4 rounded ${
+                  !newOrder.productSize || !newOrder.orderQuantity
+                    ? "bg-[#00000083] text-white cursor-not-allowed"
+                    : "bg-[#000000B2] text-white active:scale-[0.98]"
+                }`}
               >
-                Cancel
+                Add to Cart
               </button>
               <button
                 type="submit"
@@ -652,70 +706,76 @@ const Products = ({ selectedTable, setSelectedTable }) => {
 
       <div
         className={`${
-          showOrders ? "flex" : "hidden"
-        } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
+          showCart ? "flex" : "hidden"
+        } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto top-auto md-left-offset`}
       >
-        <div className="w-full overflow-scroll scrollbar-hide md:w-[550px] max-h-[80vh] bg-white py-8 pb-10 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Order List</h2>
-
-            <IoMdClose
-              onClick={() => {
-                setShowOrders(false);
-                setNewOrder({
-                  productId: "",
-                  orderQuantity: "",
-                });
-              }}
-              className="w-6 h-6 cursor-pointer"
-            />
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] h-screen bg-white py-5 pb-10 px-4 sm:px-5 border border-[#cfcfcf33] transition-all ">
+          <div className="flex items-center mb-3">
+            <div className="p-1 border rounded-lg">
+              <IoMdClose
+                onClick={() => {
+                  setShowCart(false);
+                }}
+                className="w-6 h-6 cursor-pointer"
+              />
+            </div>
           </div>
+
+          {cart.length > 0 && (
+            <div className="w-full flex items-center justify-between border rounded-lg mb-4 overflow-hidden">
+              <div className="w-1/2 flex items-center justify-center text-[#0BB501] py-2 px-4 font-bold">
+                Products : {cart?.length}
+              </div>
+              <div
+                onClick={placeAllCartOrders}
+                className="w-1/2 flex items-center justify-center border-l bg-[#0BB501] text-white py-2 px-4 font-semibold cursor-pointer hover:bg-[#0ab501f6] "
+              >
+                Buy Now
+              </div>
+            </div>
+          )}
+
           {/* orderList View */}
           <div className="grid grid-cols-1 gap-4">
-            {orders?.length > 0 ? (
-              orders?.map((order) => (
-                <div className="w-full max-w-[500px] p-4 border rounded-xl bg-white shadow-sm space-y-2">
+            {cart?.length > 0 ? (
+              cart?.map((product) => (
+                <div className="w-full p-4 border rounded-xl bg-white shadow-sm space-y-2">
                   {/* Product Image and Info */}
                   <div className="flex h-[90px] gap-4 justify-between">
                     <div className="flex gap-4 items-center">
                       <img
-                        src={`${URI}${order?.productImage}`}
+                        src={`${URI}${product?.productImage}`}
                         alt="Product"
                         className="w-[120px] h-[80px] object-cover rounded-md border"
                       />
 
                       <div className="flex flex-col space-y-1">
-                        <h2 className="text-base font-semibold text-gray-800">
-                          {order?.productName || "T-Shirt"}
+                        <h2 className="text-base font-semibold text-gray-900">
+                          {product?.productName}
                         </h2>
-                        <p className="text-xs font-medium text-gray-700">
-                          Order ID :{" "}
+                        <p className="text-sm font-semibold text-gray-500">
+                          Size :{" "}
                           <span className="bg-[#EAFBF1] text-[#0BB501] font-semibold px-1 py-0.5 rounded">
-                            {order?.orderId || 142}
+                            {product?.productSize}
                           </span>
                         </p>
-                        <p className="text-sm text-gray-700">
-                          <span className="bg-gray-100 font-semibold rounded">
-                            {order?.created_at}
+                        <p className="text-sm text-gray-900">
+                          <span className="font-semibold rounded">
+                            {product?.orderCreatedAt}
                           </span>
                         </p>
                       </div>
                     </div>
                     <div className="p-1">
                       <MdCancel
-                        onClick={cancelOrder}
+                        onClick={() => {
+                          removeFromCart(product?.cartId);
+                        }}
                         className="w-5 h-5 md:w-6 mdLh-6 text-red-600 cursor-pointer"
                       />
                     </div>
                   </div>
-
-                  <div className="w-full flex items-center justify-start gap-2 px-4 py-1 border rounded-md">
-                    <h2 className="text-sm font-semibold ">Order Status : </h2>
-                    <span className="bg-[#EAFBF1] text-[#0BB501] text-[12px] font-semibold px-1 py-0.5 rounded">
-                      {order?.status || "New"}
-                    </span>
-                  </div>
-
+                  <div className="border"></div>
                   {/* Order Details */}
                   <div className="grid p-2 grid-cols-2 md:grid-cols-3 gap-4 text-sm font-semibold text-gray-700">
                     <div>
@@ -723,13 +783,13 @@ const Products = ({ selectedTable, setSelectedTable }) => {
                         Quantity
                       </p>
                       <p className="font-semibold ">
-                        {order?.orderQuantity || 0} Units
+                        {product?.orderQuantity || 0} Units
                       </p>
                     </div>
                     <div>
                       <p className="font-medium text-xs text-gray-400">GST</p>
                       <p className="font-semibold ">
-                        {order?.gstPercentage || "18%"}
+                        {product?.gstPercentage || "18%"}
                       </p>
                     </div>
                     <div>
@@ -738,11 +798,7 @@ const Products = ({ selectedTable, setSelectedTable }) => {
                       </p>
                       <p className="font-semibold ">
                         <FormatPrice
-                          price={
-                            parseInt(
-                              order?.totalPrice * order?.orderQuantity
-                            ) || 0
-                          }
+                          price={parseFloat(product?.billAmount) || 0}
                         />
                       </p>
                     </div>
@@ -750,7 +806,7 @@ const Products = ({ selectedTable, setSelectedTable }) => {
                 </div>
               ))
             ) : (
-              <p className="font-semibold">{"Orders Not Found"}</p>
+              <p className="font-semibold">{"Products Not Found"}</p>
             )}
           </div>
         </div>

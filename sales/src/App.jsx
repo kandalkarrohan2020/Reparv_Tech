@@ -18,6 +18,7 @@ import PropertyDetails from "./propertyPages/PropertyDetails.jsx";
 import KYC from "./pages/KYC.jsx";
 import CheckEligibility from "./pages/CheckEligibility.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
+import BrandAccessories from "./pages/BrandAccessories.jsx";
 
 
 const App = () => {
@@ -34,6 +35,7 @@ const App = () => {
           <Route path="/properties" element={<Properties />} />
           <Route path="/calender" element={<Calender />} />
           <Route path="/tickets" element={<Ticketing />} />
+          <Route path="/brand-accessories" element={<BrandAccessories />} />
           <Route path="/marketing-content" element={<MarketingContent />} />
           <Route path="/download-apk" element={<DownloadApk />} />
 

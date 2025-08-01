@@ -27,3 +27,11 @@
   justify-content: center;
 }
 
+/* In your CSS */
+@media (min-width: 768px) {
+  .md-left-offset {
+    left: calc(100vw - 500px);
+    top: 0px;
+  }
+}
+

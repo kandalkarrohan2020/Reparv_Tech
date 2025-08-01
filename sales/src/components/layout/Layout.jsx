@@ -4,6 +4,7 @@ import reparvAppLogo from "../../assets/reparvIcon.png";
 import reparvMainLogo from "../../assets/layout/reparvMainLogo.svg";
 import calenderIcon from "../../assets/layout/calenderIcon.svg";
 import enquirersIcon from "../../assets/layout/enquirersIcon.svg";
+import materialIcon from "../../assets/layout/materialIcon.svg";
 import customersIcon from "../../assets/layout/customersIcon.svg";
 import overviewIcon from "../../assets/layout/overviewIcon.svg";
 import marketingIcon from "../../assets/layout/marketingIcon.svg";
@@ -73,6 +74,14 @@ function Layout() {
     setShowEnquirerPropertyForm,
     showCustomer,
     setShowCustomer,
+    showCart,
+    setShowCart,
+    showOrder,
+    setShowOrder,
+    showOrderForm,
+    setShowOrderForm,
+    showProductForm,
+    setShowProductForm,
     showCustomerPaymentForm,
     setShowCustomerPaymentForm,
   } = useAuth();
@@ -91,6 +100,10 @@ function Layout() {
     { state: showEnquirerPropertyForm, setter: setShowEnquirerPropertyForm },
     { state: showCustomer, setter: setShowCustomer },
     { state: showCustomerPaymentForm, setter: setShowCustomerPaymentForm },
+    { state: showCart, setter: setShowCart },
+    { state: showOrder, setter: setShowOrder },
+    { state: showOrderForm, setter: setShowOrderForm },
+    { state: showProductForm, setter: setShowProductForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -212,14 +225,17 @@ function Layout() {
               { to: "/customers", icon: customersIcon, label: "Customers" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
-              
+              {
+                to: "/brand-accessories",
+                icon: materialIcon,
+                label: "Brand Accessories",
+              },
               {
                 to: "/marketing-content",
                 icon: marketingIcon,
                 label: "Marketing Content",
               },
               { to: "/download-apk", icon: reparvAppLogo, label: "Download" },
-
             ].map(({ to, icon, label }) => (
               <NavLink
                 onClick={() => {

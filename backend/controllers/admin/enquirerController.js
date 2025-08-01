@@ -1,3 +1,4 @@
+import axios from "axios";
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 
@@ -187,47 +188,123 @@ export const status = (req, res) => {
   );
 };
 
+// export const assignEnquiry = async (req, res) => {
+//   const { salespersonid, salesperson, salespersoncontact } = req.body;
+//   if (!salespersonid || !salesperson || !salespersoncontact) {
+//     return res.status(400).json({ message: "All Fields Required" });
+//   }
+//   const Id = parseInt(req.params.id);
+//   let salesInfo = salesperson + " - " + salespersoncontact;
+//   if (isNaN(Id)) {
+//     return res.status(400).json({ message: "Invalid Enquiry ID" });
+//   }
+
+//   db.query(
+//     "SELECT * FROM enquirers WHERE enquirersid = ?",
+//     [Id],
+//     (err, result) => {
+//       if (err) {
+//         console.error("Database error:", err);
+//         return res.status(500).json({ message: "Database error", error: err });
+//       }
+//       if (result.length === 0) {
+//         return res.status(404).json({ message: "Enquiry not found" });
+//       }
+
+//       db.query(
+//         "UPDATE enquirers SET salespersonid = ?, assign = ? WHERE enquirersid = ?",
+//         [salespersonid, salesInfo, Id],
+//         (err, result) => {
+//           if (err) {
+//             console.error("Error assigning sales person :", err);
+//             return res
+//               .status(500)
+//               .json({ message: "Database error", error: err });
+//           }
+//           res.status(200).json({
+//             message: "Enquiry assigned successfully to " + salesperson,
+//           });
+//         }
+//       );
+//     }
+//   );
+// };
+
 export const assignEnquiry = async (req, res) => {
   const { salespersonid, salesperson, salespersoncontact } = req.body;
+  const Id = parseInt(req.params.id);
+  const currentDate = moment().format("YYYY-MM-DD HH:mm:ss");
+
   if (!salespersonid || !salesperson || !salespersoncontact) {
     return res.status(400).json({ message: "All Fields Required" });
   }
-  const Id = parseInt(req.params.id);
-  let salesInfo = salesperson + " - " + salespersoncontact;
+
   if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Enquiry ID" });
   }
 
-  db.query(
-    "SELECT * FROM enquirers WHERE enquirersid = ?",
-    [Id],
-    (err, result) => {
-      if (err) {
-        console.error("Database error:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-      if (result.length === 0) {
-        return res.status(404).json({ message: "Enquiry not found" });
-      }
+  const salesInfo = `${salesperson} - ${salespersoncontact}`;
 
-      db.query(
-        "UPDATE enquirers SET salespersonid = ?, assign = ? WHERE enquirersid = ?",
-        [salespersonid, salesInfo, Id],
-        (err, result) => {
-          if (err) {
-            console.error("Error assigning sales person :", err);
-            return res
-              .status(500)
-              .json({ message: "Database error", error: err });
-          }
-          res.status(200).json({
-            message: "Enquiry assigned successfully to " + salesperson,
-          });
-        }
-      );
+  db.query("SELECT * FROM enquirers WHERE enquirersid = ?", [Id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database error", error: err });
     }
-  );
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Enquiry not found" });
+    }
+
+    db.query(
+      "UPDATE enquirers SET salespersonid = ?, assign = ?, updated_at = ? WHERE enquirersid = ?",
+      [salespersonid, salesInfo, currentDate, Id],
+      async (err, result) => {
+        if (err) {
+          console.error("Error assigning salesperson:", err);
+          return res.status(500).json({ message: "Database error", error: err });
+        }
+
+        // WhatsApp message logic
+        const apikey = "1c26ea744ef248f080ee1c5270081c0b";
+        const msg = `🌟 *REPARV* - New Enquiry Alert 🌟
+
+Hello ${salesperson},
+
+You have been assigned a new enquiry.
+
+🚀 Please check the details and take quick action.
+
+📱 Open the *REPARV Sales Partner App* or  
+🖥️ Visit: https://sales.reparv.in/
+
+Thank you,  
+Team REPARV`;
+
+        const encodedMsg = encodeURIComponent(msg);
+        const apiUrl = `http://wapi.kinextechnologies.in/wapp/api/send?apikey=${apikey}&mobile=${salespersoncontact}&msg=${encodedMsg}`;
+
+        try {
+          const response = await axios.get(apiUrl);
+          console.log("WhatsApp API response:", response.data);
+        } catch (error) {
+          console.error("WhatsApp send error:", error.message);
+          // optional: log but do not block assignment
+        }
+
+        return res.status(200).json({
+          message: `Enquiry assigned successfully to ${salesperson}`,
+          assigned_to: {
+            id: salespersonid,
+            name: salesperson,
+            contact: salespersoncontact,
+          },
+        });
+      }
+    );
+  });
 };
+
+
 
 export const updateEnquirerProperty = async (req, res) => {
   const enquiryId = parseInt(req.params.id);

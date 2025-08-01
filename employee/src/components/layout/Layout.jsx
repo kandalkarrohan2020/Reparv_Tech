@@ -115,6 +115,16 @@ function Layout() {
     setShowEMIForm,
     showEMI,
     setShowEMI,
+    showProduct,
+    setShowProduct,
+    showProductForm,
+    setShowProductForm,
+    showOrder,
+    setShowOrder,
+    showStockForm,
+    setShowStockForm,
+    showStatusForm,
+    setShowStatusForm,
     isLoggedIn,
   } = useAuth();
 
@@ -162,6 +172,11 @@ function Layout() {
     { state: showContentUploadForm, setter: setShowContentUploadForm },
     { state: showEMI, setter: setShowEMI },
     { state: showEMIForm, setter: setShowEMIForm },
+    { state: showProduct, setter: setShowProduct },
+    { state: showProductForm, setter: setShowProductForm },
+    { state: showStockForm, setter: setShowStockForm },
+    { state: showOrder, setter: setShowOrder },
+    { state: showStatusForm, setter: setShowStatusForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -218,9 +233,9 @@ function Layout() {
     { to: "/slider", icon: marketingIcon, label: "Slider" },
     { to: "/testimonial", icon: marketingIcon, label: "Testimonial" },
     {
-      to: "/raw-materials",
+      to: "/brand-accessories",
       icon: materialIcon,
-      label: "Raw Materials",
+      label: "Brand Accessories",
     },
     {
       to: "/marketing-content",

@@ -17,6 +17,11 @@ import {
   status,
   changeOrderStatus,
   cancelOrderByPartner,
+  deleteOrder,
+  addToCart,
+  removeFromCart,
+  getProductsFromCart,
+  placeAllCartItemsIntoOrders,
 } from "../../controllers/admin/brandAccessoriesController.js";
 
 const router = express.Router();
@@ -91,5 +96,22 @@ router.put("/order/status/:id", changeOrderStatus);
 // Cancel Order Through Partner
 router.put("/partner/order/cancel/:id", cancelOrderByPartner);
 
-//router.delete("/product/order/cancel/:id", cancelOrder);
+// delete Order
+router.delete("/order/delete/:id", deleteOrder);
+
+
+// ***  Cart Routes ***
+
+// Fetch Product Items From Cart
+router.get("/product/cart/get/:role", getProductsFromCart);
+
+// Add to Cart
+router.post("/product/cart/add/:id", addToCart);
+
+// Remove From Cart
+router.delete("/product/cart/remove/:id", removeFromCart);
+
+// Convert All Carts Data Into Orders
+router.post("/product/cart/buy", placeAllCartItemsIntoOrders);
+
 export default router;

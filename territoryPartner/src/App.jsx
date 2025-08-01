@@ -16,6 +16,7 @@ import KYC from "./pages/KYC.jsx";
 import DownloadApk from "./pages/DownloadApk.jsx";
 import CheckEligibility from "./pages/CheckEligibility.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
+import BrandAccessories from "./pages/BrandAccessories.jsx";
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const App = () => {
           <Route path="/properties" element={<Properties />} />
           <Route path="/tickets" element={<Ticketing />} />
           <Route path="/calender" element={<CalendarScheduler />} />
+          <Route path="/brand-accessories" element={<BrandAccessories />} />
           <Route path="/marketing-content" element={<MarketingContent />} />
           <Route path="/download-apk" element={<DownloadApk />} />
           

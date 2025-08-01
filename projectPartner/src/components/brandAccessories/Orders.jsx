@@ -7,7 +7,6 @@ import CustomDateRangePicker from "../CustomDateRangePicker";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
-import Loader from "../Loader";
 import TableFilter from "./tableFilter";
 import FormatPrice from "../FormatPrice";
 
@@ -43,7 +42,7 @@ const Orders = ({ selectedTable, setSelectedTable }) => {
       );
       if (!response.ok) throw new Error("Failed to fetch Orders.");
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       setOrders(data);
     } catch (err) {
       console.error("Error fetching :", err);
@@ -65,7 +64,7 @@ const Orders = ({ selectedTable, setSelectedTable }) => {
       );
       if (!response.ok) throw new Error("Failed to fetch order.");
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       setOrder(data);
       setShowOrder(true);
     } catch (err) {
@@ -239,6 +238,13 @@ const Orders = ({ selectedTable, setSelectedTable }) => {
     {
       name: "Product",
       selector: (row) => row.productName,
+      sortable: true,
+      minWidth: "150px",
+      maxWidth: "200px",
+    },
+    {
+      name: "Product Size",
+      selector: (row) => row.productSize,
       sortable: true,
       minWidth: "150px",
       maxWidth: "200px",

@@ -1,4 +1,3 @@
-// import db from "../../config/dbconnect.js";
 import moment from "moment";
 import db from "../../config/dbconnect.js";
 
@@ -102,9 +101,10 @@ export const add = async (req, res) => {
   });
 };
 
-// Fetch All Enquiries for a Customer (GET)
+
 export const getAll = (req, res) => {
-  const { contact } = req.query;
+   const { contact } = req.query;
+console.log('fddd',contact);
 
   // Validate contact
   if (!contact || !contact.trim()) {
@@ -112,33 +112,31 @@ export const getAll = (req, res) => {
       message: "Please provide a valid contact number",
     });
   }
+  
 
   const sql = `
-    SELECT 
-      enquirers.*, 
-      properties.*, 
-      territorypartner.fullname AS territoryName,
-      territorypartner.contact AS territoryContact
+    SELECT enquirers.*,properties.propertyName,properties.seoSlug, properties.frontView, properties.totalOfferPrice,properties.totalSalesPrice,properties.emi,properties.propertyCategory,
+    properties.city,properties.location,properties.propertyApprovedBy,properties.distanceFromCityCenter,
+    territorypartner.fullname AS territoryName,
+    territorypartner.contact AS territoryContact
     FROM enquirers 
-    LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+    LEFT JOIN properties 
+    ON enquirers.propertyid = properties.propertyid
     LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
-    WHERE enquirers.contact = ?
-    ORDER BY enquirers.enquirersid DESC
-  `;
+    WHERE enquirers.contact = ? 
+    ORDER BY enquirers.enquirersid DESC`;
 
   db.query(sql, [contact.trim()], (err, results) => {
     if (err) {
       console.error("Database Query Error:", err);
-      return res.status(500).json({
-        message: "Database query error",
-        error: err,
-      });
+      return res
+        .status(500)
+        .json({ message: "Database query error", error: err });
     }
-
     const formatted = results.map((row) => ({
       ...row,
-      created_at: row.created_at ? moment(row.created_at).format("DD MMM YYYY | hh:mm A") : null,
-      updated_at: row.updated_at ? moment(row.updated_at).format("DD MMM YYYY | hh:mm A") : null,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
     }));
 
     res.status(200).json({
@@ -146,6 +144,7 @@ export const getAll = (req, res) => {
       data: formatted,
     });
   });
+
 };
 
 //Fetch only Visit Enquiry 
@@ -153,10 +152,11 @@ export const getVisitsOnly = (req, res) => {
   const { contact, fullname } = req.query;
 
 
+
   //Validate required query parameters
-  if (!contact || !fullname) {
+  if (!contact) {
     return res.status(400).json({
-      message: "Please provide contact and fullname!",
+      message: "Please provide contact !",
     });
   }
 
@@ -164,17 +164,17 @@ export const getVisitsOnly = (req, res) => {
   const sql = `
     SELECT 
       enquirers.*, 
-      properties.*
+     properties.propertyName,properties.seoSlug, properties.frontView, properties.totalOfferPrice,properties.totalSalesPrice,properties.emi,properties.propertyCategory,
+    properties.city,properties.location,properties.propertyApprovedBy,properties.distanceFromCityCenter
     FROM enquirers 
     LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
     WHERE enquirers.contact = ? 
-      AND enquirers.customer = ? 
       AND enquirers.visitdate IS NOT NULL 
       AND enquirers.status = 'Visit Scheduled'
     ORDER BY enquirers.enquirersid DESC
   `;
 
-  db.query(sql, [contact, fullname], (err, results) => {
+  db.query(sql, [contact], (err, results) => {
     if (err) {
       console.error("Database Query Error:", err);
       return res.status(500).json({
@@ -197,3 +197,77 @@ export const getVisitsOnly = (req, res) => {
   });
 };
 
+//Fetch only Visit Enquiry 
+export const getBookingOnly = (req, res) => {
+  const { contact} = req.query;
+  //Validate required query parameters
+  if (!contact ) {
+    return res.status(400).json({
+      message: "Please provide contact",
+    });
+  }
+
+  //  Get visit records with visitdate and status
+  const sql = `
+    SELECT 
+      enquirers.*, 
+     properties.propertyName,properties.seoSlug, properties.frontView, properties.totalOfferPrice,properties.propertyCategory
+    FROM enquirers 
+    LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+    WHERE enquirers.contact = ?  
+      AND enquirers.status = 'Token'
+    ORDER BY enquirers.enquirersid DESC
+  `;
+
+  db.query(sql, [contact], (err, results) => {
+    if (err) {
+      console.error("Database Query Error:", err);
+      return res.status(500).json({
+        message: "Database query error",
+        error: err,
+      });
+    }
+
+    //Format created_at and updated_at
+    const formatted = results.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    return res.json({
+      message: "Visits fetched successfully",
+      data: formatted,
+    });
+  });
+};
+
+
+export const getPaymentList = (req, res) => {
+  const enquirerId = parseInt(req.params.id);
+  if (isNaN(enquirerId)) {
+    return res.status(400).json({ message: "Invalid Enquirer ID." });
+  }
+
+  const sql = `
+    SELECT 
+      customerPayment.*
+    FROM customerPayment 
+    WHERE customerPayment.enquirerId = ?
+    ORDER BY customerPayment.created_at
+  `;
+
+  db.query(sql, [enquirerId], (err, result) => {
+    if (err) {
+      console.error("Error fetching :", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json(formatted);
+  });
+};

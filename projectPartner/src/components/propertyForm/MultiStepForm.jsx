@@ -13,6 +13,7 @@ const MultiStepForm = ({
   imageFiles,
   setImageFiles,
   builderData,
+  authorities,
   states,
   cities,
 }) => {
@@ -227,6 +228,7 @@ const MultiStepForm = ({
               newProperty={newProperty}
               setPropertyData={setPropertyData}
               builderData={builderData}
+              authorities={authorities}
               states={states}
               cities={cities}
             />

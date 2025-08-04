@@ -15,8 +15,10 @@ import propertyRoutes from "./routes/admin/propertyRoutes.js";
 import customerRoutes from "./routes/admin/customerRoutes.js";
 import roleRoutes from "./routes/admin/roleRoutes.js";
 import departmentRoutes from "./routes/admin/departmentRoutes.js";
+import authoritiesRoutes from "./routes/admin/authoritiesRoutes.js";
 import stateRoutes from "./routes/admin/stateRoutes.js";
 import cityRoutes from "./routes/admin/cityRoutes.js";
+import promoterRoutes from "./routes/admin/promoterRoutes.js";
 import salespersonRoutes from "./routes/admin/salespersonRoutes.js";
 import partnerRoutes from "./routes/admin/partnerRoutes.js";
 import projectPartnerRoutes from "./routes/admin/projectPartnerRoutes.js";
@@ -66,6 +68,16 @@ import employeeBuildersRoutes from "./routes/employee/employeeBuildersRoutes.js"
 import employeePropertyRoutes from "./routes/employee/employeePropertyRoutes.js";
 import employeeTicketRoutes from "./routes/employee/employeeTicketRoutes.js";
 import employeeEnquirersRoutes from "./routes/employee/employeeEnquirersRoutes.js";
+
+// import Project Partner Routes
+import promoterLoginRoutes from "./routes/promoter/loginRoutes.js";
+import promoterProfileRoutes from "./routes/promoter/profileRoutes.js";
+import promoterAgreementRoutes from "./routes/promoter/agreementRoutes.js";
+import promoterDashboardRoutes from "./routes/promoter/dashboardRoutes.js";
+import promoterPropertyRoutes from "./routes/promoter/propertyRoutes.js";
+import promoterCustomerRoutes from "./routes/promoter/customerRoutes.js";
+import promoterBuilderRoutes from "./routes/promoter/builderRoutes.js";
+import promoterTicketRoutes from "./routes/promoter/ticketRoutes.js";
 
 //sales
 import salesLoginRoutes from "./routes/sales/salesLoginRoutes.js";
@@ -215,14 +227,17 @@ const verifyToken = (req, res, next) => {
   const publicRoutes = [
     "/admin/login",
     "/employee/login",
+    "/promote/login",
     "/sales/login",
     "/partner/login",
     "/project-partner/login",
     "/territory-partner/login",
     "/guest-user/register",
     "/guest-user/login",
+    "/admin/authorities",
     "/admin/states",
     "/admin/cities",
+    "/admin/promoter/add",
     "/admin/salespersons/add",
     "/admin/partner/add",
     "/admin/projectpartner/add",
@@ -253,11 +268,13 @@ const verifyToken = (req, res, next) => {
     "/salesapp/post",
     "/salesapp/user",
     "/salesapp/client",
+    "/sales/customers",
     //Territory App
     "/territoryapp/user",
     "/territoryapp/post",
     "/territoryapp/post/get",
-    "/customerapp",
+    "/customerapp/enquiry",
+    "/customerapp/",
     "/customerapp/emiform",
   ];
 
@@ -320,8 +337,10 @@ app.use("/admin/builders", builderRoutes);
 app.use("/admin/customers", customerRoutes);
 app.use("/admin/roles", roleRoutes);
 app.use("/admin/departments", departmentRoutes);
+app.use("/admin/authorities", authoritiesRoutes);
 app.use("/admin/states", stateRoutes);
 app.use("/admin/cities", cityRoutes);
+app.use("/admin/promoter", promoterRoutes);
 app.use("/admin/salespersons", salespersonRoutes);
 app.use("/admin/partner", partnerRoutes);
 app.use("/admin/projectpartner", projectPartnerRoutes);
@@ -358,6 +377,16 @@ app.use("/employee/builders", employeeBuildersRoutes);
 app.use("/employee/properties", employeePropertyRoutes);
 app.use("/employee/enquirers", employeeEnquirersRoutes);
 app.use("/employee/tickets", employeeTicketRoutes);
+
+// Project Partner Routes
+app.use("/promoter", promoterLoginRoutes);
+app.use("/promoter/profile", promoterProfileRoutes);
+app.use("/promoter/agreement", promoterAgreementRoutes);
+app.use("/promoter/dashboard", promoterDashboardRoutes);
+app.use("/promoter/properties", promoterPropertyRoutes);
+app.use("/promoter/customers", promoterCustomerRoutes);
+app.use("/promoter/builders", promoterBuilderRoutes);
+app.use("/promoter/tickets", promoterTicketRoutes);
 
 //Sales Person Routes
 app.use("/sales", salesLoginRoutes);

@@ -13,6 +13,7 @@ import MultiStepForm from "../components/propertyForm/MultiStepForm";
 const Properties = () => {
   const { setShowPropertyForm, URI } = useAuth();
   const [datas, setDatas] = useState([]);
+  const [authorities, setAuthorities] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [builderData, setBuilderData] = useState([]);
@@ -81,6 +82,24 @@ const Properties = () => {
     nearestLandmark: [],
     developedAmenities: [],
   });
+
+  // **Fetch Authorities from API**
+  const fetchAuthorities = async () => {
+    try {
+      const response = await fetch(URI + "/admin/authorities", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch Authorities.");
+      const data = await response.json();
+      setAuthorities(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
 
   // **Fetch States from API**
   const fetchStates = async () => {
@@ -181,6 +200,7 @@ const Properties = () => {
     fetchData();
     fetchStates();
     fetchBuilder();
+    fetchAuthorities();
   }, []);
 
   useEffect(() => {
@@ -479,6 +499,7 @@ const Properties = () => {
         imageFiles={imageFiles}
         setImageFiles={setImageFiles}
         builderData={builderData}
+        authorities={authorities}
         states={states}
         cities={cities}
       />

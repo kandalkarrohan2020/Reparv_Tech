@@ -14,6 +14,7 @@ import OnboardingPartner from "./pages/OnboardingPartner";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import RefundPolicy from "./pages/RefundPolicy";
+import Promoter from "./pages/Promoter";
 
 function App() {
   return (
@@ -22,7 +23,8 @@ function App() {
       <Routes>
         <Route path="" element={<Layout />}>
           <Route path="/" element={<SalesPartner />} />
-
+          
+          <Route path="/promoter" element={<Promoter />} />
           <Route path="/sales-partner" element={<SalesPartner />} />
           <Route path="/territory-partner" element={<TerritoryPartner />} />
           <Route path="/project-partner" element={<ProjectPartner />} />

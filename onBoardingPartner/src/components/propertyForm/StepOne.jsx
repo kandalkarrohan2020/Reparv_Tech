@@ -4,6 +4,7 @@ const StepOne = ({
   newProperty,
   setPropertyData,
   builderData,
+  authorities,
   states,
   cities,
 }) => {
@@ -64,7 +65,11 @@ const StepOne = ({
           </select>
         </div>
 
-        <div className={`${newProperty.propertyCategory === "FarmLand" ? "hidden":"block"} w-full`} >
+        <div
+          className={`${
+            newProperty.propertyCategory === "FarmLand" ? "hidden" : "block"
+          } w-full`}
+        >
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Property Approved by <span className="text-red-600">*</span>
           </label>
@@ -80,11 +85,11 @@ const StepOne = ({
             }
           >
             <option value="">Select Approved by</option>
-            <option value="PMC.">PMC</option>
-            <option value="PCMC">PCMC</option>
-            <option value="PMRDA">PMRDA</option>
-            <option value="NMRDA">NMRDA</option>
-            <option value="NA. TP.">NA. TP.</option>
+            {authorities?.map((authority, index) => (
+              <option key={index} value={authority.authorityNACL}>
+                {authority.authorityNACL}
+              </option>
+            ))}
           </select>
         </div>
 

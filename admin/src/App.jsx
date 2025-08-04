@@ -12,7 +12,12 @@ import MarketingContent from "./pages/MarketingContent.jsx";
 import Login from "./pages/Login.jsx";
 import Employee from "./pages/Employee.jsx";
 import Builders from "./pages/Builders.jsx";
+import Promoter from "./pages/Promoter.jsx";
 import SalesPerson from "./pages/SalesPerson.jsx";
+import OnBoardingPartner from "./pages/OnBoardingPartner.jsx";
+import ProjectPartner from "./pages/ProjectPartner.jsx";
+import TerritoryPartner from "./pages/TerritoryPartner.jsx";
+import GuestUser from "./pages/guestUser.jsx";
 import AuctionMembers from "./pages/AuctionMembers.jsx";
 import Properties from "./pages/Properties.jsx";
 import Role from "./pages/Role.jsx";
@@ -22,16 +27,13 @@ import ErrorPage from "./pages/ErrorPage.jsx";
 import Slider from "./pages/Slider.jsx";
 import Testimonial from "./pages/Testimonial.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
-import OnBoardingPartner from "./pages/OnBoardingPartner.jsx";
-import ProjectPartner from "./pages/projectPartner.jsx";
-import TerritoryPartner from "./pages/TerritoryPartner.jsx";
-import GuestUser from "./pages/guestUser.jsx";
 import Blogs from "./pages/Blogs.jsx";
 import ApkUpload from "./pages/ApkUpload.jsx";
 import UsersLoanEligibility from "./pages/UsersLoanEligibility.jsx";
 import UpdateEMI from "./components/usersLoanEligibility/UpdateEMI.jsx";
 import Trends from "./pages/Trends.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
+
 
 const App = () => {
   return (
@@ -48,6 +50,7 @@ const App = () => {
           <Route path="/customers" element={<Customers />} />
           <Route path="/guest-users" element={<GuestUser />} />
           <Route path="/builders" element={<Builders />} />
+          <Route path="/promoters" element={<Promoter />} />
           <Route path="/salespersons" element={<SalesPerson />} />
           <Route path="/onboardingpartner" element={<OnBoardingPartner />} />
           <Route path="/projectpartner" element={<ProjectPartner />} />

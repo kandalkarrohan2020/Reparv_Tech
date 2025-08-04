@@ -22,7 +22,7 @@ function ProjectPartner() {
         keywords={""}
       />
       <div className="w-full">
-        {/* Sales Top BackGround */}
+        {/*  Top BackGround */}
         <div className="w-full flex flex-col items-center justify-center backImage relative">
           <div className="relative w-full min-h-120 max-h-170 sm:min-h-170 sm:max-h-200 md:min-h-70 md:max-h-200 flex items-center justify-center">
             <img

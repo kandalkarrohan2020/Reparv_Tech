@@ -238,10 +238,6 @@ const Products = ({ selectedTable, setSelectedTable }) => {
     }
   };
 
-  const cartToOrders = () => {
-    console.log("Buy All Products");
-  };
-
   const placeAllCartOrders = async () => {
     try {
       const response = await fetch(
@@ -283,7 +279,7 @@ const Products = ({ selectedTable, setSelectedTable }) => {
     if (product) {
       setNewOrder((prev) => ({
         ...prev,
-        role: "Sales Partner",
+        role: "Sales Person",
         sellingPrice: product?.sellingPrice || "",
         gstPercentage: product?.gstPercentage || "",
         productId: product?.productId || "",

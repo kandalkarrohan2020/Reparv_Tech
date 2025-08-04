@@ -1,6 +1,13 @@
 import React from "react";
 
-const StepOne = ({ newProperty, setPropertyData, builderData, states, cities }) => {
+const StepOne = ({
+  newProperty,
+  setPropertyData,
+  builderData,
+  authorities,
+  states,
+  cities,
+}) => {
   return (
     <div className="bg-white h-[55vh] overflow-scroll scrollbar-x-hidden p-2">
       <h2 className="text-base font-semibold mb-4">Step 1: Property Details</h2>
@@ -9,7 +16,7 @@ const StepOne = ({ newProperty, setPropertyData, builderData, states, cities }) 
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Builder/Company <span className="text-red-600">*</span>
           </label>
-          <select 
+          <select
             required
             className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
             style={{ backgroundImage: "none" }}
@@ -62,7 +69,11 @@ const StepOne = ({ newProperty, setPropertyData, builderData, states, cities }) 
           </select>
         </div>
 
-        <div className={`${newProperty.propertyCategory === "FarmLand" ? "hidden":"block"} w-full`}>
+        <div
+          className={`${
+            newProperty.propertyCategory === "FarmLand" ? "hidden" : "block"
+          } w-full`}
+        >
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Property Approved by <span className="text-red-600">*</span>
           </label>
@@ -78,11 +89,11 @@ const StepOne = ({ newProperty, setPropertyData, builderData, states, cities }) 
             }
           >
             <option value="">Select Approved by</option>
-            <option value="PMC.">PMC</option>
-            <option value="PCMC">PCMC</option>
-            <option value="PMRDA">PMRDA</option>
-            <option value="NMRDA">NMRDA</option>
-            <option value="NA. TP.">NA. TP.</option>
+            {authorities?.map((authority, index) => (
+              <option key={index} value={authority.authorityNACL}>
+                {authority.authorityNACL}
+              </option>
+            ))}
           </select>
         </div>
 

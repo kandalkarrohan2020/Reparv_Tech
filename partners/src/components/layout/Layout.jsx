@@ -189,8 +189,17 @@ function Layout() {
           </div>
 
           <div className="footerBody w-full flex justify-between">
-            <div className="leftBody flex flex-col gap-5 text-lg font-medium">
+            <div className="leftBody flex flex-col gap-4 text-lg font-medium">
               <h3 className="text-xl font-bold">Company</h3>
+              <p className="cursor-pointer">
+                <Link
+                  onClick={() => {
+                    window.open("https://www.reparv.in/", "_blank");
+                  }}
+                >
+                  Home
+                </Link>
+              </p>
               <p className="cursor-pointer">
                 <Link
                   onClick={() => {
@@ -229,8 +238,11 @@ function Layout() {
               </p>
             </div>
 
-            <div className="midBody flex flex-col gap-5 text-lg font-medium !text-White">
+            <div className="midBody flex flex-col gap-4 text-lg font-medium !text-White">
               <h3 className="text-xl font-bold">Become a Professional</h3>
+              <p className="cursor-pointer">
+                <Link to="/promoter">Promoter</Link>
+              </p>
               <p className="cursor-pointer">
                 <Link to="/sales-partner">Sales Partner</Link>
               </p>
@@ -245,7 +257,7 @@ function Layout() {
               </p>
             </div>
 
-            <div className="downloadBody hidden lg:flex flex-col gap-5 text-lg font-medium !text-White">
+            <div className="downloadBody hidden lg:flex flex-col gap-4 text-lg font-medium !text-White">
               <h3 className="text-xl font-bold">Download Apps</h3>
               <p className="cursor-pointer">
                 <a href={`${URI}/${salesApkUrl}`} download="Sales.apk" className="hover:text-[#0BB501]">
@@ -295,7 +307,7 @@ function Layout() {
           </div>
 
           <div className="footerBottom text-lg py-3 leading-6 flex gap-4 md:gap-6 tracking-[0.6%] text-white/60 ">
-            <span>@2024 reparv.com All Right Reserved</span>
+            <span>@{new Date().getFullYear()} reparv.in All Rights Reserved</span>
             <Link to="/terms-and-conditions" className="cursor-pointer">
               Terms & Conditions
             </Link>
@@ -381,7 +393,7 @@ function Layout() {
         </div>
 
         <div className="footerBottom w-full text-xs sm:text-lg py-3 leading-6 flex flex-col items-center justify-center gap-4 md:gap-6 tracking-[0.6%] text-white/60 ">
-          <span>@2024 reparv.com All Right Reserved</span>
+          <span>@{new Date().getFullYear()} reparv.in All Rights Reserved</span>
           <div className="flex text-[10px] w-full items-center justify-evenly">
             <Link to="/terms-and-conditions" className="cursor-pointer">
               Terms & Conditions

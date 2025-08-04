@@ -104,16 +104,12 @@ export const add = async (req, res) => {
 
 export const getAll = (req, res) => {
    const { contact } = req.query;
-console.log('fddd',contact);
-
   // Validate contact
   if (!contact || !contact.trim()) {
     return res.status(400).json({
       message: "Please provide a valid contact number",
     });
   }
-  
-
   const sql = `
     SELECT enquirers.*,properties.propertyName,properties.seoSlug, properties.frontView, properties.totalOfferPrice,properties.totalSalesPrice,properties.emi,properties.propertyCategory,
     properties.city,properties.location,properties.propertyApprovedBy,properties.distanceFromCityCenter,
@@ -197,67 +193,34 @@ export const getVisitsOnly = (req, res) => {
   });
 };
 
-//Fetch only Visit Enquiry 
-export const getBookingOnly = (req, res) => {
-  const { contact} = req.query;
-  //Validate required query parameters
-  if (!contact ) {
-    return res.status(400).json({
-      message: "Please provide contact",
-    });
-  }
 
-  //  Get visit records with visitdate and status
+export const getBookingOnly = (req, res) => {
+    const { contact } = req.query;
+    console.log(contact);
+  if (!contact) {
+    console.log("Invalid User Id: " + contact);
+    return res.status(400).json({ message: "Invalid User Id" });
+  }
   const sql = `
     SELECT 
       enquirers.*, 
-     properties.propertyName,properties.seoSlug, properties.frontView, properties.totalOfferPrice,properties.propertyCategory
+      properties.frontView,
+      properties.seoSlug,
+      properties.commissionType,
+      properties.commissionAmount,
+      properties.commissionPercentage,
+      territorypartner.fullname AS territoryName, 
+      territorypartner.contact AS territoryContact,
+      propertyfollowup.*
     FROM enquirers 
     LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
-    WHERE enquirers.contact = ?  
-      AND enquirers.status = 'Token'
-    ORDER BY enquirers.enquirersid DESC
+    LEFT JOIN territorypartner ON enquirers.territorypartnerid = territorypartner.id
+    LEFT JOIN propertyfollowup ON propertyfollowup.enquirerid = enquirers.enquirersid
+    WHERE enquirers.status = 'Token' AND propertyfollowup.status = 'Token' AND enquirers.contact= ?
+    ORDER BY propertyfollowup.created_at DESC
   `;
 
-  db.query(sql, [contact], (err, results) => {
-    if (err) {
-      console.error("Database Query Error:", err);
-      return res.status(500).json({
-        message: "Database query error",
-        error: err,
-      });
-    }
-
-    //Format created_at and updated_at
-    const formatted = results.map((row) => ({
-      ...row,
-      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
-      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
-    }));
-
-    return res.json({
-      message: "Visits fetched successfully",
-      data: formatted,
-    });
-  });
-};
-
-
-export const getPaymentList = (req, res) => {
-  const enquirerId = parseInt(req.params.id);
-  if (isNaN(enquirerId)) {
-    return res.status(400).json({ message: "Invalid Enquirer ID." });
-  }
-
-  const sql = `
-    SELECT 
-      customerPayment.*
-    FROM customerPayment 
-    WHERE customerPayment.enquirerId = ?
-    ORDER BY customerPayment.created_at
-  `;
-
-  db.query(sql, [enquirerId], (err, result) => {
+  db.query(sql, [contact], (err, result) => {
     if (err) {
       console.error("Error fetching :", err);
       return res.status(500).json({ message: "Database error", error: err });
@@ -268,6 +231,9 @@ export const getPaymentList = (req, res) => {
       updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
     }));
 
-    res.json(formatted);
+
+  return  res.json(formatted);
   });
 };
+
+

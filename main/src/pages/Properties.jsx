@@ -18,6 +18,7 @@ import { usePropertyFilter } from "../store/propertyFilter";
 import SEO from "../components/SEO";
 import PropertyCategories from "../components/PropertyCategories";
 import { IoMdDoneAll } from "react-icons/io";
+import Select from "react-select";
 
 export default function Properties() {
   const { setVideoInView, isIntersecting } = useOutletContext();
@@ -41,6 +42,24 @@ export default function Properties() {
   const [filteredProperties, setFilteredProperties] = useState(properties);
   const [searchTerm, setSearchTerm] = useState("");
   const [cities, setCities] = useState([]);
+  // Convert cities to options
+  const cityOptions = cities?.map((city) => ({
+    value: city,
+    label: city,
+  }));
+  const customStyles = {
+    control: (base, state) => ({
+      ...base,
+      fontSize: "0.75rem", // text-xs
+      padding: 0,
+      cursor: "pointer",
+      borderColor: state.isFocused ? "#00C42B" : base.borderColor,
+      boxShadow: state.isFocused ? "0 0 0 1px #00C42B" : "none",
+      "&:hover": {
+        borderColor: "#00C42B",
+      },
+    }),
+  };
 
   const filteredData = filteredProperties.filter((item) =>
     item.propertyName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -193,9 +212,37 @@ export default function Properties() {
         }
       />
       <div className="properties w-full max-w-[1400px] flex flex-col p-4 sm:py-4 sm:px-0 mx-auto">
-        {/* Search Bar */}
-        <div className="w-full flex flex-wrap gap-4 justify-beteen sm:justify-end sm:py-2 sm:px-5">
-          <div className="w-1/2 sm:min-w-[350px] flex items-center justify-center relative">
+        <div className="w-full flex flex-wrap gap-3 justify-beteen sm:justify-end sm:py-2 sm:px-5">
+          {/* City Selector And Location Filter For MobileScreen  */}
+          <div className="w-full flex sm:hidden gap-1 items-center justify-between">
+            <div className="selectCity min-w-[200px] max-w-[250px] relative inline-block">
+              <Select
+                className="w-full text-xs p-0 cursor-pointer"
+                styles={customStyles}
+                options={cityOptions}
+                value={
+                  cityOptions.find((opt) => opt.value === selectedCity) || null
+                }
+                onChange={(selectedOption) => {
+                  const value = selectedOption?.value || "";
+                  setSelectedCity(value);
+                  //navigate("/properties");
+                }}
+                placeholder="Select City"
+                isClearable={false}
+              />
+            </div>
+            <div
+              onClick={() => {
+                setShowFilterPopup(true);
+              }}
+              className="filterIcon p-[10px] border border-gray-300 rounded-md flex items-center justify-center"
+            >
+              <IoFilter />
+            </div>
+          </div>
+          {/* Search Bar */}
+          <div className="w-full sm:w-1/2 sm:min-w-[350px] flex items-center justify-center relative">
             <span className="absolute inset-y-0 left-4 md:left-4 flex items-center text-gray-400">
               <IoSearchSharp className="w-4 md:w-5 h-4 md:h-5" />
             </span>
@@ -204,43 +251,8 @@ export default function Properties() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search For Your Favourite Property"
-              className="w-full pl-10 md:pl-11 pr-4 py-2 text-xs md:text-base rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-[#00000066]"
+              className="w-full pl-10 md:pl-11 pr-4 py-[10px] text-xs md:text-base rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#00C42B] placeholder:text-[#00000066]"
             />
-          </div>
-
-          {/* City Selector And Location Filter For MobileScreen  */}
-          <div className="min-w-[140px]  flex sm:hidden gap-1 items-center justify-between">
-            <div
-              onClick={() => {
-                setShowFilterPopup(true);
-              }}
-              className="filterIcon p-2 border border-gray-300 rounded-md flex items-center justify-center"
-            >
-              <IoFilter />
-            </div>
-            <div className="selectCity min-w-[100px] max-w-[180px] relative inline-block">
-              <div className="flex gap-1 items-center justify-center text-xs font-semibold  text-black p-1 ">
-                <CiLocationOn className="w-5 h-5" />
-                <span>{selectedCity || "Select City"}</span>
-                <RiArrowDropDownLine className="w-6 h-6 text-black" />
-              </div>
-              <select
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                value={selectedCity}
-                onChange={(e) => {
-                  const action = e.target.value;
-                  setSelectedCity(action);
-                  //navigate("/properties");
-                }}
-              >
-                <option value="">Select City</option>
-                {cities?.map((city, index) => (
-                  <option key={index} value={city}>
-                    {city}
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
         </div>
         <div className=" relative w-full min-h-[77vh] flex gap-5 py-4 sm:p-4">

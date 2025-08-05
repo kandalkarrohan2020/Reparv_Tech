@@ -9,7 +9,8 @@ import PropertyNavbar from "./PropertyNavbar";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { IoSearchSharp } from "react-icons/io5";
 import { CiLocationOn } from "react-icons/ci";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Select from "react-select";
 
 export default function ImageSlider() {
   const {
@@ -23,6 +24,25 @@ export default function ImageSlider() {
   const [sliderImages, setSliderImages] = useState([]);
   const [mobileImage, setMobileImage] = useState([]);
   const [cities, setCities] = useState([]);
+  // Convert cities to options
+  const cityOptions = cities?.map((city) => ({
+    value: city,
+    label: city,
+  }));
+  const customStyles = {
+    control: (base, state) => ({
+      ...base,
+      fontSize: "0.75rem", // text-xs
+      padding: 0,
+      cursor: "pointer",
+      borderColor: state.isFocused ? "#00C42B" : base.borderColor,
+      boxShadow: state.isFocused ? "0 0 0 1px #00C42B" : "none",
+      "&:hover": {
+        borderColor: "#00C42B",
+      },
+    }),
+  };
+
   // *Fetch Data from API*
   const fetchAllCity = async () => {
     try {
@@ -68,9 +88,27 @@ export default function ImageSlider() {
 
   return (
     <div className="relative w-full mx-auto max-w-[1650px] flex flex-col items-center justify-center mb-5">
-      <div className="w-full flex sm:hidden items-center justify-between gap-2 px-4 pt-3 pb-2">
+      <div className="w-full flex flex-col sm:hidden gap-2 px-4 pt-3 pb-2">
+        {/* Mobile City Selector */}
+        <div className="selectCity w-full max-w-[250px] relative inline-block">
+          <Select
+            className="w-full text-xs p-0 cursor-pointer z-10"
+            styles={customStyles}
+            options={cityOptions}
+            value={
+              cityOptions.find((opt) => opt.value === selectedCity) || null
+            }
+            onChange={(selectedOption) => {
+              const value = selectedOption?.value || "";
+              setSelectedCity(value);
+              //navigate("/properties");
+            }}
+            placeholder="Select City"
+            isClearable={false}
+          />
+        </div>
         {/* Mobile Search */}
-        <div className="relative min-w-[140px] max-w-[250px] bg-white rounded-md ">
+        <div className="relative w-full bg-white rounded-md">
           <span className="absolute inset-y-0 left-2 md:left-6 flex items-center text-gray-400">
             <IoSearchSharp className="w-4 md:w-5 h-4 md:h-5" />
           </span>
@@ -81,32 +119,8 @@ export default function ImageSlider() {
               setPropertySearch(e.target.value);
             }}
             placeholder="Search Property"
-            className="w-full pl-7 md:pl-14 pr-4 py-2 text-xs md:text-base rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-[#00000066]"
+            className="w-full pl-7 md:pl-14 pr-4 py-[10px] text-xs md:text-base rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-[#00000066]"
           />
-        </div>
-        {/* Mobile City Selector */}
-        <div className="selectCity min-w-[100px] max-w-[180px] relative inline-block">
-          <div className="flex gap-1 items-center justify-center text-sm font-semibold  text-black p-1 ">
-            <CiLocationOn className="w-5 h-5" />
-            <span>{selectedCity || "Select City"}</span>
-            <RiArrowDropDownLine className="w-6 h-6 text-black" />
-          </div>
-          <select
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            value={selectedCity}
-            onChange={(e) => {
-              const action = e.target.value;
-              setSelectedCity(action);
-              //navigate("/properties");
-            }}
-          >
-            <option value="">Select City</option>
-            {cities?.map((city, index) => (
-              <option key={index} value={city}>
-                {city}
-              </option>
-            ))}
-          </select>
         </div>
       </div>
       <Swiper

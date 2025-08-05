@@ -80,6 +80,17 @@ function Layout() {
 
             <div className="w-full flex flex-col gap-3 px-10 font-semibold text-[#110229]">
               <NavLink
+                to="/promoter"
+                onClick={() => {
+                  setShowSidebar(false);
+                }}
+                className={`${getNavLinkClass(
+                  "/promoter"
+                )} ${getNavLinkClass("/promoter")}`}
+              >
+                Promoter
+              </NavLink>
+              <NavLink
                 to="/sales-partner"
                 onClick={() => {
                   setShowSidebar(false);

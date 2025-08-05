@@ -23,6 +23,7 @@ import { useInView } from "react-intersection-observer";
 import BenefitsPopup from "../property/BenefitsPopup";
 import SiteVisitPopup from "../property/SiteVisitPopup";
 import FilterSidebar from "../FilterSidebar";
+import Select from "react-select";
 
 function Layout() {
   const {
@@ -43,7 +44,7 @@ function Layout() {
   } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const { ref: footerRef, inView: footerInView } = useInView({
     threshold: 0.1,
   });
@@ -59,6 +60,25 @@ function Layout() {
   };
 
   const [cities, setCities] = useState([]);
+  // Convert cities to options
+  const cityOptions = cities?.map((city) => ({
+    value: city,
+    label: city,
+  }));
+  const customStyles = {
+    control: (base, state) => ({
+      ...base,
+      fontSize: "14px",
+      fontWeight: "bold",
+      padding: 0,
+      cursor: "pointer",
+      borderColor: state.isFocused ? "#00C42B" : base.borderColor,
+      boxShadow: state.isFocused ? "0 0 0 1px #00C42B" : "none",
+      "&:hover": {
+        borderColor: "#00C42B",
+      },
+    }),
+  };
 
   // *Fetch Data from API*
   const fetchAllCity = async () => {
@@ -172,33 +192,26 @@ function Layout() {
         </div>
         <div
           className={`selectCity ${
-            location.pathname !== "/check-eligibility" ? "sm:inline-block" : "hidden"
-          } hidden min-w-[50px] max-w-[180px] relative`}
+            location.pathname !== "/check-eligibility"
+              ? "sm:inline-block"
+              : "hidden"
+          } hidden min-w-[100px] max-w-[230px] relative`}
         >
-          <div className="flex lg:gap-1 items-center justify-center text-lg font-semibold text-black lg:p-1">
-            <CiLocationOn className="w-5 h-5" />
-            <span className="hidden sm:block md:hidden xl:block">
-              {selectedCity || "Select City"}
-            </span>
-            <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
-          </div>
-
-          <select
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            value={selectedCity}
-            onChange={(e) => {
-              const action = e.target.value;
-              setSelectedCity(action);
+          <Select
+            className="w-full cursor-pointer text-xs font-semibold"
+            styles={customStyles}
+            options={cityOptions}
+            value={
+              cityOptions.find((opt) => opt.value === selectedCity) || null
+            }
+            onChange={(selectedOption) => {
+              const value = selectedOption?.value || "";
+              setSelectedCity(value);
               navigate("/properties");
             }}
-          >
-            <option value="">Select City</option>
-            {cities?.map((city, index) => (
-              <option key={index} value={city}>
-                {city}
-              </option>
-            ))}
-          </select>
+            placeholder="Select City"
+            isClearable={false}
+          />
         </div>
         <div className="menu flex items-center justify-between md:hidden">
           <IoMdMenu
@@ -292,10 +305,7 @@ function Layout() {
               <p
                 className="cursor-pointer"
                 onClick={() => {
-                  window.open(
-                    "https://partners.reparv.in/promoter",
-                    "_blank"
-                  );
+                  window.open("https://partners.reparv.in/promoter", "_blank");
                 }}
               >
                 Promoter
@@ -378,7 +388,9 @@ function Layout() {
           </div>
 
           <div className="footerBottom text-lg py-3 leading-6 flex gap-4 md:gap-6 tracking-[0.6%] text-white/60 ">
-            <span>@{new Date().getFullYear()} reparv.in All Rights Reserved</span>
+            <span>
+              @{new Date().getFullYear()} reparv.in All Rights Reserved
+            </span>
             <Link to="/terms-and-conditions" className="cursor-pointer">
               Terms & Conditions
             </Link>

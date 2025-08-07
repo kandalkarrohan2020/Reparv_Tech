@@ -14,6 +14,7 @@ import MarketingContent from "./pages/MarketingContent.jsx";
 import Login from "./pages/Login.jsx";
 import Employee from "./pages/Employee.jsx";
 import Builders from "./pages/Builders.jsx";
+import Promoter from "./pages/Promoter.jsx";
 import SalesPerson from "./pages/SalesPerson.jsx";
 import AuctionMembers from "./pages/AuctionMembers.jsx";
 import Properties from "./pages/Properties.jsx";
@@ -68,6 +69,10 @@ const App = () => {
     {
       name: "Builders",
       menu: <Route path="/builders" element={<Builders />} />,
+    },
+    {
+      name: "Promoters",
+      menu: <Route path="/promoters" element={<Promoter />} />,
     },
     {
       name: "Sales Persons",

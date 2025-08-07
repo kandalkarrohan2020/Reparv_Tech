@@ -65,7 +65,7 @@ const Ticketing = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(URI + "/partner/tickets", {
+      const response = await fetch(URI + "/territory-partner/tickets", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -87,7 +87,7 @@ const Ticketing = () => {
   //Fetch department data
   const fetchAdminData = async () => {
     try {
-      const response = await fetch(URI + "/partner/tickets/admins", {
+      const response = await fetch(URI + "/territory-partner/tickets/admins", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -105,7 +105,7 @@ const Ticketing = () => {
   //Fetch department data
   const fetchDepartmentData = async () => {
     try {
-      const response = await fetch(URI + "/partner/tickets/departments", {
+      const response = await fetch(URI + "/territory-partner/tickets/departments", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -123,7 +123,7 @@ const Ticketing = () => {
   //Fetch department data
   const fetchEmployeeData = async (id) => {
     try {
-      const response = await fetch(URI + "/partner/tickets/employees/" + id, {
+      const response = await fetch(URI + "/territory-partner/tickets/employees/" + id, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -144,7 +144,7 @@ const Ticketing = () => {
     const endpoint = newTicket.ticketid ? `edit/${newTicket.ticketid}` : "add";
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/partner/tickets/${endpoint}`, {
+      const response = await fetch(`${URI}/territory-partner/tickets/${endpoint}`, {
         method: newTicket.ticketid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -185,7 +185,7 @@ const Ticketing = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(`${URI}/partner/tickets/${id}`, {
+      const response = await fetch(`${URI}/territory-partner/tickets/${id}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -204,7 +204,7 @@ const Ticketing = () => {
   // View Ticket
   const viewTicket = async (id) => {
     try {
-      const response = await fetch(`${URI}/partner/tickets/${id}`, {
+      const response = await fetch(`${URI}/territory-partner/tickets/${id}`, {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent
         headers: {
@@ -225,7 +225,7 @@ const Ticketing = () => {
     if (!window.confirm("Are you sure you want to delete this ticket?")) return;
 
     try {
-      const response = await fetch(URI + `/partner/tickets/delete/${id}`, {
+      const response = await fetch(URI + `/territory-partner/tickets/delete/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

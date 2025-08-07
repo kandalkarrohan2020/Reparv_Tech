@@ -1,9 +1,6 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 import bcrypt from "bcryptjs";
-import sendEmail from "../../utils/nodeMailer.js";
-
-const saltRounds = 10;
 
 export const getProfile = (req, res) => {
   const Id = req.user?.id; 
@@ -11,7 +8,7 @@ export const getProfile = (req, res) => {
     return res.status(400).json({ message: "Unauthorized User" });
   }
 
-  const sql = `SELECT * FROM projectpartner WHERE id = ?`;
+  const sql = `SELECT * FROM promoter WHERE id = ?`;
   
   db.query(sql, [Id], (err, result) => {
     if (err) {
@@ -39,7 +36,7 @@ export const editProfile = (req, res) => {
   }
 
   // Fetch existing user profile first
-  db.query("SELECT userimage FROM projectpartner WHERE id = ?", [userId], (err, result) => {
+  db.query("SELECT userimage FROM promoter WHERE id = ?", [userId], (err, result) => {
     if (err) {
       console.error("Error fetching user:", err);
       return res.status(500).json({ message: "Database error", error: err });
@@ -52,7 +49,7 @@ export const editProfile = (req, res) => {
     const existingImage = result[0].userimage;
     const finalImagePath = req.file ? `/uploads/${req.file.filename}` : existingImage;
 
-    let updateSql = `UPDATE projectpartner SET fullname = ?, username = ?, contact = ?, email = ?, userimage = ?, updated_at = ? WHERE id = ?`;
+    let updateSql = `UPDATE promoter SET fullname = ?, username = ?, contact = ?, email = ?, userimage = ?, updated_at = ? WHERE id = ?`;
     const updateValues = [
       fullname,
       username,
@@ -91,7 +88,7 @@ export const changePassword = async (req, res) => {
   
   try {
     // Fetch user's current password from the database
-    db.query("SELECT password FROM projectpartner WHERE id = ?", [userId], async (err, result) => {
+    db.query("SELECT password FROM promoter WHERE id = ?", [userId], async (err, result) => {
       if (err) {
         console.error("Error fetching user:", err);
         return res.status(500).json({ message: "Database error", error: err });
@@ -113,7 +110,7 @@ export const changePassword = async (req, res) => {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
       // Update the password in the database
-      db.query("UPDATE projectpartner SET password = ? WHERE id = ?", [hashedPassword, userId], (updateErr) => {
+      db.query("UPDATE promoter SET password = ? WHERE id = ?", [hashedPassword, userId], (updateErr) => {
         if (updateErr) {
           console.error("Error updating password:", updateErr);
           return res.status(500).json({ message: "Database error during update", error: updateErr });

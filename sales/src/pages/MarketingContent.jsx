@@ -223,8 +223,6 @@ const MarketingContent = () => {
             Select Action
           </option>
           <option value="view">View</option>
-          <option value="update">Update</option>
-          <option value="delete">Delete</option>
         </select>
       </div>
     );

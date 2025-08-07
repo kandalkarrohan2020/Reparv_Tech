@@ -175,6 +175,12 @@ function Dashboard() {
             to: "/employees",
           },
           {
+            label: "Promoters",
+            value: overviewCountData?.totalPromoter || "00",
+            // icon: card4,
+            to: "/promoters",
+          },
+          {
             label: "Project Partners",
             value: overviewCountData?.totalProjectPartner || "00",
             // icon: card4,

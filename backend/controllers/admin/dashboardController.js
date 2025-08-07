@@ -8,8 +8,9 @@ export const getCount = (req, res) => {
          JOIN enquirers e ON pf.enquirerid = e.enquirersid
          WHERE pf.status = 'Token'
         ) AS totalDealAmount,
-
+        
         (SELECT COUNT(enquirersid) FROM enquirers WHERE status = 'Token') AS totalCustomer,
+        (SELECT COUNT(enquirersid) FROM enquirers WHERE status != 'Token') AS totalEnquiry,
         
         (SELECT IFNULL(SUM(pf.totalcommission), 0)
          FROM propertyfollowup pf
@@ -42,10 +43,10 @@ export const getCount = (req, res) => {
          WHERE pf.status = 'Token'
         ) AS totalTDS,
 
-        (SELECT COUNT(enquirersid) FROM enquirers) AS totalEnquiry,
         (SELECT COUNT(propertyid) FROM properties) AS totalProperty,
         (SELECT COUNT(builderid) FROM builders) AS totalBuilder,
         (SELECT COUNT(id) FROM employees) AS totalEmployee,
+        (SELECT COUNT(id) FROM promoter WHERE status = 'Active' AND paymentstatus = 'Success') AS totalPromoter,
         (SELECT COUNT(salespersonsid) FROM salespersons WHERE status = 'Active' AND paymentstatus = 'Success') AS totalSalesPerson,
         (SELECT COUNT(id) FROM territorypartner WHERE status = 'Active' AND paymentstatus = 'Success') AS totalTerritoryPartner,
         (SELECT COUNT(partnerid) FROM onboardingpartner WHERE status = 'Active' AND paymentstatus = 'Success') AS totalOnboardingPartner,

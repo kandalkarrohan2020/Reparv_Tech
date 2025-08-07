@@ -6,7 +6,7 @@ const filterOptions = [
   { label: "New", color: "text-[#0BB501] bg-green-100" },
   { label: "Follow Up", color: "text-[#5D00FF] bg-purple-100" },
   { label: "Cancelled", color: "text-[#FF4646] bg-red-100 " },
-   { label: "Visit Scheduled", color: "text-[#0068FF] bg-blue-100" },
+  { label: "Visit Scheduled", color: "text-[#0068FF] bg-blue-100" },
 ];
 
 const FilterData = ({selectedFilter, setSelectedFilter}) => {

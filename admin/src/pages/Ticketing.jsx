@@ -472,7 +472,7 @@ const Ticketing = () => {
         <div className="w-full flex flex-col gap-[2px]">
           <p>{row.ticketadder_role}</p>
           <p>{row.ticketadder_name}</p>
-          <p>{row.ticketadder_contact}</p>   
+          <p>{row.ticketadder_contact}</p>
         </div>
       ),
       omit: false,
@@ -654,10 +654,11 @@ const Ticketing = () => {
               </option>
               <option value="Admin">Admin</option>
               <option value="Employee">Employee</option>
+              <option value="Promoter">Promoter</option>
               <option value="Sales Person">Sales Person</option>
-              <option value="Onboarding Partner">Onboarding Partner</option>
-              <option value="Territory Partner">Territory Partner</option>
               <option value="Project Partner">Project Partner</option>
+              <option value="Territory Partner">Territory Partner</option>
+              <option value="Onboarding Partner">Onboarding Partner</option>
             </select>
           </div>
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">

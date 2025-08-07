@@ -4,44 +4,24 @@ export const getCount = (req, res) => {
   const query = `
     SELECT
       (
-        SELECT IFNULL(SUM(pf.dealamount), 0)
-        FROM propertyfollowup pf
-        JOIN enquirers e ON pf.enquirerid = e.enquirersid
-        JOIN properties p ON e.propertyid = p.propertyid
-        WHERE pf.status = 'Token' AND p.projectpartnerid = ?
-      ) AS totalDealAmount,
-
-      (
         SELECT COUNT(e.enquirersid)
         FROM enquirers e
         JOIN properties p ON e.propertyid = p.propertyid
-        WHERE e.status = 'Token' AND p.projectpartnerid = ?
+        WHERE e.status = 'Token' AND p.city = ?
       ) AS totalCustomer,
 
-      (
-        SELECT IFNULL(SUM(p.carpetArea), 0)
-        FROM enquirers e
-        JOIN properties p ON e.propertyid = p.propertyid
-        WHERE e.status = 'Token' AND p.projectpartnerid = ?
-      ) AS totalDealInSquareFeet,
-
-      (
-        SELECT COUNT(builderid) 
-        FROM builders  
-        WHERE builderadder = ?
-      ) AS totalBuilder,
-
-      (
-        SELECT COUNT(propertyid) 
-        FROM properties 
-        WHERE projectpartnerid = ?
-      ) AS totalProperty,
-
+      (SELECT COUNT(enquirersid) FROM enquirers WHERE status != 'Token' AND city = ? ) AS totalEnquiry,
+      (SELECT COUNT(salespersonsid) FROM salespersons WHERE status = 'Active' AND paymentstatus = 'Success' AND partneradder = ? ) AS totalSalesPerson,
+      (SELECT COUNT(id) FROM territorypartner WHERE status = 'Active' AND paymentstatus = 'Success' AND partneradder = ? ) AS totalTerritoryPartner,
+      (SELECT COUNT(partnerid) FROM onboardingpartner WHERE status = 'Active' AND paymentstatus = 'Success' AND partneradder = ? ) AS totalOnboardingPartner,
+      (SELECT COUNT(id) FROM projectpartner WHERE status = 'Active' AND paymentstatus = 'Success' AND partneradder = ? ) AS totalProjectPartner,
+      (SELECT COUNT(id) FROM guestUsers WHERE status = 'Active' AND partneradder = ? ) AS totalGuestUser,
+      
       (
         SELECT COUNT(ticketid) 
         FROM tickets 
-        INNER JOIN projectpartner 
-        ON projectpartner.adharno = tickets.ticketadder 
+        INNER JOIN promoter 
+        ON promoter.adharno = tickets.ticketadder 
         WHERE tickets.ticketadder = ?
       ) AS totalTicket
   `;
@@ -49,11 +29,13 @@ export const getCount = (req, res) => {
   db.query(
     query,
     [
-      req.user.id, // for projectpartnerid in totalDealAmount
-      req.user.id, // for totalCustomer
-      req.user.id, // for totalDealInSquareFeet
-      req.user.adharId, // for totalBuilder
-      req.user.id, // for totalProperty
+      req.user.city, // for totalCustomer
+      req.user.city, // for totalEnquiry
+      req.user.id, // for totalSalesPartner
+      req.user.id, // for totalTerritoryPartner
+      req.user.id, // for totalOnboardingPartner
+      req.user.id, // for totalProjectPartner
+      req.user.id, // for totalGuestUser
       req.user.adharId, // for totalTicket
     ],
     (err, results) => {

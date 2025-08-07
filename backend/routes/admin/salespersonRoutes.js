@@ -38,26 +38,27 @@ const upload = multer({
   },
 });
 
-
-router.get("/active", getAllActive);      // specific path first
-router.get("/get/:id", getById);          // more specific dynamic route
-router.get("/:paymentStatus", getAll);    // less specific dynamic route last
+router.get("/active", getAllActive); // specific path first
+router.get("/get/:id", getById); // more specific dynamic route
+router.get("/:paymentStatus", getAll); // less specific dynamic route last
 router.post(
   "/add",
   upload.fields([
     { name: "adharImage", maxCount: 1 },
     { name: "panImage", maxCount: 1 },
+    { name: "reraImage", maxCount: 1 },
   ]),
   add
 );
 router.put(
-    "/edit/:id",
-    upload.fields([
-      { name: "adharImage", maxCount: 1 },
-      { name: "panImage", maxCount: 1 },
-    ]),
-    edit
-  );
+  "/edit/:id",
+  upload.fields([
+    { name: "adharImage", maxCount: 1 },
+    { name: "panImage", maxCount: 1 },
+    { name: "reraImage", maxCount: 1 },
+  ]),
+  edit
+);
 router.put("/status/:id", status);
 router.put("/update/paymentid/:id", updatePaymentId);
 router.get("/followup/list/:id", fetchFollowUpList);

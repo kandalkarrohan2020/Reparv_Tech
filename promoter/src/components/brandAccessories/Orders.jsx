@@ -25,7 +25,7 @@ const Orders = ({ selectedTable, setSelectedTable }) => {
   const [orderId, setOrderId] = useState(null);
   const [order, setOrder] = useState({});
 
-  const [selectedPartner, setSelectedPartner] = useState("projectPartnerId");
+  const [selectedPartner, setSelectedPartner] = useState("promoterId");
 
   // **Fetch Data from API**
   const fetchData = async () => {

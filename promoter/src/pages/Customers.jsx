@@ -63,7 +63,7 @@ const Customers = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${URI}/project-partner/customers`, {
+      const response = await fetch(`${URI}/promoter/customers`, {
         method: "GET",
         credentials: "include", //  Ensures cookies are sent
         headers: {
@@ -82,7 +82,7 @@ const Customers = () => {
 
   const viewCustomer = async (id) => {
     try {
-      const response = await fetch(`${URI}/project-partner/customers/${id}`, {
+      const response = await fetch(`${URI}/admin/customers/${id}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -103,7 +103,7 @@ const Customers = () => {
   const fetchPaymentData = async (id, customer) => {
     try {
       const response = await fetch(
-        `${URI}/project-partner/customers/payment/get/${id}`,
+        `${URI}/admin/customers/payment/get/${id}`,
         {
           method: "GET",
           credentials: "include",
@@ -119,47 +119,6 @@ const Customers = () => {
       setPaymentList(data);
     } catch (err) {
       console.error("Error fetching :", err);
-    }
-  };
-
-  const addCustomerPayment = async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("paymentType", customerPayment.paymentType);
-    formData.append("paymentAmount", customerPayment.paymentAmount);
-    if (selectedImage) {
-      formData.append("paymentImage", selectedImage);
-    }
-
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `${URI}/project-partner/customers/payment/add/${enquirerId}`,
-        {
-          method: "POST",
-          credentials: "include",
-          body: formData,
-        }
-      );
-      const data = await response.json();
-      if (response.ok) {
-        alert("Payment added Successfully!");
-        // Clear input fields
-        setCustomerPayment({
-          paymentType: "",
-          paymentAmount: "",
-        });
-        setSelectedImage(null);
-        setShowCustomerPaymentForm(false);
-        await viewCustomer(enquirerId);
-      } else {
-        alert(`Error: ${data.message}`);
-      }
-    } catch (error) {
-      console.error("Error adding Payment:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -316,10 +275,6 @@ const Customers = () => {
         case "view":
           viewCustomer(id);
           break;
-        case "addPayment":
-          setEnquirerId(id);
-          setShowCustomerPaymentForm(true);
-          break;
         default:
           console.log("Invalid action");
       }
@@ -343,7 +298,6 @@ const Customers = () => {
             Select Action
           </option>
           <option value="view">View</option>
-          <option value="addPayment">Add Payment</option>
         </select>
       </div>
     );
@@ -393,144 +347,6 @@ const Customers = () => {
               selectAllRowsItemText: "All",
             }}
           />
-        </div>
-      </div>
-
-      {/* Add Customer Payment Form */}
-      <div
-        className={` ${
-          !showCustomerPaymentForm && "hidden"
-        } z-[61] overflow-scroll scrollbar-hide flex fixed`}
-      >
-        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] h-[65vh] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">ADD Payment</h2>
-            <IoMdClose
-              onClick={() => {
-                setShowCustomerPaymentForm(false);
-              }}
-              className="w-6 h-6 cursor-pointer"
-            />
-          </div>
-          <form onSubmit={addCustomerPayment}>
-            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-1">
-              <input
-                type="hidden"
-                value={enquirerId || ""}
-                onChange={(e) => setEnquirerId(e.target.value)}
-              />
-
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Payment Type
-                </label>
-                <select
-                  required
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
-                  style={{ backgroundImage: "none" }}
-                  value={customerPayment.paymentType}
-                  onChange={(e) =>
-                    setCustomerPayment({
-                      ...customerPayment,
-                      paymentType: e.target.value,
-                    })
-                  }
-                >
-                  <option value="" disabled>
-                    Select Payment Type
-                  </option>
-                  <option value="UPI">UPI</option>
-                  <option value="Cash">Cash</option>
-                  <option value="Check">Check</option>
-                  <option value="Net Banking">Net Banking</option>
-                </select>
-              </div>
-
-              <div className={` w-full `}>
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Payment Amount
-                </label>
-                <input
-                  type="number"
-                  required
-                  placeholder="Enter Amount"
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={customerPayment.paymentAmount}
-                  onChange={(e) =>
-                    setCustomerPayment({
-                      ...customerPayment,
-                      paymentAmount: e.target.value,
-                    })
-                  }
-                />
-              </div>
-
-              <div className={`w-full`}>
-                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-                  Upload Payment Image
-                </label>
-                <div className="w-full mt-2">
-                  <input
-                    type="file"
-                    required
-                    accept="image/*"
-                    onChange={singleImageChange}
-                    className="hidden"
-                    id="imageUpload"
-                  />
-                  <label
-                    htmlFor="imageUpload"
-                    className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-                  >
-                    <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                      {"Upload Image"}
-                    </span>
-                    <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
-                      Browse
-                    </div>
-                  </label>
-                </div>
-                <span className="text-red-500 text-xs ml-1">
-                  Maximum Image Size 2 MB
-                </span>
-                {/* Preview Section */}
-                {selectedImage && (
-                  <div className="relative mt-2">
-                    <img
-                      src={URL.createObjectURL(selectedImage)}
-                      alt="Uploaded preview"
-                      className="w-full max-w-[350px] object-cover rounded-lg border border-gray-300"
-                    />
-                    <button
-                      type="button"
-                      onClick={removeSingleImage}
-                      className="absolute top-3 left-[270px] sm:left-[310px] bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="flex mt-8 md:mt-6 justify-end gap-6">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowCustomerPaymentForm(false);
-                }}
-                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
-              >
-                Add Payment
-              </button>
-              <Loader></Loader>
-            </div>
-          </form>
         </div>
       </div>
 

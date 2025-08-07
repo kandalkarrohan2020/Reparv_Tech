@@ -250,7 +250,7 @@ const OrderDetails = ({ selectedTable, setSelectedTable }) => {
       width: "150px",
     },
 
-    { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
+    { name: "Date & Time", selector: (row) => row.orderCreatedAt, width: "200px" },
     {
       name: "Order ID",
       cell: (row, index) => (

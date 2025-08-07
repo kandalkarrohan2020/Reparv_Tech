@@ -96,54 +96,56 @@ function Overview() {
   return (
     <div className="overview overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
       <div className="overview-card-container px-4 md:px-0 gap-2 sm:gap-5 w-full grid place-items-center grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 my-5">
-        <div className="overview-card w-full max-w-[272px] h-[132px] flex gap-1 flex-col items-center justify-center rounded-[24px] p-6 bg-transperent">
-          <div className="upside w-full max-w-[224px] h-[40px] flex items-center justify-between gap-3 text-[24px] font-normal text-black">
-            <p>Hii Partner, </p>
-          </div>
-          <div className="downside w-[224px] h-[40px] flex items-center text-[40px] font-semibold text-black">
-            <p className="flex items-center justify-center">Welcome</p>
-          </div>
-        </div>
-
         {[
           {
-            label: "Total Deal Amount",
-            value:
-              (Number(overviewCountData?.totalDealAmount) / 10000000).toFixed(
-                2
-              ) + " cr" || "00",
-            icon: card1,
-          },
-          {
-            label: "No. of Deal Done",
+            label: "Customers",
             value: overviewCountData?.totalCustomer || "00",
-            icon: card2,
+            //icon: card2,
             to: "/customers",
           },
-
           {
-            label: "Deal in Sq. Ft.",
-            value: overviewCountData?.totalDealInSquareFeet || "00",
-            icon: card4,
+            label: "Enquirers",
+            value: overviewCountData?.totalEnquiry || "00",
+            //icon: card2,
+            to: "/enquirers",
           },
           {
-            label: "Properties",
-            value: overviewCountData?.totalProperty || "00",
-            //icon: card4,
-            to: "/properties",
-          },
-          {
-            label: "Builders",
-            value: overviewCountData?.totalBuilder || "00",
-            // icon: card4,
-            to: "/builders",
-          },
-          {
-            label: "Total Tickets",
+            label: "Tickets",
             value: overviewCountData?.totalTicket || "00",
             //icon: card4,
             to: "/tickets",
           },
+          {
+            label: "Guest Users",
+            value: overviewCountData?.totalGuestUser || "00",
+            // icon: card4,
+            to: "/guest-users",
+          },
+          {
+            label: "Sales Persons",
+            value: overviewCountData?.totalSalesPerson || "00",
+            //icon: card4,
+             to: "/salespersons",
+          },
+          {
+            label: "Project Partners",
+            value: overviewCountData?.totalProjectPartner || "00",
+            //icon: card4,
+            to: "/projectpartner",
+          },
+          {
+            label: "Onboarding Partners",
+            value: overviewCountData?.totalOnboardingPartner || "00",
+            //icon: card4,
+             to: "/onboardingpartner",
+          },
+          {
+            label: "Territory Partners",
+            value: overviewCountData?.totalTerritoryPartner || "00",
+            //icon: card4,
+            to: "/territorypartner",
+          },
+          
         ].map((card, index) => (
           <div
             key={index}

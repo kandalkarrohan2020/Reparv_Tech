@@ -69,14 +69,19 @@ import employeePropertyRoutes from "./routes/employee/employeePropertyRoutes.js"
 import employeeTicketRoutes from "./routes/employee/employeeTicketRoutes.js";
 import employeeEnquirersRoutes from "./routes/employee/employeeEnquirersRoutes.js";
 
-// import Project Partner Routes
+// import Promoter Routes
 import promoterLoginRoutes from "./routes/promoter/loginRoutes.js";
 import promoterProfileRoutes from "./routes/promoter/profileRoutes.js";
 import promoterAgreementRoutes from "./routes/promoter/agreementRoutes.js";
 import promoterDashboardRoutes from "./routes/promoter/dashboardRoutes.js";
-import promoterPropertyRoutes from "./routes/promoter/propertyRoutes.js";
+import promoterEnquirerRoutes from "./routes/promoter/enquirerRoutes.js";
 import promoterCustomerRoutes from "./routes/promoter/customerRoutes.js";
-import promoterBuilderRoutes from "./routes/promoter/builderRoutes.js";
+import promoterSalespersonRoutes from "./routes/promoter/salespersonRoutes.js";
+import promoterPartnerRoutes from "./routes/promoter/partnerRoutes.js";
+import promoterProjectPartnerRoutes from "./routes/promoter/projectPartnerRoutes.js";
+import promoterTerritoryPartnerRoutes from "./routes/promoter/territoryPartnerRoutes.js";
+import promoterGuestUserRoutes from "./routes/promoter/guestUserRoutes.js";
+import promoterEmiRoutes from "./routes/promoter/emiRoutes.js";
 import promoterTicketRoutes from "./routes/promoter/ticketRoutes.js";
 
 //sales
@@ -168,8 +173,8 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+app.use(express.json({ limit: "200mb" }));
+app.use(express.urlencoded({ extended: true, limit: "200mb" }));
 // Serve static files from 'uploads' directory
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
@@ -227,7 +232,7 @@ const verifyToken = (req, res, next) => {
   const publicRoutes = [
     "/admin/login",
     "/employee/login",
-    "/promote/login",
+    "/promoter/login",
     "/sales/login",
     "/partner/login",
     "/project-partner/login",
@@ -242,6 +247,7 @@ const verifyToken = (req, res, next) => {
     "/admin/partner/add",
     "/admin/projectpartner/add",
     "/admin/territorypartner/add",
+    "/admin/marketing-content",
     "/admin/apk",
     "/api/payment/create-order",
     "/api/payment/verify-payment",
@@ -268,7 +274,6 @@ const verifyToken = (req, res, next) => {
     "/salesapp/post",
     "/salesapp/user",
     "/salesapp/client",
-    "/sales/customers",
     //Territory App
     "/territoryapp/user",
     "/territoryapp/post",
@@ -383,9 +388,14 @@ app.use("/promoter", promoterLoginRoutes);
 app.use("/promoter/profile", promoterProfileRoutes);
 app.use("/promoter/agreement", promoterAgreementRoutes);
 app.use("/promoter/dashboard", promoterDashboardRoutes);
-app.use("/promoter/properties", promoterPropertyRoutes);
+app.use("/promoter/enquirers", promoterEnquirerRoutes);
 app.use("/promoter/customers", promoterCustomerRoutes);
-app.use("/promoter/builders", promoterBuilderRoutes);
+app.use("/promoter/salespersons", promoterSalespersonRoutes);
+app.use("/promoter/partner", promoterPartnerRoutes);
+app.use("/promoter/projectpartner", promoterProjectPartnerRoutes);
+app.use("/promoter/territorypartner", promoterTerritoryPartnerRoutes);
+app.use("/promoter/guestuser", promoterGuestUserRoutes);
+app.use("/promoter/emi", promoterEmiRoutes);
 app.use("/promoter/tickets", promoterTicketRoutes);
 
 //Sales Person Routes

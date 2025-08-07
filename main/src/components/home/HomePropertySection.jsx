@@ -56,7 +56,7 @@ function HomePropertySection() {
       console.error("Error fetching:", err);
     }
   };
-  
+
   useEffect(() => {
     fetchData();
   }, [selectedCity]);
@@ -111,6 +111,17 @@ function HomePropertySection() {
                   {property.propertyName.length > 26
                     ? `${property.propertyName.slice(0, 25)}...`
                     : property.propertyName}
+                </span>
+              </div>
+
+              <div className="w-full px-4 flex gap-2 text-sm font-semibold">
+                <span className="text-[#076300] group-hover:text-white">
+                  {property.propertyCategory}
+                </span>
+                <span className="text-[#076300] group-hover:text-white">
+                  {property.propertyType?.length > 16
+                    ? `${property.propertyType?.slice(0, 15)}...`
+                    : property.propertyType}
                 </span>
               </div>
 

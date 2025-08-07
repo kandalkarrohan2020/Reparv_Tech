@@ -597,7 +597,7 @@ export const getOrders = (req, res) => {
       column: "promoterId",
       table: "promoter",
       alias: "pr",
-      joinOn: "pr.promoterId = bao.promoterId",
+      joinOn: "pr.id = bao.promoterId",
       select: "pr.fullname AS partnerName, pr.contact AS partnerContact",
     },
   };
@@ -608,8 +608,12 @@ export const getOrders = (req, res) => {
   let selectFields = `
     bao.*,
     bao.status AS orderStatus,
+    bao.updated_at AS orderUpdatedAt,
+    bao.created_at AS orderCreatedAt,
     ba.*,
-    ba.status AS productStatus
+    ba.status AS productStatus,
+    ba.updated_at AS orderUpdatedAt,
+    ba.created_at AS productCreatedAt
   `;
 
   let joins = "";
@@ -639,8 +643,18 @@ export const getOrders = (req, res) => {
 
     const formatted = rows.map((row) => ({
       ...row,
-      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
-      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+      productCreatedAt: moment(row.productCreatedAt).format(
+        "DD MMM YYYY | hh:mm A"
+      ),
+      productUpdatedAt: moment(row.productUpdatedAt).format(
+        "DD MMM YYYY | hh:mm A"
+      ),
+      orderCreatedAt: moment(row.orderCreatedAt).format(
+        "DD MMM YYYY | hh:mm A"
+      ),
+      orderUpdatedAt: moment(row.orderUpdatedAt).format(
+        "DD MMM YYYY | hh:mm A"
+      ),
     }));
 
     res.json(formatted);
@@ -1345,7 +1359,7 @@ export const placeAllCartItemsIntoOrders = (req, res) => {
     );
   };
 
-const getCartItemsQuery = `
+  const getCartItemsQuery = `
   SELECT 
     cart.*, 
     stock.sellingPrice, 
@@ -1370,7 +1384,7 @@ const getCartItemsQuery = `
     if (cartItems.length === 0) {
       return res.status(404).json({ message: "Cart is empty" });
     }
-    
+
     generateUniqueOrderId((orderId) => {
       db.beginTransaction((err) => {
         if (err)

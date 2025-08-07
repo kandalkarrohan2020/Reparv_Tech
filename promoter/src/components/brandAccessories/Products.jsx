@@ -30,7 +30,7 @@ const Products = ({ selectedTable, setSelectedTable }) => {
     setShowOrderForm,
   } = useAuth();
 
-  const [selectedPartner, setSelectedPartner] = useState("projectPartnerId");
+  const [selectedPartner, setSelectedPartner] = useState("promoterId");
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [product, setProduct] = useState({});
@@ -39,7 +39,7 @@ const Products = ({ selectedTable, setSelectedTable }) => {
   const [cart, setCart] = useState([]);
   const [cartId, setCartId] = useState(null);
   const [newOrder, setNewOrder] = useState({
-    role: "Project Partner",
+    role: "Promoter",
     productSize: "",
     sellingPrice: "",
     orderQuantity: "",
@@ -238,10 +238,6 @@ const Products = ({ selectedTable, setSelectedTable }) => {
     }
   };
 
-  const cartToOrders = () => {
-    console.log("Buy All Products");
-  };
-
   const placeAllCartOrders = async () => {
     try {
       const response = await fetch(
@@ -253,7 +249,7 @@ const Products = ({ selectedTable, setSelectedTable }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            role: "Project Partner",
+            role: "Promoter",
           }),
         }
       );
@@ -283,7 +279,7 @@ const Products = ({ selectedTable, setSelectedTable }) => {
     if (product) {
       setNewOrder((prev) => ({
         ...prev,
-        role: "Project Partner",
+        role: "Promoter",
         sellingPrice: product?.sellingPrice || "",
         gstPercentage: product?.gstPercentage || "",
         productId: product?.productId || "",

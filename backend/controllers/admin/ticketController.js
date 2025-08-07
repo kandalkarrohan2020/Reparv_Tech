@@ -75,7 +75,17 @@ export const getAll = (req, res) => {
            LEFT JOIN departments ON tickets.departmentid = departments.departmentid
            LEFT JOIN employees ON tickets.employeeid = employees.id
            ORDER BY created_at DESC`;
-  } else {
+  } else if (ticketGenerator === "Promoter") {
+    sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
+           employees.name AS employee_name, employees.uid , 
+           promoter.fullname AS ticketadder_name, promoter.contact AS ticketadder_contact
+           FROM tickets 
+           INNER JOIN promoter ON promoter.adharno = tickets.ticketadder
+           LEFT JOIN users ON tickets.adminid = users.id 
+           LEFT JOIN departments ON tickets.departmentid = departments.departmentid
+           LEFT JOIN employees ON tickets.employeeid = employees.id
+           ORDER BY created_at DESC`;
+  }  else {
     sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
            employees.name AS employee_name, employees.uid 
            FROM tickets

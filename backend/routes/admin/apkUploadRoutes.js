@@ -32,7 +32,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 100 * 1024 * 1024 }, // Max 100MB
+  limits: { fileSize: 200 * 1024 * 1024 }, // Max 200MB
   fileFilter: (req, file, cb) => {
     if (file.mimetype === "application/vnd.android.package-archive") {
       cb(null, true);

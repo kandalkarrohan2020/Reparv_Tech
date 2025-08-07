@@ -104,7 +104,7 @@ export default function KYC() {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch Project Partner!");
+      if (!response.ok) throw new Error("Failed to fetch Promoter!");
       const data = await response.json();
       setUserData(data);
     } catch (err) {
@@ -163,7 +163,7 @@ export default function KYC() {
         });
       }
     } catch (err) {
-      console.error("Error saving Project Partner:", err);
+      console.error("Error saving Promoter:", err);
     } finally {
       setLoading(false);
     }

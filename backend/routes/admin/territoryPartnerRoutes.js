@@ -47,17 +47,19 @@ router.post(
   upload.fields([
     { name: "adharImage", maxCount: 1 },
     { name: "panImage", maxCount: 1 },
+    { name: "reraImage", maxCount: 1 },
   ]),
   add
 );
 router.put(
-    "/edit/:id",
-    upload.fields([
-      { name: "adharImage", maxCount: 1 },
-      { name: "panImage", maxCount: 1 },
-    ]),
-    edit
-  );
+  "/edit/:id",
+  upload.fields([
+    { name: "adharImage", maxCount: 1 },
+    { name: "panImage", maxCount: 1 },
+    { name: "reraImage", maxCount: 1 },
+  ]),
+  edit
+);
 router.put("/status/:id", status);
 router.put("/update/paymentid/:id", updatePaymentId);
 router.get("/followup/list/:id", fetchFollowUpList);

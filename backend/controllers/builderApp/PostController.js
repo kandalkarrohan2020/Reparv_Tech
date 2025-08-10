@@ -16,7 +16,7 @@ SELECT
   u.city,
   u.userimage
 FROM 
-  Builderposts p
+  builderposts p
 LEFT JOIN 
   builders u ON p.userId = u.builderid
 ORDER BY 
@@ -50,7 +50,7 @@ export const getAllByUser = (req, res) => {
     u.city,
     u.userimage
 FROM 
-    Builderposts p
+    builderposts p
 JOIN 
     builders u ON p.userId = u.builderid
 WHERE 
@@ -93,7 +93,7 @@ export const add = (req, res) => {
   const finalImagePath = imageFile ? `/uploads/${imageFile}` : null;
 
   const sql = `
-    INSERT INTO Builderposts (userId, image, postContent, likes, created_at)
+    INSERT INTO builderposts (userId, image, postContent, likes, created_at)
     VALUES (?, ?, ?, ?, ?)
   `;
 
@@ -129,7 +129,7 @@ export const addLike = async (req, res) => {
 
   // Step 1: Check if post exists
   db.query(
-    "SELECT * FROM Builderposts WHERE postId = ?",
+    "SELECT * FROM builderposts WHERE postId = ?",
     [postId],
     (err, result) => {
       if (err) {
@@ -143,7 +143,7 @@ export const addLike = async (req, res) => {
 
       // Step 2: Update like count
       db.query(
-        "UPDATE Builderposts SET likes = likes + 1 WHERE postId = ?",
+        "UPDATE builderposts SET likes = likes + 1 WHERE postId = ?",
         [postId],
         (err2, result2) => {
           if (err2) {
@@ -171,14 +171,14 @@ export const updatePost = (req, res) => {
 
   if (image && postContent) {
     const finalImagePath = `/uploads/${image}`;
-    sql = "UPDATE Builderposts SET image = ?, postContent = ? WHERE postId = ?";
+    sql = "UPDATE builderposts SET image = ?, postContent = ? WHERE postId = ?";
     values = [finalImagePath, postContent, postId];
   } else if (image) {
     const finalImagePath = `/uploads/${image}`;
-    sql = "UPDATE Builderposts SET image = ? WHERE postId = ?";
+    sql = "UPDATE builderposts SET image = ? WHERE postId = ?";
     values = [finalImagePath, postId];
   } else if (postContent) {
-    sql = "UPDATE Builderposts SET postContent = ? WHERE postId = ?";
+    sql = "UPDATE builderposts SET postContent = ? WHERE postId = ?";
     values = [postContent, postId];
   } else {
     return res.status(400).json({ message: "Nothing to update" });

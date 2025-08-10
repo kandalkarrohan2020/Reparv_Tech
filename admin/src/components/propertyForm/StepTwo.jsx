@@ -181,7 +181,7 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
             Property Type <span className="text-red-600">*</span>
           </label>
           <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             style={{ backgroundImage: "none" }}
             value={newProperty.propertyType}
             onChange={(e) =>

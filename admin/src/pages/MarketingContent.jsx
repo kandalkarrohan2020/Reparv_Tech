@@ -376,7 +376,7 @@ const MarketingContent = () => {
                 />
               </div>
 
-              {/* Apk File Upload */}
+              {/* File Upload */}
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#0000007b] font-medium">
                   Upload Content File

@@ -24,7 +24,7 @@ export default function FilterSidebar() {
     "NewFlat",
     "NewPlot",
     "RentalFlat",
-    "RentalPlot",
+    "RentalShop",
     "RentalOffice",
     "Resale",
     "RowHouse",

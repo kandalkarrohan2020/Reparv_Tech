@@ -25,6 +25,7 @@ import FilterSidebar from "../FilterSidebar";
 import BenefitsPopup from "../property/BenefitsPopup";
 import KYC from "../userVerification/KYC";
 import Agreement from "../Agreement";
+import PlayVideo from "../property/PlayVideo";
 
 function Layout() {
   const { id } = useParams();
@@ -84,6 +85,8 @@ function Layout() {
     setShowProductForm,
     showCustomerPaymentForm,
     setShowCustomerPaymentForm,
+    showPlayVideo,
+    setShowPlayVideo,
   } = useAuth();
 
   const overlays = [
@@ -327,6 +330,14 @@ function Layout() {
           <div className="w-full flex flex-col items-center justify-end sm:justify-center h-[90vh] absolute bottom-0">
             <BenefitsPopup />
           </div>
+        </div>
+      )}
+
+      {showPlayVideo && (
+        <div
+          className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center"
+        >
+          <PlayVideo />
         </div>
       )}
 

@@ -38,7 +38,7 @@ const PropertyNavbar = () => {
   const propertyTypes = [
     { icon: flatIcon, label: "New Flat", type: "NewFlat", show: "true"},
     { icon: plotIcon, label: "New Plot", type: "NewPlot", show: "true" },
-    { icon: rentalIcon, label: "Rental", type: "Rental", show: "true" },
+    { icon: rentalIcon, label: "Rental Flat", type: "RentalFlat", show: "true" },
     { icon: resaleIcon, label: "Resale", type: "Resale", show: "true" },
     { icon: rowHouseIcon, label: "Row House", type: "RowHouse", show: "true" },
     { icon: leaseIcon, label: "Lease", type: "Lease", show: "true" },

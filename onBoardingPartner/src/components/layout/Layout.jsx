@@ -45,6 +45,8 @@ function Layout() {
     setShowOrderForm,
     showProductForm,
     setShowProductForm,
+    showVideoUploadForm,
+    setShowVideoUploadForm,
     isLoggedIn,
   } = useAuth();
 
@@ -59,6 +61,7 @@ function Layout() {
     { state: showOrder, setter: setShowOrder },
     { state: showOrderForm, setter: setShowOrderForm },
     { state: showProductForm, setter: setShowProductForm },
+     { state: showVideoUploadForm, setter: setShowVideoUploadForm },
   ];
 
   const getNavLinkClass = (path) => {

@@ -211,15 +211,13 @@ const StepOne = ({
             }
           />
         </div>
-        <div className="w-full ">
+        <div className="w-full">
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Distance From City Center <span className="text-red-600">*</span>
           </label>
-          <input
-            type="number"
+          <select
             required
-            placeholder="Enter Distance in Kms"
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
             value={newProperty.distanceFromCityCenter}
             onChange={(e) =>
               setPropertyData({
@@ -227,9 +225,15 @@ const StepOne = ({
                 distanceFromCityCenter: e.target.value,
               })
             }
-          />
+          >
+            <option value="">Select Distance (Kms)</option>
+            {Array.from({ length: 25 }, (_, i) => (
+              <option key={i + 1} value={i + 1}>
+                {i + 1} Km
+              </option>
+            ))}
+          </select>
         </div>
-
         <div className="w-full">
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Total Sales Price <span className="text-red-600">*</span>
@@ -276,11 +280,9 @@ const StepOne = ({
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Stamp Duty In Percentage <span className="text-red-600">*</span>
           </label>
-          <input
-            type="number"
+          <select
             required
-            placeholder="Enter Stamp Duty %"
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
             value={newProperty.stampDuty}
             onChange={(e) =>
               setPropertyData({
@@ -288,17 +290,20 @@ const StepOne = ({
                 stampDuty: e.target.value,
               })
             }
-          />
+          >
+            <option value="">Select Stamp Duty %</option>
+            <option value="5">5%</option>
+            <option value="6">6%</option>
+            <option value="7">7%</option>
+          </select>
         </div>
 
         <div className="w-full">
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Registration Fee Percentage <span className="text-red-600">*</span>
           </label>
-          <input
-            type="number"
+          <select
             required
-            placeholder="Enter Registration Fee %"
             className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={newProperty.registrationFee}
             onChange={(e) =>
@@ -307,17 +312,18 @@ const StepOne = ({
                 registrationFee: e.target.value,
               })
             }
-          />
+          >
+            <option value="">Select Registration Fee %</option>
+            <option value="1">1%</option>
+          </select>
         </div>
 
         <div className="w-full">
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             GST Percentage <span className="text-red-600">*</span>
           </label>
-          <input
-            type="number"
+          <select
             required
-            placeholder="Enter GST %"
             className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={newProperty.gst}
             onChange={(e) =>
@@ -326,18 +332,21 @@ const StepOne = ({
                 gst: e.target.value,
               })
             }
-          />
+          >
+            <option value="">Select GST %</option>
+            <option value="0">0%</option>
+            <option value="1">1%</option>
+            <option value="5">5%</option>
+          </select>
         </div>
 
         <div className="w-full">
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Advocate Fee in Rupee <span className="text-red-600">*</span>
           </label>
-          <input
-            type="number"
+          <select
             required
-            placeholder="Enter Advocate Fee"
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
             value={newProperty.advocateFee}
             onChange={(e) =>
               setPropertyData({
@@ -345,7 +354,13 @@ const StepOne = ({
                 advocateFee: e.target.value,
               })
             }
-          />
+          >
+            <option value="">Select Advocate Fee</option>
+            <option value="10000">10,000</option>
+            <option value="15000">15,000</option>
+            <option value="20000">20,000</option>
+            <option value="25000">25,000</option>
+          </select>
         </div>
 
         <div className="w-full">
@@ -356,7 +371,7 @@ const StepOne = ({
             type="number"
             required
             placeholder="Enter Water & MSEB Charges"
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
             value={newProperty.msebWater}
             onChange={(e) =>
               setPropertyData({

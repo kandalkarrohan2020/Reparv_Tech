@@ -159,7 +159,17 @@ import customerEmi from "./routes/customerAppRoute/EmiRoute.js";
 import customerSignUp from "./routes/customerAppRoute/userRoute.js";
 import customerPropertyRoute from "./routes/customerAppRoute/propertyRoute.js";
 import customerTrendRoute from "./routes/customerAppRoute/trendRoute.js"
-import customerEnquiryRoute from "./routes/customerAppRoute/enquiryRoute.js"
+import customerEnquiryRoute from "./routes/customerAppRoute/enquiryRoute.js";
+
+//Builder App
+import builderapploginRoute from "./routes/builderAppRoute/builderapploginRoute.js"
+import builderProfileRoute from "./routes/builderAppRoute/builderProfileRoutes.js"
+import builderpropertyRoute from "./routes/builderAppRoute/propertyController.js";
+import builderEnquiryCustomerRoute from "./routes/builderAppRoute/builderPropertyEnquiryRoute.js"
+import builderCommunityRoute from "./routes/builderAppRoute/communityRoute.js"
+import builderTicketRoute from "./routes/builderAppRoute/BuilderTicketRoutes.js"
+import builderpostRoute from "./routes/builderAppRoute/BuilderpostRoutes.js"
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -281,6 +291,10 @@ const verifyToken = (req, res, next) => {
     "/customerapp/enquiry",
     "/customerapp/",
     "/customerapp/emiform",
+    //builder app
+    "/builderapp/community",
+     "/builderapp/user",
+     "/builderapp/post"
   ];
 
   //  Allow public routes to pass through
@@ -479,6 +493,16 @@ app.use("/customerapp/property", customerPropertyRoute);
 app.use("/customerapp/customerTrendRoute",customerTrendRoute)
 app.use("/customerapp/enquiry",customerEnquiryRoute)
 
+
+//Builder app
+//Builder app
+app.use("/builderapp/user",builderapploginRoute);
+app.use("/builderapp/profile",builderProfileRoute);
+app.use("/builderapp/property",builderpropertyRoute)
+app.use("/builderapp/customer",builderEnquiryCustomerRoute)
+app.use("/builderapp/community",builderCommunityRoute)
+app.use("/builderapp/ticket",builderTicketRoute)
+app.use("/builderapp/post", builderpostRoute);
 //  Start Server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

@@ -18,6 +18,8 @@ import { usePropertyFilter } from "../store/propertyFilter";
 import SEO from "../components/SEO";
 import PropertyCategories from "../components/PropertyCategories";
 import { IoMdDoneAll } from "react-icons/io";
+import { MdOutlineFileDownload } from "react-icons/md";
+import { MdSlowMotionVideo } from "react-icons/md";
 import Select from "react-select";
 
 export default function Properties() {
@@ -36,6 +38,8 @@ export default function Properties() {
     setSelectedCity,
     showFilterePopup,
     setShowFilterPopup,
+    setVideoURL,
+    setShowPlayVideo,
   } = useAuth();
   const [properties, setProperties] = useState([]);
   const [locations, setLocations] = useState([]);
@@ -138,7 +142,7 @@ export default function Properties() {
 
       const response = await fetch(url, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -400,8 +404,39 @@ export default function Properties() {
                       <hr className="text-[#F0EFFB] my-2 " />
                       <div className="w-full flex px-4 justify-between mb-1">
                         <img src={cardAssuredTag} alt="" className="w-40" />
-                        <div className="text-sm py-1 px-3 bg-[#0000000F] rounded-xl ">
-                          {property.propertyCategory}
+                        <div
+                          className={`flex gap-2 items-center justidy-center`}
+                        >
+                          <div
+                            onClick={() => {
+                              const link = document.createElement("a");
+                              link.href = URI + property?.brochureFile;
+                              link.download = property?.brochureFile
+                                .split("/")
+                                .pop(); // filename
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                            }}
+                            className={`${
+                              property?.brochureFile ? "block" : "hidden"
+                            } p-[5px] text-white bg-[#107c0b] rounded-full cursor-pointer`}
+                          >
+                            <MdOutlineFileDownload />
+                          </div>
+
+                          <div
+                            onClick={() => {
+                              //window.open(URI + property?.videoFile, "_blank");
+                              setVideoURL(URI + property?.videoFile);
+                              setShowPlayVideo(true);
+                            }}
+                            className={`${
+                              property?.videoFile ? "block" : "hidden"
+                            } p-[5px] text-white bg-[#107c0b] rounded-full cursor-pointer`}
+                          >
+                            <MdSlowMotionVideo />
+                          </div>
                         </div>
                       </div>
                       <div className="w-full flex gap-1 items-center justify-start py-3 px-4 rounded-bl-lg rounded-br-lg address text-[10px] md:text-xs lg:text-sm font-normal text-[#808080] group-hover:text-[#e2e2e2] bg-[#0000000F] ">

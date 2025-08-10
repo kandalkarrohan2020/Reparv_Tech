@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
   const [showCart, setShowCart] = useState(false);
   const [showOrder, setShowOrder] = useState(false);
   const [showOrderForm, setShowOrderForm] = useState(false);
+  const [showVideoUploadForm, setShowVideoUploadForm] = useState(false);
 
   return (
     <AuthContext.Provider
@@ -81,6 +82,8 @@ export const AuthProvider = ({ children }) => {
         setShowProductForm,
         showOrderForm,
         setShowOrderForm,
+        showVideoUploadForm,
+        setShowVideoUploadForm,
       }}
     >
       {children}

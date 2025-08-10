@@ -34,6 +34,8 @@ const Properties = () => {
     setShowSeoForm,
     showCommissionForm,
     setShowCommissionForm,
+    showVideoUploadForm,
+    setShowVideoUploadForm,
     URI,
     loading,
     setLoading,
@@ -97,10 +99,8 @@ const Properties = () => {
     parkingFeature: "",
     terraceFeature: "",
     ageOfPropertyFeature: "",
-    furnishingFeature: "",
     amenitiesFeature: "",
     propertyStatusFeature: "",
-    floorNumberFeature: "",
     smartHomeFeature: "",
     securityBenefit: "",
     primeLocationBenefit: "",
@@ -153,6 +153,12 @@ const Properties = () => {
       documentcharge: "",
     },
   ];
+
+  // for Uploade Brochure and Video
+  const [videoUpload, setVideoUpload] = useState({
+    brochureFile: "",
+    videoFile: "",
+  });
 
   //Single Image Upload
   const [selectedImage, setSelectedImage] = useState(null);
@@ -464,6 +470,74 @@ const Properties = () => {
       fetchData();
     } catch (error) {
       console.error("Error deleting :", error);
+    }
+  };
+
+  //fetch Brochure and Video Data From Property
+  const showBrochure = async (id) => {
+    try {
+      const response = await fetch(URI + `/admin/properties/${id}`, {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch property.");
+      const data = await response.json();
+      setVideoUpload({
+        ...videoUpload,
+        brochureFile: data.brochureFile,
+        videoFile: data.videoFile,
+      });
+      setShowVideoUploadForm(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  const uploadVideo = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+
+    // Image or PDF
+    if (selectedImage) {
+      formData.append("brochureFile", selectedImage);
+    }
+
+    // Video
+    if (videoUpload?.videoFile) {
+      formData.append("videoFile", videoUpload.videoFile);
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        `${URI}/admin/properties/brochure/upload/${propertyKey}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+
+      setShowVideoUploadForm(false);
+      setSelectedImage(null);
+      setVideoUpload({ videoFile: null });
+      await fetchData();
+    } catch (error) {
+      console.error("Error Uploading Brochure Or Video:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -1080,6 +1154,10 @@ const Properties = () => {
         case "approve":
           approve(propertyid);
           break;
+        case "videoUpload":
+          setPropertyKey(propertyid);
+          showBrochure(propertyid);
+          break;
         case "SEO":
           setPropertyKey(propertyid);
           showSEO(propertyid);
@@ -1139,6 +1217,7 @@ const Properties = () => {
           <option value="rejectReason">Reject Reason</option>
           <option value="updateImages">Update Images</option>
           <option value="setCommission">Set Commission</option>
+          <option value="videoUpload">Brochure & Video</option>
         </select>
       </div>
     );
@@ -1242,6 +1321,135 @@ const Properties = () => {
         imageFiles={imageFiles}
         setImageFiles={setImageFiles}
       />
+
+      {/* ADD Brochure and Video Upload Form */}
+      <div
+        className={` ${
+          !showVideoUploadForm && "hidden"
+        } z-[61] overflow-scroll scrollbar-hide  w-full flex fixed bottom-0 md:bottom-auto `}
+      >
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[450px] max-h-[80vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">Brochure & Video</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowVideoUploadForm(false);
+                setSelectedImage(null);
+                setVideoUpload({ videoFile: null });
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={uploadVideo}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-1">
+              <input
+                type="hidden"
+                value={propertyKey || ""}
+                onChange={(e) => setPropertyKey(e.target.value)}
+              />
+
+              <div className={`w-full`}>
+                {videoUpload?.brochureFile && (
+                  <div className="relative mb-3">
+                    <img
+                      onClick={() => {
+                        window.open(URI + videoUpload?.brochureFile, "_blank");
+                      }}
+                      src={URI + videoUpload?.brochureFile}
+                      alt="Old Image"
+                      className="w-full max-w-[100px] object-cover rounded-lg border border-gray-300 cursor-pointer"
+                    />
+                  </div>
+                )}
+                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
+                  Brochure Image
+                </label>
+                <div className="w-full mt-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={singleImageChange}
+                    className="hidden"
+                    id="imageUpload"
+                  />
+                  <label
+                    htmlFor="imageUpload"
+                    className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
+                  >
+                    <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
+                      Upload Image
+                    </span>
+                    <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                      Browse
+                    </div>
+                  </label>
+                </div>
+
+                {/* Preview Section */}
+                {selectedImage && (
+                  <div className="relative mt-2">
+                    <img
+                      src={URL.createObjectURL(selectedImage)}
+                      alt="Uploaded preview"
+                      className="w-full max-w-[400px] object-cover rounded-lg border border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeSingleImage}
+                      className="absolute top-2 left-2 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#0000007b] font-medium">
+                  Video
+                </label>
+                <input
+                  type="file"
+                  accept="video/*"
+                  className="w-full mt-[8px] text-[16px] font-medium p-3 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      const maxSize = 50 * 1024 * 1024; // 50MB limit
+                      if (file.size > maxSize) {
+                        alert("Video must be less than 50MB");
+                        e.target.value = "";
+                        return;
+                      }
+                      setVideoUpload({
+                        ...videoUpload,
+                        videoFile: file,
+                      });
+                    }
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowVideoUploadForm(false);
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Upload
+              </button>
+              <Loader></Loader>
+            </div>
+          </form>
+        </div>
+      </div>
 
       <div
         className={`${
@@ -1605,7 +1813,9 @@ const Properties = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setShowCommissionForm(false);
+                  setSelectedImage(null);
+                  setVideoUpload({ videoFile: null });
+                  setShowVideoUploadForm(false);
                 }}
                 className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
               >

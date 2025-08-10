@@ -115,10 +115,10 @@ export const addProperty = async (req, res) => {
     parkingFeature,
     terraceFeature,
     ageOfPropertyFeature,
-    furnishingFeature,
+    
     amenitiesFeature,
     propertyStatusFeature,
-    floorNumberFeature,
+    
     smartHomeFeature,
     securityBenefit,
     primeLocationBenefit,
@@ -164,10 +164,10 @@ export const addProperty = async (req, res) => {
     !parkingFeature ||
     !terraceFeature ||
     !ageOfPropertyFeature ||
-    !furnishingFeature ||
+    
     !amenitiesFeature ||
     !propertyStatusFeature ||
-    !floorNumberFeature ||
+    
     !smartHomeFeature ||
     !securityBenefit ||
     !primeLocationBenefit ||
@@ -216,14 +216,14 @@ export const addProperty = async (req, res) => {
         msebWater, maintenance, other, propertyType, builtYear, ownershipType, builtUpArea, carpetArea,
         parkingAvailability, totalFloors, floorNo, loanAvailability, propertyFacing, reraRegistered, 
         furnishing, waterSupply, powerBackup, locationFeature, sizeAreaFeature, parkingFeature, terraceFeature,
-        ageOfPropertyFeature, furnishingFeature, amenitiesFeature, propertyStatusFeature, floorNumberFeature, smartHomeFeature,
+        ageOfPropertyFeature, amenitiesFeature, propertyStatusFeature, smartHomeFeature,
         securityBenefit, primeLocationBenefit, rentalIncomeBenefit, qualityBenefit, capitalAppreciationBenefit, ecofriendlyBenefit,
         frontView, sideView, kitchenView, hallView, bedroomView, bathroomView, balconyView,
         nearestLandmark, developedAmenities, seoSlug,
         updated_at, created_at
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const values = [
         partnerId,
@@ -266,10 +266,8 @@ export const addProperty = async (req, res) => {
         parkingFeature,
         terraceFeature,
         ageOfPropertyFeature,
-        furnishingFeature,
         amenitiesFeature,
         propertyStatusFeature,
-        floorNumberFeature,
         smartHomeFeature,
         securityBenefit,
         primeLocationBenefit,

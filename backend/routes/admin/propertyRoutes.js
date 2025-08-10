@@ -18,6 +18,7 @@ import {
   fetchAdditionalInfo,
   seoDetails,
   setPropertyCommission,
+  uploadBrochureAndVideo,
 } from "../../controllers/admin/propertyController.js";
 import multer from "multer";
 import path from "path";
@@ -147,7 +148,58 @@ router.put(
   editAdditionalInfo
 );
 
-// multer for Uopload Property Additional Information
+// Multer Setting for Upload Brochure and Video
+const brochureVideoStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    if (file.fieldname === "brochureFile") {
+      cb(null, "./uploads/brochures/");
+    } else if (file.fieldname === "videoFile") {
+      cb(null, "./uploads/videos/");
+    } else {
+      cb(new Error("Invalid file field"));
+    }
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const brochureVideoUpload = multer({
+  storage: brochureVideoStorage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB for videos/images
+  fileFilter: (req, file, cb) => {
+    const allowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
+    const allowedVideoTypes = [
+      "video/mp4",
+      "video/mpeg",
+      "video/quicktime",
+      "video/x-msvideo",
+    ];
+
+    if (file.fieldname === "brochureFile") {
+      if (!allowedImageTypes.includes(file.mimetype)) {
+        return cb(new Error("Only JPEG, PNG, WEBP images are allowed for brochure"));
+      }
+    } else if (file.fieldname === "videoFile") {
+      if (!allowedVideoTypes.includes(file.mimetype)) {
+        return cb(new Error("Only MP4, MPEG, MOV, AVI videos are allowed"));
+      }
+    }
+    cb(null, true);
+  },
+});
+
+router.put(
+  "/brochure/upload/:id",
+  brochureVideoUpload.fields([
+    { name: "brochureFile", maxCount: 1 },
+    { name: "videoFile", maxCount: 1 },
+  ]),
+  uploadBrochureAndVideo
+);
+
+
+// multer for Upload Property Additional Information
 const uploadForCsv = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit

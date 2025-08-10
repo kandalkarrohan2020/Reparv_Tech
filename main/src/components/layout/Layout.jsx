@@ -24,6 +24,7 @@ import BenefitsPopup from "../property/BenefitsPopup";
 import SiteVisitPopup from "../property/SiteVisitPopup";
 import FilterSidebar from "../FilterSidebar";
 import Select from "react-select";
+import PlayVideo from "../property/PlayVideo";
 
 function Layout() {
   const {
@@ -41,6 +42,8 @@ function Layout() {
     setShowSiteVisitPopup,
     showFilterPopup,
     setShowFilterPopup,
+    showPlayVideo,
+    setShowPlayVideo,
   } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -503,6 +506,14 @@ function Layout() {
           <div className="w-full flex flex-col items-center justify-end sm:justify-center h-[90vh] absolute bottom-0">
             <BenefitsPopup />
           </div>
+        </div>
+      )}
+
+      {showPlayVideo && (
+        <div
+          className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center"
+        >
+          <PlayVideo />
         </div>
       )}
 

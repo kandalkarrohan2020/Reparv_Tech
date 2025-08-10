@@ -17,7 +17,7 @@ import { useAuth } from "../../store/auth";
 import LogoutButton from "../LogoutButton";
 import { FaUserCircle } from "react-icons/fa";
 import Agreement from "../Agreement";
-
+import PlayVideo from "../property/PlayVideo";
 import SuccessScreen from "../property/SuccessScreen";
 import SiteVisitPopup from "../property/SiteVisitPopup";
 import PriceSummery from "../property/PriceSummery";
@@ -71,6 +71,8 @@ function Layout() {
     setShowOrderForm,
     showProductForm,
     setShowProductForm,
+    showPlayVideo,
+    setShowPlayVideo,
     isLoggedIn,
   } = useAuth();
 
@@ -328,6 +330,14 @@ function Layout() {
           <div className="w-full flex flex-col items-center justify-end sm:justify-center h-[90vh] absolute bottom-0">
             <BenefitsPopup />
           </div>
+        </div>
+      )}
+
+      {showPlayVideo && (
+        <div
+          className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center"
+        >
+          <PlayVideo />
         </div>
       )}
 

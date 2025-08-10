@@ -179,10 +179,8 @@ export const addProperty = async (req, res) => {
     parkingFeature,
     terraceFeature,
     ageOfPropertyFeature,
-    furnishingFeature,
     amenitiesFeature,
     propertyStatusFeature,
-    floorNumberFeature,
     smartHomeFeature,
     securityBenefit,
     primeLocationBenefit,
@@ -228,10 +226,8 @@ export const addProperty = async (req, res) => {
     !parkingFeature ||
     !terraceFeature ||
     !ageOfPropertyFeature ||
-    !furnishingFeature ||
     !amenitiesFeature ||
     !propertyStatusFeature ||
-    !floorNumberFeature ||
     !smartHomeFeature ||
     !securityBenefit ||
     !primeLocationBenefit ||
@@ -287,14 +283,14 @@ export const addProperty = async (req, res) => {
         msebWater, maintenance, other, propertyType, builtYear, ownershipType, builtUpArea, carpetArea,
         parkingAvailability, totalFloors, floorNo, loanAvailability, propertyFacing, reraRegistered, 
         furnishing, waterSupply, powerBackup, locationFeature, sizeAreaFeature, parkingFeature, terraceFeature,
-        ageOfPropertyFeature, furnishingFeature, amenitiesFeature, propertyStatusFeature, floorNumberFeature, smartHomeFeature,
+        ageOfPropertyFeature, amenitiesFeature, propertyStatusFeature, smartHomeFeature,
         securityBenefit, primeLocationBenefit, rentalIncomeBenefit, qualityBenefit, capitalAppreciationBenefit, ecofriendlyBenefit,
         frontView, sideView, kitchenView, hallView, bedroomView, bathroomView, balconyView,
         nearestLandmark, developedAmenities, seoSlug,
         updated_at, created_at
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const values = [
         builderid,
@@ -336,10 +332,8 @@ export const addProperty = async (req, res) => {
         parkingFeature,
         terraceFeature,
         ageOfPropertyFeature,
-        furnishingFeature,
         amenitiesFeature,
         propertyStatusFeature,
-        floorNumberFeature,
         smartHomeFeature,
         securityBenefit,
         primeLocationBenefit,
@@ -425,10 +419,8 @@ export const update = async (req, res) => {
     parkingFeature,
     terraceFeature,
     ageOfPropertyFeature,
-    furnishingFeature,
     amenitiesFeature,
     propertyStatusFeature,
-    floorNumberFeature,
     smartHomeFeature,
     securityBenefit,
     primeLocationBenefit,
@@ -475,10 +467,8 @@ export const update = async (req, res) => {
     !parkingFeature ||
     !terraceFeature ||
     !ageOfPropertyFeature ||
-    !furnishingFeature ||
     !amenitiesFeature ||
     !propertyStatusFeature ||
-    !floorNumberFeature ||
     !smartHomeFeature ||
     !securityBenefit ||
     !primeLocationBenefit ||
@@ -516,7 +506,7 @@ export const update = async (req, res) => {
         msebWater=?, maintenance=?, other=?, propertyType=?, builtYear=?, ownershipType=?,
         builtUpArea=?, carpetArea=?, parkingAvailability=?, totalFloors=?, floorNo=?, loanAvailability=?,
         propertyFacing=?, reraRegistered=?, furnishing=?, waterSupply=?, powerBackup=?, locationFeature=?, sizeAreaFeature=?, parkingFeature=?, terraceFeature=?,
-        ageOfPropertyFeature=?, furnishingFeature=?, amenitiesFeature=?, propertyStatusFeature=?, floorNumberFeature=?, smartHomeFeature=?,
+        ageOfPropertyFeature=?, amenitiesFeature=?, propertyStatusFeature=?, smartHomeFeature=?,
         securityBenefit=?, primeLocationBenefit=?, rentalIncomeBenefit=?, qualityBenefit=?, capitalAppreciationBenefit=?, ecofriendlyBenefit=?,
         frontView=?, sideView=?, kitchenView=?, hallView=?, bedroomView=?, bathroomView=?, balconyView=?,
         nearestLandmark=?, developedAmenities=?, updated_at=?
@@ -563,10 +553,8 @@ export const update = async (req, res) => {
         parkingFeature,
         terraceFeature,
         ageOfPropertyFeature,
-        furnishingFeature,
         amenitiesFeature,
         propertyStatusFeature,
-        floorNumberFeature,
         smartHomeFeature,
         securityBenefit,
         primeLocationBenefit,
@@ -751,6 +739,82 @@ export const approve = (req, res) => {
           res
             .status(200)
             .json({ message: "Property status change successfully" });
+        }
+      );
+    }
+  );
+};
+
+// * UPLOAD Brochure & Video *
+export const uploadBrochureAndVideo = (req, res) => {
+  const propertyId = req.params.id;
+
+  if (!propertyId) {
+    return res.status(400).json({ message: "Property Id is required" });
+  }
+
+  const brochureFile = req.files?.brochureFile?.[0] || null; // image
+  const videoFile = req.files?.videoFile?.[0] || null; // video
+
+  if (!brochureFile && !videoFile) {
+    return res.status(400).json({ message: "No brochure or video uploaded" });
+  }
+
+  const brochurePath = brochureFile
+    ? `/uploads/brochures/${brochureFile.filename}`
+    : null;
+  const videoPath = videoFile ? `/uploads/videos/${videoFile.filename}` : null;
+
+  // 1 Get old files first
+  db.query(
+    "SELECT brochureFile, videoFile FROM properties WHERE propertyid = ?",
+    [propertyId],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+
+      const oldBrochure = result[0].brochureFile;
+      const oldVideo = result[0].videoFile;
+
+      // 2 Delete old files if new ones are provided
+      if (brochureFile && oldBrochure) {
+        const oldPath = path.join(process.cwd(), oldBrochure);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+      if (videoFile && oldVideo) {
+        const oldPath = path.join(process.cwd(), oldVideo);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+
+      // 3 Update DB with new paths
+      db.query(
+        "UPDATE properties SET brochureFile = ?, videoFile = ? WHERE propertyid = ?",
+        [
+          brochurePath || oldBrochure, // keep old if no new file
+          videoPath || oldVideo,
+          propertyId,
+        ],
+        (err) => {
+          if (err) {
+            console.error("Error while saving brochure/video:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+          res.status(200).json({
+            message: "Brochure & Video uploaded successfully",
+            brochurePath: brochurePath || oldBrochure,
+            videoPath: videoPath || oldVideo,
+          });
         }
       );
     }

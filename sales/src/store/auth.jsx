@@ -59,6 +59,8 @@ export const AuthProvider = ({ children }) => {
   const [showBenefitsPopup, setShowBenefitsPopup] = useState(false);
   const [showFilterPopup, setShowFilterPopup] = useState(false);
   const [showSiteVisitPopup, setShowSiteVisitPopup] = useState(false);
+  const [showPlayVideo, setShowPlayVideo] = useState(false);
+  const [videoURL, setVideoURL] = useState("");
   return (
     <AuthContext.Provider
       value={{
@@ -145,6 +147,10 @@ export const AuthProvider = ({ children }) => {
         setShowBenefitsPopup,
         showSiteVisitPopup,
         setShowSiteVisitPopup,
+        showPlayVideo,
+        setShowPlayVideo,
+        videoURL,
+        setVideoURL,
       }}
     >
       {children}

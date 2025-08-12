@@ -219,8 +219,8 @@ export default function Properties() {
       <div className="properties w-full max-w-[1400px] flex flex-col p-4 sm:py-4 sm:px-0 mx-auto">
         <div className="w-full flex flex-wrap gap-3 justify-beteen sm:justify-end sm:py-2 sm:px-5">
           {/* City Selector And Location Filter For MobileScreen  */}
-          <div className="w-full flex sm:hidden gap-1 items-center justify-between">
-            <div className="selectCity min-w-[200px] max-w-[250px] relative inline-block">
+          <div className="w-full flex sm:hidden gap-2 items-center justify-between">
+            <div className="selectCity w-[300px] min-w-[200px] max-w-[350px] relative inline-block">
               <Select
                 className="w-full text-xs p-0 cursor-pointer"
                 styles={customStyles}
@@ -409,6 +409,7 @@ export default function Properties() {
                         >
                           <div
                             onClick={() => {
+                              //window.open(URI + property?.brochureFile, "_blank");
                               const link = document.createElement("a");
                               link.href = URI + property?.brochureFile;
                               link.download = property?.brochureFile
@@ -433,7 +434,7 @@ export default function Properties() {
                             }}
                             className={`${
                               property?.videoFile ? "block" : "hidden"
-                            } p-[5px] text-white bg-[#107c0b] rounded-full cursor-pointer`}
+                            } p-[5px] z-10 text-white bg-[#107c0b] rounded-full cursor-pointer`}
                           >
                             <MdSlowMotionVideo />
                           </div>

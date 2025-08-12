@@ -430,10 +430,10 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
             className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
             value={newProperty.reraRegistered}
             onChange={(e) => {
-              const input = e.target.value.toUpperCase(); // Convert to uppercase
-              if (/^[A-Z0-9]{0,12}$/.test(input)) {
-                setPropertyData({ ...newProperty, reraRegistered: input });
-              }
+              setPropertyData({
+                ...newProperty,
+                reraRegistered: e.target.value,
+              });
             }}
           />
         </div>

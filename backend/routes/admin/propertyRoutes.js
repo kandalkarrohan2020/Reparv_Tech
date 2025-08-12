@@ -168,7 +168,12 @@ const brochureVideoUpload = multer({
   storage: brochureVideoStorage,
   limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB for videos/images
   fileFilter: (req, file, cb) => {
-    const allowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
+    const allowedFileTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "application/pdf",
+    ];
     const allowedVideoTypes = [
       "video/mp4",
       "video/mpeg",
@@ -177,8 +182,10 @@ const brochureVideoUpload = multer({
     ];
 
     if (file.fieldname === "brochureFile") {
-      if (!allowedImageTypes.includes(file.mimetype)) {
-        return cb(new Error("Only JPEG, PNG, WEBP images are allowed for brochure"));
+      if (!allowedFileTypes.includes(file.mimetype)) {
+        return cb(
+          new Error("Only JPG, PNG, WEBP images or PDF files are allowed.")
+        );
       }
     } else if (file.fieldname === "videoFile") {
       if (!allowedVideoTypes.includes(file.mimetype)) {
@@ -197,7 +204,6 @@ router.put(
   ]),
   uploadBrochureAndVideo
 );
-
 
 // multer for Upload Property Additional Information
 const uploadForCsv = multer({
@@ -227,6 +233,10 @@ const uploadCsvMiddleware = (req, res, next) => {
 
 // Fetch & Upload CSV File
 router.get("/additionalinfo/get/:id", fetchAdditionalInfo);
-router.post("/additionalinfo/csv/add/:propertyid", uploadCsvMiddleware, addCsvFile);
+router.post(
+  "/additionalinfo/csv/add/:propertyid",
+  uploadCsvMiddleware,
+  addCsvFile
+);
 
 export default router;

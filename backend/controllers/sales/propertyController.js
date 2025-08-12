@@ -72,7 +72,7 @@ export const updateStatus = (req, res) => {
   const sql = `
   UPDATE propertiesinfo SET status = ? WHERE propertyinfoid = ?
   `;
-  const val = "not_available";
+  const val = "Booked";
   db.query(sql, [val, id], (err, result) => {
     if (err) {
       console.error("Error deleting :", err);

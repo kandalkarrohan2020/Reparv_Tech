@@ -90,7 +90,7 @@ export default function ImageSlider() {
     <div className="relative w-full mx-auto max-w-[1650px] flex flex-col items-center justify-center mb-5">
       <div className="w-full flex flex-col sm:hidden gap-2 px-4 pt-3 pb-2">
         {/* Mobile City Selector */}
-        <div className="selectCity w-full max-w-[250px] relative inline-block">
+        <div className="selectCity w-full relative inline-block">
           <Select
             className="w-full text-xs p-0 cursor-pointer z-10"
             styles={customStyles}

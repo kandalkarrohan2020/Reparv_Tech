@@ -239,12 +239,12 @@ export const addProperty = async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
  
-  // Property Registration Fee is 1% or Minumum 30,000 Rs
+  // Property Registration Fee is 1% or Maximum 30,000 Rs
   let registrationFees;
   if (totalOfferPrice > 3000000) {
-    registrationFees = 1; // 1%
-  } else {
     registrationFees = (30000 / totalOfferPrice) * 100; // percentage for ₹30,000
+  } else {
+    registrationFees = 1; // 1%
   }
 
   const seoSlug = toSlug(propertyName);
@@ -488,12 +488,12 @@ export const update = async (req, res) => {
     return res.status(400).json({ message: "All Fields are required" });
   }
 
-  // Property Registration Fee is 1% or Minumum 30,000 Rs
+  // Property Registration Fee is 1% or Maximum 30,000 Rs
   let registrationFees;
   if (totalOfferPrice > 3000000) {
-    registrationFees = 1; // 1%
-  } else {
     registrationFees = (30000 / totalOfferPrice) * 100; // percentage for ₹30,000
+  } else {
+    registrationFees = 1; // 1%
   }
 
   const emi = calculateEMI(Number(totalOfferPrice));

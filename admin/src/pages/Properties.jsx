@@ -1374,7 +1374,7 @@ const Properties = () => {
                 <div className="w-full mt-2">
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/*,application/pdf"
                     onChange={singleImageChange}
                     className="hidden"
                     id="imageUpload"

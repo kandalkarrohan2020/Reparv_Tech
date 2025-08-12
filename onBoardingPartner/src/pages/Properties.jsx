@@ -686,13 +686,13 @@ const Properties = () => {
                 <div className="w-full mt-2">
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/*,application/pdf"
                     onChange={singleImageChange}
                     className="hidden"
-                    id="imageUpload"
+                    id="fileUpload"
                   />
                   <label
-                    htmlFor="imageUpload"
+                    htmlFor="fileUpload"
                     className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
                   >
                     <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">

@@ -429,10 +429,7 @@ export default function KYC() {
                 placeholder="Enter Rera Number"
                 value={userData.rerano}
                 onChange={(e) => {
-                  const input = e.target.value.toUpperCase(); // Convert to uppercase
-                  if (/^[A-Z0-9]{0,12}$/.test(input)) {
-                    setUserData({ ...userData, rerano: input });
-                  }
+                  setUserData({ ...userData, rerano: e.target.value });
                 }}
                 className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501]"
               />

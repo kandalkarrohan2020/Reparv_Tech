@@ -360,6 +360,7 @@ const StepOne = ({
             }
           >
             <option value="">Select Advocate Fee</option>
+            <option value="0">0</option>
             <option value="10000">10,000</option>
             <option value="15000">15,000</option>
             <option value="20000">20,000</option>

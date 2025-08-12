@@ -513,17 +513,13 @@ function Layout() {
       )}
 
       {showPlayVideo && (
-        <div
-          className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center"
-        >
+        <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
           <PlayVideo />
         </div>
       )}
 
       {showWingInfoPopup && (
-        <div
-          className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center"
-        >
+        <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
           <WingInfo />
         </div>
       )}

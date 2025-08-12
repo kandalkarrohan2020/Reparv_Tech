@@ -86,3 +86,85 @@ export const getLocationsByCityAndCategory = (req, res) => {
     res.status(200).json(locations);
   });
 };
+
+// ** Fetch Property Information by ID **
+// ** Fetch Property Information by ID **
+export const fetchAdditionalInfo = (req, res) => {
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  const sql = `SELECT * FROM propertiesinfo WHERE propertyid = ? ORDER BY propertyinfoid`;
+
+  db.query(sql, [Id], (err, result) => {
+    if (err) {
+      console.error("Error fetching property Details:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Property Additional Information not found" });
+    }
+
+    // Group by wing
+    const grouped = result.reduce((acc, row) => {
+      const wingName = row.wing || "Unknown";
+      let wingGroup = acc.find((w) => w.wing === wingName);
+      if (!wingGroup) {
+        wingGroup = { wing: wingName, rows: [] };
+        acc.push(wingGroup);
+      }
+      wingGroup.rows.push(row);
+      return acc;
+    }, []);
+
+    res.json(grouped);
+  });
+};
+
+// ** Fetch Property Information by ID **
+export const fetchFlatById = (req, res) => {
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  const sql = `SELECT * FROM propertiesinfo WHERE propertyinfoid = ? ORDER BY propertyinfoid`;
+
+  db.query(sql, [Id], (err, result) => {
+    if (err) {
+      console.error("Error fetching property Details:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Property Additional Information not found" });
+    }
+
+    const data = result[0];
+
+    // Calculate flat price
+    const flatPrice =
+      parseFloat(data?.carpetarea) * parseFloat(data?.sqftprice);
+
+    const totalFlatPrice =
+      parseFloat(flatPrice) +
+      parseFloat(data?.documentcharge) +
+      parseFloat(data?.watercharge) +
+      parseFloat(data?.parkingcharge) +
+      parseFloat(data?.clubhousecharge) +
+      parseFloat(data?.maintanance) +
+      parseFloat(data?.societydeposit);
+
+    // Append totalFlatPrice to the data object
+    data.totalFlatPrice = totalFlatPrice;
+
+    // Now set the updated object in state
+    res.json(data);
+  });
+};

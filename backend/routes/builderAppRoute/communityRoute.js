@@ -150,6 +150,7 @@ router.get("/:id/following-posts", (req, res) => {
 //new onw
 router.post("/add/follow", (req, res) => {
   const { follower_id, follower_type, following_id, following_type } = req.body;
+console.log( follower_id, follower_type, following_id, following_type );
 
   if (!follower_id || !following_id || !follower_type || !following_type) {
     return res.status(400).json({ error: "Missing follow data" });
@@ -176,6 +177,7 @@ router.post("/add/follow", (req, res) => {
 
 router.post("/add/unfollow", (req, res) => {
   const { follower_id, follower_type, following_id, following_type } = req.body;
+console.log( follower_id, follower_type, following_id, following_type );
 
   if (!follower_id || !following_id || !follower_type || !following_type) {
     return res.status(400).json({ error: "Missing unfollow data" });
@@ -297,7 +299,7 @@ router.get("/add/:id/:type/following-posts", (req, res) => {
 
 router.get("/add/:id/:type/following", (req, res) => {
   const { id, type } = req.params;
-  console.log(id, type, "ggggggggggggggg");
+ 
 
   // Map user type to table and ID field
   const tableMap = {
@@ -316,7 +318,7 @@ router.get("/add/:id/:type/following", (req, res) => {
   }
 
   const sql = `
-    SELECT u.${userMeta.idField} AS id, u.userimage
+    SELECT u.${userMeta.idField} AS builderid, u.userimage
     FROM userFollowers f
     JOIN ${userMeta.table} u 
       ON u.${userMeta.idField} = f.following_id
@@ -328,6 +330,7 @@ router.get("/add/:id/:type/following", (req, res) => {
       console.error("Fetch following error:", err);
       return res.status(500).json({ error: "Internal server error" });
     }
+console.log(results,'dd');
 
     res.json(results);
   });

@@ -54,7 +54,7 @@ export const editProfile = (req, res) => {
     const existingImage = result[0].userimage;
     const finalImagePath = req.file ? `/uploads/${req.file.filename}` : existingImage;
 
-    let updateSql = `UPDATE builders SET fullname = ?, username = ?, contact = ?, email = ?, userimage = ?, updated_at = ? WHERE builderid = ?`;
+    let updateSql = `UPDATE builders SET contact_person = ?, username = ?, contact = ?, email = ?, userimage = ?, updated_at = ? WHERE builderid = ?`;
     const updateValues = [
       fullname,
       username,
@@ -77,55 +77,25 @@ export const editProfile = (req, res) => {
 };
 
 export const changePassword = async (req, res) => {
-  const userId = req.user?.id;
-  const { currentPassword, newPassword } = req.body;
+  const { email, newPassword } = req.body;
 
-  if (!userId) {
-    return res.status(400).json({ message: "Invalid User ID" });
-  }
-
-  if (!currentPassword || !newPassword) {
-    return res.status(400).json({ message: "Both current and new passwords are required" });
-  }
-  if(currentPassword === newPassword) {
-    return res.status(400).json({ message: "New Password Cannot be Same as Current Password"});
-  }
-  
   try {
-    // Fetch user's current password from the database
-    db.query("SELECT password FROM builders WHERE builderid = ?", [userId], async (err, result) => {
-      if (err) {
-        console.error("Error fetching user:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
+    //Securely hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-      if (result.length === 0) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      const storedPassword = result[0].password;
+    //  Update password in your salesperson  table
+    const query = `UPDATE builders SET password = ? WHERE email = ?`;
+    db.query(query, [hashedPassword, email], (err, result) => {
+      if (err) throw err;
+console.log("Password updated successfully for email:", email);
 
-      // Compare provided current password with stored password
-      const isMatch = await bcrypt.compare(currentPassword, storedPassword);
-      if (!isMatch) {
-        return res.status(400).json({ message: "Current password is incorrect" });
-      }
-
-      // Hash the new password
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-      // Update the password in the database
-      db.query("UPDATE builders SET password = ? WHERE builderid = ?", [hashedPassword, userId], (updateErr) => {
-        if (updateErr) {
-          console.error("Error updating password:", updateErr);
-          return res.status(500).json({ message: "Database error during update", error: updateErr });
-        }
-
-        res.status(200).json({ message: "Password changed successfully" });
+      return res.json({
+        success: true,
+        message: "Password updated successfully. You can now log in.",
       });
     });
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ message: "Internal server error", error });
+    console.error("Password reset error:", error);
+    res.status(500).json({ success: false, message: "Something went wrong." });
   }
 };

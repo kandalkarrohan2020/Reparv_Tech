@@ -589,7 +589,22 @@ const SalesPerson = () => {
                 : "Login Status Inactive"}
             </div>
           </div>
-          {row.fullname}
+          <div className="relative group cursor-pointer">
+            <span
+              className={`${
+                row.adharno && row.panno && row.adharimage && row.panimage
+                  ? "text-green-600"
+                  : ""
+              }`}
+            >
+              {row.fullname}
+            </span>
+            <div className="absolute w-[150px] text-center -top-12 left-[50px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+              {row.adharno && row.panno && row.adharimage && row.panimage
+                ? "KYC Completed"
+                : "KYC Not Completed"}
+            </div>
+          </div>
         </div>
       ),
       width: "200px",
@@ -689,7 +704,9 @@ const SalesPerson = () => {
     >
       <div className="sales-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
         <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
-          <p className="block md:hidden text-lg font-semibold">Sales Partners</p>
+          <p className="block md:hidden text-lg font-semibold">
+            Sales Partners
+          </p>
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
             <DownloadCSV data={filteredData} filename={"SalesPartner.csv"} />
             <AddButton label={"Add"} func={setShowSalesForm} />
@@ -871,25 +888,50 @@ const SalesPerson = () => {
                   ))}
                 </select>
               </div>
-              <div className="w-full ">
+              <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Why are You Intrested ?{" "}
+                  Why are You Interested?{" "}
                   <span className="text-red-600">*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   required
-                  minLength={3}
-                  placeholder="Enter Your Intrest to Join Reparv"
                   value={newSalesPerson.intrest}
-                  onChange={(e) => {
+                  onChange={(e) =>
                     setNewSalesPerson({
                       ...newSalesPerson,
                       intrest: e.target.value,
-                    });
-                  }}
+                    })
+                  }
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="" disabled>
+                    Why are You Interested ?
+                  </option>
+                  <option value="Passion for Real Estate Industry">
+                    Passion for Real Estate Industry
+                  </option>
+                  <option value="Opportunity to Work with a Growing Company">
+                    Opportunity to Work with a Growing Company
+                  </option>
+                  <option value="Learning & Career Growth">
+                    Learning & Career Growth
+                  </option>
+                  <option value="Strong Communication & Negotiation Skills">
+                    Strong Communication & Negotiation Skills
+                  </option>
+                  <option value="Interest in Marketing & Sales">
+                    Interest in Marketing & Sales
+                  </option>
+                  <option value="Local Market Knowledge">
+                    Local Market Knowledge
+                  </option>
+                  <option value="Financial Rewards & Performance-Driven Role">
+                    Financial Rewards & Performance-Driven Role
+                  </option>
+                  <option value="Helping People Make Life-Changing Decisions">
+                    Helping People Make Life-Changing Decisions
+                  </option>
+                </select>
               </div>
             </div>
             <div className="flex h-10 mt-8 md:mt-6 justify-end gap-6">

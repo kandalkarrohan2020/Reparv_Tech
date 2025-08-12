@@ -25,6 +25,7 @@ import SiteVisitPopup from "../property/SiteVisitPopup";
 import FilterSidebar from "../FilterSidebar";
 import Select from "react-select";
 import PlayVideo from "../property/PlayVideo";
+import WingInfo from "../property/WingInfo";
 
 function Layout() {
   const {
@@ -44,6 +45,8 @@ function Layout() {
     setShowFilterPopup,
     showPlayVideo,
     setShowPlayVideo,
+    showWingInfoPopup,
+    setShowWingInfoPopup,
   } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -514,6 +517,14 @@ function Layout() {
           className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center"
         >
           <PlayVideo />
+        </div>
+      )}
+
+      {showWingInfoPopup && (
+        <div
+          className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center"
+        >
+          <WingInfo />
         </div>
       )}
 

@@ -28,8 +28,6 @@ const PropertyFeatures = ({ propertyInfo }) => {
     { icon: <GiHomeGarage />, label: propertyInfo?.parkingFeature },
     { icon: <MdBalcony />, label: propertyInfo?.terraceFeature },
     { icon: <MdBuildCircle />, label: propertyInfo?.ageOfPropertyFeature },
-    { icon: <MdChair />, label: propertyInfo?.furnishingFeature },
-    { icon: <FaBuilding />, label: propertyInfo?.floorNumberFeature },
     { icon: <MdConstruction />, label: propertyInfo?.propertyStatusFeature },
     { icon: <BiSolidBuildingHouse />, label: propertyInfo?.amenitiesFeature },
     { icon: <TbSmartHome />, label: propertyInfo?.smartHomeFeature },
@@ -48,7 +46,7 @@ const PropertyFeatures = ({ propertyInfo }) => {
   ];
 
   return (
-    <div className="bg-white rounded-lg p-4">
+    <div className="bg-white rounded-lg p-4 md:p-6">
       <h2 className="text-lg font-semibold mb-6">Features and Benefits</h2>
 
       <div className="flex items-center justify-between gap-20 px-6 mb-6">

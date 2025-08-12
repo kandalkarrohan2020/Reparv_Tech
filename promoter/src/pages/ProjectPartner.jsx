@@ -141,14 +141,17 @@ const ProjectPartner = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/promoter/projectpartner/${endpoint}`, {
-        method: newPartner.id ? "PUT" : "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newPartner),
-      });
+      const response = await fetch(
+        `${URI}/promoter/projectpartner/${endpoint}`,
+        {
+          method: newPartner.id ? "PUT" : "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newPartner),
+        }
+      );
 
       if (response.status === 409) {
         alert("partner all ready exists!");
@@ -586,7 +589,22 @@ const ProjectPartner = () => {
                 : "Login Status Inactive"}
             </div>
           </div>
-          {row.fullname}
+          <div className="relative group cursor-pointer">
+            <span
+              className={`${
+                row.adharno && row.panno && row.adharimage && row.panimage
+                  ? "text-green-600"
+                  : ""
+              }`}
+            >
+              {row.fullname}
+            </span>
+            <div className="absolute w-[150px] text-center -top-12 left-[50px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+              {row.adharno && row.panno && row.adharimage && row.panimage
+                ? "KYC Completed"
+                : "KYC Not Completed"}
+            </div>
+          </div>
         </div>
       ),
       width: "200px",
@@ -872,25 +890,50 @@ const ProjectPartner = () => {
                 </select>
               </div>
 
-              <div className="w-full ">
+              <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Why are You Intrested ?{" "}
+                  Why are You Interested?{" "}
                   <span className="text-red-600">*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   required
-                  minLength={3}
-                  placeholder="Enter Your Intrest to Join Reparv"
                   value={newPartner.intrest}
-                  onChange={(e) => {
+                  onChange={(e) =>
                     setNewPartner({
                       ...newPartner,
                       intrest: e.target.value,
-                    });
-                  }}
+                    })
+                  }
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="" disabled>
+                    Why are You Interested?
+                  </option>
+                  <option value="Mutual Growth Opportunity">
+                    Mutual Growth Opportunity
+                  </option>
+                  <option value="Strong Interest in Infrastructure and Development">
+                    Strong Interest in Infrastructure and Development
+                  </option>
+                  <option value="Complementary Skills and Experience">
+                    Complementary Skills and Experience
+                  </option>
+                  <option value="Market Expansion Vision">
+                    Market Expansion Vision
+                  </option>
+                  <option value="Long-Term Value Creation">
+                    Long-Term Value Creation
+                  </option>
+                  <option value="Collaborative Approach">
+                    Collaborative Approach
+                  </option>
+                  <option value="Technology Integration">
+                    Technology Integration
+                  </option>
+                  <option value="Interest in Sustainable and Smart Projects">
+                    Interest in Sustainable and Smart Projects
+                  </option>
+                </select>
               </div>
             </div>
             <div className="flex h-10 mt-8 md:mt-6 justify-end gap-6">

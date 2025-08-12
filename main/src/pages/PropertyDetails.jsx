@@ -12,6 +12,7 @@ import OtherProperties from "../components/OtherProperties";
 import { useOutletContext } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 import SEO from "../components/SEO";
+import WingData from "../components/property/WingData";
 
 function PropertyDetails() {
   const { setOtherPropertiesInView, isScrolling } = useOutletContext();
@@ -35,7 +36,7 @@ function PropertyDetails() {
       });
       if (!response.ok) throw new Error("Failed to fetch property info.");
       const data = await response.json();
-      console.log("Property Info", data);
+      //console.log("Property Info", data);
       setPropertyInfo(data);
       setPropertyCategory(data.propertyCategory);
     } catch (err) {
@@ -79,11 +80,21 @@ function PropertyDetails() {
       />
       <div className="w-full max-w-7xl flex flex-col sm:p-4 mx-auto">
         <div className="flex w-full">
-          <div className="leftSection w-full md:w-[50%] flex flex-col gap-5 sm:gap-10">
+          <div className="leftSection w-full md:w-[50%] flex flex-col gap-2 sm:gap-10">
             <PropertyImageGallery property={propertyInfo} />
             <div className=" block md:hidden">
               <PropertyBookingCard propertyInfo={propertyInfo} />
             </div>
+
+            {/* Show Wing Data Only in the New And Commercial Flat Or Plot */}
+            {[
+              "NewFlat",
+              "NewPlot",
+              "CommercialFlat",
+              "CommercialPlot",
+            ].includes(propertyInfo.propertyCategory) && (
+              <WingData propertyInfo={propertyInfo} />
+            )}
 
             {/* Property Details */}
             <div
@@ -106,7 +117,11 @@ function PropertyDetails() {
 
             <PropertyOverview propertyInfo={propertyInfo} />
             <PropertyFeatures propertyInfo={propertyInfo} />
-            <EMICalculator totalAmount={propertyInfo.totalOfferPrice} />
+
+            {/* Hide EMI Calculator in Rental Properties */}
+            {!["RentalFlat", "RentalShop", "RentalOffice"].includes(
+              propertyInfo.propertyCategory
+            ) && <EMICalculator totalAmount={propertyInfo.totalOfferPrice} />}
           </div>
           <div
             className={`${

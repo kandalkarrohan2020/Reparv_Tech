@@ -238,6 +238,14 @@ export const addProperty = async (req, res) => {
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
+ 
+  // Property Registration Fee is 1% or Minumum 30,000 Rs
+  let registrationFees;
+  if (totalOfferPrice > 3000000) {
+    registrationFees = 1; // 1%
+  } else {
+    registrationFees = (30000 / totalOfferPrice) * 100; // percentage for ₹30,000
+  }
 
   const seoSlug = toSlug(propertyName);
 
@@ -307,7 +315,7 @@ export const addProperty = async (req, res) => {
         totalOfferPrice,
         emi,
         stampDuty,
-        registrationFee,
+        registrationFees,
         gst,
         advocateFee,
         msebWater,
@@ -480,6 +488,14 @@ export const update = async (req, res) => {
     return res.status(400).json({ message: "All Fields are required" });
   }
 
+  // Property Registration Fee is 1% or Minumum 30,000 Rs
+  let registrationFees;
+  if (totalOfferPrice > 3000000) {
+    registrationFees = 1; // 1%
+  } else {
+    registrationFees = (30000 / totalOfferPrice) * 100; // percentage for ₹30,000
+  }
+
   const emi = calculateEMI(Number(totalOfferPrice));
 
   // Fetch existing property to retain old image paths if not replaced
@@ -528,7 +544,7 @@ export const update = async (req, res) => {
         totalOfferPrice,
         emi,
         stampDuty,
-        registrationFee,
+        registrationFees,
         gst,
         advocateFee,
         msebWater,
@@ -1377,6 +1393,11 @@ export const addCsvFile = async (req, res) => {
     return res.status(400).json({ message: "CSV file is required" });
   }
 
+  const propertyId = parseInt(req.params?.propertyid);
+  if (isNaN(propertyId)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
   const results = [];
 
   const filePath = req.file.path;
@@ -1391,7 +1412,7 @@ export const addCsvFile = async (req, res) => {
 
   stream.on("end", () => {
     const values = results.map((row) => [
-      row.propertyid,
+      row.propertyid || propertyId,
       row.wing || null,
       row.floor || null,
       row.flatno || null,

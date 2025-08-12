@@ -720,12 +720,12 @@ const Properties = () => {
     }
 
     const formData = new FormData();
-    formData.append("csv", file);
     formData.append("propertyid", propertyKey);
+    formData.append("csv", file);
 
     try {
       const response = await fetch(
-        `${URI}/admin/properties/additionalinfo/csv/add`,
+        `${URI}/admin/properties/additionalinfo/csv/add/${propertyKey}`,
         {
           method: "POST",
           credentials: "include",

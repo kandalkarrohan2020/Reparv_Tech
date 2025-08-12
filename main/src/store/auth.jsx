@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [propertyId, setPropertyId] = useState(null);
+  const [propertyInfoId, setPropertyInfoId] = useState(null);
   const [propertyCategory, setPropertyCategory] = useState("");
   const [successScreen, setSuccessScreen] = useState({
     show: false,
@@ -25,9 +26,10 @@ export const AuthProvider = ({ children }) => {
   const [showSiteVisitPopup, setShowSiteVisitPopup] = useState(false);
   const [showPlayVideo, setShowPlayVideo] = useState(false);
   const [videoURL, setVideoURL] = useState("");
+  const [showWingInfoPopup, setShowWingInfoPopup] = useState(false);
 
-  //const URI = "https://api.reparv.in";
-  const URI = "http://localhost:3000";
+  const URI = "https://api.reparv.in";
+  //const URI = "http://localhost:3000";
 
   return (
     <AuthContext.Provider
@@ -36,6 +38,8 @@ export const AuthProvider = ({ children }) => {
         setIsActive,
         propertyId,
         setPropertyId,
+        propertyInfoId, 
+        setPropertyInfoId,
         propertyCategory,
         setPropertyCategory,
         successScreen,
@@ -64,6 +68,9 @@ export const AuthProvider = ({ children }) => {
         setShowPlayVideo,
         videoURL,
         setVideoURL,
+        showWingInfoPopup,
+        setShowWingInfoPopup,
+      
         URI,
         loading,
         setLoading,

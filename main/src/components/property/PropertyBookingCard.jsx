@@ -21,7 +21,7 @@ const PropertyBookingCard = ({ propertyInfo }) => {
   } = useAuth();
   return (
     <div
-      className={`w-full max-w-[540px] flex flex-col gap-2 sm:gap-4 bg-white rounded-xl p-6 sm:border`}
+      className={`w-full max-w-[540px] flex flex-col gap-2 sm:gap-4 bg-white rounded-xl p-4 md:p-6 sm:border`}
     >
       {/* Title */}
       <h2 className="text-lg sm:text-2xl font-semibold">
@@ -31,7 +31,7 @@ const PropertyBookingCard = ({ propertyInfo }) => {
       {/* Flat/Plot Count */}
       <div
         className={`${
-          ["NewFlat", "NewPlot"].includes(propertyInfo.propertyCategory)
+          ["NewFlat", "NewPlot", "CommercialFlat", "CommercialPlot"].includes(propertyInfo.propertyCategory)
             ? "flex"
             : "hidden"
         } flex flex-wrap gap-4 text-sm md:text-base font-medium text-[#00092966] group-hover:text-[#e2e2e2] mt-1`}

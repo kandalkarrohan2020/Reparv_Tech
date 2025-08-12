@@ -590,7 +590,22 @@ const TerritoryPartner = () => {
                 : "Login Status Inactive"}
             </div>
           </div>
-          {row.fullname}
+          <div className="relative group cursor-pointer">
+            <span
+              className={`${
+                row.adharno && row.panno && row.adharimage && row.panimage
+                  ? "text-green-600"
+                  : ""
+              }`}
+            >
+              {row.fullname}
+            </span>
+            <div className="absolute w-[150px] text-center -top-12 left-[50px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+              {row.adharno && row.panno && row.adharimage && row.panimage
+                ? "KYC Completed"
+                : "KYC Not Completed"}
+            </div>
+          </div>
         </div>
       ),
       width: "200px",
@@ -877,25 +892,50 @@ const TerritoryPartner = () => {
                   ))}
                 </select>
               </div>
-              <div className="w-full ">
+              <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Why are You Intrested ?{" "}
+                  Why are You Interested?{" "}
                   <span className="text-red-600">*</span>
                 </label>
-                <input
-                  type="text"
-                  minLength={3}
+                <select
                   required
-                  placeholder="Enter Your Intrest to Join Reparv"
                   value={newPartner.intrest}
-                  onChange={(e) => {
+                  onChange={(e) =>
                     setNewPartner({
                       ...newPartner,
                       intrest: e.target.value,
-                    });
-                  }}
+                    })
+                  }
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="" disabled>
+                    Why are You Interested ?
+                  </option>
+                  <option value="Passion for Real Estate Industry">
+                    Passion for Real Estate Industry
+                  </option>
+                  <option value="Opportunity to Work with a Growing Company">
+                    Opportunity to Work with a Growing Company
+                  </option>
+                  <option value="Learning & Career Growth">
+                    Learning & Career Growth
+                  </option>
+                  <option value="Strong Communication & Negotiation Skills">
+                    Strong Communication & Negotiation Skills
+                  </option>
+                  <option value="Interest in Marketing & Sales">
+                    Interest in Marketing & Sales
+                  </option>
+                  <option value="Local Market Knowledge">
+                    Local Market Knowledge
+                  </option>
+                  <option value="Financial Rewards & Performance-Driven Role">
+                    Financial Rewards & Performance-Driven Role
+                  </option>
+                  <option value="Helping People Make Life-Changing Decisions">
+                    Helping People Make Life-Changing Decisions
+                  </option>
+                </select>
               </div>
             </div>
             <div className="flex h-10 mt-8 md:mt-6 justify-end gap-6">

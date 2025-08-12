@@ -1,6 +1,7 @@
 import mysql from "mysql";
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
+  connectionLimit: 20, 
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -8,12 +9,4 @@ const db = mysql.createConnection({
   port: process.env.DB_PORT,
 });
 
-db.connect((err) => {
-  if (err) {
-    console.error("Database Connection Failed: ", err);
-    return;
-  }
-  console.log("Connected to MySQL Database");
-});
-
-export default db; 
+export default db;

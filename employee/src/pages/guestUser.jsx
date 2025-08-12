@@ -346,7 +346,22 @@ const GuestUser = () => {
                 : "Login Status Inactive"}
             </div>
           </div>
-          {row.fullname}
+          <div className="relative group cursor-pointer">
+            <span
+              className={`${
+                row.adharno && row.panno && row.adharimage && row.panimage
+                  ? "text-green-600"
+                  : ""
+              }`}
+            >
+              {row.fullname}
+            </span>
+            <div className="absolute w-[150px] text-center -top-12 left-[50px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+              {row.adharno && row.panno && row.adharimage && row.panimage
+                ? "KYC Completed"
+                : "KYC Not Completed"}
+            </div>
+          </div>
         </div>
       ),
       minWidth: "200px",

@@ -13,7 +13,6 @@ import SalesPerson from "./pages/SalesPerson.jsx";
 import UsersLoanEligibility from "./pages/UsersLoanEligibility.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
-import GuestUser from "./pages/guestUser.jsx";
 import OnBoardingPartner from "./pages/OnBoardingPartner.jsx";
 import ProjectPartner from "./pages/ProjectPartner.jsx";
 import TerritoryPartner from "./pages/TerritoryPartner.jsx";
@@ -30,7 +29,6 @@ const App = () => {
           <Route path="/enquirers" element={<Enquirers />} />
           <Route path="/customers" element={<Customers />} />
           <Route path="/tickets" element={<Ticketing />} />
-          <Route path="/guest-users" element={<GuestUser />} />
           <Route path="/salespersons" element={<SalesPerson />} />
           <Route path="/onboardingpartner" element={<OnBoardingPartner />} />
           <Route path="/projectpartner" element={<ProjectPartner />} />

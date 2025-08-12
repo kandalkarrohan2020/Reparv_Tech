@@ -222,9 +222,7 @@ const Promoter = () => {
 
   //Delete record
   const del = async (id) => {
-    if (
-      !window.confirm("Are you sure you want to delete this Promoter?")
-    )
+    if (!window.confirm("Are you sure you want to delete this Promoter?"))
       return;
 
     try {
@@ -253,12 +251,7 @@ const Promoter = () => {
 
   // change status record
   const status = async (id) => {
-    if (
-      !window.confirm(
-        "Are you sure to change this Promoter status?"
-      )
-    )
-      return;
+    if (!window.confirm("Are you sure to change this Promoter status?")) return;
 
     try {
       const response = await fetch(URI + `/admin/promoter/status/${id}`, {
@@ -377,11 +370,7 @@ const Promoter = () => {
   // Assign login record
   const assignLogin = async (e) => {
     e.preventDefault();
-    if (
-      !window.confirm(
-        "Are you sure to assign login to this Promoter ?"
-      )
-    )
+    if (!window.confirm("Are you sure to assign login to this Promoter ?"))
       return;
 
     try {
@@ -416,7 +405,6 @@ const Promoter = () => {
     }
   };
 
-  
   useEffect(() => {
     fetchData();
     fetchStates();
@@ -587,7 +575,22 @@ const Promoter = () => {
                 : "Login Status Inactive"}
             </div>
           </div>
-          {row.fullname}
+          <div className="relative group cursor-pointer">
+            <span
+              className={`${
+                row.adharno && row.panno && row.adharimage && row.panimage
+                  ? "text-green-600"
+                  : ""
+              }`}
+            >
+              {row.fullname}
+            </span>
+            <div className="absolute w-[150px] text-center -top-12 left-[50px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+              {row.adharno && row.panno && row.adharimage && row.panimage
+                ? "KYC Completed"
+                : "KYC Not Completed"}
+            </div>
+          </div>
         </div>
       ),
       width: "200px",
@@ -687,9 +690,7 @@ const Promoter = () => {
     >
       <div className=" w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
         <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
-          <p className="block md:hidden text-lg font-semibold">
-            Promoter
-          </p>
+          <p className="block md:hidden text-lg font-semibold">Promoter</p>
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
             <DownloadCSV data={filteredData} filename={"Promoter.csv"} />
             <AddButton label={"Add"} func={setShowPartnerForm} />
@@ -714,10 +715,7 @@ const Promoter = () => {
               </div>
             </div>
             <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
-              <DownloadCSV
-                data={filteredData}
-                filename={"Promoter.csv"}
-              />
+              <DownloadCSV data={filteredData} filename={"Promoter.csv"} />
               <AddButton label={"Add"} func={setShowPartnerForm} />
             </div>
           </div>
@@ -873,25 +871,50 @@ const Promoter = () => {
                 </select>
               </div>
 
-              <div className="w-full ">
+              <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Why are You Intrested ?{" "}
+                  Why are You Interested?{" "}
                   <span className="text-red-600">*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   required
-                  minLength={3}
-                  placeholder="Enter Your Intrest to Join Reparv"
                   value={newPartner.intrest}
-                  onChange={(e) => {
+                  onChange={(e) =>
                     setNewPartner({
                       ...newPartner,
                       intrest: e.target.value,
-                    });
-                  }}
+                    })
+                  }
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="" disabled>
+                    Why are You Interested?
+                  </option>
+                  <option value="Mutual Growth Opportunity">
+                    Mutual Growth Opportunity
+                  </option>
+                  <option value="Strong Interest in Infrastructure and Development">
+                    Strong Interest in Infrastructure and Development
+                  </option>
+                  <option value="Complementary Skills and Experience">
+                    Complementary Skills and Experience
+                  </option>
+                  <option value="Market Expansion Vision">
+                    Market Expansion Vision
+                  </option>
+                  <option value="Long-Term Value Creation">
+                    Long-Term Value Creation
+                  </option>
+                  <option value="Collaborative Approach">
+                    Collaborative Approach
+                  </option>
+                  <option value="Technology Integration">
+                    Technology Integration
+                  </option>
+                  <option value="Interest in Sustainable and Smart Projects">
+                    Interest in Sustainable and Smart Projects
+                  </option>
+                </select>
               </div>
             </div>
             <div className="flex h-10 mt-8 md:mt-6 justify-end gap-6">
@@ -1222,9 +1245,7 @@ const Promoter = () => {
       >
         <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">
-              Promoter Details
-            </h2>
+            <h2 className="text-[16px] font-semibold">Promoter Details</h2>
             <IoMdClose
               onClick={() => {
                 setShowPartner(false);

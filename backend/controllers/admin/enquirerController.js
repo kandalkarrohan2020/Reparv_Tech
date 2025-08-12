@@ -87,7 +87,7 @@ export const getById = (req, res) => {
   });
 };
 
-export const getPropertyList = (req, res) => {
+export const getPropertyListOld = (req, res) => {
   const enquiryId = req.params.id;
 
   // Step 1: Get Enquiry details
@@ -125,6 +125,53 @@ export const getPropertyList = (req, res) => {
           return res
             .status(500)
             .json({ message: "Database error", error: err });
+        }
+
+        res.json(propertyResults);
+      }
+    );
+  });
+};
+
+export const getPropertyList = (req, res) => {
+  const enquiryId = req.params.id;
+
+  // Step 1: Get Enquiry details
+  const enquirySql = "SELECT * FROM enquirers WHERE enquirersid = ?";
+  db.query(enquirySql, [enquiryId], (err, enquiryResults) => {
+    if (err) {
+      console.error("Error fetching enquiry:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (enquiryResults.length === 0) {
+      return res.status(404).json({ message: "Enquiry not found" });
+    }
+
+    const enquiry = enquiryResults[0];
+
+    // Parse budgets to numbers (fallbacks to avoid NaN)
+    const minbudget = parseFloat(enquiry.minbudget) || 0;
+    const maxbudget = parseFloat(enquiry.maxbudget) || Number.MAX_SAFE_INTEGER;
+    const { category, state, city } = enquiry;
+
+    // Step 2: Get matching properties
+    const propertySql = `
+      SELECT * FROM properties
+      WHERE CAST(totalOfferPrice AS DECIMAL(15,2)) BETWEEN ? AND ?
+        AND propertyCategory = ?
+        AND state = ?
+        AND city = ?
+      ORDER BY created_at DESC
+    `;
+
+    db.query(
+      propertySql,
+      [minbudget, maxbudget, category, state, city],
+      (err, propertyResults) => {
+        if (err) {
+          console.error("Error fetching properties:", err);
+          return res.status(500).json({ message: "Database error", error: err });
         }
 
         res.json(propertyResults);
@@ -268,17 +315,17 @@ export const assignEnquiry = async (req, res) => {
         const apikey = "1c26ea744ef248f080ee1c5270081c0b";
         const msg = `🌟 *REPARV* - New Enquiry Alert 🌟
 
-Hello ${salesperson},
+        Hello ${salesperson},
 
-You have been assigned a new enquiry.
+        You have been assigned a new enquiry.
 
-🚀 Please check the details and take quick action.
+        Please check the details and take quick action.
 
-📱 Open the *REPARV Sales Partner App* or  
-🖥️ Visit: https://sales.reparv.in/
+        📱 Open the *REPARV Sales Partner App* or  
+        🖥️ Visit: https://sales.reparv.in/
 
-Thank you,  
-Team REPARV`;
+        Thank you,  
+        Team REPARV`;
 
         const encodedMsg = encodeURIComponent(msg);
         const apiUrl = `http://wapi.kinextechnologies.in/wapp/api/send?apikey=${apikey}&mobile=${salespersoncontact}&msg=${encodedMsg}`;

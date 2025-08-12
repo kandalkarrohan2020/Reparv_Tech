@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
+import { IoMdClose } from "react-icons/io";
 import FilterData from "../components/FilterData";
 import AddButton from "../components/AddButton";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import MultiStepForm from "../components/propertyForm/MultiStepForm";
 import UpdateImagesForm from "../components/propertyForm/UpdateImagesForm";
+import Loader from "../components/Loader";
 
 const Properties = () => {
   const {

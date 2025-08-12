@@ -34,7 +34,7 @@ router.put('/updated/:id', upload.single('image'),updatePost)
 router.delete('/deletepost/:id', (req, res) => {
   const postId = req.params.id;
 
-  const sql = 'DELETE FROM salespersonposts WHERE postId = ?';
+  const sql = 'DELETE FROM builderposts WHERE postId = ?';
 
   db.query(sql, [postId], (err, result) => {
     if (err) {

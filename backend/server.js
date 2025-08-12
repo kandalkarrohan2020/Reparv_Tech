@@ -80,7 +80,6 @@ import promoterSalespersonRoutes from "./routes/promoter/salespersonRoutes.js";
 import promoterPartnerRoutes from "./routes/promoter/partnerRoutes.js";
 import promoterProjectPartnerRoutes from "./routes/promoter/projectPartnerRoutes.js";
 import promoterTerritoryPartnerRoutes from "./routes/promoter/territoryPartnerRoutes.js";
-import promoterGuestUserRoutes from "./routes/promoter/guestUserRoutes.js";
 import promoterEmiRoutes from "./routes/promoter/emiRoutes.js";
 import promoterTicketRoutes from "./routes/promoter/ticketRoutes.js";
 
@@ -198,6 +197,7 @@ const allowedOrigins = [
   "https://www.reparv.in",
   "https://users.reparv.in",
   "https://employee.reparv.in",
+  "https://promoter.reparv.in",
   "https://partners.reparv.in",
   "https://onboarding.reparv.in",
   "https://sales.reparv.in",
@@ -408,7 +408,6 @@ app.use("/promoter/salespersons", promoterSalespersonRoutes);
 app.use("/promoter/partner", promoterPartnerRoutes);
 app.use("/promoter/projectpartner", promoterProjectPartnerRoutes);
 app.use("/promoter/territorypartner", promoterTerritoryPartnerRoutes);
-app.use("/promoter/guestuser", promoterGuestUserRoutes);
 app.use("/promoter/emi", promoterEmiRoutes);
 app.use("/promoter/tickets", promoterTicketRoutes);
 

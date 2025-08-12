@@ -201,6 +201,15 @@ export const addProperty = async (req, res) => {
 
   const seoSlug = toSlug(propertyName);
 
+  // Property Registration Fee is 1% or Minumum 30,000 Rs
+  let registrationFees;
+  if (totalOfferPrice > 3000000) {
+    registrationFees = 1; // 1%
+  } else {
+    registrationFees = (30000 / totalOfferPrice) * 100; // percentage for ₹30,000
+  }
+
+
   // calculate EMI On OFFER PRICE
   const emi = calculateEMI(Number(totalOfferPrice));
 
@@ -261,7 +270,7 @@ export const addProperty = async (req, res) => {
         totalOfferPrice,
         emi,
         stampDuty,
-        registrationFee,
+        registrationFees,
         gst,
         advocateFee,
         msebWater,
@@ -435,6 +444,15 @@ export const update = async (req, res) => {
     return res.status(400).json({ message: "All Fields are required" });
   }
 
+  // Property Registration Fee is 1% or Minumum 30,000 Rs
+  let registrationFees;
+  if (totalOfferPrice > 3000000) {
+    registrationFees = 1; // 1%
+  } else {
+    registrationFees = (30000 / totalOfferPrice) * 100; // percentage for ₹30,000
+  }
+
+
   // calculate EMI On OFFER PRICE
   const emi = calculateEMI(Number(totalOfferPrice));
 
@@ -498,7 +516,7 @@ export const update = async (req, res) => {
         totalOfferPrice,
         emi,
         stampDuty,
-        registrationFee,
+        registrationFees,
         gst,
         advocateFee,
         msebWater,

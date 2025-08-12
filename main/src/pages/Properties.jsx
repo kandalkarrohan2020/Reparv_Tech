@@ -95,7 +95,7 @@ export default function Properties() {
       if (!response.ok) throw new Error("Failed to fetch properties.");
 
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       setProperties(data);
     } catch (err) {
       console.error("Error fetching:", err);

@@ -208,6 +208,11 @@ function Layout() {
               { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/enquirers", icon: enquirersIcon, label: "Enquirers" },
               { to: "/customers", icon: customersIcon, label: "Customers" },
+               {
+                to: "/users-loan-eligibility",
+                icon: partnerIcon,
+                label: "Users Loan Eligibility",
+              },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
               {
                 to: "/salespersons",
@@ -228,12 +233,6 @@ function Layout() {
                 to: "/territorypartner",
                 icon: partnerIcon,
                 label: "Territory Partners",
-              },
-              { to: "/guest-users", icon: partnerIcon, label: "Guest Users" },
-              {
-                to: "/users-loan-eligibility",
-                icon: partnerIcon,
-                label: "Users Loan Eligibility",
               },
               {
                 to: "/brand-accessories",

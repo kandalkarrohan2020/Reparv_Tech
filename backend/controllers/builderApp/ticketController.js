@@ -3,7 +3,7 @@ import moment from "moment";
 
 // **Fetch All **
 export const getAll = (req, res) => {
-  const adharId = req.user.adharId;
+  const adharId = req.user.id;
   if(!adharId){
     return res.status(401).json({message: "Unauthorized! Please Login again"})
   }
@@ -111,7 +111,7 @@ export const getEmployees = (req, res) => {
 export const add = (req, res) => {
   const currentDate = moment().format("YYYY-MM-DD HH:mm:ss");
 
-  const adharId = req.user.adharId;
+  const adharId = req.user.id;
   if(!adharId){
     return res.status(401).json({message: 'Unauthorized! Please Login Again'});
   }

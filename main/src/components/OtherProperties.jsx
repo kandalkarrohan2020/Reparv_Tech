@@ -5,6 +5,8 @@ import { BiBath } from "react-icons/bi";
 import { FaDiamond } from "react-icons/fa6";
 import { IoMdDoneAll } from "react-icons/io";
 import { CiLocationOn } from "react-icons/ci";
+import { MdOutlineFileDownload } from "react-icons/md";
+import { MdSlowMotionVideo } from "react-icons/md";
 import propertyPicture from "../assets/property/propertyPicture.svg";
 import cardAssuredTag from "../assets/property/cardAssuredTag.svg";
 import populerTag from "../assets/property/populerTag.svg";
@@ -16,7 +18,13 @@ import { usePropertyFilter } from "../store/propertyFilter";
 
 function OtherProperties({ propertyCategory, propertyId }) {
   const navigate = useNavigate();
-  const { URI, setPriceSummery, setShowPriceSummery } = useAuth();
+  const {
+    URI,
+    setPriceSummery,
+    setShowPriceSummery,
+    setVideoURL,
+    setShowPlayVideo,
+  } = useAuth();
   const { selectedCity } = usePropertyFilter();
   const [properties, setProperties] = useState([]);
 
@@ -173,8 +181,35 @@ function OtherProperties({ propertyCategory, propertyId }) {
             <hr className="text-[#F0EFFB] my-2 " />
             <div className="w-full flex px-4 justify-between mb-1">
               <img src={cardAssuredTag} alt="" className="w-40" />
-              <div className="text-sm py-1 px-3 bg-[#0000000F] group-hover:text-[#e2e2e2] rounded-xl ">
-                {property.propertyCategory}
+              <div className={`flex gap-2 items-center justidy-center`}>
+                <div
+                  onClick={() => {
+                    const link = document.createElement("a");
+                    link.href = URI + property?.brochureFile;
+                    link.download = property?.brochureFile.split("/").pop(); // filename
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                  className={`${
+                    property?.brochureFile ? "block" : "hidden"
+                  } p-[5px] text-white bg-[#107c0b] rounded-full cursor-pointer`}
+                >
+                  <MdOutlineFileDownload />
+                </div>
+
+                <div
+                  onClick={() => {
+                    //window.open(URI + property?.videoFile, "_blank");
+                    setVideoURL(URI + property?.videoFile);
+                    setShowPlayVideo(true);
+                  }}
+                  className={`${
+                    property?.videoFile ? "block" : "hidden"
+                  } p-[5px] text-white bg-[#107c0b] rounded-full cursor-pointer`}
+                >
+                  <MdSlowMotionVideo />
+                </div>
               </div>
             </div>
 

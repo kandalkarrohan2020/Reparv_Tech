@@ -227,6 +227,6 @@ const uploadCsvMiddleware = (req, res, next) => {
 
 // Fetch & Upload CSV File
 router.get("/additionalinfo/get/:id", fetchAdditionalInfo);
-router.post("/additionalinfo/csv/add", uploadCsvMiddleware, addCsvFile);
+router.post("/additionalinfo/csv/add/:propertyid", uploadCsvMiddleware, addCsvFile);
 
 export default router;

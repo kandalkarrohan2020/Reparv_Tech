@@ -13,7 +13,7 @@ SELECT
   p.likes,
   p.created_at,
   u.username,
-  u.city,
+  
   u.userimage
 FROM 
   builderposts p
@@ -47,7 +47,7 @@ export const getAllByUser = (req, res) => {
     p.likes,
     p.created_at,
     u.username,
-    u.city,
+    
     u.userimage
 FROM 
     builderposts p

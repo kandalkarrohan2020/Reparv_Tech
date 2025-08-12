@@ -304,7 +304,7 @@ const StepOne = ({
           </label>
           <select
             required
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
             value={newProperty.registrationFee}
             onChange={(e) =>
               setPropertyData({
@@ -324,7 +324,7 @@ const StepOne = ({
           </label>
           <select
             required
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
             value={newProperty.gst}
             onChange={(e) =>
               setPropertyData({

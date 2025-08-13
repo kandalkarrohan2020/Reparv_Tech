@@ -65,8 +65,10 @@ export default function Properties() {
     }),
   };
 
-  const filteredData = filteredProperties.filter((item) =>
-    item.propertyName.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = filteredProperties?.filter(
+    (item) =>
+      item.propertyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.propertyType?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const fetchData = async () => {
@@ -283,9 +285,6 @@ export default function Properties() {
               {filteredData.length > 0 ? (
                 filteredData.map((property) => (
                   <div
-                    onClick={() =>
-                      navigate(`/property-info/${property.seoSlug}`)
-                    }
                     key={property.seoSlug}
                     className="border border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
                   >
@@ -307,6 +306,7 @@ export default function Properties() {
                       }}
                       className="object-cover h-[200px] bg-[#00000020] w-full"
                     />
+
                     <div className="relative flex flex-col gap-2">
                       {property.likes > 500 && (
                         <img
@@ -314,6 +314,16 @@ export default function Properties() {
                           className="absolute top-[-15px] left-[-8px]"
                         ></img>
                       )}
+
+                      {/* Read More ... */}
+                      <div
+                        onClick={() =>
+                          navigate(`/property-info/${property.seoSlug}`)
+                        }
+                        className="absolute top-[-30px] right-[0px] flex items-center justify-center px-4 py-1 h-[30px] bg-[#076300] text-white text-sm rounded-tl-xl shadow cursor-pointer hover:font-medium border-t-2 border-l-[1.5px] "
+                      >
+                        <span>Read More...</span>
+                      </div>
 
                       <div className="w-full px-4 pt-4 flex text-base font-semibold leading-[150%] spacing-[-1%] ">
                         <span className="text-[#000929] group-hover:text-white">

@@ -28,6 +28,7 @@ function HomePropertySection() {
     setShowPlayVideo,
   } = useAuth();
   const [properties, setProperties] = useState([]);
+
   const filteredProperties = properties?.filter((property) => {
     const nameMatch = property.propertyName
       .toLowerCase()
@@ -35,7 +36,15 @@ function HomePropertySection() {
     const areaMatch =
       property.builtUpArea &&
       property.builtUpArea.toString().includes(propertySearch?.toLowerCase());
-    return nameMatch || areaMatch;
+    const typeMatch =
+      property.propertyType &&
+      property.propertyType.toString().includes(propertySearch?.toLowerCase());
+    const categoryMatch =
+      property.propertyCategory &&
+      property.propertyCategory
+        .toString()
+        .includes(propertySearch?.toLowerCase());
+    return nameMatch || areaMatch || typeMatch || categoryMatch;
   });
 
   // fetch Properties
@@ -81,7 +90,6 @@ function HomePropertySection() {
       <div className=" HomeProperties w-full max-w-[1135px] overflow-scroll scrollbar-hide grid place-items-center grid-flow-col gap-6 py-4 px-1 sm:p-5">
         {filteredProperties.map((property) => (
           <div
-            onClick={() => navigate(`/property-info/${property.seoSlug}`)}
             key={property.seoSlug}
             className="w-[350px] border border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
           >
@@ -110,6 +118,15 @@ function HomePropertySection() {
                   className="absolute top-[-15px] left-[-8px]"
                 ></img>
               )}
+
+              {/* Read More ... */}
+              <div
+                onClick={() => navigate(`/property-info/${property.seoSlug}`)}
+                className="absolute top-[-30px] right-[0px] flex items-center justify-center px-4 py-1 h-[30px] bg-[#076300] text-white text-sm rounded-tl-xl shadow cursor-pointer hover:font-medium border-t-2 border-l-[1.5px] "
+              >
+                <span>Read More...</span>
+              </div>
+
               <div className="w-full px-4 pt-4 flex text-base font-semibold leading-[150%] spacing-[-1%] ">
                 <span className="text-[#000929] group-hover:text-white">
                   {property.propertyName.length > 26

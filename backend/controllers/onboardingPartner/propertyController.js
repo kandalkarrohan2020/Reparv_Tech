@@ -229,7 +229,7 @@ export const addProperty = async (req, res) => {
         updated_at, created_at
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,)`;
+              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const values = [
         partnerId,
@@ -272,10 +272,8 @@ export const addProperty = async (req, res) => {
         parkingFeature,
         terraceFeature,
         ageOfPropertyFeature,
-
         amenitiesFeature,
         propertyStatusFeature,
-
         smartHomeFeature,
         securityBenefit,
         primeLocationBenefit,
@@ -294,7 +292,7 @@ export const addProperty = async (req, res) => {
         developedAmenities,
         seoSlug,
         currentdate,
-        currentdate,
+        currentdate
       ];
 
       db.query(insertSQL, values, (err, result) => {

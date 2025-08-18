@@ -148,22 +148,6 @@ export const fetchFlatById = (req, res) => {
 
     const data = result[0];
 
-    // Calculate flat price
-    const flatPrice =
-      parseFloat(data?.carpetarea) * parseFloat(data?.sqftprice);
-
-    const totalFlatPrice =
-      parseFloat(flatPrice) +
-      parseFloat(data?.documentcharge) +
-      parseFloat(data?.watercharge) +
-      parseFloat(data?.parkingcharge) +
-      parseFloat(data?.clubhousecharge) +
-      parseFloat(data?.maintanance) +
-      parseFloat(data?.societydeposit);
-
-    // Append totalFlatPrice to the data object
-    data.totalFlatPrice = totalFlatPrice;
-
     // Now set the updated object in state
     res.json(data);
   });

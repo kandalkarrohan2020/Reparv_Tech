@@ -34,6 +34,21 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
             <option value="3 BHK">3 BHK</option>
             <option value="4 BHK">4 BHK</option>
             <option value="5 BHK">5 BHK & Above</option>
+            <option value="1,2,3,4 & 5 BHK">1,2,3,4 & 5 BHK</option>
+            <option value=" 1,2,3 & 4BHK"> 1,2,3 & 4 BHK</option>
+            <option value="1,2 & 3BHK">1,2 & 3 BHK</option>
+            <option value=" 2,3 & 4 BHK"> 2,3 & 4 BHK</option>
+            <option value="3 & 4 BHK">3 & 4 BHK</option>
+            <option value="2 & 4 BHK ">2 & 4 BHK </option>
+            <option value=" 2 & 3 BHK"> 2 & 3 BHK</option>
+            <option value="1 & 2 BHK">1 & 2 BHK</option>
+            <option value="1,2,2.5,3,3.5,4 & 5 BHK">
+              1,2,2.5,3,3.5,4 & 5 BHK
+            </option>
+            <option value="2,2.5,3,3.5,4 & 5 BHK">2,2.5,3,3.5,4 & 5 BHK</option>
+            <option value="3,3.5.,4 & 5 BHK"> 3,3.5.,4 & 5 BHK</option>
+            <option value="3.5,4 & 5 BHK ">3.5,4 & 5 BHK</option>
+            <option value="4 & 5 BHK">4 & 5 BHK</option>
             <option value="Pent House">Pent House</option>
             <option value="Builder Floor">Builder Floor</option>
             <option value="Studio Apartment">Studio Apartment</option>
@@ -356,7 +371,7 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
             Loan Availability <span className="text-red-600">*</span>
           </label>
           <select
-            className="w-full mt-[10px] text-[14px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
             style={{ backgroundImage: "none" }}
             value={newProperty.loanAvailability}
             onChange={(e) =>
@@ -609,7 +624,7 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </select>
         </div>
 
-        <div className="w-full mt-4">
+        <div className="w-full">
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Balcony / Terrace Feature <span className="text-red-600">*</span>
           </label>

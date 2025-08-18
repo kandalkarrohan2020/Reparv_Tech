@@ -7,6 +7,93 @@ import { verifyRazorpayPayment } from "../paymentController.js";
 const saltRounds = 10;
 
 export const getAll = (req, res) => {
+  const partnerLister = req.params.partnerlister;
+
+  if (!partnerLister) {
+    return res.status(401).json({ message: "Partner Lister Not Selected" });
+  }
+
+  let sql;
+
+  if (partnerLister === "Promoter") {
+    sql = `
+      SELECT projectpartner.*, pf.followUp, pf.created_at AS followUpDate
+      FROM projectpartner
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Project Partner'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Project Partner'
+      ) pf ON projectpartner.id = pf.partnerId
+      WHERE projectpartner.partneradder IS NOT NULL 
+        AND projectpartner.partneradder != ''
+      ORDER BY projectpartner.created_at DESC;
+    `;
+  } else if (partnerLister === "Reparv") {
+    sql = `
+      SELECT projectpartner.*, pf.followUp, pf.created_at AS followUpDate
+      FROM projectpartner
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Project Partner'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Project Partner'
+      ) pf ON projectpartner.id = pf.partnerId
+      WHERE projectpartner.partneradder IS NULL 
+        OR projectpartner.partneradder = ''
+      ORDER BY projectpartner.created_at DESC;
+    `;
+  } else {
+    sql = `
+      SELECT projectpartner.*, pf.followUp, pf.created_at AS followUpDate
+      FROM projectpartner
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Project Partner'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Project Partner'
+      ) pf ON projectpartner.id = pf.partnerId
+        OR projectpartner.partneradder = ''
+      ORDER BY projectpartner.created_at DESC;
+    `;
+  }
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error fetching partners:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+      followUp: row.followUp || null,
+      followUpDate: row.followUpDate
+        ? moment(row.followUpDate).format("DD MMM YYYY | hh:mm A")
+        : null,
+    }));
+
+    res.json(formatted);
+  });
+};
+
+export const getAllOld = (req, res) => {
   const paymentStatus = req.params.paymentStatus;
 
   if (!paymentStatus) {

@@ -1370,6 +1370,7 @@ export const editAdditionalInfo = (req, res) => {
   });
 };
 
+// Get Property Info
 export const propertyInfo = (req, res) => {
   const Id = parseInt(req.params.id);
   if (isNaN(Id))
@@ -1388,6 +1389,7 @@ export const propertyInfo = (req, res) => {
   });
 };
 
+// Add Additional Info Using CSV
 export const addCsvFile = async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "CSV file is required" });
@@ -1413,33 +1415,38 @@ export const addCsvFile = async (req, res) => {
   stream.on("end", () => {
     const values = results.map((row) => [
       row.propertyid || propertyId,
-      row.wing || null,
-      row.floor || null,
-      row.flatno || null,
-      row.flatfacing || null,
-      row.type || null,
-      row.carpetarea || null,
-      row.superbuiltup || null,
-      row.facing || null,
-      row.sqftprice || null,
-      row.mouza || null,
-      row.khasrano || null,
-      row.clubhousecharge || null,
-      row.parkingcharge || null,
-      row.watercharge || null,
-      row.societydeposit || null,
-      row.maintanance || null,
-      row.documentcharge || null,
+      row.Mouza || null,
+      row.Khasra_No || null,
+      row.Wing || null,
+      row.Wing_Facing || null,
+      row.Floor_No || null,
+      row.Flat_No || null,
+      row.Flat_Facing || null,
+      row.BHK_Type || null,
+      row.Carpet_Area || null,
+      row.Builtup_Area || null,
+      row.Super_Builtup_Area || null,
+      row.Additional_Area || null,
+      row.Payable_Area || null,
+      row.SQFT_Price || null,
+      row.Basic_Cost || null,
+      row.Stamp_Duty || null,
+      row.Registration || null,
+      row.Advocate_Fee || null,
+      row.GOV_Water_Charge || null,
+      row.Maintanance || null,
+      row.GST || null,
+      row.Other || null,
+      row.Total_Cost || null,
       row.updated_at || new Date(),
       row.created_at || new Date(),
     ]);
 
     const query = `
       INSERT INTO propertiesinfo (
-        propertyid, wing, floor, flatno, flatfacing, type,
-        carpetarea, superbuiltup, facing, sqftprice, mouza,
-        khasrano, clubhousecharge, parkingcharge, watercharge,
-        societydeposit, maintanance, documentcharge,
+        propertyid, mouza, khasrano, wing, wingfacing, floorno, flatno, flatfacing, type,
+        carpetarea, builtuparea, superbuiltuparea, additionalarea, payablearea, sqftprice, basiccost,
+        stampduty, registration, advocatefee, watercharge, maintanance, gst, other, totalcost,
         updated_at, created_at
       ) VALUES ?
     `;

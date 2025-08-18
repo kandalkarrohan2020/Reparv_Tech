@@ -6,7 +6,7 @@ import { FaDiamond } from "react-icons/fa6";
 import { IoMdDoneAll } from "react-icons/io";
 import { CiLocationOn } from "react-icons/ci";
 import { MdOutlineFileDownload } from "react-icons/md";
-import { MdSlowMotionVideo } from "react-icons/md";
+import { MdOutlinePlayCircleOutline } from "react-icons/md";
 import propertyPicture from "../assets/property/propertyPicture.svg";
 import cardAssuredTag from "../assets/property/cardAssuredTag.svg";
 import populerTag from "../assets/property/populerTag.svg";
@@ -73,6 +73,7 @@ function OtherProperties({ propertyCategory, propertyId }) {
           className="w-[350px] sm:w-[375px] border border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
         >
           <img
+            onClick={() => navigate(`/property-info/${property.seoSlug}`)}
             src={(() => {
               try {
                 const images = JSON.parse(property.frontView || "[]");
@@ -101,9 +102,10 @@ function OtherProperties({ propertyCategory, propertyId }) {
             {/* Read More ... */}
             <div
               onClick={() => navigate(`/property-info/${property.seoSlug}`)}
-              className="absolute top-[-30px] right-[0px] flex items-center justify-center px-4 py-1 h-[30px] bg-[#076300] text-white text-sm rounded-tl-xl shadow cursor-pointer hover:font-medium border-t-2 border-l-[1.5px] "
+              className="overflow-hidden absolute top-[-30px] right-[0px] flex items-center justify-center px-4 py-1 h-[30px] bg-[#076300] text-white text-sm rounded-tl-xl shadow cursor-pointer hover:font-medium border-t-2 border-l-[1.5px] "
             >
               <span>Read More...</span>
+              <span className="shine-layer"></span>
             </div>
 
             <div className="w-full px-4 pt-4 flex text-base font-semibold leading-[150%] spacing-[-1%] ">
@@ -188,23 +190,7 @@ function OtherProperties({ propertyCategory, propertyId }) {
             <hr className="text-[#F0EFFB] my-2 " />
             <div className="w-full flex px-4 justify-between mb-1">
               <img src={cardAssuredTag} alt="" className="w-40" />
-              <div className={`flex gap-2 items-center justidy-center`}>
-                <div
-                  onClick={() => {
-                    const link = document.createElement("a");
-                    link.href = URI + property?.brochureFile;
-                    link.download = property?.brochureFile.split("/").pop(); // filename
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                  }}
-                  className={`${
-                    property?.brochureFile ? "block" : "hidden"
-                  } p-[5px] text-white bg-[#107c0b] rounded-full cursor-pointer`}
-                >
-                  <MdOutlineFileDownload />
-                </div>
-
+              <div className={`flex gap-[8px] items-center justidy-center`}>
                 <div
                   onClick={() => {
                     //window.open(URI + property?.videoFile, "_blank");
@@ -213,9 +199,30 @@ function OtherProperties({ propertyCategory, propertyId }) {
                   }}
                   className={`${
                     property?.videoFile ? "block" : "hidden"
-                  } p-[5px] text-white bg-[#107c0b] rounded-full cursor-pointer`}
+                  } relative overflow-hidden p-[5px] z-10 text-white bg-[#107c0b] rounded-lg cursor-pointer`}
                 >
-                  <MdSlowMotionVideo />
+                  <div className="overflow-hidden relative z-10 flex items-center justify-center animate-blink">
+                    <MdOutlinePlayCircleOutline className="w-5 h-5" />
+                    <span className="absolute shine-layer"></span>
+                  </div>
+                </div>
+                <div
+                  onClick={() => {
+                    const link = document.createElement("a");
+                    link.href = URI + property?.brochureFile;
+                    link.download = property?.brochureFile.split("/").pop();
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                  className={`${
+                    property?.brochureFile ? "block" : "hidden"
+                  } p-[5px] text-white bg-[#107c0b] rounded-lg cursor-pointer relative overflow-hidden`}
+                >
+                  <div className="overflow-hidden relative z-10 flex items-center justify-center animate-blink">
+                    <MdOutlineFileDownload className="w-5 h-5" />
+                    <span className="absolute shine-layer"></span>
+                  </div>
                 </div>
               </div>
             </div>

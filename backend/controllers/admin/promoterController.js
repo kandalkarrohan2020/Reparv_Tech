@@ -7,130 +7,46 @@ import { verifyRazorpayPayment } from "../paymentController.js";
 const saltRounds = 10;
 
 export const getAll = (req, res) => {
-  const paymentStatus = req.params.paymentStatus;
+  const sql = `
+      SELECT promoter.*, pf.followUp, pf.created_at AS followUpDate
+      FROM promoter
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Promoter'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Promoter'
+      ) pf ON promoter.id = pf.partnerId
+      ORDER BY promoter.created_at DESC;
+    `;
 
-  if (!paymentStatus) {
-    return res.status(401).json({ message: "Payment Status Not Selected" });
-  }
-
-  let sql;
-
-  const followUpJoin = `
-    LEFT JOIN (
-      SELECT p1.*
-      FROM partnerFollowup p1
-      INNER JOIN (
-        SELECT partnerId, MAX(created_at) AS latest
-        FROM partnerFollowup
-        WHERE role = 'Promoter'
-        GROUP BY partnerId
-      ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-      WHERE p1.role = 'Promoter'
-    ) pf ON promoter.id = pf.partnerId
-  `;
-
-  switch (paymentStatus) {
-    case "Success":
-      sql = `
-        SELECT promoter.*, pf.followUp, pf.created_at AS followUpDate
-        FROM promoter
-        ${followUpJoin}
-        WHERE promoter.paymentstatus = 'Success'
-        ORDER BY promoter.created_at DESC`;
-      break;
-
-    case "Follow Up":
-      sql = `
-        SELECT promoter.*, pf.followUp, pf.created_at AS followUpDate
-        FROM promoter
-        ${followUpJoin}
-        WHERE promoter.paymentstatus = 'Follow Up' AND promoter.loginstatus = 'Inactive'
-        ORDER BY promoter.updated_at DESC`;
-      break;
-
-    case "Pending":
-      sql = `
-        SELECT promoter.*, pf.followUp, pf.created_at AS followUpDate
-        FROM promoter
-        ${followUpJoin}
-        WHERE promoter.paymentstatus = 'Pending'
-        ORDER BY promoter.created_at DESC`;
-      break;
-
-    case "Free":
-      sql = `
-        SELECT promoter.*, pf.followUp, pf.created_at AS followUpDate
-        FROM promoter
-        ${followUpJoin}
-        WHERE promoter.paymentstatus != 'Success' 
-          AND promoter.loginstatus = 'Active'
-        ORDER BY promoter.created_at DESC`;
-      break;
-
-    default:
-      sql = `SELECT * FROM promoter ORDER BY id DESC`;
-  }
-
-  db.query(sql, (err, partners) => {
+  db.query(sql, (err, result) => {
     if (err) {
-      console.error("Error fetching Promoters:", err);
+      console.error("Error fetching partners:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
 
-    // Accurate count logic including "Free"
-    const countQuery = `
-      SELECT 'Success' AS status, COUNT(*) AS count
-      FROM promoter
-      WHERE paymentstatus = 'Success'
-      UNION ALL
-      SELECT 'Pending', COUNT(*)
-      FROM promoter
-      WHERE paymentstatus = 'Pending'
-      UNION ALL
-      SELECT 'Follow Up', COUNT(*)
-      FROM promoter
-      WHERE paymentstatus = 'Follow Up' AND loginstatus = 'Inactive'
-      UNION ALL
-      SELECT 'Free', COUNT(*)
-      FROM promoter
-      WHERE paymentstatus != 'Success' AND loginstatus = 'Active'
-    `;
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+      followUp: row.followUp || null,
+      followUpDate: row.followUpDate
+        ? moment(row.followUpDate).format("DD MMM YYYY | hh:mm A")
+        : null,
+    }));
 
-    db.query(countQuery, (countErr, counts) => {
-      if (countErr) {
-        console.error("Error fetching promoter status counts:", countErr);
-        return res
-          .status(500)
-          .json({ message: "Database error", error: countErr });
-      }
-
-      const formatted = (partners || []).map((row) => ({
-        ...row,
-        created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
-        updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
-        followUp: row.followUp || null,
-        followUpDate: row.followUpDate
-          ? moment(row.followUpDate).format("DD MMM YYYY | hh:mm A")
-          : null,
-      }));
-
-      const paymentStatusCounts = {};
-      counts.forEach((item) => {
-        paymentStatusCounts[item.status] = item.count;
-      });
-
-      res.json({
-        data: formatted,
-        paymentStatusCounts,
-      });
-    });
+    res.json(formatted);
   });
 };
 
 // **Fetch All**
 export const getAllActive = (req, res) => {
-  const sql =
-    "SELECT * FROM promoter WHERE status = 'Active' ORDER BY id DESC";
+  const sql = "SELECT * FROM promoter WHERE status = 'Active' ORDER BY id DESC";
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching:", err);
@@ -714,58 +630,51 @@ export const assignLogin = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10); // Use 10 as salt rounds
 
-    db.query(
-      "SELECT * FROM promoter WHERE id = ?",
-      [Id],
-      (err, result) => {
-        if (err) {
-          console.error("Database error:", err);
-          return res
-            .status(500)
-            .json({ message: "Database error", error: err });
-        }
-        if (result.length === 0) {
-          return res.status(404).json({ message: "Projet Partner not found" });
-        }
-
-        let loginstatus = "Active";
-        const email = result[0].email;
-
-        db.query(
-          "UPDATE promoter SET loginstatus = ?, username = ?, password = ? WHERE id = ?",
-          [loginstatus, username, hashedPassword, Id],
-          (err, updateResult) => {
-            if (err) {
-              console.error("Error updating record:", err);
-              return res
-                .status(500)
-                .json({ message: "Database error", error: err });
-            }
-
-            // Send email after successful update
-            sendEmail(
-              email,
-              username,
-              password,
-              "Promoter",
-              "https://promoter.reparv.in"
-            )
-              .then(() => {
-                res.status(200).json({
-                  message:
-                    "Promoter login assigned successfully and email sent.",
-                });
-              })
-              .catch((emailError) => {
-                console.error("Error sending email:", emailError);
-                res
-                  .status(500)
-                  .json({ message: "Login updated but email failed to send." });
-              });
-          }
-        );
+    db.query("SELECT * FROM promoter WHERE id = ?", [Id], (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
       }
-    );
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Projet Partner not found" });
+      }
+
+      let loginstatus = "Active";
+      const email = result[0].email;
+
+      db.query(
+        "UPDATE promoter SET loginstatus = ?, username = ?, password = ? WHERE id = ?",
+        [loginstatus, username, hashedPassword, Id],
+        (err, updateResult) => {
+          if (err) {
+            console.error("Error updating record:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+
+          // Send email after successful update
+          sendEmail(
+            email,
+            username,
+            password,
+            "Promoter",
+            "https://promoter.reparv.in"
+          )
+            .then(() => {
+              res.status(200).json({
+                message: "Promoter login assigned successfully and email sent.",
+              });
+            })
+            .catch((emailError) => {
+              console.error("Error sending email:", emailError);
+              res
+                .status(500)
+                .json({ message: "Login updated but email failed to send." });
+            });
+        }
+      );
+    });
   } catch (error) {
     console.error("Unexpected error:", error);
     res.status(500).json({ message: "Unexpected server error", error });

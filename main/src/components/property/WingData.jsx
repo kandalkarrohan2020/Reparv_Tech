@@ -36,7 +36,7 @@ function WingData({ propertyInfo }) {
   }, [propertyInfo]);
 
   return (
-    <div className="overflow-scroll scrollbar-hide bg-white rounded-lg p-4 md:border-2 border-[#0bb500] max-h-[200px]">
+    <div className={`${wings?.length > 0 ? "block" : "hidden"} overflow-scroll scrollbar-hide bg-white rounded-lg p-4 md:border-2 border-[#0bb500] max-h-[200px]`}>
       <div className="w-full flex gap-4 flex-col items-center justify-center">
         {wings?.map((item, index) => (
           <div key={index} className="w-full flex flex-col gap-2">

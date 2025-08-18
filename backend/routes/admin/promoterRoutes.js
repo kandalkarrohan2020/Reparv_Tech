@@ -40,7 +40,7 @@ const upload = multer({
 
 router.get("/active", getAllActive);
 router.get("/get/:id", getById);
-router.get("/:paymentStatus", getAll);
+router.get("/", getAll);
 
 router.post(
   "/add",

@@ -104,23 +104,28 @@ const Properties = () => {
 
   const additionalInfoCSVFileFormat = [
     {
-      wing: "",
-      floor: "",
-      flatno: "",
-      flatfacing: "",
-      type: "",
-      carpetarea: "",
-      superbuiltup: "",
-      facing: "",
-      sqftprice: "",
-      mouza: "",
-      khasrano: "",
-      clubhousecharge: "",
-      parkingcharge: "",
-      watercharge: "",
-      societydeposit: "",
-      maintanance: "",
-      documentcharge: "",
+      Mouza: "Nagpur",
+      Khasra_No: "123/ABC",
+      Wing: "A",
+      Wing_Facing: "East",
+      Floor_No: "3",
+      Flat_No: "101",
+      Flat_Facing: "East",
+      BHK_Type: "2 BHK",
+      Carpet_Area: 2200,
+      Super_Builtup_Area: 1800,
+      Additional_Area: 100,
+      Payable_Area: 2000,
+      SQFT_Price: 10000,
+      Basic_Cost: "=L2*M2",
+      Stamp_Duty: 10000,
+      Registration: 30000,
+      GST: 5,
+      GOV_Water_Charge: 10000,
+      Maintenance: 50000,
+      Advocate_Fee: 20000,
+      Other_Charges: 50000,
+      Total_Cost: "=N2+O2+P2+Q2+R2+S2+T2+U2",
     },
   ];
 
@@ -293,7 +298,7 @@ const Properties = () => {
     try {
       const response = await fetch(URI + "/project-partner/builders/active", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },

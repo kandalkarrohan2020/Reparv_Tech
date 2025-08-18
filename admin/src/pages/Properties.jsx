@@ -17,6 +17,7 @@ import propertyPicture from "../assets/propertyPicture.svg";
 import DownloadCSV from "../components/DownloadCSV";
 import UpdateImagesForm from "../components/propertyForm/UpdateImagesForm";
 import PropertyFilter from "../components/propertyFilter";
+import FormatPrice from "../components/FormatPrice";
 
 const Properties = () => {
   const location = useLocation();
@@ -135,23 +136,28 @@ const Properties = () => {
 
   const additionalInfoCSVFileFormat = [
     {
-      wing: "",
-      floor: "",
-      flatno: "",
-      flatfacing: "",
-      type: "",
-      carpetarea: "",
-      superbuiltup: "",
-      facing: "",
-      sqftprice: "",
-      mouza: "",
-      khasrano: "",
-      clubhousecharge: "",
-      parkingcharge: "",
-      watercharge: "",
-      societydeposit: "",
-      maintanance: "",
-      documentcharge: "",
+      Mouza: "Nagpur",
+      Khasra_No: "123/ABC",
+      Wing: "A",
+      Wing_Facing: "East",
+      Floor_No: "3",
+      Flat_No: "101",
+      Flat_Facing: "East",
+      BHK_Type: "2 BHK",
+      Carpet_Area: 2200,
+      Super_Builtup_Area: 1800,
+      Additional_Area: 100,
+      Payable_Area: 2000,
+      SQFT_Price: 10000,
+      Basic_Cost: "=L2*M2",
+      Stamp_Duty: 10000,
+      Registration: 30000,
+      GST: 500000,
+      GOV_Water_Charge: 10000,
+      Maintenance: 50000,
+      Advocate_Fee: 20000,
+      Other_Charges: 50000,
+      Total_Cost: "=N2+O2+P2+Q2+R2+S2+T2+U2",
     },
   ];
 
@@ -1070,9 +1076,61 @@ const Properties = () => {
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
       name: "Property Name",
-      selector: (row) => row.propertyName,
+      cell: (row, index) => (
+        <div className="relative group flex items-center w-full">
+          {/* Property Name */}
+          <span
+            className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md cursor-pointer`}
+          >
+            {row.propertyName}
+          </span>
+
+          {/* Tooltip */}
+          <div className={`${row.commissionAmount ? "-top-[150px]":"-top-[80px]"} absolute w-full min-w-[250px] text-center left-[80px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:flex flex-col gap-1 transition`}>
+            <h2 className="text-[14px] font-semibold text-[#0bb501]">{row.propertyName}</h2>
+            <div className="w-full flex items-center justify-between">
+              <span>Total Price :</span>
+              <FormatPrice price={parseFloat(row.totalOfferPrice)} />
+            </div>
+            {row.commissionAmount ? (
+              <>
+                <div className="w-full flex items-center justify-between">
+                  <span>Reparv Commission :</span>
+                  <FormatPrice
+                    price={parseFloat(
+                      row.commissionAmount && (row.commissionAmount * 40) / 100
+                    )}
+                  />
+                </div>
+                <div className="w-full flex items-center justify-between">
+                  <span>Sales Commission :</span>
+                  <FormatPrice
+                    price={parseFloat(
+                      row.commissionAmount && (row.commissionAmount * 40) / 100
+                    )}
+                  />
+                </div>
+                <div className="w-full flex items-center justify-between">
+                  <span>Territory Commission :</span>
+                  <FormatPrice
+                    price={parseFloat(
+                      row.commissionAmount && (row.commissionAmount * 20) / 100
+                    )}
+                  />
+                </div>
+                <div className="w-full flex items-center justify-between">
+                  <span>Total Commission :</span>
+                  <FormatPrice price={parseFloat(row.commissionAmount)} />
+                </div>
+              </>
+            ):(<div className="w-full text-red-500 text-[13px] flex items-center justify-between">
+              <span>Commission Not Added</span>
+            </div>)}
+          </div>
+        </div>
+      ),
       sortable: true,
-      minWidth: "150px",
+      minWidth: "200px",
     },
     {
       name: "Builder",

@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
   const [showCustomer, setShowCustomer] = useState(false);
   const [showCustomerPaymentForm, setShowCustomerPaymentForm] = useState(false);
   const [showApkUploadForm, setShowApkUploadForm] = useState(false);
-  const [partnerPaymentStatus, setPartnerPaymentStatus] = useState("Pending");
+  const [partnerPaymentStatus, setPartnerPaymentStatus] = useState("Unpaid");
   const [showEMIForm, setShowEMIForm] = useState(false);
   const [filterStatus, setFilterStatus] = useState("New");
   const [showEMI, setShowEMI] = useState(false);

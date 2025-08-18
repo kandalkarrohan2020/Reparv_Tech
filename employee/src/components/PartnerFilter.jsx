@@ -6,28 +6,24 @@ const PartnerFilter = ({ counts = {} }) => {
 
   const filterOptions = [
     {
-      name: "Unpaid",
-      label: "Pending",
+      label: "Unpaid",
       bg: "bg-red-100",
       text: "text-red-600",
-      count: counts?.Pending || 0,
+      count: counts?.Unpaid || 0,
     },
     {
-      name: "Follow Up",
       label: "Follow Up",
       bg: "bg-blue-100",
       text: "text-blue-600",
-      count: counts["Follow Up"] || 0,
+      count: counts?.FollowUp || 0,
     },
     {
-      name: "Paid",
-      label: "Success",
+      label: "Paid",
       bg: "bg-green-100",
       text: "text-green-600",
-      count: counts?.Success || 0,
+      count: counts?.Paid || 0,
     },
     {
-      name: "Free",
       label: "Free",
       bg: "bg-yellow-100",
       text: "text-yellow-500",
@@ -51,7 +47,7 @@ const PartnerFilter = ({ counts = {} }) => {
               }
               hover:opacity-90`}
           >
-            <span>{option.name}</span>
+            <span>{option.label}</span>
             <span
               className={`text-xs px-2 py-0.5 rounded-full font-semibold
                 ${

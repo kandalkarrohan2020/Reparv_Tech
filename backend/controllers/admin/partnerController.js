@@ -7,6 +7,92 @@ import { verifyRazorpayPayment } from "../paymentController.js";
 const saltRounds = 10;
 
 export const getAll = (req, res) => {
+  const partnerLister = req.params.partnerlister;
+
+  if (!partnerLister) {
+    return res.status(401).json({ message: "Partner Lister Not Selected" });
+  }
+
+  let sql;
+
+  if (partnerLister === "Promoter") {
+    sql = `
+      SELECT onboardingpartner.*, pf.followUp, pf.created_at AS followUpDate
+      FROM onboardingpartner
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Onboarding Partner'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Onboarding Partner'
+      ) pf ON onboardingpartner.partnerid = pf.partnerId
+      WHERE onboardingpartner.partneradder IS NOT NULL 
+        AND onboardingpartner.partneradder != ''
+      ORDER BY onboardingpartner.created_at DESC;
+    `;
+  } else if (partnerLister === "Reparv") {
+    sql = `
+      SELECT onboardingpartner.*, pf.followUp, pf.created_at AS followUpDate
+      FROM onboardingpartner
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Onboarding Partner'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Onboarding Partner'
+      ) pf ON onboardingpartner.partnerid = pf.partnerId
+      WHERE onboardingpartner.partneradder IS NULL 
+        OR onboardingpartner.partneradder = ''
+      ORDER BY onboardingpartner.created_at DESC;
+    `;
+  } else {
+    sql = `
+      SELECT onboardingpartner.*, pf.followUp, pf.created_at AS followUpDate
+      FROM onboardingpartner
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Onboarding Partner'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Onboarding Partner'
+      ) pf ON onboardingpartner.partnerid = pf.partnerId
+      ORDER BY onboardingpartner.created_at DESC;
+    `;
+  }
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error fetching partners:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+      followUp: row.followUp || null,
+      followUpDate: row.followUpDate
+        ? moment(row.followUpDate).format("DD MMM YYYY | hh:mm A")
+        : null,
+    }));
+
+    res.json(formatted);
+  });
+};
+
+export const getAllOld = (req, res) => {
   const paymentStatus = req.params.paymentStatus;
 
   if (!paymentStatus) {
@@ -344,7 +430,7 @@ export const edit = (req, res) => {
     ifsc,
   } = req.body;
 
-  if (!fullname || !contact || !email ) {
+  if (!fullname || !contact || !email) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -552,7 +638,7 @@ export const updatePaymentId = async (req, res) => {
 
         const updateSql = `
           UPDATE onboardingpartner 
-          SET amount = ?, paymentid = ?, username = ?, password = ?, paymentstatus = "Success", loginstatus = "Active" 
+          SET amount = ?, paymentid = ?, username = ?, password = ?, partnerLister = "Success", loginstatus = "Active" 
           WHERE partnerid = ?
         `;
         const updateValues = [
@@ -681,13 +767,13 @@ export const addFollowUp = async (req, res) => {
               .json({ message: "Database error", error: insertErr });
           }
 
-          // Update paymentstatus in onboardingpartner
+          // Update partnerLister in onboardingpartner
           db.query(
-            "UPDATE onboardingpartner SET paymentstatus = 'Follow Up', updated_at = ? WHERE partnerid = ?",
+            "UPDATE onboardingpartner SET partnerLister = 'Follow Up', updated_at = ? WHERE partnerid = ?",
             [currentdate, Id],
             (updateErr, updateResult) => {
               if (updateErr) {
-                console.error("Error updating paymentstatus:", updateErr);
+                console.error("Error updating partnerLister:", updateErr);
                 return res
                   .status(500)
                   .json({ message: "Database error", error: updateErr });

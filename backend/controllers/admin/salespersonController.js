@@ -7,122 +7,89 @@ import { verifyRazorpayPayment } from "../paymentController.js";
 const saltRounds = 10;
 
 export const getAll = (req, res) => {
-  const paymentStatus = req.params.paymentStatus;
+  const partnerLister = req.params.partnerlister;
 
-  if (!paymentStatus) {
-    return res.status(401).json({ message: "Payment Status Not Selected" });
+  if (!partnerLister) {
+    return res.status(401).json({ message: "Partner Lister Not Selected" });
   }
 
   let sql;
 
-  const followUpJoin = `
-    LEFT JOIN (
-      SELECT p1.*
-      FROM partnerFollowup p1
-      INNER JOIN (
-        SELECT partnerId, MAX(created_at) AS latest
-        FROM partnerFollowup
-        WHERE role = 'Sales Person'
-        GROUP BY partnerId
-      ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-      WHERE p1.role = 'Sales Person'
-    ) pf ON s.salespersonsid = pf.partnerId
-  `;
-
-  switch (paymentStatus) {
-    case "Success":
-      sql = `
-        SELECT s.*, pf.followUp, pf.created_at AS followUpDate
-        FROM salespersons s
-        ${followUpJoin}
-        WHERE s.paymentstatus = 'Success'
-        ORDER BY s.created_at DESC`;
-      break;
-
-    case "Follow Up":
-      sql = `
-        SELECT s.*, pf.followUp, pf.created_at AS followUpDate
-        FROM salespersons s
-        ${followUpJoin}
-        WHERE s.paymentstatus = 'Follow Up' AND s.loginstatus = 'Inactive'
-        ORDER BY s.updated_at DESC`;
-      break;
-
-    case "Pending":
-      sql = `
-        SELECT s.*, pf.followUp, pf.created_at AS followUpDate
-        FROM salespersons s
-        ${followUpJoin}
-        WHERE s.paymentstatus = 'Pending'
-        ORDER BY s.created_at DESC`;
-      break;
-
-    case "Free":
-      sql = `
-        SELECT s.*, pf.followUp, pf.created_at AS followUpDate
-        FROM salespersons s
-        ${followUpJoin}
-        WHERE s.paymentstatus != 'Success' AND s.loginstatus = 'Active'
-        ORDER BY s.created_at DESC`;
-      break;
-
-    default:
-      sql = `SELECT * FROM salespersons ORDER BY salespersonsid DESC`;
+  if (partnerLister === "Promoter") {
+    sql = `
+      SELECT salespersons.*, pf.followUp, pf.created_at AS followUpDate
+      FROM salespersons
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Sales Person'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Sales Person'
+      ) pf ON salespersons.salespersonsid = pf.partnerId
+      WHERE salespersons.partneradder IS NOT NULL 
+        AND salespersons.partneradder != ''
+      ORDER BY salespersons.created_at DESC;
+    `;
+  } else if (partnerLister === "Reparv") {
+    sql = `
+      SELECT salespersons.*, pf.followUp, pf.created_at AS followUpDate
+      FROM salespersons
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Sales Person'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Sales Person'
+      ) pf ON salespersons.salespersonsid = pf.partnerId
+      WHERE salespersons.partneradder IS NULL 
+        OR salespersons.partneradder = ''
+      ORDER BY salespersons.created_at DESC;
+    `;
+  } else {
+    sql = `
+      SELECT salespersons.*, pf.followUp, pf.created_at AS followUpDate
+      FROM salespersons
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Sales Person'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Sales Person'
+      ) pf ON salespersons.salespersonsid = pf.partnerId
+        OR salespersons.partneradder = ''
+      ORDER BY salespersons.created_at DESC;
+    `;
   }
 
-  db.query(sql, (err, salespersons) => {
+  db.query(sql, (err, result) => {
     if (err) {
-      console.error("Error fetching Salespersons:", err);
+      console.error("Error fetching partners:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
 
-    // Accurate count query with "Free"
-    const countQuery = `
-      SELECT 'Success' AS status, COUNT(*) AS count
-      FROM salespersons
-      WHERE paymentstatus = 'Success'
-      UNION ALL
-      SELECT 'Pending', COUNT(*)
-      FROM salespersons
-      WHERE paymentstatus = 'Pending'
-      UNION ALL
-      SELECT 'Follow Up', COUNT(*)
-      FROM salespersons
-      WHERE paymentstatus = 'Follow Up' AND loginstatus = 'Inactive'
-      UNION ALL
-      SELECT 'Free', COUNT(*)
-      FROM salespersons
-      WHERE paymentstatus != 'Success' AND loginstatus = 'Active'
-    `;
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+      followUp: row.followUp || null,
+      followUpDate: row.followUpDate
+        ? moment(row.followUpDate).format("DD MMM YYYY | hh:mm A")
+        : null,
+    }));
 
-    db.query(countQuery, (countErr, counts) => {
-      if (countErr) {
-        console.error("Error fetching status counts:", countErr);
-        return res
-          .status(500)
-          .json({ message: "Database error", error: countErr });
-      }
-
-      const formatted = salespersons.map((row) => ({
-        ...row,
-        created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
-        updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
-        followUp: row.followUp || null,
-        followUpDate: row.followUpDate
-          ? moment(row.followUpDate).format("DD MMM YYYY | hh:mm A")
-          : null,
-      }));
-
-      const paymentStatusCounts = {};
-      counts.forEach((item) => {
-        paymentStatusCounts[item.status] = item.count;
-      });
-
-      return res.json({
-        data: formatted,
-        paymentStatusCounts,
-      });
-    });
+    res.json(formatted);
   });
 };
 
@@ -233,7 +200,7 @@ export const add = (req, res) => {
 
   db.query(checkSql, [contact, email], (checkErr, checkResult) => {
     if (checkErr) {
-      console.error("Error checking existing salesperson:", checkErr);
+      console.error("Error checking existing salespersons:", checkErr);
       return res.status(500).json({
         message: "Database error during validation",
         error: checkErr,
@@ -256,7 +223,7 @@ export const add = (req, res) => {
         });
       }
 
-      // Insert new salesperson
+      // Insert new salespersons
       const insertSql = `
         INSERT INTO salespersons 
         (fullname, contact, email, intrest, refrence, referral, address, state, city, pincode, experience, rerano, adharno, panno, 
@@ -358,8 +325,8 @@ export const edit = (req, res) => {
     accountnumber,
     ifsc,
   } = req.body;
-  const salespersonsid = parseInt(req.params.id);
-  if (isNaN(salespersonsid)) {
+  const salespersonssid = parseInt(req.params.id);
+  if (isNaN(salespersonssid)) {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
 
@@ -418,11 +385,11 @@ export const edit = (req, res) => {
   }
 
   updateSql += ` WHERE salespersonsid = ?`;
-  updateValues.push(salespersonsid);
+  updateValues.push(salespersonssid);
 
   db.query(updateSql, updateValues, (updateErr, result) => {
     if (updateErr) {
-      console.error("Error updating salesperson:", updateErr);
+      console.error("Error updating salespersons:", updateErr);
       return res
         .status(500)
         .json({ message: "Database error during update", error: updateErr });
@@ -679,7 +646,7 @@ export const addFollowUp = async (req, res) => {
     return res.status(400).json({ message: "Follow up message is required." });
   }
 
-  // Check if salesperson exists
+  // Check if salespersons exists
   db.query(
     "SELECT * FROM salespersons WHERE salespersonsid = ?",
     [Id],
@@ -690,7 +657,7 @@ export const addFollowUp = async (req, res) => {
       }
 
       if (result.length === 0) {
-        return res.status(404).json({ message: "Salesperson not found" });
+        return res.status(404).json({ message: "salesperson not found" });
       }
 
       // Insert follow-up entry
@@ -747,7 +714,7 @@ export const assignLogin = async (req, res) => {
     // Hash the password securely
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Fetch salesperson details first
+    // Fetch salespersons details first
     db.query(
       "SELECT * FROM salespersons WHERE salespersonsid = ?",
       [Id],
@@ -767,13 +734,13 @@ export const assignLogin = async (req, res) => {
         const email = result[0].email;
         let loginstatus = "Active";
 
-        // Update salesperson details
+        // Update salespersons details
         db.query(
           "UPDATE salespersons SET loginstatus = ?, username = ?, password = ? WHERE salespersonsid = ?",
           [loginstatus, username, hashedPassword, Id],
           (updateErr, updateResult) => {
             if (updateErr) {
-              console.error("Error updating salesperson:", updateErr);
+              console.error("Error updating salespersons:", updateErr);
               return res
                 .status(500)
                 .json({ message: "Database error", error: updateErr });

@@ -40,7 +40,7 @@ const upload = multer({
 
 router.get("/active", getAllActive); // specific path first
 router.get("/get/:id", getById); // more specific dynamic route
-router.get("/:paymentStatus", getAll); // less specific dynamic route last
+router.get("/:partnerlister", getAll);
 router.post(
   "/add",
   upload.fields([

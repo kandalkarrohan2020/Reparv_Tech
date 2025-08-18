@@ -6,124 +6,89 @@ import { verifyRazorpayPayment } from "../paymentController.js";
 
 const saltRounds = 10;
 export const getAll = (req, res) => {
-  const paymentStatus = req.params.paymentStatus;
+  const partnerLister = req.params.partnerlister;
 
-  if (!paymentStatus) {
-    return res.status(401).json({ message: "Payment Status Not Selected" });
+  if (!partnerLister) {
+    return res.status(401).json({ message: "Partner Lister Not Selected" });
   }
 
   let sql;
 
-  const followUpJoin = `
-    LEFT JOIN (
-      SELECT p1.*
-      FROM partnerFollowup p1
-      INNER JOIN (
-        SELECT partnerId, MAX(created_at) AS latest
-        FROM partnerFollowup
-        WHERE role = 'Territory Partner'
-        GROUP BY partnerId
-      ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-      WHERE p1.role = 'Territory Partner'
-    ) pf ON tp.id = pf.partnerId
-  `;
-
-  switch (paymentStatus) {
-    case "Success":
-      sql = `
-        SELECT tp.*, pf.followUp, pf.created_at AS followUpDate
-        FROM territorypartner tp
-        ${followUpJoin}
-        WHERE tp.paymentstatus = 'Success'
-        ORDER BY tp.created_at DESC`;
-      break;
-
-    case "Follow Up":
-      sql = `
-        SELECT tp.*, pf.followUp, pf.created_at AS followUpDate
-        FROM territorypartner tp
-        ${followUpJoin}
-        WHERE tp.paymentstatus = 'Follow Up' AND tp.loginstatus = 'Inactive'
-        ORDER BY tp.updated_at DESC`;
-      break;
-
-    case "Pending":
-      sql = `
-        SELECT tp.*, pf.followUp, pf.created_at AS followUpDate
-        FROM territorypartner tp
-        ${followUpJoin}
-        WHERE tp.paymentstatus = 'Pending'
-        ORDER BY tp.created_at DESC`;
-      break;
-
-    case "Free":
-      sql = `
-        SELECT tp.*, pf.followUp, pf.created_at AS followUpDate
-        FROM territorypartner tp
-        ${followUpJoin}
-        WHERE tp.paymentstatus != 'Success' AND tp.loginstatus = 'Active'
-        ORDER BY tp.created_at DESC`;
-      break;
-
-    default:
-      sql = `SELECT * FROM territorypartner ORDER BY id DESC`;
+  if (partnerLister === "Promoter") {
+    sql = `
+      SELECT territorypartner.*, pf.followUp, pf.created_at AS followUpDate
+      FROM territorypartner
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Territory Partner'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Territory Partner'
+      ) pf ON territorypartner.id = pf.partnerId
+      WHERE territorypartner.partneradder IS NOT NULL 
+        AND territorypartner.partneradder != ''
+      ORDER BY territorypartner.created_at DESC;
+    `;
+  } else if (partnerLister === "Reparv") {
+    sql = `
+      SELECT territorypartner.*, pf.followUp, pf.created_at AS followUpDate
+      FROM territorypartner
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Territory Partner'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Territory Partner'
+      ) pf ON territorypartner.id = pf.partnerId
+      WHERE territorypartner.partneradder IS NULL 
+        OR territorypartner.partneradder = ''
+      ORDER BY territorypartner.created_at DESC;
+    `;
+  } else {
+    sql = `
+      SELECT territorypartner.*, pf.followUp, pf.created_at AS followUpDate
+      FROM territorypartner
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Territory Partner'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Territory Partner'
+      ) pf ON territorypartner.id = pf.partnerId
+        OR territorypartner.partneradder = ''
+      ORDER BY territorypartner.created_at DESC;
+    `;
   }
 
   db.query(sql, (err, result) => {
     if (err) {
-      console.error("Error fetching Territory Partners:", err);
+      console.error("Error fetching partners:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
 
-    // Count query with "Free" added
-    const countQuery = `
-      SELECT 'Success' AS status, COUNT(*) AS count
-      FROM territorypartner
-      WHERE paymentstatus = 'Success'
-      UNION ALL
-      SELECT 'Pending', COUNT(*)
-      FROM territorypartner
-      WHERE paymentstatus = 'Pending'
-      UNION ALL
-      SELECT 'Follow Up', COUNT(*)
-      FROM territorypartner
-      WHERE paymentstatus = 'Follow Up' AND loginstatus = 'Inactive'
-      UNION ALL
-      SELECT 'Free', COUNT(*)
-      FROM territorypartner
-      WHERE paymentstatus != 'Success' AND loginstatus = 'Active'
-    `;
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+      followUp: row.followUp || null,
+      followUpDate: row.followUpDate
+        ? moment(row.followUpDate).format("DD MMM YYYY | hh:mm A")
+        : null,
+    }));
 
-    db.query(countQuery, (countErr, counts) => {
-      if (countErr) {
-        console.error("Error fetching status counts:", countErr);
-        return res
-          .status(500)
-          .json({ message: "Database error", error: countErr });
-      }
-
-      // Format counts into object
-      const paymentStatusCounts = {};
-      counts.forEach((item) => {
-        paymentStatusCounts[item.status] = item.count;
-      });
-
-      // Format results
-      const formatted = result.map((row) => ({
-        ...row,
-        created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
-        updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
-        followUp: row.followUp || null,
-        followUpDate: row.followUpDate
-          ? moment(row.followUpDate).format("DD MMM YYYY | hh:mm A")
-          : null,
-      }));
-
-      return res.json({
-        data: formatted,
-        paymentStatusCounts,
-      });
-    });
+    res.json(formatted);
   });
 };
 

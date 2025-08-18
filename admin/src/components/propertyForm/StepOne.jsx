@@ -195,7 +195,7 @@ const StepOne = ({
                 setPropertyData({ ...newProperty, pincode: input });
               }
             }}
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501]"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none  focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -306,7 +306,7 @@ const StepOne = ({
 
         <div className="w-full">
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
-            Registration Fee Percentage <span className="text-red-600">*</span>
+            Registration Fee or Percentage <span className="text-red-600">*</span>
           </label>
           <select
             required
@@ -319,8 +319,9 @@ const StepOne = ({
               })
             }
           >
-            <option value="">Select Registration Fee %</option>
+            <option value="">Select Registration Fee</option>
             <option value="1">1%</option>
+            <option value="30000">Rs. 30,000</option>
           </select>
         </div>
 
@@ -362,11 +363,11 @@ const StepOne = ({
             }
           >
             <option value="">Select Advocate Fee</option>
-            <option value="0">0</option>
-            <option value="10000">10,000</option>
-            <option value="15000">15,000</option>
-            <option value="20000">20,000</option>
-            <option value="25000">25,000</option>
+            <option value="0">Rs. 0</option>
+            <option value="10000">Rs. 10,000</option>
+            <option value="15000">Rs. 15,000</option>
+            <option value="20000">Rs. 20,000</option>
+            <option value="25000">Rs. 25,000</option>
           </select>
         </div>
 
@@ -377,7 +378,7 @@ const StepOne = ({
           <input
             type="number"
             required
-            placeholder="Enter Water & MSEB Charges"
+            placeholder="Enter Charges In Rupee"
             className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
             value={newProperty.msebWater}
             onChange={(e) =>
@@ -396,7 +397,7 @@ const StepOne = ({
           <input
             type="number"
             required
-            placeholder="Enter Maintenance"
+            placeholder="Enter Maintenance In Rupee"
             className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={newProperty.maintenance}
             onChange={(e) =>
@@ -414,7 +415,7 @@ const StepOne = ({
           <input
             type="number"
             required
-            placeholder="Enter Extra Other Charges"
+            placeholder="Enter Charges In Rupee"
             className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={newProperty.other}
             onChange={(e) =>

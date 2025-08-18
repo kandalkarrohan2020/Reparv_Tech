@@ -9,6 +9,7 @@ import FilterData from "../components/FilterData";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
+import { RiArrowDropDownLine } from "react-icons/ri";
 import Loader from "../components/Loader";
 import PartnerFilter from "../components/PartnerFilter";
 import { RxCross2 } from "react-icons/rx";
@@ -34,7 +35,6 @@ const Promoter = () => {
   } = useAuth();
 
   const [datas, setDatas] = useState([]);
-  const [paymentStatusCounts, setPaymentStatusCounts] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [partnerId, setPartnerId] = useState(null);
   const [partner, setPartner] = useState({});
@@ -101,7 +101,7 @@ const Promoter = () => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        `${URI}/admin/promoter/${partnerPaymentStatus}`,
+        `${URI}/admin/promoter/`,
         {
           method: "GET",
           credentials: "include", // Ensures cookies are sent
@@ -117,18 +117,7 @@ const Promoter = () => {
       console.log("Fetched promoter Data:", result);
 
       // Set the table data
-      if (result?.data) {
-        setDatas(result.data);
-      } else {
-        setDatas([]); // fallback if no data
-      }
-
-      // Set payment status counts if available
-      if (result?.paymentStatusCounts) {
-        setPaymentStatusCounts(result.paymentStatusCounts);
-      } else {
-        setPaymentStatusCounts({}); // fallback to empty
-      }
+      setDatas(result);
     } catch (err) {
       console.error("Error fetching promoter data:", err);
     }
@@ -408,13 +397,39 @@ const Promoter = () => {
   useEffect(() => {
     fetchData();
     fetchStates();
-  }, [partnerPaymentStatus]);
+  }, []);
 
   useEffect(() => {
     if (newPartner.state != "") {
       fetchCities();
     }
   }, [newPartner.state]);
+
+  const getPartnerCounts = (data) => {
+    return data.reduce(
+      (acc, item) => {
+        if (item.paymentstatus === "Success") {
+          acc.Paid++;
+        } else if (
+          item.paymentstatus === "Follow Up" &&
+          item.loginstatus === "Inactive"
+        ) {
+          acc.FollowUp++;
+        } else if (item.paymentstatus === "Pending") {
+          acc.Unpaid++;
+        } else if (
+          item.paymentstatus !== "Success" &&
+          item.loginstatus === "Active"
+        ) {
+          acc.Free++;
+        }
+        return acc;
+      },
+      { Unpaid: 0, FollowUp: 0, Paid: 0, Free: 0 }
+    );
+  };
+
+  const partnerCounts = getPartnerCounts(datas);
 
   const [range, setRange] = useState([
     {
@@ -424,7 +439,7 @@ const Promoter = () => {
     },
   ]);
 
-  const filteredData = datas.filter((item) => {
+  const filteredData = datas?.filter((item) => {
     const matchesSearch =
       item.fullname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -448,7 +463,22 @@ const Promoter = () => {
       (!startDate && !endDate) ||
       (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
 
-    return matchesSearch && matchesDate;
+    // Enquiry filter logic: New, Alloted, Assign
+    const getPartnerPaymentStatus = () => {
+      if (item.paymentstatus === "Success") return "Paid";
+      if (item.paymentstatus === "Follow Up" && item.loginstatus === "Inactive")
+        return "Follow Up";
+      if (item.paymentstatus === "Pending") return "Unpaid";
+      if (item.paymentstatus !== "Success" && item.loginstatus === "Active")
+        return "Free";
+      return "";
+    };
+
+    const matchesPartner =
+      !partnerPaymentStatus ||
+      getPartnerPaymentStatus() === partnerPaymentStatus;
+
+    return matchesSearch && matchesDate && matchesPartner;
   });
 
   const customStyles = {
@@ -575,15 +605,22 @@ const Promoter = () => {
                 : "Login Status Inactive"}
             </div>
           </div>
-          <span
-            className={`${
-              row.adharno && row.panno && row.adharimage && row.panimage
-                ? "text-green-600"
-                : ""
-            }`}
-          >
-            {row.fullname}
-          </span>
+          <div className="relative group cursor-pointer">
+            <span
+              className={`${
+                row.adharno && row.panno && row.adharimage && row.panimage
+                  ? "text-green-600"
+                  : ""
+              }`}
+            >
+              {row.fullname}
+            </span>
+            <div className="absolute w-[150px] text-center -top-12 left-[50px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+              {row.adharno && row.panno && row.adharimage && row.panimage
+                ? "KYC Completed"
+                : "KYC Not Completed"}
+            </div>
+          </div>
         </div>
       ),
       width: "200px",
@@ -683,7 +720,7 @@ const Promoter = () => {
     >
       <div className=" w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
         <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
-          <p className="block md:hidden text-lg font-semibold">Promoter</p>
+          <p className="block md:hidden text-lg font-semibold">Promoters</p>
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
             <DownloadCSV data={filteredData} filename={"Promoter.csv"} />
             <AddButton label={"Add"} func={setShowPartnerForm} />
@@ -702,15 +739,15 @@ const Promoter = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <PartnerFilter counts={paymentStatusCounts} />
+              <PartnerFilter counts={partnerCounts} />
               <div className="block">
                 <CustomDateRangePicker range={range} setRange={setRange} />
               </div>
             </div>
             <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
-              <DownloadCSV data={filteredData} filename={"Promoter.csv"} />
-              <AddButton label={"Add"} func={setShowPartnerForm} />
-            </div>
+            <DownloadCSV data={filteredData} filename={"Promoter.csv"} />
+            <AddButton label={"Add"} func={setShowPartnerForm} />
+          </div>
           </div>
         </div>
         <h2 className="text-[16px] font-semibold"> Promoter List</h2>

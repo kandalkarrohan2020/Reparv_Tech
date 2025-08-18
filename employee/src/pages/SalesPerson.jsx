@@ -9,6 +9,7 @@ import PartnerFilter from "../components/PartnerFilter";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
+import { RiArrowDropDownLine } from "react-icons/ri";
 import Loader from "../components/Loader";
 import { RxCross2 } from "react-icons/rx";
 import { MdDone } from "react-icons/md";
@@ -33,10 +34,12 @@ const SalesPerson = () => {
   } = useAuth();
 
   const [datas, setDatas] = useState([]);
-  const [paymentStatusCounts, setPaymentStatusCounts] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [salesPersonId, setSalesPersonId] = useState(null);
   const [partner, setPartner] = useState({});
+  const [selectedPartnerLister, setSelectedPartnerLister] = useState(
+    "Select Partner Lister"
+  );
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [states, setStates] = useState([]);
@@ -103,7 +106,7 @@ const SalesPerson = () => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        `${URI}/admin/salespersons/${partnerPaymentStatus}`,
+        `${URI}/admin/salespersons/${selectedPartnerLister}`,
         {
           method: "GET",
           credentials: "include", // Ensures cookies are sent
@@ -118,18 +121,7 @@ const SalesPerson = () => {
       const result = await response.json();
 
       // Set the table data
-      if (result?.data) {
-        setDatas(result.data);
-      } else {
-        setDatas([]);
-      }
-
-      // Set the status counts if available
-      if (result?.paymentStatusCounts) {
-        setPaymentStatusCounts(result.paymentStatusCounts);
-      } else {
-        setPaymentStatusCounts({});
-      }
+      setDatas(result);
     } catch (err) {
       console.error("Error fetching salespersons:", err);
     }
@@ -422,13 +414,39 @@ const SalesPerson = () => {
   useEffect(() => {
     fetchData();
     fetchStates();
-  }, [partnerPaymentStatus]);
+  }, [selectedPartnerLister]);
 
   useEffect(() => {
     if (newSalesPerson.state != "") {
       fetchCities();
     }
   }, [newSalesPerson.state]);
+
+  const getPartnerCounts = (data) => {
+    return data.reduce(
+      (acc, item) => {
+        if (item.paymentstatus === "Success") {
+          acc.Paid++;
+        } else if (
+          item.paymentstatus === "Follow Up" &&
+          item.loginstatus === "Inactive"
+        ) {
+          acc.FollowUp++;
+        } else if (item.paymentstatus === "Pending") {
+          acc.Unpaid++;
+        } else if (
+          item.paymentstatus !== "Success" &&
+          item.loginstatus === "Active"
+        ) {
+          acc.Free++;
+        }
+        return acc;
+      },
+      { Unpaid: 0, FollowUp: 0, Paid: 0, Free: 0 }
+    );
+  };
+
+  const partnerCounts = getPartnerCounts(datas);
 
   const [range, setRange] = useState([
     {
@@ -438,7 +456,7 @@ const SalesPerson = () => {
     },
   ]);
 
-  const filteredData = datas.filter((item) => {
+  const filteredData = datas?.filter((item) => {
     const matchesSearch =
       item.fullname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -462,7 +480,22 @@ const SalesPerson = () => {
       (!startDate && !endDate) ||
       (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
 
-    return matchesSearch && matchesDate;
+    // Enquiry filter logic: New, Alloted, Assign
+    const getPartnerPaymentStatus = () => {
+      if (item.paymentstatus === "Success") return "Paid";
+      if (item.paymentstatus === "Follow Up" && item.loginstatus === "Inactive")
+        return "Follow Up";
+      if (item.paymentstatus === "Pending") return "Unpaid";
+      if (item.paymentstatus !== "Success" && item.loginstatus === "Active")
+        return "Free";
+      return "";
+    };
+
+    const matchesPartner =
+      !partnerPaymentStatus ||
+      getPartnerPaymentStatus() === partnerPaymentStatus;
+
+    return matchesSearch && matchesDate && matchesPartner;
   });
 
   const customStyles = {
@@ -703,11 +736,28 @@ const SalesPerson = () => {
       className={`sales Persons overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
     >
       <div className="sales-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
-        <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
-          <p className="block md:hidden text-lg font-semibold">
-            Sales Partners
-          </p>
-          <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
+        <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
+          <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+            <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+              <span>{selectedPartnerLister || "Select Partner Lister"}</span>
+              <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+            </div>
+            <select
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              value={selectedPartnerLister}
+              onChange={(e) => {
+                const action = e.target.value;
+                setSelectedPartnerLister(action);
+              }}
+            >
+              <option value="Select Partner Lister">
+                Select Partner Lister
+              </option>
+              <option value="Reparv">Reparv</option>
+              <option value="Promoter">Promoter</option>
+            </select>
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
             <DownloadCSV data={filteredData} filename={"SalesPartner.csv"} />
             <AddButton label={"Add"} func={setShowSalesForm} />
           </div>
@@ -725,14 +775,10 @@ const SalesPerson = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <PartnerFilter counts={paymentStatusCounts} />
+              <PartnerFilter counts={partnerCounts} />
               <div className="block">
                 <CustomDateRangePicker range={range} setRange={setRange} />
               </div>
-            </div>
-            <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
-              <DownloadCSV data={filteredData} filename={"SalesPartner.csv"} />
-              <AddButton label={"Add"} func={setShowSalesForm} />
             </div>
           </div>
         </div>

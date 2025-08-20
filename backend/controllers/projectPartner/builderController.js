@@ -27,7 +27,7 @@ export const getAll = (req, res) => {
 // **Fetch All**
 export const getAllActive = (req, res) => {
   const sql =
-    "SELECT * FROM builders WHERE status = 'Active' AND builders.builderadder = ? ORDER BY builderid DESC";
+    "SELECT * FROM builders WHERE status = 'Active' AND builders.builderadder = ? ORDER BY company_name";
   db.query(sql, [req.user.adharId], (err, result) => {
     if (err) {
       console.error("Error fetching:", err);

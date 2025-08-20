@@ -183,6 +183,39 @@ export const add = (req, res) => {
   tryInsert();
 };
 
+// Re-Open Ticket if Not Resolved Issue
+export const reOpen = (req, res) => {
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid ID" });
+  }
+
+  db.query("SELECT * FROM tickets WHERE ticketid = ?", [Id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    db.query(
+      "UPDATE tickets SET status = ? WHERE ticketid = ?",
+      ["Open", Id],
+      (err) => {
+        if (err) {
+          console.error("Error Re-Opening Ticket:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+        res.status(200).json({ message: "Re-open ticket successfully" });
+      }
+    );
+  });
+};
+
 /* Change status */
 export const changeStatus = (req, res) => {
   const { status } = req.body;

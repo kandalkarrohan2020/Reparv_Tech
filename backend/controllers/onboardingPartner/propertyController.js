@@ -207,13 +207,13 @@ export const addProperty = async (req, res) => {
   const developedAmenities = getImagePaths("developedAmenities");
 
   db.query(
-    "SELECT * FROM properties WHERE propertyid = ?",
-    [Id],
+    "SELECT * FROM properties WHERE propertyName = ?",
+    [propertyName],
     (err, result) => {
       if (err)
         return res.status(500).json({ message: "Database error", error: err });
       if (result.length > 0)
-        return res.status(202).json({ message: "Property already exists!" });
+        return res.status(409).json({ message: "Property name already exists!" });
 
       const insertSQL = `
       INSERT INTO properties (
@@ -297,6 +297,10 @@ export const addProperty = async (req, res) => {
 
       db.query(insertSQL, values, (err, result) => {
         if (err) {
+          if (err.code === "ER_DUP_ENTRY") {
+            // DB caught duplicate propertyName
+            return res.status(409).json({ message: "Property name already exists!" });
+          }
           console.error("Error inserting property:", err);
           return res.status(500).json({ message: "Insert failed", error: err });
         }

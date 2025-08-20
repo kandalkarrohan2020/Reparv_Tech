@@ -135,6 +135,262 @@ export const getById = (req, res) => {
 
 export const addProperty = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+
+  // Convert uploaded images to WebP
+  const files = await convertImagesToWebp(req.files);
+
+  const {
+    builderid,
+    propertyCategory,
+    propertyApprovedBy,
+    propertyName,
+    address,
+    state,
+    city,
+    pincode,
+    location,
+    distanceFromCityCenter,
+    totalSalesPrice,
+    totalOfferPrice,
+    stampDuty,
+    registrationFee,
+    gst,
+    advocateFee,
+    msebWater,
+    maintenance,
+    other,
+    propertyType,
+    builtYear,
+    ownershipType,
+    builtUpArea,
+    carpetArea,
+    parkingAvailability,
+    totalFloors,
+    floorNo,
+    loanAvailability,
+    propertyFacing,
+    reraRegistered,
+    furnishing,
+    waterSupply,
+    powerBackup,
+    locationFeature,
+    sizeAreaFeature,
+    parkingFeature,
+    terraceFeature,
+    ageOfPropertyFeature,
+    amenitiesFeature,
+    propertyStatusFeature,
+    smartHomeFeature,
+    securityBenefit,
+    primeLocationBenefit,
+    rentalIncomeBenefit,
+    qualityBenefit,
+    capitalAppreciationBenefit,
+    ecofriendlyBenefit,
+  } = req.body;
+
+  // Check required fields
+  if (
+    !builderid ||
+    !propertyCategory ||
+    !propertyName ||
+    !address ||
+    !state ||
+    !city ||
+    !pincode ||
+    !location ||
+    !distanceFromCityCenter ||
+    !totalSalesPrice ||
+    !totalOfferPrice ||
+    !stampDuty ||
+    !registrationFee ||
+    !gst ||
+    !advocateFee ||
+    !msebWater ||
+    !maintenance ||
+    !other ||
+    !builtYear ||
+    !ownershipType ||
+    !builtUpArea ||
+    !carpetArea ||
+    !parkingAvailability ||
+    !totalFloors ||
+    !floorNo ||
+    !loanAvailability ||
+    !propertyFacing ||
+    !furnishing ||
+    !waterSupply ||
+    !powerBackup ||
+    !locationFeature ||
+    !sizeAreaFeature ||
+    !parkingFeature ||
+    !terraceFeature ||
+    !ageOfPropertyFeature ||
+    !amenitiesFeature ||
+    !propertyStatusFeature ||
+    !smartHomeFeature ||
+    !securityBenefit ||
+    !primeLocationBenefit ||
+    !rentalIncomeBenefit ||
+    !qualityBenefit ||
+    !capitalAppreciationBenefit ||
+    !ecofriendlyBenefit
+  ) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  // Property Registration Fee is 1% or Maximum 30,000 Rs
+  let registrationFees;
+  if (totalOfferPrice > 3000000) {
+    registrationFees = (30000 / totalOfferPrice) * 100;
+  } else {
+    registrationFees = 1;
+  }
+
+  const seoSlug = toSlug(propertyName);
+
+  const calculateEMI = (price) => {
+    const interestRate = 0.08 / 12; // 8% annual
+    const tenureMonths = 240; // 20 years
+    return Math.round(
+      (price * interestRate * Math.pow(1 + interestRate, tenureMonths)) /
+        (Math.pow(1 + interestRate, tenureMonths) - 1)
+    );
+  };
+
+  const emi = calculateEMI(Number(totalOfferPrice));
+
+  const getImagePaths = (field) =>
+    files[field]
+      ? JSON.stringify(files[field].map((f) => `/uploads/${f.filename}`))
+      : null;
+
+  const frontView = getImagePaths("frontView");
+  const sideView = getImagePaths("sideView");
+  const kitchenView = getImagePaths("kitchenView");
+  const hallView = getImagePaths("hallView");
+  const bedroomView = getImagePaths("bedroomView");
+  const bathroomView = getImagePaths("bathroomView");
+  const balconyView = getImagePaths("balconyView");
+  const nearestLandmark = getImagePaths("nearestLandmark");
+  const developedAmenities = getImagePaths("developedAmenities");
+
+  // Early check: is propertyName already taken?
+  db.query(
+    "SELECT propertyid FROM properties WHERE propertyName = ?",
+    [propertyName],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+      if (result.length > 0) {
+        return res
+          .status(409)
+          .json({ message: "Property name already exists!" });
+      }
+
+      // Insert query
+      const insertSQL = `
+        INSERT INTO properties (
+          builderid, propertyCategory, propertyApprovedBy, propertyName, address, state, city, pincode, location,
+          distanceFromCityCenter, totalSalesPrice, totalOfferPrice, emi, stampDuty, registrationFee, gst, advocateFee, 
+          msebWater, maintenance, other, propertyType, builtYear, ownershipType, builtUpArea, carpetArea,
+          parkingAvailability, totalFloors, floorNo, loanAvailability, propertyFacing, reraRegistered, 
+          furnishing, waterSupply, powerBackup, locationFeature, sizeAreaFeature, parkingFeature, terraceFeature,
+          ageOfPropertyFeature, amenitiesFeature, propertyStatusFeature, smartHomeFeature,
+          securityBenefit, primeLocationBenefit, rentalIncomeBenefit, qualityBenefit, capitalAppreciationBenefit, ecofriendlyBenefit,
+          frontView, sideView, kitchenView, hallView, bedroomView, bathroomView, balconyView,
+          nearestLandmark, developedAmenities, seoSlug,
+          updated_at, created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+      const values = [
+        builderid,
+        propertyCategory,
+        propertyApprovedBy,
+        propertyName,
+        address,
+        state,
+        city,
+        pincode,
+        location,
+        distanceFromCityCenter,
+        totalSalesPrice,
+        totalOfferPrice,
+        emi,
+        stampDuty,
+        registrationFees,
+        gst,
+        advocateFee,
+        msebWater,
+        maintenance,
+        other,
+        propertyType,
+        builtYear,
+        ownershipType,
+        builtUpArea,
+        carpetArea,
+        parkingAvailability,
+        totalFloors,
+        floorNo,
+        loanAvailability,
+        propertyFacing,
+        reraRegistered,
+        furnishing,
+        waterSupply,
+        powerBackup,
+        locationFeature,
+        sizeAreaFeature,
+        parkingFeature,
+        terraceFeature,
+        ageOfPropertyFeature,
+        amenitiesFeature,
+        propertyStatusFeature,
+        smartHomeFeature,
+        securityBenefit,
+        primeLocationBenefit,
+        rentalIncomeBenefit,
+        qualityBenefit,
+        capitalAppreciationBenefit,
+        ecofriendlyBenefit,
+        frontView,
+        sideView,
+        kitchenView,
+        hallView,
+        bedroomView,
+        bathroomView,
+        balconyView,
+        nearestLandmark,
+        developedAmenities,
+        seoSlug,
+        currentdate,
+        currentdate,
+      ];
+
+      db.query(insertSQL, values, (err, result) => {
+        if (err) {
+          if (err.code === "ER_DUP_ENTRY") {
+            // DB caught duplicate propertyName
+            return res
+              .status(409)
+              .json({ message: "Property name already exists!" });
+          }
+          console.error("Error inserting property:", err);
+          return res.status(500).json({ message: "Insert failed", error: err });
+        }
+        res.status(201).json({
+          message: "Property added successfully",
+          id: result.insertId,
+        });
+      });
+    }
+  );
+};
+
+export const addPropertyOld = async (req, res) => {
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const Id = req.body.propertyid ? parseInt(req.body.propertyid) : null;
 
   // Convert uploaded images to WebP
@@ -238,7 +494,7 @@ export const addProperty = async (req, res) => {
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
- 
+
   // Property Registration Fee is 1% or Maximum 30,000 Rs
   let registrationFees;
   if (totalOfferPrice > 3000000) {

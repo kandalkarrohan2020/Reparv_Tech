@@ -25,7 +25,7 @@ export const getAllActive = (req, res) => {
     FROM builders 
     INNER JOIN employees ON builders.builderadder = employees.uid
     WHERE builders.status = 'Active'
-    ORDER BY builders.builderid DESC`;
+    ORDER BY builders.company_name`;
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching:", err);

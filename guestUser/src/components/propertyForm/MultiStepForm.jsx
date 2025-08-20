@@ -37,12 +37,10 @@ const MultiStepForm = ({
     e.preventDefault();
 
     const formData = new FormData();
-    // Add all text fields
     Object.entries(newProperty).forEach(([key, value]) => {
       formData.append(key, value);
     });
 
-    // Add multiple image files for each field
     const imageFields = [
       "frontView",
       "sideView",
@@ -69,25 +67,30 @@ const MultiStepForm = ({
 
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/guest-user/properties/${endpoint}`, {
+      const response = await fetch(`${URI}/admin/properties/${endpoint}`, {
         method: newProperty.propertyid ? "PUT" : "POST",
         credentials: "include",
-        body: formData, // Use FormData instead of JSON
+        body: formData,
       });
 
+      // If duplicate property name
       if (response.status === 409) {
-        alert("Property already exists!");
-      } else if (!response.ok) {
-        throw new Error(`Failed to save property. Status: ${response.status}`);
-      } else {
-        alert(
-          newProperty.propertyid
-            ? "Property updated successfully!"
-            : "Property added successfully!"
-        );
+        const data = await response.json();
+        alert(data.message || "Property name already exists!");
+        return;
       }
 
-      // Clear form after successful response
+      if (!response.ok) {
+        throw new Error(`Failed to save property. Status: ${response.status}`);
+      }
+
+      alert(
+        newProperty.propertyid
+          ? "Property updated successfully!"
+          : "Property added successfully!"
+      );
+
+      // Reset form
       setPropertyData({
         propertyid: "",
         builderid: "",
@@ -138,26 +141,91 @@ const MultiStepForm = ({
         capitalAppreciationBenefit: "",
         ecofriendlyBenefit: "",
       });
+
       setStep(1);
       setShowPropertyForm(false);
       await fetchData();
     } catch (err) {
       console.error("Error saving property:", err);
-      if (err.response?.data?.error) {
-        alert("Upload failed: " + err.response.data.error);
-      } else {
-        alert("please check empty fields or try again later.");
-      }
+      alert("Please check empty fields or try again later.");
     } finally {
       setLoading(false);
     }
   };
 
   const checkButton = () => {
-    if (step === 1 && newProperty.other != "") {
-      setNextButton(true);
-    } else if (step === 2 && newProperty.ecofriendlyBenefit != "") {
-      setNextButton(true);
+    if (step === 1) {
+      const requiredFieldsStep1 = [
+        "builderid", // number
+        "propertyCategory",
+        "propertyApprovedBy",
+        "propertyName",
+        "address",
+        "state",
+        "city",
+        "pincode", // number
+        "location",
+        "distanceFromCityCenter",
+        "totalSalesPrice", // number
+        "totalOfferPrice", // number
+        "stampDuty", // number
+        "registrationFee",
+        "gst",
+        "advocateFee", // number
+        "msebWater", // number
+        "maintenance", // number
+        "other", // number
+      ];
+
+      const allFilled = requiredFieldsStep1.every((field) => {
+        const value = newProperty[field];
+        if (typeof value === "number") {
+          return value > 0; // for numbers, must be > 0
+        }
+        return value && value.toString().trim() !== ""; // for strings
+      });
+
+      setNextButton(allFilled);
+    } else if (step === 2) {
+      const requiredFieldsStep2 = [
+        "builtYear", // number
+        "ownershipType",
+        "builtUpArea", // number
+        "carpetArea", // number
+        "parkingAvailability",
+        "totalFloors", // number
+        "floorNo", // number
+        "loanAvailability",
+        "propertyFacing",
+        "reraRegistered",
+        "furnishing",
+        "waterSupply",
+        "powerBackup",
+        "locationFeature",
+        "sizeAreaFeature",
+        "parkingFeature",
+        "terraceFeature",
+        "ageOfPropertyFeature",
+        "amenitiesFeature",
+        "propertyStatusFeature",
+        "smartHomeFeature",
+        "securityBenefit",
+        "primeLocationBenefit",
+        "rentalIncomeBenefit",
+        "qualityBenefit",
+        "capitalAppreciationBenefit",
+        "ecofriendlyBenefit",
+      ];
+
+      const allFilled = requiredFieldsStep2.every((field) => {
+        const value = newProperty[field];
+        if (typeof value === "number") {
+          return value > 0; // number must be greater than 0
+        }
+        return value && value.toString().trim() !== "";
+      });
+
+      setNextButton(allFilled);
     } else {
       setNextButton(false);
     }

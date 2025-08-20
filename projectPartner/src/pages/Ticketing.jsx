@@ -106,13 +106,16 @@ const Ticketing = () => {
   //Fetch department data
   const fetchDepartmentData = async () => {
     try {
-      const response = await fetch(URI + "/project-partner/tickets/departments", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + "/project-partner/tickets/departments",
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch departments.");
       const data = await response.json();
       setDepartmentData(data);
@@ -124,13 +127,16 @@ const Ticketing = () => {
   //Fetch department data
   const fetchEmployeeData = async (id) => {
     try {
-      const response = await fetch(URI + "/project-partner/tickets/employees/" + id, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + "/project-partner/tickets/employees/" + id,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch departments.");
       const data = await response.json();
       setEmployeeData(data);
@@ -145,12 +151,15 @@ const Ticketing = () => {
     const endpoint = newTicket.ticketid ? `edit/${newTicket.ticketid}` : "add";
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/project-partner/tickets/${endpoint}`, {
-        method: newTicket.ticketid ? "PUT" : "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newTicket),
-      });
+      const response = await fetch(
+        `${URI}/project-partner/tickets/${endpoint}`,
+        {
+          method: newTicket.ticketid ? "PUT" : "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newTicket),
+        }
+      );
 
       if (response.status === 409) {
         alert("Ticket already exists!");
@@ -188,7 +197,7 @@ const Ticketing = () => {
     try {
       const response = await fetch(`${URI}/project-partner/tickets/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -207,7 +216,7 @@ const Ticketing = () => {
     try {
       const response = await fetch(`${URI}/project-partner/tickets/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -221,15 +230,46 @@ const Ticketing = () => {
     }
   };
 
+  // Re-Open Ticket
+  const reOpen = async (id) => {
+    if (!window.confirm("Are You Sure to Re-Open This Ticket?")) return;
+
+    try {
+      const response = await fetch(
+        URI + `/project-partner/tickets/re-open/ticket/${id}`,
+        {
+          method: "PUT",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      //console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      fetchData();
+    } catch (error) {
+      console.error("Error Re-Opening Ticket :", error);
+    }
+  };
+
   // Delete record
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this ticket?")) return;
 
     try {
-      const response = await fetch(URI + `/project-partner/tickets/delete/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const response = await fetch(
+        URI + `/project-partner/tickets/delete/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
       if (response.ok) {
@@ -434,6 +474,9 @@ const Ticketing = () => {
         case "update":
           edit(id);
           break;
+        case "reopen":
+          reOpen(id);
+          break;
         case "delete":
           del(id);
           break;
@@ -461,6 +504,7 @@ const Ticketing = () => {
           </option>
           <option value="view">View</option>
           <option value="update">Update</option>
+          <option value="reopen">Re-Open</option>
           <option value="delete">Delete</option>
         </select>
       </div>
@@ -775,7 +819,7 @@ const Ticketing = () => {
               />
             </div>
           </form>
-          <div className="w-full">
+          <div className="w-full mt-3">
             <label className="block text-sm leading-4 text-[#00000066] font-medium">
               Description
             </label>

@@ -15,8 +15,18 @@ export const getAll = (req, res) => {
   }
 
   let sql;
-
-  if (ticketGenerator === "Sales Person") {
+  
+  if (ticketGenerator === "Builder") {
+    sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
+           employees.name AS employee_name, employees.uid , builders.fullname AS ticketadder_name, builders.contact AS ticketadder_contact
+           FROM tickets 
+           INNER JOIN builders ON builders.uid = tickets.ticketadder
+           LEFT JOIN users ON tickets.adminid = users.id 
+           LEFT JOIN departments ON tickets.departmentid = departments.departmentid
+           LEFT JOIN employees ON tickets.employeeid = employees.id
+           WHERE tickets.employeeid = ?
+           ORDER BY ticketno DESC`;
+  } else if (ticketGenerator === "Sales Person") {
     sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
            employees.name AS employee_name, employees.uid , salespersons.fullname AS ticketadder_name, salespersons.contact AS ticketadder_contact
            FROM tickets 

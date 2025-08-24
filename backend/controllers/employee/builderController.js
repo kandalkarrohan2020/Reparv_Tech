@@ -59,9 +59,9 @@ export const add = (req, res) => {
     return res.status(401).json({ message: "Unauthorized! Please Login Again." });
   }
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { company_name, contact_person, contact, email, office_address, registration_no, dor, website, notes } = req.body;
+  const { company_name, contact_person, contact, email, uid, office_address, registration_no, dor, website, notes } = req.body;
 
-  if (!company_name || !contact_person || !contact || !email || !office_address || !registration_no || !dor || !website || !notes) {
+  if (!company_name || !contact_person || !contact || !email || !uid || !office_address || !registration_no || !dor || !website || !notes) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -69,9 +69,9 @@ export const add = (req, res) => {
     if (err) return res.status(500).json({ message: "Database error", error: err });
 
     if (result.length === 0) {
-      const insertSQL = `INSERT INTO builders (builderadder, company_name, contact_person, contact, email, office_address, registration_no, dor, website, notes, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const insertSQL = `INSERT INTO builders (builderadder, company_name, contact_person, contact, email, uid, office_address, registration_no, dor, website, notes, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-      db.query(insertSQL, [adharId, company_name, contact_person, contact, email, office_address, registration_no, dor, website, notes, currentdate, currentdate], (err, result) => {
+      db.query(insertSQL, [adharId, company_name, contact_person, contact, email, uid, office_address, registration_no, dor, website, notes, currentdate, currentdate], (err, result) => {
         if (err) {
           console.error("Error inserting:", err);
           return res.status(500).json({ message: "Database error", error: err });
@@ -88,9 +88,9 @@ export const add = (req, res) => {
 export const update = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const Id = req.body.builderid;
-  const { company_name, contact_person, contact, email, office_address, registration_no, dor, website, notes } = req.body;
+  const { company_name, contact_person, contact, email, uid, office_address, registration_no, dor, website, notes } = req.body;
 
-  if (!company_name || !contact_person || !contact || !email || !office_address || !registration_no || !dor || !website || !notes) {
+  if (!company_name || !contact_person || !contact || !email || !uid || !office_address || !registration_no || !dor || !website || !notes) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -98,9 +98,9 @@ export const update = (req, res) => {
     if (err) return res.status(500).json({ message: "Database error", error: err });
     if (result.length === 0) return res.status(404).json({ message: "Builder not found" });
 
-    const sql = `UPDATE builders SET company_name=?, contact_person=?, contact=?, email=?, office_address=?, registration_no=?, dor=?, website=?, notes=?, updated_at=? WHERE builderid=?`;
+    const sql = `UPDATE builders SET company_name=?, contact_person=?, contact=?, email=?, uid=?, office_address=?, registration_no=?, dor=?, website=?, notes=?, updated_at=? WHERE builderid=?`;
 
-    db.query(sql, [company_name, contact_person, contact, email, office_address, registration_no, dor, website, notes, currentdate, Id], (err) => {
+    db.query(sql, [company_name, contact_person, contact, email, uid, office_address, registration_no, dor, website, notes, currentdate, Id], (err) => {
       if (err) {
         console.error("Error updating:", err);
         return res.status(500).json({ message: "Database error", error: err });

@@ -25,6 +25,16 @@ export const getAll = (req, res) => {
            LEFT JOIN employees AS emp ON tickets.employeeid = emp.id
            LEFT JOIN roles ON ticketAdder.roleid = roles.roleid
            ORDER BY tickets.created_at DESC`;
+  } else if (ticketGenerator === "Builder") {
+    sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
+           employees.name AS employee_name, employees.uid , 
+           builders.contact_person AS ticketadder_name, builders.contact AS ticketadder_contact
+           FROM tickets 
+           INNER JOIN builders ON builders.uid = tickets.ticketadder
+           LEFT JOIN users ON tickets.adminid = users.id 
+           LEFT JOIN departments ON tickets.departmentid = departments.departmentid
+           LEFT JOIN employees ON tickets.employeeid = employees.id
+           ORDER BY created_at DESC`;
   } else if (ticketGenerator === "Sales Person") {
     sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
            employees.name AS employee_name, employees.uid , 

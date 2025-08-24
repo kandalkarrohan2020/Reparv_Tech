@@ -78,7 +78,7 @@ const Ticketing = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${URI}/admin/tickets/get/${selectedGenerator}`,
+        `${URI}/employee/tickets/get/${selectedGenerator}`,
         {
           method: "GET",
           credentials: "include",
@@ -230,7 +230,7 @@ const Ticketing = () => {
     try {
       const response = await fetch(`${URI}/admin/tickets/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -653,6 +653,7 @@ const Ticketing = () => {
                 Select Ticket Generator
               </option>
               <option value="Admin">Admin</option>
+              <option value="Builder">Builder</option>
               <option value="Employee">Employee</option>
               <option value="Sales Person">Sales Person</option>
               <option value="Onboarding Partner">Onboarding Partner</option>

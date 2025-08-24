@@ -1,4 +1,6 @@
 import React from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "../../store/auth";
 
 const StepOne = ({
   newProperty,
@@ -8,6 +10,36 @@ const StepOne = ({
   states,
   cities,
 }) => {
+  const { URI } = useAuth();
+
+  // For Property Name Checking
+  const [isSame, setIsSame] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const checkPropertyName = async () => {
+    try {
+      const res = await fetch(`${URI}/admin/properties/check-property-name`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newProperty),
+      });
+
+      const data = await res.json();
+      setIsSame(data.unique);
+      setMessage(data.message);
+    } catch (error) {
+      console.error("Error:", error);
+      setMessage("Something went wrong");
+    }
+  };
+
+  useEffect(() => {
+    checkPropertyName();
+  }, [newProperty.propertyName]);
+
   return (
     <div className="bg-white h-[55vh] overflow-scroll scrollbar-x-hidden p-2">
       <h2 className="text-base font-semibold mb-4">Step 1: Property Details</h2>
@@ -98,8 +130,16 @@ const StepOne = ({
         </div>
 
         <div className="w-full ">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
-            Property Name <span className="text-red-600">*</span>
+          <label
+            className={`${
+              isSame === true
+                ? "text-green-600"
+                : isSame === false
+                ? "text-red-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
+            {message || "Property Name"} <span className="text-red-600">*</span>
           </label>
           <input
             type="text"
@@ -304,9 +344,18 @@ const StepOne = ({
           </select>
         </div>
 
-        <div className="w-full">
+        <div
+          className={`${
+            ["RentalFlat", "RentalShop", "RentalOffice"].includes(
+              newProperty.propertyCategory
+            )
+              ? "hidden"
+              : "block"
+          } w-full`}
+        >
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
-            Registration Fee or Percentage <span className="text-red-600">*</span>
+            Registration Fee or Percentage{" "}
+            <span className="text-red-600">*</span>
           </label>
           <select
             required
@@ -325,7 +374,15 @@ const StepOne = ({
           </select>
         </div>
 
-        <div className="w-full">
+        <div
+          className={`${
+            ["RentalFlat", "RentalShop", "RentalOffice"].includes(
+              newProperty.propertyCategory
+            )
+              ? "hidden"
+              : "block"
+          } w-full`}
+        >
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             GST Percentage <span className="text-red-600">*</span>
           </label>
@@ -347,7 +404,15 @@ const StepOne = ({
           </select>
         </div>
 
-        <div className="w-full">
+        <div
+          className={`${
+            ["RentalFlat", "RentalShop", "RentalOffice"].includes(
+              newProperty.propertyCategory
+            )
+              ? "hidden"
+              : "block"
+          } w-full`}
+        >
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Advocate Fee in Rupee <span className="text-red-600">*</span>
           </label>
@@ -371,59 +436,79 @@ const StepOne = ({
           </select>
         </div>
 
-        <div className="w-full">
+        <div
+          className={`${
+            ["RentalFlat", "RentalShop", "RentalOffice"].includes(
+              newProperty.propertyCategory
+            )
+              ? "hidden"
+              : "block"
+          } w-full`}
+        >
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
-            MSEB & Water <span className="text-red-600">*</span>
+            MSEB & Water Charges in Rupee<span className="text-red-600">*</span>
           </label>
           <input
             type="number"
+            min="0"
             required
             placeholder="Enter Charges In Rupee"
             className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
             value={newProperty.msebWater}
-            onChange={(e) =>
+            onChange={(e) => {
+              const value = e.target.value;
               setPropertyData({
                 ...newProperty,
-                msebWater: e.target.value,
-              })
-            }
+                msebWater: value < 0 ? 0 : value, // block negatives
+              });
+            }}
           />
         </div>
 
-        <div className="w-full">
+        <div
+          className={`${
+            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
+              ? "hidden"
+              : "block"
+          } w-full`}
+        >
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
-            Maintenance <span className="text-red-600">*</span>
+            Maintenance in Rupee <span className="text-red-600">*</span>
           </label>
           <input
             type="number"
+            min="0"
             required
             placeholder="Enter Maintenance In Rupee"
             className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={newProperty.maintenance}
-            onChange={(e) =>
+            onChange={(e) => {
+              const value = e.target.value;
               setPropertyData({
                 ...newProperty,
-                maintenance: e.target.value,
-              })
-            }
+                maintenance: value < 0 ? 0 : value, // block negatives
+              });
+            }}
           />
         </div>
         <div className="w-full">
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
-            Other <span className="text-red-600">*</span>
+            Other charges in Rupee <span className="text-red-600">*</span>
           </label>
           <input
             type="number"
+            min="0"
             required
             placeholder="Enter Charges In Rupee"
             className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={newProperty.other}
-            onChange={(e) =>
+            onChange={(e) => {
+              const value = e.target.value;
               setPropertyData({
                 ...newProperty,
-                other: e.target.value,
-              })
-            }
+                other: value < 0 ? 0 : value, // block negatives
+              });
+            }}
           />
         </div>
       </div>

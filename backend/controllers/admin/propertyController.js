@@ -133,6 +133,57 @@ export const getById = (req, res) => {
   });
 };
 
+export const checkPropertyName = (req, res) => {
+  try {
+    let { propertyName } = req.body;
+
+    if (!propertyName || propertyName.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        unique: null,
+        message: "Property Name",
+      });
+    }
+
+    propertyName = propertyName.trim();
+    // Case-insensitive check
+    const sql =
+      "SELECT propertyid FROM properties WHERE LOWER(propertyName) = LOWER(?) LIMIT 1";
+
+    db.query(sql, [propertyName], (err, rows) => {
+      if (err) {
+        console.error("Error checking property name:", err);
+        return res.status(500).json({
+          success: false,
+          unique: null,
+          message: "Server error while checking property name",
+        });
+      }
+
+      if (rows.length > 0) {
+        return res.status(200).json({
+          success: true,
+          unique: false,
+          message: "Property Name already exists",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        unique: true,
+        message: "Property Name is available",
+      });
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return res.status(500).json({
+      success: false,
+      unique: null,
+      message: "Unexpected server error",
+    });
+  }
+};
+
 export const addProperty = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
 
@@ -203,36 +254,24 @@ export const addProperty = async (req, res) => {
     !totalSalesPrice ||
     !totalOfferPrice ||
     !stampDuty ||
-    !registrationFee ||
-    !gst ||
-    !advocateFee ||
-    !msebWater ||
-    !maintenance ||
     !other ||
     !builtYear ||
     !ownershipType ||
-    !builtUpArea ||
     !carpetArea ||
     !parkingAvailability ||
-    !totalFloors ||
-    !floorNo ||
     !loanAvailability ||
     !propertyFacing ||
-    !furnishing ||
     !waterSupply ||
     !powerBackup ||
     !locationFeature ||
     !sizeAreaFeature ||
     !parkingFeature ||
-    !terraceFeature ||
     !ageOfPropertyFeature ||
     !amenitiesFeature ||
     !propertyStatusFeature ||
-    !smartHomeFeature ||
     !securityBenefit ||
     !primeLocationBenefit ||
     !rentalIncomeBenefit ||
-    !qualityBenefit ||
     !capitalAppreciationBenefit ||
     !ecofriendlyBenefit
   ) {
@@ -389,250 +428,6 @@ export const addProperty = async (req, res) => {
   );
 };
 
-export const addPropertyOld = async (req, res) => {
-  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const Id = req.body.propertyid ? parseInt(req.body.propertyid) : null;
-
-  // Convert uploaded images to WebP
-  const files = await convertImagesToWebp(req.files);
-
-  const {
-    builderid,
-    propertyCategory,
-    propertyApprovedBy,
-    propertyName,
-    address,
-    state,
-    city,
-    pincode,
-    location,
-    distanceFromCityCenter,
-    totalSalesPrice,
-    totalOfferPrice,
-    stampDuty,
-    registrationFee,
-    gst,
-    advocateFee,
-    msebWater,
-    maintenance,
-    other,
-    propertyType,
-    builtYear,
-    ownershipType,
-    builtUpArea,
-    carpetArea,
-    parkingAvailability,
-    totalFloors,
-    floorNo,
-    loanAvailability,
-    propertyFacing,
-    reraRegistered,
-    furnishing,
-    waterSupply,
-    powerBackup,
-    locationFeature,
-    sizeAreaFeature,
-    parkingFeature,
-    terraceFeature,
-    ageOfPropertyFeature,
-    amenitiesFeature,
-    propertyStatusFeature,
-    smartHomeFeature,
-    securityBenefit,
-    primeLocationBenefit,
-    rentalIncomeBenefit,
-    qualityBenefit,
-    capitalAppreciationBenefit,
-    ecofriendlyBenefit,
-  } = req.body;
-
-  if (
-    !builderid ||
-    !propertyCategory ||
-    !propertyName ||
-    !address ||
-    !state ||
-    !city ||
-    !pincode ||
-    !location ||
-    !distanceFromCityCenter ||
-    !totalSalesPrice ||
-    !totalOfferPrice ||
-    !stampDuty ||
-    !registrationFee ||
-    !gst ||
-    !advocateFee ||
-    !msebWater ||
-    !maintenance ||
-    !other ||
-    !builtYear ||
-    !ownershipType ||
-    !builtUpArea ||
-    !carpetArea ||
-    !parkingAvailability ||
-    !totalFloors ||
-    !floorNo ||
-    !loanAvailability ||
-    !propertyFacing ||
-    !furnishing ||
-    !waterSupply ||
-    !powerBackup ||
-    !locationFeature ||
-    !sizeAreaFeature ||
-    !parkingFeature ||
-    !terraceFeature ||
-    !ageOfPropertyFeature ||
-    !amenitiesFeature ||
-    !propertyStatusFeature ||
-    !smartHomeFeature ||
-    !securityBenefit ||
-    !primeLocationBenefit ||
-    !rentalIncomeBenefit ||
-    !qualityBenefit ||
-    !capitalAppreciationBenefit ||
-    !ecofriendlyBenefit
-  ) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
-  // Property Registration Fee is 1% or Maximum 30,000 Rs
-  let registrationFees;
-  if (totalOfferPrice > 3000000) {
-    registrationFees = (30000 / totalOfferPrice) * 100; // percentage for ₹30,000
-  } else {
-    registrationFees = 1; // 1%
-  }
-
-  const seoSlug = toSlug(propertyName);
-
-  const calculateEMI = (price) => {
-    const interestRate = 0.08 / 12; // 8% annual interest
-    const tenureMonths = 240; // 20 years
-    return Math.round(
-      (price * interestRate * Math.pow(1 + interestRate, tenureMonths)) /
-        (Math.pow(1 + interestRate, tenureMonths) - 1)
-    );
-  };
-
-  const emi = calculateEMI(Number(totalOfferPrice));
-
-  const getImagePaths = (field) =>
-    files[field]
-      ? JSON.stringify(files[field].map((f) => `/uploads/${f.filename}`))
-      : null;
-
-  const frontView = getImagePaths("frontView");
-  const sideView = getImagePaths("sideView");
-  const kitchenView = getImagePaths("kitchenView");
-  const hallView = getImagePaths("hallView");
-  const bedroomView = getImagePaths("bedroomView");
-  const bathroomView = getImagePaths("bathroomView");
-  const balconyView = getImagePaths("balconyView");
-  const nearestLandmark = getImagePaths("nearestLandmark");
-  const developedAmenities = getImagePaths("developedAmenities");
-
-  db.query(
-    "SELECT * FROM properties WHERE propertyid = ?",
-    [Id],
-    (err, result) => {
-      if (err)
-        return res.status(500).json({ message: "Database error", error: err });
-      if (result.length > 0)
-        return res.status(202).json({ message: "Property already exists!" });
-
-      const insertSQL = `
-      INSERT INTO properties (
-        builderid, propertyCategory, propertyApprovedBy, propertyName, address, state, city, pincode, location,
-        distanceFromCityCenter, totalSalesPrice, totalOfferPrice, emi, stampDuty, registrationFee, gst, advocateFee, 
-        msebWater, maintenance, other, propertyType, builtYear, ownershipType, builtUpArea, carpetArea,
-        parkingAvailability, totalFloors, floorNo, loanAvailability, propertyFacing, reraRegistered, 
-        furnishing, waterSupply, powerBackup, locationFeature, sizeAreaFeature, parkingFeature, terraceFeature,
-        ageOfPropertyFeature, amenitiesFeature, propertyStatusFeature, smartHomeFeature,
-        securityBenefit, primeLocationBenefit, rentalIncomeBenefit, qualityBenefit, capitalAppreciationBenefit, ecofriendlyBenefit,
-        frontView, sideView, kitchenView, hallView, bedroomView, bathroomView, balconyView,
-        nearestLandmark, developedAmenities, seoSlug,
-        updated_at, created_at
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-      const values = [
-        builderid,
-        propertyCategory,
-        propertyApprovedBy,
-        propertyName,
-        address,
-        state,
-        city,
-        pincode,
-        location,
-        distanceFromCityCenter,
-        totalSalesPrice,
-        totalOfferPrice,
-        emi,
-        stampDuty,
-        registrationFees,
-        gst,
-        advocateFee,
-        msebWater,
-        maintenance,
-        other,
-        propertyType,
-        builtYear,
-        ownershipType,
-        builtUpArea,
-        carpetArea,
-        parkingAvailability,
-        totalFloors,
-        floorNo,
-        loanAvailability,
-        propertyFacing,
-        reraRegistered,
-        furnishing,
-        waterSupply,
-        powerBackup,
-        locationFeature,
-        sizeAreaFeature,
-        parkingFeature,
-        terraceFeature,
-        ageOfPropertyFeature,
-        amenitiesFeature,
-        propertyStatusFeature,
-        smartHomeFeature,
-        securityBenefit,
-        primeLocationBenefit,
-        rentalIncomeBenefit,
-        qualityBenefit,
-        capitalAppreciationBenefit,
-        ecofriendlyBenefit,
-        frontView,
-        sideView,
-        kitchenView,
-        hallView,
-        bedroomView,
-        bathroomView,
-        balconyView,
-        nearestLandmark,
-        developedAmenities,
-        seoSlug,
-        currentdate,
-        currentdate,
-      ];
-
-      db.query(insertSQL, values, (err, result) => {
-        if (err) {
-          console.error("Error inserting property:", err);
-          return res.status(500).json({ message: "Insert failed", error: err });
-        }
-        res.status(201).json({
-          message: "Property added successfully",
-          id: result.insertId,
-        });
-      });
-    }
-  );
-};
-
 // Update property controller
 export const update = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
@@ -708,36 +503,24 @@ export const update = async (req, res) => {
     !totalSalesPrice ||
     !totalOfferPrice ||
     !stampDuty ||
-    !registrationFee ||
-    !gst ||
-    !advocateFee ||
-    !msebWater ||
-    !maintenance ||
     !other ||
     !builtYear ||
     !ownershipType ||
-    !builtUpArea ||
     !carpetArea ||
     !parkingAvailability ||
-    !totalFloors ||
-    !floorNo ||
     !loanAvailability ||
     !propertyFacing ||
-    !furnishing ||
     !waterSupply ||
     !powerBackup ||
     !locationFeature ||
     !sizeAreaFeature ||
     !parkingFeature ||
-    !terraceFeature ||
     !ageOfPropertyFeature ||
     !amenitiesFeature ||
     !propertyStatusFeature ||
-    !smartHomeFeature ||
     !securityBenefit ||
     !primeLocationBenefit ||
     !rentalIncomeBenefit ||
-    !qualityBenefit ||
     !capitalAppreciationBenefit ||
     !ecofriendlyBenefit
   ) {

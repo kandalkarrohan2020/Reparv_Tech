@@ -19,6 +19,7 @@ import {
   seoDetails,
   setPropertyCommission,
   uploadBrochureAndVideo,
+  checkPropertyName,
 } from "../../controllers/admin/propertyController.js";
 import multer from "multer";
 import path from "path";
@@ -68,6 +69,7 @@ router.get("/get/:lister", getAll);
 router.get("/:id", getById);
 router.get("/images/get/:id", getImages);
 router.delete("/images/delete/:id", deleteImages);
+router.post("/check-property-name", checkPropertyName);
 router.post(
   "/add",
   upload.fields([

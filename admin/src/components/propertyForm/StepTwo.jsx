@@ -276,22 +276,30 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </select>
         </div>
 
-        <div className="w-full ">
+        <div
+          className={`${
+            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
+              ? "hidden"
+              : "block"
+          } w-full`}
+        >
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Built-Up Area <span className="text-red-600">*</span>
           </label>
           <input
             type="number"
+            min="0"
             required
             placeholder="Enter Area in Sq.Ft."
             className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={newProperty.builtUpArea}
-            onChange={(e) =>
+            onChange={(e) => {
+              const value = e.target.value;
               setPropertyData({
                 ...newProperty,
-                builtUpArea: e.target.value,
-              })
-            }
+                builtUpArea: value < 0 ? 0 : value, // block negatives
+              });
+            }}
           />
         </div>
 
@@ -301,16 +309,18 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </label>
           <input
             type="number"
+            min="0"
             required
             placeholder="Enter Area in Sq.Ft."
             className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={newProperty.carpetArea}
-            onChange={(e) =>
+            onChange={(e) => {
+              const value = e.target.value;
               setPropertyData({
                 ...newProperty,
-                carpetArea: e.target.value,
-              })
-            }
+                carpetArea: value < 0 ? 0 : value, // block negatives
+              });
+            }}
           />
         </div>
         <div className="w-full ">
@@ -331,37 +341,56 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
             }
           />
         </div>
-        <div className="w-full ">
+        <div
+          className={`${
+            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
+              ? "hidden"
+              : "block"
+          } w-full`}
+        >
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Total Floors <span className="text-red-600">*</span>
           </label>
           <input
             type="number"
+            min="0"
             required
             placeholder="Total No of Floors"
             className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={newProperty.totalFloors}
-            onChange={(e) =>
+            onChange={(e) => {
+              const value = e.target.value;
               setPropertyData({
                 ...newProperty,
-                totalFloors: e.target.value,
-              })
-            }
+                totalFloors: value < 0 ? 0 : value, // block negatives
+              });
+            }}
           />
         </div>
 
-        <div className="w-full ">
+        <div
+          className={`${
+            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
+              ? "hidden"
+              : "block"
+          } w-full`}
+        >
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Floor No <span className="text-red-600">*</span>
           </label>
           <input
             type="number"
+            min="0"
             required
             placeholder="Enter Floor No."
             className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={newProperty.floorNo}
             onChange={(e) => {
-              setPropertyData({ ...newProperty, floorNo: e.target.value });
+              const value = e.target.value;
+              setPropertyData({
+                ...newProperty,
+                floorNo: value < 0 ? 0 : value, // block negatives
+              });
             }}
           />
         </div>
@@ -453,7 +482,13 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           />
         </div>
 
-        <div className="w-full">
+        <div
+          className={`${
+            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
+              ? "hidden"
+              : "block"
+          } w-full`}
+        >
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Furnishing <span className="text-red-600">*</span>
           </label>
@@ -624,7 +659,13 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </select>
         </div>
 
-        <div className="w-full">
+        <div
+          className={`${
+            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
+              ? "hidden"
+              : "block"
+          } w-full`}
+        >
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Balcony / Terrace Feature <span className="text-red-600">*</span>
           </label>
@@ -729,7 +770,13 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </select>
         </div>
 
-        <div className="w-full">
+        <div
+          className={`${
+            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
+              ? "hidden"
+              : "block"
+          } w-full`}
+        >
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Smart Home Feature <span className="text-red-600">*</span>
           </label>
@@ -873,7 +920,13 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
             </option>
           </select>
         </div>
-        <div className="w-full">
+        <div
+          className={`${
+            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
+              ? "hidden"
+              : "block"
+          } w-full`}
+        >
           <label className="block text-sm leading-4 text-[#00000066] font-medium">
             Quality Construction <span className="text-red-600">*</span>
           </label>

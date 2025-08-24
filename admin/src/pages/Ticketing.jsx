@@ -653,6 +653,7 @@ const Ticketing = () => {
                 Select Ticket Generator
               </option>
               <option value="Admin">Admin</option>
+              <option value="Builder">Builder</option>
               <option value="Employee">Employee</option>
               <option value="Promoter">Promoter</option>
               <option value="Sales Person">Sales Person</option>

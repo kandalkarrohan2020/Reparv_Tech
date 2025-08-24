@@ -35,6 +35,7 @@ const Builders = () => {
     contact_person: "",
     contact: "",
     email: "",
+    uid: "",
     office_address: "",
     registration_no: "",
     dor: "",
@@ -97,6 +98,7 @@ const Builders = () => {
         contact_person: "",
         contact: "",
         email: "",
+        uid: "",
         office_address: "",
         registration_no: "",
         dor: "",
@@ -324,6 +326,7 @@ const Builders = () => {
     },
     { name: "Contact", selector: (row) => row.contact, minWidth: "150px" },
     { name: "Email", selector: (row) => row.email, minWidth: "150px" },
+    { name: "Aadhaar No", selector: (row) => row.uid, width: "150px" },
     { name: "Office address", selector: (row) => row.office_address },
     {
       name: "Registration No",
@@ -529,6 +532,25 @@ const Builders = () => {
                   onChange={(e) =>
                     setNewBuilder({ ...newBuilder, email: e.target.value })
                   }
+                />
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Aadhaar Number
+                </label>
+                <input
+                  type="number"
+                  required
+                  placeholder="Enter Aadhaar No"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newBuilder.uid}
+                  onChange={(e) => {
+                    const input = e.target.value;
+                    if (/^\d{0,12}$/.test(input)) {
+                      // Allows only up to 12 digits
+                      setNewBuilder({ ...newBuilder, uid: input });
+                    }
+                  }}
                 />
               </div>
               <div className="w-full">

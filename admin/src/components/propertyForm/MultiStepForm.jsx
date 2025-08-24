@@ -169,11 +169,6 @@ const MultiStepForm = ({
         "totalSalesPrice", // number
         "totalOfferPrice", // number
         "stampDuty", // number
-        "registrationFee",
-        "gst",
-        "advocateFee", // number
-        "msebWater", // number
-        "maintenance", // number
         "other", //number
       ];
 
@@ -191,29 +186,22 @@ const MultiStepForm = ({
         "propertyType",
         "builtYear", // number
         "ownershipType",
-        "builtUpArea", // number
         "carpetArea", // number
         "parkingAvailability",
-        "totalFloors", // number
-        "floorNo", // number
         "loanAvailability",
         "propertyFacing",
         "reraRegistered",
-        "furnishing",
         "waterSupply",
         "powerBackup",
         "locationFeature",
         "sizeAreaFeature",
         "parkingFeature",
-        "terraceFeature",
         "ageOfPropertyFeature",
         "amenitiesFeature",
         "propertyStatusFeature",
-        "smartHomeFeature",
         "securityBenefit",
         "primeLocationBenefit",
         "rentalIncomeBenefit",
-        "qualityBenefit",
         "capitalAppreciationBenefit",
         "ecofriendlyBenefit",
       ];

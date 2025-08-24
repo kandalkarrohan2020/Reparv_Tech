@@ -638,7 +638,7 @@ export const updatePaymentId = async (req, res) => {
 
         const updateSql = `
           UPDATE onboardingpartner 
-          SET amount = ?, paymentid = ?, username = ?, password = ?, partnerLister = "Success", loginstatus = "Active" 
+          SET amount = ?, paymentid = ?, username = ?, password = ?, paymentstatus = "Success", loginstatus = "Active" 
           WHERE partnerid = ?
         `;
         const updateValues = [

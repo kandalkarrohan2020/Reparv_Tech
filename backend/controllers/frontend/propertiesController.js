@@ -87,7 +87,7 @@ export const getLocationsByCityAndCategory = (req, res) => {
   });
 };
 
-// ** Fetch Property Information by ID **
+
 // ** Fetch Property Information by ID **
 export const fetchAdditionalInfo = (req, res) => {
   const Id = parseInt(req.params.id);

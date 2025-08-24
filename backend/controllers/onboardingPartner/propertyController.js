@@ -140,36 +140,24 @@ export const addProperty = async (req, res) => {
     !totalSalesPrice ||
     !totalOfferPrice ||
     !stampDuty ||
-    !registrationFee ||
-    !gst ||
-    !advocateFee ||
-    !msebWater ||
-    !maintenance ||
     !other ||
     !builtYear ||
     !ownershipType ||
-    !builtUpArea ||
     !carpetArea ||
     !parkingAvailability ||
-    !totalFloors ||
-    !floorNo ||
     !loanAvailability ||
     !propertyFacing ||
-    !furnishing ||
     !waterSupply ||
     !powerBackup ||
     !locationFeature ||
     !sizeAreaFeature ||
     !parkingFeature ||
-    !terraceFeature ||
     !ageOfPropertyFeature ||
     !amenitiesFeature ||
     !propertyStatusFeature ||
-    !smartHomeFeature ||
     !securityBenefit ||
     !primeLocationBenefit ||
     !rentalIncomeBenefit ||
-    !qualityBenefit ||
     !capitalAppreciationBenefit ||
     !ecofriendlyBenefit
   ) {
@@ -391,36 +379,24 @@ export const update = async (req, res) => {
     !totalSalesPrice ||
     !totalOfferPrice ||
     !stampDuty ||
-    !registrationFee ||
-    !gst ||
-    !advocateFee ||
-    !msebWater ||
-    !maintenance ||
     !other ||
     !builtYear ||
     !ownershipType ||
-    !builtUpArea ||
     !carpetArea ||
     !parkingAvailability ||
-    !totalFloors ||
-    !floorNo ||
     !loanAvailability ||
     !propertyFacing ||
-    !furnishing ||
     !waterSupply ||
     !powerBackup ||
     !locationFeature ||
     !sizeAreaFeature ||
     !parkingFeature ||
-    !terraceFeature ||
     !ageOfPropertyFeature ||
     !amenitiesFeature ||
     !propertyStatusFeature ||
-    !smartHomeFeature ||
     !securityBenefit ||
     !primeLocationBenefit ||
     !rentalIncomeBenefit ||
-    !qualityBenefit ||
     !capitalAppreciationBenefit ||
     !ecofriendlyBenefit
   ) {

@@ -60,6 +60,14 @@ import guestUserDashboardRoutes from "./routes/guestUser/dashboardRoutes.js";
 import guestUserPropertyRoutes from "./routes/guestUser/propertyRoutes.js";
 import guestUserBuilderRoutes from "./routes/guestUser/builderRoutes.js";
 
+// builder
+import builderLoginRoutes from "./routes/builder/loginRoutes.js";
+import builderProfileRoutes from "./routes/builder/profileRoutes.js";
+import builderDashboardRoutes from "./routes/builder/dashboardRoutes.js";
+import builderCustomerRoutes from "./routes/builder/customerRoutes.js";
+import builderPropertyRoutes from "./routes/builder/propertyRoutes.js";
+import builderTicketRoutes from "./routes/builder/ticketRoutes.js";
+
 //employee
 import employeeLoginRoutes from "./routes/employee/employeeLoginRoutes.js";
 import employeeProfileRoutes from "./routes/employee/employeeProfileRoutes.js";
@@ -241,6 +249,7 @@ app.use(cookieParser());
 const verifyToken = (req, res, next) => {
   const publicRoutes = [
     "/admin/login",
+    "/builder/login",
     "/employee/login",
     "/promoter/login",
     "/sales/login",
@@ -388,7 +397,15 @@ app.use("/guest-user/dashboard", guestUserDashboardRoutes);
 app.use("/guest-user/builders", guestUserBuilderRoutes);
 app.use("/guest-user/properties", guestUserPropertyRoutes);
 
-//Employee Routes
+// Builder Routes
+app.use("/builder", builderLoginRoutes);
+app.use("/builder/profile", builderProfileRoutes);
+app.use("/builder/dashboard", builderDashboardRoutes);
+app.use("/builder/customers", builderCustomerRoutes);
+app.use("/builder/properties", builderPropertyRoutes);
+app.use("/builder/tickets", builderTicketRoutes);
+
+// Employee Routes
 app.use("/employee", employeeLoginRoutes);
 app.use("/employee/profile", employeeProfileRoutes);
 app.use("/employee/dashboard", employeeDashboardRoutes);

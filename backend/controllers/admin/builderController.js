@@ -93,6 +93,7 @@ export const add = (req, res) => {
     contact_person,
     contact,
     email,
+    uid,
     office_address,
     registration_no,
     dor,
@@ -105,6 +106,7 @@ export const add = (req, res) => {
     !contact_person ||
     !contact ||
     !email ||
+    !uid ||
     !office_address ||
     !registration_no ||
     !dor ||
@@ -124,7 +126,7 @@ export const add = (req, res) => {
         return res.status(500).json({ message: "Database error", error: err });
 
       if (result.length === 0) {
-        const insertSQL = `INSERT INTO builders (builderadder, company_name, contact_person, contact, email, office_address, registration_no, dor, website, notes, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const insertSQL = `INSERT INTO builders (builderadder, company_name, contact_person, contact, email, uid, office_address, registration_no, dor, website, notes, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
         db.query(
           insertSQL,
@@ -134,6 +136,7 @@ export const add = (req, res) => {
             contact_person,
             contact,
             email,
+            uid,
             office_address,
             registration_no,
             date,
@@ -149,12 +152,10 @@ export const add = (req, res) => {
                 .status(500)
                 .json({ message: "Database error", error: err });
             }
-            res
-              .status(201)
-              .json({
-                message: "Builder added successfully",
-                Id: result.insertId,
-              });
+            res.status(201).json({
+              message: "Builder added successfully",
+              Id: result.insertId,
+            });
           }
         );
       } else {
@@ -173,6 +174,7 @@ export const update = (req, res) => {
     contact_person,
     contact,
     email,
+    uid,
     office_address,
     registration_no,
     dor,
@@ -187,6 +189,7 @@ export const update = (req, res) => {
     !contact_person ||
     !contact ||
     !email ||
+    !uid ||
     !office_address ||
     !registration_no ||
     !dor ||
@@ -205,7 +208,7 @@ export const update = (req, res) => {
       if (result.length === 0)
         return res.status(404).json({ message: "Builder not found" });
 
-      const sql = `UPDATE builders SET company_name=?, contact_person=?, contact=?, email=?, office_address=?, registration_no=?, dor=?, website=?, notes=?, updated_at=? WHERE builderid=?`;
+      const sql = `UPDATE builders SET company_name=?, contact_person=?, contact=?, email=?, uid=?, office_address=?, registration_no=?, dor=?, website=?, notes=?, updated_at=? WHERE builderid=?`;
 
       db.query(
         sql,
@@ -214,6 +217,7 @@ export const update = (req, res) => {
           contact_person,
           contact,
           email,
+          uid,
           office_address,
           registration_no,
           date,
@@ -361,12 +365,10 @@ export const assignLogin = async (req, res) => {
               "https://builder.reparv.in"
             )
               .then(() => {
-                res
-                  .status(200)
-                  .json({
-                    message:
-                      "Builder login assigned successfully and email sent.",
-                  });
+                res.status(200).json({
+                  message:
+                    "Builder login assigned successfully and email sent.",
+                });
               })
               .catch((emailError) => {
                 console.error("Error sending email:", emailError);

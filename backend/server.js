@@ -204,6 +204,7 @@ const allowedOrigins = [
   "https://reparv.in",
   "https://www.reparv.in",
   "https://users.reparv.in",
+  "https://builder.reparv.in",
   "https://employee.reparv.in",
   "https://promoter.reparv.in",
   "https://partners.reparv.in",

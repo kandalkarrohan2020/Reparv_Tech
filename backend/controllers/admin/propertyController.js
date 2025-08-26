@@ -1473,9 +1473,9 @@ export const addCsvFile = async (req, res) => {
       row.Registration || null,
       row.Advocate_Fee || null,
       row.GOV_Water_Charge || null,
-      row.Maintanance || null,
+      row.Maintenance || null,
       row.GST || null,
-      row.Other || null,
+      row.Other_Charges || null,
       row.Total_Cost || null,
       row.updated_at || new Date(),
       row.created_at || new Date(),
@@ -1485,7 +1485,7 @@ export const addCsvFile = async (req, res) => {
       INSERT INTO propertiesinfo (
         propertyid, mouza, khasrano, wing, wingfacing, floorno, flatno, flatfacing, type,
         carpetarea, builtuparea, superbuiltuparea, additionalarea, payablearea, sqftprice, basiccost,
-        stampduty, registration, advocatefee, watercharge, maintanance, gst, other, totalcost,
+        stampduty, registration, advocatefee, watercharge, maintenance, gst, other, totalcost,
         updated_at, created_at
       ) VALUES ?
     `;

@@ -113,21 +113,23 @@ const Properties = () => {
       Flat_Facing: "East",
       BHK_Type: "2 BHK",
       Carpet_Area: 2200,
+      Builtup_Area: 1800,
       Super_Builtup_Area: 1800,
       Additional_Area: 100,
       Payable_Area: 2000,
       SQFT_Price: 10000,
-      Basic_Cost: "=L2*M2",
+      Basic_Cost: "=M2*N2",
       Stamp_Duty: 10000,
       Registration: 30000,
-      GST: 5,
+      GST: 500000,
       GOV_Water_Charge: 10000,
       Maintenance: 50000,
       Advocate_Fee: 20000,
       Other_Charges: 50000,
-      Total_Cost: "=N2+O2+P2+Q2+R2+S2+T2+U2",
+      Total_Cost: "=O2+P2+Q2+R2+S2+T2+U2+V2",
     },
   ];
+
 
   // for Uploade Brochure and Video
   const [videoUpload, setVideoUpload] = useState({

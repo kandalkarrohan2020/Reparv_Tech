@@ -1,0 +1,164 @@
+import { useState, useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { useAuth } from "../../store/auth";
+import PropertyNavbar from "./PropertyNavbar";
+import { RiArrowDropDownLine } from "react-icons/ri";
+import { IoSearchSharp } from "react-icons/io5";
+import { CiLocationOn } from "react-icons/ci";
+import { useNavigate } from "react-router-dom";
+import Select from "react-select";
+
+export default function ImageSlider() {
+  const {
+    URI,
+    selectedCity,
+    setSelectedCity,
+    propertySearch,
+    setPropertySearch,
+  } = useAuth();
+  const navigate = useNavigate();
+  const [sliderImages, setSliderImages] = useState([]);
+  const [mobileImage, setMobileImage] = useState([]);
+  const [cities, setCities] = useState([]);
+  // Convert cities to options
+  const cityOptions = cities?.map((city) => ({
+    value: city,
+    label: city,
+  }));
+  const customStyles = {
+    control: (base, state) => ({
+      ...base,
+      fontSize: "0.75rem", // text-xs
+      padding: 0,
+      cursor: "pointer",
+      borderColor: state.isFocused ? "#00C42B" : base.borderColor,
+      boxShadow: state.isFocused ? "0 0 0 1px #00C42B" : "none",
+      "&:hover": {
+        borderColor: "#00C42B",
+      },
+    }),
+  };
+
+  // *Fetch Data from API*
+  const fetchAllCity = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/properties/cities", {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch cities.");
+
+      const data = await response.json();
+      setCities(data); // Sets the cities array
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  // **Fetch Data from API**
+  const getSliderImages = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/slider", {
+        method: "GET",
+        credentials: "include", //  Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch slider Images.");
+      const data = await response.json();
+      setSliderImages(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllCity();
+    getSliderImages();
+  }, []);
+
+  return (
+    <div className="relative w-full mx-auto max-w-[1650px] flex flex-col items-center justify-center mb-5">
+      <div className="w-full flex flex-col sm:hidden gap-2 px-4 pt-3 pb-2">
+        {/* Mobile City Selector */}
+        <div className="selectCity w-full relative inline-block">
+          <Select
+            className="w-full text-xs p-0 cursor-pointer z-10"
+            styles={customStyles}
+            options={cityOptions}
+            value={
+              cityOptions.find((opt) => opt.value === selectedCity) || null
+            }
+            onChange={(selectedOption) => {
+              const value = selectedOption?.value || "";
+              setSelectedCity(value);
+              //navigate("/properties");
+            }}
+            placeholder="Select City"
+            isClearable={false}
+          />
+        </div>
+        {/* Mobile Search */}
+        <div className="relative w-full bg-white rounded-md">
+          <span className="absolute inset-y-0 left-2 md:left-6 flex items-center text-gray-400">
+            <IoSearchSharp className="w-4 md:w-5 h-4 md:h-5" />
+          </span>
+          <input
+            type="text"
+            value={propertySearch}
+            onChange={(e) => {
+              setPropertySearch(e.target.value);
+            }}
+            placeholder="Search Property"
+            className="w-full pl-7 md:pl-14 pr-4 py-[10px] text-xs md:text-base rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-[#00000066]"
+          />
+        </div>
+      </div>
+      <Swiper
+        modules={[Navigation, Pagination, Autoplay]}
+        spaceBetween={20}
+        slidesPerView={1}
+        pagination={{
+          clickable: true,
+          el: ".custom-pagination",
+        }}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
+        loop
+        touchEventsTarget="wrapper"
+        touchRatio={1}
+        simulateTouch={true}
+        grabCursor={true}
+        className="w-full shadow-lg overflow-scroll scrollbar-hide sm:overflow-hidden"
+      >
+        {sliderImages?.map((img, index) => (
+          <SwiperSlide key={index}>
+            <img
+              src={URI + "/uploads/" + img.image}
+              alt={`Slide ${index + 1}`}
+              className="hidden sm:block w-full h-auto object-cover"
+            />
+            <img
+              src={URI + "/uploads/" + img?.mobileimage}
+              alt={`Slide ${index + 1}`}
+              className={`block sm:hidden w-full h-auto object-cover`}
+            />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
+      <div className="custom-pagination hidden sm:flex items-center justify-center gap-1 m-5 absolute bottom-[60px] z-10"></div>
+      <div className="hidden lg:block absolute w-full z-10 lg:bottom-[-60px] xl:bottom-[-50px]">
+        <PropertyNavbar />
+      </div>
+    </div>
+  );
+}

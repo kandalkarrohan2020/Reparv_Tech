@@ -29,6 +29,41 @@ export const getAll = (req, res) => {
   });
 };
 
+// Get All Properties By Slug like 1-BHK-NewFlat-in-Nagpur
+export const getAllBySlug = (req, res) => {
+  const { city, propertyCategory, propertyType } = req.query;
+
+  let sql = `SELECT * FROM properties WHERE status='Active' AND approve='Approved'`;
+  const params = [];
+
+  if (propertyCategory && propertyCategory !== "properties") {
+    sql += ` AND propertyCategory = ?`;
+    params.push(propertyCategory);
+  }
+
+  if (propertyType && propertyType.trim() !== "") {
+    sql += ` AND propertyType = ?`;
+    params.push(propertyType);
+  }
+
+  if (city && city.trim() !== "") {
+    sql += ` AND city = ?`;
+    params.push(city);
+  }
+
+  sql += ` ORDER BY propertyid DESC`;
+
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      console.error("Error fetching:", err);
+      return res
+        .status(500)
+        .json({ message: "Database error", error: err });
+    }
+    res.json(result);
+  });
+};
+
 // ** Fetch All Unique City In The Listed Property **
 export const getAllCity = (req, res) => {
   const sql = `

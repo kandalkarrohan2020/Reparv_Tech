@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getAll,
+  getAllBySlug,
   getAllCity,
   getAllLocation,
   getLocationsByCityAndCategory,
@@ -11,6 +12,7 @@ import {
 const router = express.Router();
 
 router.get("/", getAll);
+router.get("/get-all-by-slug", getAllBySlug);
 router.get("/cities", getAllCity);
 router.get("/location/all", getAllLocation);
 router.get("/location", getLocationsByCityAndCategory);

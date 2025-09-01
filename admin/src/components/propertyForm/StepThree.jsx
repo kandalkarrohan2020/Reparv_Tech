@@ -6,32 +6,52 @@ const StepThree = ({
   imageFiles,
   setImageFiles,
 }) => {
-  //Property Image Selector And Remove Methods
+  // Property Image Selector
   const handleImageChange = (event, category) => {
     const files = Array.from(event.target.files);
 
-    setImageFiles((prev) => ({
-      ...prev,
-      [category]: [...prev[category], ...files],
-    }));
+    setImageFiles((prev) => {
+      const existing = prev[category] || [];
+      const newFiles = [...existing, ...files];
+
+      if (newFiles.length > 3) {
+        alert("You can only upload up to 3 images per category.");
+        return { ...prev, [category]: newFiles.slice(0, 3) }; // keep only 3
+      }
+
+      return { ...prev, [category]: newFiles };
+    });
+
+    // reset input so same file can be selected again
+    event.target.value = "";
   };
-  //Property Image Remove Methods
+
+  // Property Image Remove
   const removeImage = (category, index) => {
-    setImageFiles((prev) => ({
-      ...prev,
-      [category]: prev[category].filter((_, i) => i !== index),
-    }));
+    setImageFiles((prev) => {
+      const updated = [...prev[category]];
+      updated.splice(index, 1);
+      return { ...prev, [category]: updated };
+    });
   };
 
   return (
-    <div className="bg-white h-[55vh] overflow-scroll scrollbar-hide p-2">
+    <div className="bg-white h-[55vh] overflow-scroll scrollbar-x-hidden p-2">
       <div className="flex items-center justify-between text-base font-semibold mb-4">
-        Step 3: Upload Property Images <span className="text-red-600 text-xs"> (Maximum Image Size 50kb)</span>
+        Step 3: Upload Property Images{" "}
+        <span className="text-red-600 text-xs">
+          {" "}
+          (Maximum Image Size 500kb)
+        </span>
       </div>
       <div className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         {/* Upload Multiple Images */}
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
+          <label
+            className={`
+              text-[#00000066]
+             block text-sm leading-4 font-medium mb-2`}
+          >
             Front View <span className="text-red-600">*</span>
           </label>
           <div className="w-full mt-2">

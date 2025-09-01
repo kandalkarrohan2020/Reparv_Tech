@@ -13,6 +13,7 @@ import {
 } from "../../controllers/onboardingPartner/propertyController.js";
 import multer from "multer";
 import path from "path";
+import crypto from "crypto";
 
 const router = express.Router();
 
@@ -21,9 +22,11 @@ const storage = multer.diskStorage({
     cb(null, "./uploads/");
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+    const uniqueSuffix = crypto.randomBytes(6).toString("hex"); // random 12-char hex
+    cb(null, Date.now() + "-" + uniqueSuffix + path.extname(file.originalname));
   },
 });
+
 
 const upload = multer({
   storage,

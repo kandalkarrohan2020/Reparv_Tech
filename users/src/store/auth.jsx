@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
   const [showPropertyInfo, setShowPropertyInfo] = useState(false);
+  const [showUpdateImagesForm, setShowUpdateImagesForm] = useState(false);
   const [showVideoUploadForm, setShowVideoUploadForm] = useState(false);
 
   return (
@@ -55,6 +56,7 @@ export const AuthProvider = ({ children }) => {
         setShowAdditionalInfoForm,
         showPropertyInfo,
         setShowPropertyInfo,
+        showUpdateImagesForm, setShowUpdateImagesForm,
         showVideoUploadForm,
         setShowVideoUploadForm,
       }}

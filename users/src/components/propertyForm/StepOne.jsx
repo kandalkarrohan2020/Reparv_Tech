@@ -37,7 +37,9 @@ const StepOne = ({
   };
 
   useEffect(() => {
-    checkPropertyName();
+    if (!newProperty.propertyid) {
+      checkPropertyName();
+    }
   }, [newProperty.propertyName]);
 
   return (
@@ -45,12 +47,16 @@ const StepOne = ({
       <h2 className="text-base font-semibold mb-4">Step 1: Property Details</h2>
       <div className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.builderid ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Builder/Company <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
             style={{ backgroundImage: "none" }}
             value={newProperty.builderid}
             onChange={(e) =>
@@ -70,11 +76,17 @@ const StepOne = ({
         </div>
 
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.propertyCategory
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Property Category <span className="text-red-600">*</span>
           </label>
           <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
             style={{ backgroundImage: "none" }}
             value={newProperty.propertyCategory}
             onChange={(e) =>
@@ -102,11 +114,17 @@ const StepOne = ({
             newProperty.propertyCategory === "FarmLand" ? "hidden" : "block"
           } w-full`}
         >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.propertyApprovedBy
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Property Approved by <span className="text-red-600">*</span>
           </label>
           <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
             style={{ backgroundImage: "none" }}
             value={newProperty.propertyApprovedBy}
             onChange={(e) =>
@@ -133,6 +151,10 @@ const StepOne = ({
                 : isSame === false
                 ? "text-red-600"
                 : "text-[#00000066]"
+            } ${
+              newProperty.propertyid && newProperty.propertyName
+                ? "text-green-600"
+                : "text-[#00000066]"
             } block text-sm leading-4 font-medium`}
           >
             {message || "Property Name"} <span className="text-red-600">*</span>
@@ -141,7 +163,7 @@ const StepOne = ({
             type="text"
             required
             placeholder="Enter Property Name"
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
             value={newProperty.propertyName}
             onChange={(e) =>
               setPropertyData({
@@ -151,15 +173,71 @@ const StepOne = ({
             }
           />
         </div>
+        <div className="w-full">
+          <label
+            className={`${
+              newProperty.totalSalesPrice
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
+            Total Sales Price <span className="text-red-600">*</span>
+          </label>
+          <input
+            type="number"
+            min="0"
+            required
+            placeholder="Enter Sales Price"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
+            value={newProperty.totalSalesPrice}
+            onChange={(e) => {
+              const value = e.target.value;
+              setPropertyData({
+                ...newProperty,
+                totalSalesPrice: value < 0 ? 0 : value, // block negatives
+              });
+            }}
+          />
+        </div>
+        <div className="w-full">
+          <label
+            className={`${
+              newProperty.totalOfferPrice
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
+            Total Offer Price <span className="text-red-600">*</span>
+          </label>
+          <input
+            type="number"
+            min="0"
+            required
+            placeholder="Enter Offer Price"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
+            value={newProperty.totalOfferPrice}
+            onChange={(e) => {
+              const value = e.target.value;
+              setPropertyData({
+                ...newProperty,
+                totalOfferPrice: value < 0 ? 0 : value, // block negatives
+              });
+            }}
+          />
+        </div>
         <div className="w-full ">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.address ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Address <span className="text-red-600">*</span>
           </label>
           <input
             type="text"
             required
             placeholder="Enter Address"
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
             value={newProperty.address}
             onChange={(e) =>
               setPropertyData({ ...newProperty, address: e.target.value })
@@ -168,12 +246,16 @@ const StepOne = ({
         </div>
         {/* State Select Input */}
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.state ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Select State <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
             style={{ backgroundImage: "none" }}
             value={newProperty.state}
             onChange={(e) =>
@@ -191,12 +273,16 @@ const StepOne = ({
 
         {/* City Select Input */}
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.city ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Select City <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
             style={{ backgroundImage: "none" }}
             value={newProperty.city}
             onChange={(e) =>
@@ -216,7 +302,11 @@ const StepOne = ({
         </div>
 
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.pincode ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Pin-Code <span className="text-red-600">*</span>
           </label>
           <input
@@ -230,19 +320,23 @@ const StepOne = ({
                 setPropertyData({ ...newProperty, pincode: input });
               }
             }}
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none  focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none  focus:ring-2 focus:ring-green-600 placeholder:text-black"
           />
         </div>
 
         <div className="w-full ">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.location ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Location <span className="text-red-600">*</span>
           </label>
           <input
             type="text"
             required
             placeholder="Enter Location"
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
             value={newProperty.location}
             onChange={(e) =>
               setPropertyData({
@@ -253,12 +347,18 @@ const StepOne = ({
           />
         </div>
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.distanceFromCityCenter
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Distance From City Center <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.distanceFromCityCenter}
             onChange={(e) =>
               setPropertyData({
@@ -275,42 +375,7 @@ const StepOne = ({
             ))}
           </select>
         </div>
-        <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
-            Total Sales Price <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="number"
-            required
-            placeholder="Enter Sales Price"
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={newProperty.totalSalesPrice}
-            onChange={(e) =>
-              setPropertyData({
-                ...newProperty,
-                totalSalesPrice: e.target.value,
-              })
-            }
-          />
-        </div>
-        <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
-            Total Offer Price <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="number"
-            required
-            placeholder="Enter Offer Price"
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={newProperty.totalOfferPrice}
-            onChange={(e) =>
-              setPropertyData({
-                ...newProperty,
-                totalOfferPrice: e.target.value,
-              })
-            }
-          />
-        </div>
+        
       </div>
 
       <h2 className="text-base font-semibold mt-6 mb-4">
@@ -318,12 +383,16 @@ const StepOne = ({
       </h2>
       <div className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.stampDuty ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Stamp Duty In Percentage <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.stampDuty}
             onChange={(e) =>
               setPropertyData({
@@ -333,6 +402,7 @@ const StepOne = ({
             }
           >
             <option value="">Select Stamp Duty %</option>
+            <option value="0.25">0.25%</option>
             <option value="5">5%</option>
             <option value="6">6%</option>
             <option value="7">7%</option>
@@ -348,13 +418,19 @@ const StepOne = ({
               : "block"
           } w-full`}
         >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.registrationFee
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Registration Fee or Percentage{" "}
             <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.registrationFee}
             onChange={(e) =>
               setPropertyData({
@@ -378,12 +454,16 @@ const StepOne = ({
               : "block"
           } w-full`}
         >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.gst ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             GST Percentage <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.gst}
             onChange={(e) =>
               setPropertyData({
@@ -408,12 +488,16 @@ const StepOne = ({
               : "block"
           } w-full`}
         >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.advocateFee ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Advocate Fee in Rupee <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.advocateFee}
             onChange={(e) =>
               setPropertyData({
@@ -440,7 +524,11 @@ const StepOne = ({
               : "block"
           } w-full`}
         >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.msebWater ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             MSEB & Water Charges in Rupee<span className="text-red-600">*</span>
           </label>
           <input
@@ -448,7 +536,7 @@ const StepOne = ({
             min="0"
             required
             placeholder="Enter Charges In Rupee"
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.msebWater}
             onChange={(e) => {
               const value = e.target.value;
@@ -467,7 +555,11 @@ const StepOne = ({
               : "block"
           } w-full`}
         >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.maintenance ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Maintenance in Rupee <span className="text-red-600">*</span>
           </label>
           <input
@@ -475,7 +567,7 @@ const StepOne = ({
             min="0"
             required
             placeholder="Enter Maintenance In Rupee"
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
             value={newProperty.maintenance}
             onChange={(e) => {
               const value = e.target.value;
@@ -487,7 +579,11 @@ const StepOne = ({
           />
         </div>
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.other ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Other charges in Rupee <span className="text-red-600">*</span>
           </label>
           <input
@@ -495,7 +591,7 @@ const StepOne = ({
             min="0"
             required
             placeholder="Enter Charges In Rupee"
-            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
             value={newProperty.other}
             onChange={(e) => {
               const value = e.target.value;

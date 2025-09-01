@@ -259,7 +259,7 @@ const Products = ({ selectedTable, setSelectedTable }) => {
       );
 
       const data = await response.json();
-
+      console.log(data);
       if (response.ok) {
         console.log("Order placed successfully:", data);
         alert(`Order placed! Order ID: ${data.orderId}`);

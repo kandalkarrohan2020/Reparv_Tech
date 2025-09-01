@@ -55,21 +55,33 @@ const UpdateImagesForm = ({
 
   const [selectedImageType, setselectedImageType] = useState("");
 
-  //Property Image Selector And Remove Methods
+  // Property Image Selector
   const handleImageChange = (event, category) => {
     const files = Array.from(event.target.files);
 
-    setImageFiles((prev) => ({
-      ...prev,
-      [category]: [...prev[category], ...files],
-    }));
+    setImageFiles((prev) => {
+      const existing = prev[category] || [];
+      const newFiles = [...existing, ...files];
+
+      if (newFiles.length > 3) {
+        alert("You can only upload up to 3 images per category.");
+        return { ...prev, [category]: newFiles.slice(0, 3) }; // keep only 3
+      }
+
+      return { ...prev, [category]: newFiles };
+    });
+
+    // reset input so same file can be selected again
+    event.target.value = "";
   };
-  //Property Image Remove Methods
+
+  // Property Image Remove
   const removeImage = (category, index) => {
-    setImageFiles((prev) => ({
-      ...prev,
-      [category]: prev[category].filter((_, i) => i !== index),
-    }));
+    setImageFiles((prev) => {
+      const updated = [...prev[category]];
+      updated.splice(index, 1);
+      return { ...prev, [category]: updated };
+    });
   };
 
   const updateImages = async (e) => {

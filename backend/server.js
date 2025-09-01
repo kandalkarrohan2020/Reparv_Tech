@@ -104,7 +104,7 @@ import salesEnquiryRoutes from "./routes/sales/salesEnquiryRoutes.js";
 import salesCalenderRoutes from "./routes/sales/calenderRoutes.js";
 import salesPropertiesRoutes from "./routes/sales/propertiesRoutes.js";
 import salesPropertyinfoRoutes from "./routes/sales/propertyinfoRoutes.js";
-import enquiryRoutesSaleApp from "./routes/salesAppRoute/enquiryRoute.js"
+import enquiryRoutesSaleApp from "./routes/salesAppRoute/enquiryRoute.js";
 
 // import onBarding Partner Routes
 import partnerLoginRoutes from "./routes/onboardingPartner/partnerLoginRoutes.js";
@@ -160,22 +160,22 @@ import onboardingAppRoute from "./routes/onboardingAppRoute/userRoute.js";
 
 //ProjectPartner App
 import projectPartnerAppRoute from "./routes/projectPartnerAppRoute/userRoute.js";
-
+import projectPartnerPostRoute from "./routes/projectPartnerAppRoute/postRoutes.js";
 //Customer App
 import customerEmi from "./routes/customerAppRoute/EmiRoute.js";
 import customerSignUp from "./routes/customerAppRoute/userRoute.js";
 import customerPropertyRoute from "./routes/customerAppRoute/propertyRoute.js";
-import customerTrendRoute from "./routes/customerAppRoute/trendRoute.js"
+import customerTrendRoute from "./routes/customerAppRoute/trendRoute.js";
 import customerEnquiryRoute from "./routes/customerAppRoute/enquiryRoute.js";
 
 //Builder App
-import builderapploginRoute from "./routes/builderAppRoute/builderapploginRoute.js"
-import builderProfileRoute from "./routes/builderAppRoute/builderProfileRoutes.js"
+import builderapploginRoute from "./routes/builderAppRoute/builderapploginRoute.js";
+import builderProfileRoute from "./routes/builderAppRoute/builderProfileRoutes.js";
 import builderpropertyRoute from "./routes/builderAppRoute/propertyController.js";
-import builderEnquiryCustomerRoute from "./routes/builderAppRoute/builderPropertyEnquiryRoute.js"
-import builderCommunityRoute from "./routes/builderAppRoute/communityRoute.js"
-import builderTicketRoute from "./routes/builderAppRoute/BuilderTicketRoutes.js"
-import builderpostRoute from "./routes/builderAppRoute/BuilderpostRoutes.js"
+import builderEnquiryCustomerRoute from "./routes/builderAppRoute/builderPropertyEnquiryRoute.js";
+import builderCommunityRoute from "./routes/builderAppRoute/communityRoute.js";
+import builderTicketRoute from "./routes/builderAppRoute/BuilderTicketRoutes.js";
+import builderpostRoute from "./routes/builderAppRoute/BuilderpostRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -226,6 +226,7 @@ app.use(
       }
     },
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
@@ -303,8 +304,9 @@ const verifyToken = (req, res, next) => {
     "/customerapp/emiform",
     //builder app
     "/builderapp/community",
-     "/builderapp/user",
-     "/builderapp/post"
+    "/builderapp/user",
+    "/builderapp/post",
+    "/projectpartner/post",
   ];
 
   //  Allow public routes to pass through
@@ -502,23 +504,23 @@ app.use("/onboardingapp/user", onboardingAppRoute);
 
 //ProjectPartner App
 app.use("/projectpartnerRoute/user", projectPartnerAppRoute);
+app.use("/projectpartner/post", projectPartnerPostRoute);
 
 //Customer app
 app.use("/customerapp", customerEmi);
 app.use("/customerapp/user", customerSignUp);
 app.use("/customerapp/property", customerPropertyRoute);
-app.use("/customerapp/customerTrendRoute",customerTrendRoute)
-app.use("/customerapp/enquiry",customerEnquiryRoute)
-
+app.use("/customerapp/customerTrendRoute", customerTrendRoute);
+app.use("/customerapp/enquiry", customerEnquiryRoute);
 
 //Builder app
 //Builder app
-app.use("/builderapp/user",builderapploginRoute);
-app.use("/builderapp/profile",builderProfileRoute);
-app.use("/builderapp/property",builderpropertyRoute)
-app.use("/builderapp/customer",builderEnquiryCustomerRoute)
-app.use("/builderapp/community",builderCommunityRoute)
-app.use("/builderapp/ticket",builderTicketRoute)
+app.use("/builderapp/user", builderapploginRoute);
+app.use("/builderapp/profile", builderProfileRoute);
+app.use("/builderapp/property", builderpropertyRoute);
+app.use("/builderapp/customer", builderEnquiryCustomerRoute);
+app.use("/builderapp/community", builderCommunityRoute);
+app.use("/builderapp/ticket", builderTicketRoute);
 app.use("/builderapp/post", builderpostRoute);
 //  Start Server
 app.listen(PORT, () => {

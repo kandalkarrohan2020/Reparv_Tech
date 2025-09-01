@@ -25,6 +25,8 @@ function Layout() {
     setShowAdditionalInfoForm,
     showPropertyInfo,
     setShowPropertyInfo,
+    showUpdateImagesForm, 
+    setShowUpdateImagesForm,
     showVideoUploadForm,
     setShowVideoUploadForm,
     isLoggedIn,
@@ -34,7 +36,8 @@ function Layout() {
     { state: showPropertyForm, setter: setShowPropertyForm },
     { state: showAdditionalInfoForm, setter: setShowAdditionalInfoForm },
     { state: showPropertyInfo, setter: setShowPropertyInfo },
-     { state: showVideoUploadForm, setter: setShowVideoUploadForm },
+    { state: showUpdateImagesForm, setter: setShowUpdateImagesForm },
+    { state: showVideoUploadForm, setter: setShowVideoUploadForm },
   ];
 
   const getNavLinkClass = (path) => {

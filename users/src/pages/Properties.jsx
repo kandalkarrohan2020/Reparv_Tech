@@ -9,12 +9,17 @@ import AddButton from "../components/AddButton";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import MultiStepForm from "../components/propertyForm/MultiStepForm";
+import UpdateImagesForm from "../components/propertyForm/UpdateImagesForm";
+import { IoMdClose } from "react-icons/io";
+import Loader from "../components/Loader";
 
 const Properties = () => {
   const {
     setShowPropertyForm,
     URI,
     setLoading,
+    showUpdateImagesForm,
+    setShowUpdateImagesForm,
     showVideoUploadForm,
     setShowVideoUploadForm,
   } = useAuth();
@@ -24,6 +29,7 @@ const Properties = () => {
   const [cities, setCities] = useState([]);
   const [builderData, setBuilderData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [propertyKey, setPropertyKey] = useState("");
 
   const [newProperty, setPropertyData] = useState({
     builderid: "",
@@ -215,6 +221,26 @@ const Properties = () => {
       const data = await response.json();
       setPropertyData(data);
       setShowPropertyForm(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  //fetch data on form
+  const fetchImages = async (id) => {
+    try {
+      const response = await fetch(URI + `/admin/properties/${id}`, {
+        method: "GET",
+        credentials: "include", //  Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch property.");
+      const data = await response.json();
+      setPropertyData(data);
+      //console.log(data);
+      setShowUpdateImagesForm(true);
     } catch (err) {
       console.error("Error fetching :", err);
     }
@@ -449,12 +475,6 @@ const Properties = () => {
       minWidth: "200px",
     },
     { name: "Pin Code", selector: (row) => row.pincode, width: "120px" },
-    {
-      name: "Rera No.",
-      selector: (row) => row.reraRegistered || "-- RERA No --",
-      sortable: true,
-      minWidth: "130px",
-    },
     { name: "Area", selector: (row) => row.builtUpArea, sortable: true },
     {
       name: "Total Price",
@@ -503,6 +523,10 @@ const Properties = () => {
         case "update":
           edit(propertyid);
           break;
+        case "updateImages":
+          setPropertyKey(propertyid);
+          fetchImages(propertyid);
+          break;
         case "videoUpload":
           setPropertyKey(propertyid);
           showBrochure(propertyid);
@@ -531,6 +555,7 @@ const Properties = () => {
           </option>
           <option value="view">View</option>
           <option value="update">Update</option>
+          <option value="updateImages">Update Images</option>
           <option value="videoUpload">Brochure & Video</option>
         </select>
       </div>
@@ -599,6 +624,18 @@ const Properties = () => {
         authorities={authorities}
         states={states}
         cities={cities}
+      />
+
+      {/* Upload Images Form */}
+      <UpdateImagesForm
+        fetchImages={fetchImages}
+        fetchData={fetchData}
+        propertyId={propertyKey}
+        setPropertyId={setPropertyKey}
+        newProperty={newProperty}
+        setPropertyData={setPropertyData}
+        imageFiles={imageFiles}
+        setImageFiles={setImageFiles}
       />
 
       {/* ADD Brochure and Video Upload Form */}

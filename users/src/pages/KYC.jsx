@@ -7,7 +7,7 @@ import { useAuth } from "../store/auth";
 import { useNavigate } from "react-router-dom";
 
 export default function KYC() {
-  const {userid} = useParams();
+  const { userid } = useParams();
   const navigate = useNavigate();
   const { URI, setLoading } = useAuth();
 
@@ -109,7 +109,14 @@ export default function KYC() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!imageFiles.adharImage) {
+      alert("Please Add New Aadhaar Image for KYC");
+      return;
+    }
+    if (!imageFiles.panImage) {
+      alert("Please Add New Pan Image for KYC");
+      return;
+    }
     const formData = new FormData();
     Object.entries(userData).forEach(([key, value]) => {
       formData.append(key, value);
@@ -195,7 +202,11 @@ export default function KYC() {
             }
           />
           <div className="w-full">
-            <label className="block text-sm leading-4 text-[#00000066] font-medium">
+            <label
+              className={`${
+                userData.address ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Address <span className="text-red-600">*</span>
             </label>
             <input
@@ -209,18 +220,22 @@ export default function KYC() {
                   address: e.target.value,
                 });
               }}
-              className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501]"
+              className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501] placeholder:text-black"
             />
           </div>
 
           {/* State Select Input */}
           <div className="w-full">
-            <label className="block text-sm leading-4 text-[#00000066] font-medium">
+            <label
+              className={`${
+                userData.state ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Select State <span className="text-red-600">*</span>
             </label>
             <select
               required
-              className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+              className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501] appearance-none bg-transparent placeholder:text-black"
               style={{ backgroundImage: "none" }}
               value={userData.state}
               onChange={(e) =>
@@ -241,12 +256,16 @@ export default function KYC() {
 
           {/* City Select Input */}
           <div className="w-full">
-            <label className="block text-sm leading-4 text-[#00000066] font-medium">
+            <label
+              className={`${
+                userData.city ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Select City <span className="text-red-600">*</span>
             </label>
             <select
               required
-              className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+              className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501] appearance-none bg-transparent placeholder:text-black"
               style={{ backgroundImage: "none" }}
               value={userData.city}
               onChange={(e) =>
@@ -266,7 +285,11 @@ export default function KYC() {
           </div>
 
           <div className="w-full">
-            <label className="block text-sm leading-4 text-[#00000066] font-medium">
+            <label
+              className={`${
+                userData.pincode ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Pin-Code <span className="text-red-600">*</span>
             </label>
             <input
@@ -280,7 +303,7 @@ export default function KYC() {
                   setUserData({ ...userData, pincode: input });
                 }
               }}
-              className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501]"
+              className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501] placeholder:text-black"
             />
           </div>
         </div>
@@ -293,7 +316,11 @@ export default function KYC() {
         </h2>
         <div className="w-full grid gap-4 place-items-center grid-cols-1 md:grid-cols-3 xl:grid-cols-4 mb-4">
           <div className="w-full">
-            <label className="block text-sm leading-4 text-[#00000066] font-medium">
+            <label
+              className={`${
+                userData.adharno ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Adhar Card Number <span className="text-red-600">*</span>
             </label>
             <input
@@ -307,12 +334,16 @@ export default function KYC() {
                   setUserData({ ...userData, adharno: input });
                 }
               }}
-              className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501]"
+              className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501] placeholder:text-black"
             />
           </div>
 
           <div className="w-full">
-            <label className="block text-sm leading-4 text-[#00000066] font-medium">
+            <label
+              className={`${
+                userData.panno ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Pan Card Number <span className="text-red-600">*</span>
             </label>
             <input
@@ -326,12 +357,16 @@ export default function KYC() {
                   setUserData({ ...userData, panno: input });
                 }
               }}
-              className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501]"
+              className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501] placeholder:text-black"
             />
           </div>
 
           <div className="w-full">
-            <label className="block text-sm leading-4 text-[#00000066] font-medium">
+            <label
+              className={`${
+                userData.experience ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Experience <span className="text-red-600">*</span>
             </label>
             <input
@@ -345,16 +380,34 @@ export default function KYC() {
                   experience: e.target.value,
                 });
               }}
-              className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501]"
+              className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#0BB501] placeholder:text-black"
             />
           </div>
           <div></div>
 
           {/* Aadhaar Image Upload */}
           <div className="w-full">
-            <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
+            <label
+              className={`${
+                imageFiles.adharImage ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Upload Aadhaar Card Image <span className="text-red-600">*</span>
             </label>
+            <div
+              className={`${
+                userData.adharimage ? "block" : "hidden"
+              } relative mt-2`}
+            >
+              <img
+                src={URI + userData?.adharimage}
+                onClick={() => {
+                  window.open(URI + userData?.adharimage, "_blank");
+                }}
+                alt="Aadhaar Preview"
+                className="w-full max-w-[100px] object-cover rounded-lg border border-gray-300 cursor-pointer"
+              />
+            </div>
             <div className="w-full max-h-[200px] mt-2">
               <input
                 type="file"
@@ -397,9 +450,27 @@ export default function KYC() {
 
           {/* PAN Image Upload */}
           <div className="w-full">
-            <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
+            <label
+              className={`${
+                imageFiles.panImage ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Upload PAN Card Image <span className="text-red-600">*</span>
             </label>
+            <div
+              className={`${
+                userData.panimage ? "block" : "hidden"
+              } relative mt-2`}
+            >
+              <img
+                src={URI + userData?.panimage}
+                onClick={() => {
+                  window.open(URI + userData?.adharimage, "_blank");
+                }}
+                alt="Pancard Preview"
+                className="w-full max-w-[100px] object-cover rounded-lg border border-gray-300 cursor-pointer"
+              />
+            </div>
             <div className="w-full mt-2">
               <input
                 type="file"

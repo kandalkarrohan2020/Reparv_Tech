@@ -67,7 +67,7 @@ const MultiStepForm = ({
 
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/admin/properties/${endpoint}`, {
+      const response = await fetch(`${URI}/guest-user/properties/${endpoint}`, {
         method: newProperty.propertyid ? "PUT" : "POST",
         credentials: "include",
         body: formData,
@@ -175,7 +175,7 @@ const MultiStepForm = ({
       const allFilled = requiredFieldsStep1.every((field) => {
         const value = newProperty[field];
         if (typeof value === "number") {
-          return value > 0; // for numbers, must be > 0
+          return value > -1; // for numbers, must be Positive
         }
         return value && value.toString().trim() !== ""; // for strings
       });
@@ -189,7 +189,6 @@ const MultiStepForm = ({
         "parkingAvailability",
         "loanAvailability",
         "propertyFacing",
-        "reraRegistered",
         "waterSupply",
         "powerBackup",
         "locationFeature",
@@ -208,7 +207,7 @@ const MultiStepForm = ({
       const allFilled = requiredFieldsStep2.every((field) => {
         const value = newProperty[field];
         if (typeof value === "number") {
-          return value > 0; // number must be greater than 0
+          return value > -1; // number must be Positive
         }
         return value && value.toString().trim() !== "";
       });
@@ -221,15 +220,15 @@ const MultiStepForm = ({
 
   useEffect(() => {
     checkButton();
-  }, [newProperty]);
+  }, [newProperty, step]);
 
   return (
     <div
       className={`${
         showPropertyForm ? "flex" : "hidden"
-      } z-[61] property-form  w-[400px] h-[80vh] md:w-[500px] lg:w-[700px] xl:w-[1000px] fixed`}
+      } z-[61] property-form overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto`}
     >
-      <div className="w-[330px] sm:w-[600px] md:w-[500px] lg:w-[700px] xl:w-[1000px] bg-white py-8 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+      <div className="w-full overflow-scroll scrollbar-hide sm:w-[600px] md:w-[500px] lg:w-[700px] xl:w-[1000px] bg-white py-8 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
         {/* Top Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold">Add Property</h2>
@@ -241,7 +240,7 @@ const MultiStepForm = ({
               <div
                 className={`mx-auto w-7 h-7 flex items-center justify-center rounded-full text-sm font-bold ${
                   step === index + 1
-                    ? "bg-blue-600 text-white"
+                    ? "bg-blue-500 text-white"
                     : step > index + 1
                     ? "bg-green-600 text-white"
                     : "bg-gray-300 text-black"
@@ -257,6 +256,7 @@ const MultiStepForm = ({
           <IoMdClose
             onClick={() => {
               setShowPropertyForm(false);
+              setPropertyData(prev => Object.fromEntries(Object.keys(prev).map(k => [k, ""])));
             }}
             className="w-7 h-7 cursor-pointer"
           />
@@ -315,7 +315,7 @@ const MultiStepForm = ({
                 onClick={nextButton == true && nextStep}
                 className={`${
                   nextButton == true
-                    ? "active:scale-[0.98] bg-blue-600"
+                    ? "active:scale-[0.98] bg-green-600"
                     : "bg-blue-400"
                 } px-6 py-2 text-white  rounded `}
               >

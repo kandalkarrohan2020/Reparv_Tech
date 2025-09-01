@@ -472,12 +472,6 @@ const Properties = () => {
     },
     { name: "Pin Code", selector: (row) => row.pincode, width: "120px" },
     { name: "Location", selector: (row) => row.location, sortable: true },
-    {
-      name: "Rera No.",
-      selector: (row) => row.reraRegistered,
-      sortable: true,
-      minWidth: "130px",
-    },
     { name: "Area", selector: (row) => row.builtUpArea, sortable: true },
     {
       name: "Total Price",

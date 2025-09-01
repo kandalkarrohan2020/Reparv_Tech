@@ -1,7 +1,6 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 
-// **Fetch All**
 export const getAll = (req, res) => {
   const { city, propertyCategory } = req.query;
 
@@ -29,8 +28,53 @@ export const getAll = (req, res) => {
   });
 };
 
-// Get All Properties By Slug like 1-BHK-NewFlat-in-Nagpur
+// Get All Properties By Slug
 export const getAllBySlug = (req, res) => {
+  const { city, propertyCategory, propertyType } = req.query;
+
+  let sql = `
+    SELECT p.*, 
+           c.heading,
+           c.content,
+           c.metaTitle, 
+           c.metaDescription
+    FROM properties p
+    LEFT JOIN cities c ON p.city = c.city
+    WHERE p.status = 'Active' 
+      AND p.approve = 'Approved'
+  `;
+  const params = [];
+
+  if (propertyCategory && propertyCategory !== "properties") {
+    sql += ` AND p.propertyCategory = ?`;
+    params.push(propertyCategory);
+  }
+
+  if (propertyType && propertyType.trim() !== "") {
+    sql += ` AND p.propertyType = ?`;
+    params.push(propertyType);
+  }
+
+  if (city && city.trim() !== "") {
+    sql += ` AND p.city = ?`;
+    params.push(city);
+  }
+
+  sql += ` ORDER BY p.propertyid DESC`;
+
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      console.error("Error fetching:", err);
+      return res
+        .status(500)
+        .json({ message: "Database error", error: err });
+    }
+    res.json(result);
+  });
+};
+
+// Get All Properties By Slug like 1-BHK-NewFlat-in-Nagpur
+export const getAllBySlugOld = (req, res) => {
   const { city, propertyCategory, propertyType } = req.query;
 
   let sql = `SELECT * FROM properties WHERE status='Active' AND approve='Approved'`;

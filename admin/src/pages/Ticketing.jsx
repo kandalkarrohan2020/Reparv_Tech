@@ -719,7 +719,7 @@ const Ticketing = () => {
       <div
         className={`${
           showTicketForm ? "flex" : "hidden"
-        } z-[61] ticketForm overflow-scroll scrollbar-hide  w-full flex fixed bottom-0 md:bottom-auto `}
+        } z-[61] ticketForm overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
       >
         <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] max-h-[85vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">

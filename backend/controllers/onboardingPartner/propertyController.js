@@ -353,10 +353,8 @@ export const update = async (req, res) => {
     parkingFeature,
     terraceFeature,
     ageOfPropertyFeature,
-
     amenitiesFeature,
     propertyStatusFeature,
-
     smartHomeFeature,
     securityBenefit,
     primeLocationBenefit,
@@ -578,7 +576,7 @@ export const updateImages = async (req, res) => {
 
   try {
     const files = await convertImagesToWebp(req.files);
-
+    console.log(files);
     // Fetch existing property to preserve old images if not replaced
     db.query(
       "SELECT * FROM properties WHERE propertyid = ?",

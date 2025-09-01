@@ -337,7 +337,7 @@ const Properties = () => {
     try {
       const response = await fetch(URI + "/project-partner/properties", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -355,7 +355,7 @@ const Properties = () => {
     try {
       const response = await fetch(URI + `/project-partner/properties/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -668,12 +668,6 @@ const Properties = () => {
     },
     { name: "Pin Code", selector: (row) => row.pincode, width: "100px" },
     { name: "Location", selector: (row) => row.location, width: "150px" },
-    {
-      name: "Rera No.",
-      selector: (row) => row.reraRegistered,
-      sortable: true,
-      width: "160px",
-    },
     { name: "Area", selector: (row) => row.builtUpArea },
     {
       name: "Total Price",

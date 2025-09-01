@@ -1,6 +1,6 @@
 const StepTwo = ({ newProperty, setPropertyData }) => {
   return (
-    <div className="bg-white h-[55vh] overflow-scroll scrollbar-hide p-2">
+    <div className="bg-white h-[55vh] overflow-scroll scrollbar-x-hidden p-2">
       <h2 className="text-base font-semibold mb-4">
         Step 1: Property Overview Details
       </h2>
@@ -11,11 +11,15 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
             newProperty.propertyCategory === "NewFlat" ? "block" : "hidden"
           } w-full`}
         >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.propertyType ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Property Type <span className="text-red-600">*</span>
           </label>
           <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
             style={{ backgroundImage: "none" }}
             value={newProperty.propertyType}
             onChange={(e) =>
@@ -57,17 +61,78 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </select>
         </div>
 
+        {/* RentalFlat Property Type */}
+        <div
+          className={` ${
+            newProperty.propertyCategory === "RentalFlat" ? "block" : "hidden"
+          } w-full`}
+        >
+          <label
+            className={`${
+              newProperty.propertyType ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
+            Property Type <span className="text-red-600">*</span>
+          </label>
+          <select
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
+            style={{ backgroundImage: "none" }}
+            value={newProperty.propertyType}
+            onChange={(e) =>
+              setPropertyData({
+                ...newProperty,
+                propertyType: e.target.value,
+              })
+            }
+          >
+            <option disabled value="">
+              Select Property Type
+            </option>
+            <option value="1 RK">1 RK (Room, Kitchen)</option>
+            <option value="1 BHK">1 BHK</option>
+            <option value="2 BHK">2 BHK</option>
+            <option value="3 BHK">3 BHK</option>
+            <option value="4 BHK">4 BHK</option>
+            <option value="5 BHK">5 BHK & Above</option>
+            <option value="1,2,3,4 & 5 BHK">1,2,3,4 & 5 BHK</option>
+            <option value=" 1,2,3 & 4BHK"> 1,2,3 & 4 BHK</option>
+            <option value="1,2 & 3BHK">1,2 & 3 BHK</option>
+            <option value=" 2,3 & 4 BHK"> 2,3 & 4 BHK</option>
+            <option value="3 & 4 BHK">3 & 4 BHK</option>
+            <option value="2 & 4 BHK ">2 & 4 BHK </option>
+            <option value=" 2 & 3 BHK"> 2 & 3 BHK</option>
+            <option value="1 & 2 BHK">1 & 2 BHK</option>
+            <option value="1,2,2.5,3,3.5,4 & 5 BHK">
+              1,2,2.5,3,3.5,4 & 5 BHK
+            </option>
+            <option value="2,2.5,3,3.5,4 & 5 BHK">2,2.5,3,3.5,4 & 5 BHK</option>
+            <option value="3,3.5.,4 & 5 BHK"> 3,3.5.,4 & 5 BHK</option>
+            <option value="3.5,4 & 5 BHK ">3.5,4 & 5 BHK</option>
+            <option value="4 & 5 BHK">4 & 5 BHK</option>
+            <option value="Pent House">Pent House</option>
+            <option value="Builder Floor">Builder Floor</option>
+            <option value="Studio Apartment">Studio Apartment</option>
+            <option value="Duplex Apartment">Duplex Apartment</option>
+            <option value="Serviced Apartment">Serviced Apartment</option>
+          </select>
+        </div>
+
+
         {/* For Plot Property Category */}
         <div
           className={` ${
             newProperty.propertyCategory === "NewPlot" ? "block" : "hidden"
           } w-full`}
         >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.propertyType ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Property Type <span className="text-red-600">*</span>
           </label>
           <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
             style={{ backgroundImage: "none" }}
             value={newProperty.propertyType}
             onChange={(e) =>
@@ -95,11 +160,15 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
               : "hidden"
           } w-full`}
         >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.propertyType ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Property Type <span className="text-red-600">*</span>
           </label>
           <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
             style={{ backgroundImage: "none" }}
             value={newProperty.propertyType}
             onChange={(e) =>
@@ -127,11 +196,15 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
               : "hidden"
           } w-full`}
         >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.propertyType ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Property Type <span className="text-red-600">*</span>
           </label>
           <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
             style={{ backgroundImage: "none" }}
             value={newProperty.propertyType}
             onChange={(e) =>
@@ -159,13 +232,17 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
               : "hidden"
           } w-full`}
         >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.propertyType ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Property Type <span className="text-red-600">*</span>
           </label>
           <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
             style={{ backgroundImage: "none" }}
-            value={newProperty.propertyType}
+            value={newProperty.propertyType} placeholder:text-black
             onChange={(e) =>
               setPropertyData({
                 ...newProperty,
@@ -192,11 +269,15 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
               : "hidden"
           } w-full`}
         >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.propertyType ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Property Type <span className="text-red-600">*</span>
           </label>
           <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
             style={{ backgroundImage: "none" }}
             value={newProperty.propertyType}
             onChange={(e) =>
@@ -223,12 +304,16 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
         </div>
 
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.builtYear ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Property Built Year <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.builtYear}
             onChange={(e) =>
               setPropertyData({
@@ -252,12 +337,16 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
         </div>
 
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.ownershipType ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Ownership Type <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.ownershipType}
             onChange={(e) =>
               setPropertyData({ ...newProperty, ownershipType: e.target.value })
@@ -276,62 +365,66 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </select>
         </div>
 
-        <div
-          className={`${
-            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
-              ? "hidden"
-              : "block"
-          } w-full`}
-        >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+        <div className="w-full ">
+          <label
+            className={`${
+              newProperty.builtUpArea ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Built-Up Area <span className="text-red-600">*</span>
           </label>
           <input
             type="number"
-            min="0"
             required
             placeholder="Enter Area in Sq.Ft."
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
             value={newProperty.builtUpArea}
-            onChange={(e) => {
-              const value = e.target.value;
+            onChange={(e) =>
               setPropertyData({
                 ...newProperty,
-                builtUpArea: value < 0 ? 0 : value, // block negatives
-              });
-            }}
+                builtUpArea: e.target.value,
+              })
+            }
           />
         </div>
 
         <div className="w-full ">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.carpetArea ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Carpet Area <span className="text-red-600">*</span>
           </label>
           <input
             type="number"
-            min="0"
             required
             placeholder="Enter Area in Sq.Ft."
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600"
             value={newProperty.carpetArea}
-            onChange={(e) => {
-              const value = e.target.value;
+            onChange={(e) =>
               setPropertyData({
                 ...newProperty,
-                carpetArea: value < 0 ? 0 : value, // block negatives
-              });
-            }}
+                carpetArea: e.target.value,
+              })
+            }
           />
         </div>
         <div className="w-full ">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.parkingAvailability
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Parking Availability <span className="text-red-600">*</span>
           </label>
           <input
             type="text"
             required
             placeholder="Enter Parking Availability"
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
             value={newProperty.parkingAvailability}
             onChange={(e) =>
               setPropertyData({
@@ -341,66 +434,61 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
             }
           />
         </div>
-        <div
-          className={`${
-            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
-              ? "hidden"
-              : "block"
-          } w-full`}
-        >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+        <div className="w-full ">
+          <label
+            className={`${
+              newProperty.totalFloors ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Total Floors <span className="text-red-600">*</span>
           </label>
           <input
             type="number"
-            min="0"
             required
             placeholder="Total No of Floors"
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
             value={newProperty.totalFloors}
-            onChange={(e) => {
-              const value = e.target.value;
+            onChange={(e) =>
               setPropertyData({
                 ...newProperty,
-                totalFloors: value < 0 ? 0 : value, // block negatives
-              });
-            }}
+                totalFloors: e.target.value,
+              })
+            }
           />
         </div>
 
-        <div
-          className={`${
-            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
-              ? "hidden"
-              : "block"
-          } w-full`}
-        >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+        <div className="w-full ">
+          <label
+            className={`${
+              newProperty.floorNo ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Floor No <span className="text-red-600">*</span>
           </label>
           <input
             type="number"
-            min="0"
             required
             placeholder="Enter Floor No."
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
             value={newProperty.floorNo}
             onChange={(e) => {
-              const value = e.target.value;
-              setPropertyData({
-                ...newProperty,
-                floorNo: value < 0 ? 0 : value, // block negatives
-              });
+              setPropertyData({ ...newProperty, floorNo: e.target.value });
             }}
           />
         </div>
 
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.loanAvailability
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Loan Availability <span className="text-red-600">*</span>
           </label>
           <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
             style={{ backgroundImage: "none" }}
             value={newProperty.loanAvailability}
             onChange={(e) =>
@@ -418,12 +506,16 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </select>
         </div>
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.propertyFacing ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Property Facing <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.propertyFacing}
             onChange={(e) =>
               setPropertyData({
@@ -465,13 +557,17 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
               : "hidden"
           } w-full`}
         >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.reraRegistered ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Rera Registered <span className="text-red-600">*</span>
           </label>
           <input
             type="text"
             placeholder="Enter Rera No."
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.reraRegistered}
             onChange={(e) => {
               setPropertyData({
@@ -482,19 +578,17 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           />
         </div>
 
-        <div
-          className={`${
-            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
-              ? "hidden"
-              : "block"
-          } w-full`}
-        >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+        <div className="w-full">
+          <label
+            className={`${
+              newProperty.furnishing ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Furnishing <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.furnishing}
             onChange={(e) => {
               setPropertyData({ ...newProperty, furnishing: e.target.value });
@@ -510,12 +604,16 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
         </div>
 
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.waterSupply ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Water Supply <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.waterSupply}
             onChange={(e) => {
               setPropertyData({ ...newProperty, waterSupply: e.target.value });
@@ -534,12 +632,16 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
         </div>
 
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.powerBackup ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Power Backup <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.powerBackup}
             onChange={(e) => {
               setPropertyData({ ...newProperty, powerBackup: e.target.value });
@@ -575,12 +677,18 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
       {/* Property Features */}
       <div className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.locationFeature
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Location Feature <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.locationFeature}
             onChange={(e) => {
               setPropertyData({
@@ -612,14 +720,20 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
         </div>
 
         <div className="w-full ">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.sizeAreaFeature
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Size / Area Feature <span className="text-red-600">*</span>
           </label>
           <input
             type="text"
             required
             placeholder="Enter Feature Here."
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
             value={newProperty.sizeAreaFeature}
             onChange={(e) => {
               setPropertyData({
@@ -631,12 +745,16 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
         </div>
 
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.parkingFeature ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Parking Feature <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.parkingFeature}
             onChange={(e) => {
               setPropertyData({
@@ -659,19 +777,17 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </select>
         </div>
 
-        <div
-          className={`${
-            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
-              ? "hidden"
-              : "block"
-          } w-full`}
-        >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+        <div className="w-full">
+          <label
+            className={`${
+              newProperty.terraceFeature ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Balcony / Terrace Feature <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.terraceFeature}
             onChange={(e) => {
               setPropertyData({
@@ -694,14 +810,20 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </select>
         </div>
         <div className="w-full ">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.ageOfPropertyFeature
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Age Of Property <span className="text-red-600">*</span>
           </label>
           <input
             type="text"
             required
             placeholder="Enter Feature Here"
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.ageOfPropertyFeature}
             onChange={(e) => {
               setPropertyData({
@@ -713,12 +835,18 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
         </div>
 
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.amenitiesFeaturee
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Amenities Feature <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.amenitiesFeature}
             onChange={(e) => {
               setPropertyData({
@@ -746,12 +874,18 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
         </div>
 
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.propertyStatusFeature
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Property Status <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance- placeholder:text-black"
             value={newProperty.propertyStatusFeature}
             onChange={(e) =>
               setPropertyData({
@@ -770,19 +904,19 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </select>
         </div>
 
-        <div
-          className={`${
-            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
-              ? "hidden"
-              : "block"
-          } w-full`}
-        >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+        <div className="w-full">
+          <label
+            className={`${
+              newProperty.smartHomeFeature
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Smart Home Feature <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.smartHomeFeature}
             onChange={(e) => {
               setPropertyData({
@@ -833,12 +967,18 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
       {/* Property Features */}
       <div className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.securityBenefit
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Security Benefits <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.securityBenefit}
             onChange={(e) => {
               setPropertyData({
@@ -857,12 +997,18 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
         </div>
 
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.primeLocationBenefit
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Prime Location <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.primeLocationBenefit}
             onChange={(e) => {
               setPropertyData({
@@ -884,12 +1030,18 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </select>
         </div>
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.rentalIncomeBenefit
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Rental Income Possibilities <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.rentalIncomeBenefit}
             onChange={(e) => {
               setPropertyData({
@@ -920,19 +1072,17 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
             </option>
           </select>
         </div>
-        <div
-          className={`${
-            ["NewPlot", "CommercialPlot"].includes(newProperty.propertyCategory)
-              ? "hidden"
-              : "block"
-          } w-full`}
-        >
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+        <div className="w-full">
+          <label
+            className={`${
+              newProperty.qualityBenefit ? "text-green-600" : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Quality Construction <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500  appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600  appearance-none placeholder:text-black"
             value={newProperty.qualityBenefit}
             onChange={(e) => {
               setPropertyData({
@@ -951,12 +1101,18 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </select>
         </div>
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.capitalAppreciationBenefit
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Capital Appreciation <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500  appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600  appearance-none placeholder:text-black"
             value={newProperty.capitalAppreciationBenefit}
             onChange={(e) => {
               setPropertyData({
@@ -980,12 +1136,18 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </select>
         </div>
         <div className="w-full">
-          <label className="block text-sm leading-4 text-[#00000066] font-medium">
+          <label
+            className={`${
+              newProperty.ecofriendlyBenefit
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium`}
+          >
             Eco-Friendly <span className="text-red-600">*</span>
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500  appearance-none"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600  appearance-none placeholder:text-black"
             value={newProperty.ecofriendlyBenefit}
             onChange={(e) => {
               setPropertyData({

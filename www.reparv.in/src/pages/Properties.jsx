@@ -129,7 +129,7 @@ export default function Properties() {
       if (!response.ok) throw new Error("Failed to fetch properties.");
 
       const data = await response.json();
-      //console.log(data);
+      console.log(data);
       setProperties(data);
     } catch (err) {
       console.error("Error fetching:", err);
@@ -250,10 +250,8 @@ export default function Properties() {
   return (
     <>
       <SEO
-        title={"Explore All Property Types on Reparv – Buy, Rent or Invest"}
-        description={
-          "Find flats, plots, rentals, farmhouses, shops & commercial spaces in Nagpur & beyond. Explore verified listings & start your property journey with Reparv today!"
-        }
+        title={properties[0]?.metaTitle || "Explore All Property Types on Reparv – Buy, Rent or Invest"}
+        description={properties[0]?.metaDescription || "Find flats, plots, rentals, farmhouses, shops & commercial spaces in Nagpur & beyond. Explore verified listings & start your property journey with Reparv today!"}
       />
       <div className="properties w-full max-w-[1400px] flex flex-col p-4 sm:py-4 sm:px-0 mx-auto">
         <div className="w-full flex flex-wrap gap-3 justify-beteen sm:justify-end sm:py-2 sm:px-5">
@@ -311,10 +309,13 @@ export default function Properties() {
 
           {/* Properties Grid */}
           <div className="w-full overflow-scroll scrollbar-hide sm:pl-[260px] flex flex-col">
-            <div className="w-full text-lg sm:text-2xl ">
+            <div className="w-full flex flex-col sm:flex-row sm:gap-4 items-end justify-between text-lg sm:text-2xl ">
               <h2 className="text-black font-semibold ">
                 {filteredData.length} Result
                 <span className="text-[#9C9CA3] font-normal"> Found </span>
+              </h2>
+              <h2 className="text-base text-[#606060] font-semibold mr-3">
+                {selectedCity && properties[0]?.heading} 
               </h2>
             </div>
 

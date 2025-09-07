@@ -1553,26 +1553,64 @@ const OnBoardingPartner = () => {
               />
             </div>
 
-            <div className="w-full ">
+            {/* Aadhar Images */}
+            <div
+              className={`w-full ${partner.adharimage ? "block" : "hidden"}`}
+            >
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Adhaar Image
+                Aadhar Images
               </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}${partner.adharimage}`}
-                alt=""
-              />
+
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                {(() => {
+                  try {
+                    const images = JSON.parse(partner.adharimage); // parse JSON array
+                    return images.map((img, index) => (
+                      <img
+                        key={index}
+                        onClick={() => {
+                          window.open(`${URI}${img}`, "_blank");
+                        }}
+                        className="w-full border border-[#00000033] rounded-[4px] object-cover cursor-pointer"
+                        src={`${URI}${img}`}
+                        alt={`Aadhar ${index + 1}`}
+                      />
+                    ));
+                  } catch (err) {
+                    console.error("Invalid JSON in adharimage:", err);
+                    return null;
+                  }
+                })()}
+              </div>
             </div>
 
-            <div className="w-full ">
+            {/* PAN Images */}
+            <div className={`w-full ${partner.panimage ? "block" : "hidden"}`}>
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                PanCard Image
+                PAN Card Images
               </label>
-              <img
-                className="w-full mt-[10px] border border-[#00000033] rounded-[4px] object-cover"
-                src={`${URI}${partner.panimage}`}
-                alt=""
-              />
+
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                {(() => {
+                  try {
+                    const images = JSON.parse(partner.panimage); // parse JSON array
+                    return images.map((img, index) => (
+                      <img
+                        key={index}
+                        onClick={() => {
+                          window.open(`${URI}${img}`, "_blank");
+                        }}
+                        className="w-full border border-[#00000033] rounded-[4px] object-cover cursor-pointer"
+                        src={`${URI}${img}`}
+                        alt={`PAN ${index + 1}`}
+                      />
+                    ));
+                  } catch (err) {
+                    console.error("Invalid JSON in panimage:", err);
+                    return null;
+                  }
+                })()}
+              </div>
             </div>
           </form>
         </div>

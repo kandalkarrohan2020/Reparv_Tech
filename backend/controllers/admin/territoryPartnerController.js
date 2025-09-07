@@ -3,6 +3,8 @@ import moment from "moment";
 import bcrypt from "bcryptjs";
 import sendEmail from "../../utils/nodeMailer.js";
 import { verifyRazorpayPayment } from "../paymentController.js";
+import fs from "fs";
+import path from "path";
 
 const saltRounds = 10;
 export const getAll = (req, res) => {
@@ -306,6 +308,7 @@ export const edit = (req, res) => {
   if (isNaN(partnerid)) {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
+
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const {
     fullname,
@@ -330,70 +333,107 @@ export const edit = (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  // Handle uploaded files
+  // Handle uploaded files (single file each)
   const adharImageFile = req.files?.["adharImage"]?.[0];
   const panImageFile = req.files?.["panImage"]?.[0];
   const reraImageFile = req.files?.["reraImage"]?.[0];
 
-  const adharImageUrl = adharImageFile
-    ? `/uploads/${adharImageFile.filename}`
-    : null;
+  const adharImageUrl = adharImageFile ? `/uploads/${adharImageFile.filename}` : null;
   const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
-  const reraImageUrl = reraImageFile
-    ? `/uploads/${reraImageFile.filename}`
-    : null;
+  const reraImageUrl = reraImageFile ? `/uploads/${reraImageFile.filename}` : null;
 
-  let updateSql = `UPDATE territorypartner SET fullname = ?, contact = ?, email = ?, intrest = ?,
-    address = ?, state = ?, city = ?, pincode = ?, experience = ?, adharno = ?, panno = ?,
-     rerano = ?, bankname = ?, accountholdername = ?, accountnumber = ?, ifsc = ?, updated_at = ?`;
-  const updateValues = [
-    fullname,
-    contact,
-    email,
-    intrest,
-    address,
-    state,
-    city,
-    pincode,
-    experience,
-    adharno,
-    panno,
-    rerano,
-    bankname,
-    accountholdername,
-    accountnumber,
-    ifsc,
-    currentdate,
-  ];
+  // STEP 1: Fetch old images
+  db.query(
+    "SELECT adharimage, panimage, reraimage FROM territorypartner WHERE id = ?",
+    [partnerid],
+    (selectErr, results) => {
+      if (selectErr) {
+        console.error("Error fetching old images:", selectErr);
+        return res.status(500).json({ message: "Database error while fetching old images" });
+      }
 
-  if (adharImageUrl) {
-    updateSql += `, adharimage = ?`;
-    updateValues.push(adharImageUrl);
-  }
+      if (results.length === 0) {
+        return res.status(404).json({ message: "Partner not found" });
+      }
 
-  if (panImageUrl) {
-    updateSql += `, panimage = ?`;
-    updateValues.push(panImageUrl);
-  }
+      const oldData = results[0];
 
-  if (reraImageUrl) {
-    updateSql += `, reraimage = ?`;
-    updateValues.push(reraImageUrl);
-  }
+      // Helper to delete old file
+      const deleteOldFile = (filePath) => {
+        try {
+          if (filePath) {
+            const absPath = path.join(process.cwd(), "public", filePath);
+            if (fs.existsSync(absPath)) {
+              fs.unlinkSync(absPath);
+            }
+          }
+        } catch (err) {
+          console.error("Error deleting file:", err);
+        }
+      };
 
-  updateSql += ` WHERE id = ?`;
-  updateValues.push(partnerid);
+      // STEP 2: Prepare SQL
+      let updateSql = `UPDATE territorypartner 
+        SET fullname = ?, contact = ?, email = ?, intrest = ?,
+        address = ?, state = ?, city = ?, pincode = ?, experience = ?, 
+        adharno = ?, panno = ?, rerano = ?, bankname = ?, 
+        accountholdername = ?, accountnumber = ?, ifsc = ?, updated_at = ?`;
+      const updateValues = [
+        fullname,
+        contact,
+        email,
+        intrest,
+        address,
+        state,
+        city,
+        pincode,
+        experience,
+        adharno,
+        panno,
+        rerano,
+        bankname,
+        accountholdername,
+        accountnumber,
+        ifsc,
+        currentdate,
+      ];
 
-  db.query(updateSql, updateValues, (updateErr, result) => {
-    if (updateErr) {
-      console.error("Error updating Territory Partner:", updateErr);
-      return res
-        .status(500)
-        .json({ message: "Database error during update", error: updateErr });
+      // Replace old files only if new ones uploaded
+      if (adharImageUrl) {
+        updateSql += `, adharimage = ?`;
+        updateValues.push(adharImageUrl);
+        deleteOldFile(oldData?.adharimage);
+      }
+
+      if (panImageUrl) {
+        updateSql += `, panimage = ?`;
+        updateValues.push(panImageUrl);
+        deleteOldFile(oldData?.panimage);
+      }
+
+      if (reraImageUrl) {
+        updateSql += `, reraimage = ?`;
+        updateValues.push(reraImageUrl);
+        deleteOldFile(oldData?.reraimage);
+      }
+
+      updateSql += ` WHERE id = ?`;
+      updateValues.push(partnerid);
+
+      // STEP 3: Update DB
+      db.query(updateSql, updateValues, (updateErr) => {
+        if (updateErr) {
+          console.error("Error updating Territory Partner:", updateErr);
+          return res.status(500).json({
+            message: "Database error during update",
+            error: updateErr,
+          });
+        }
+
+        res.status(200).json({ message: "Territory Partner updated successfully" });
+      });
     }
-
-    res.status(200).json({ message: "Territory Partner updated successfully" });
-  });
+  );
 };
 
 // **Delete **

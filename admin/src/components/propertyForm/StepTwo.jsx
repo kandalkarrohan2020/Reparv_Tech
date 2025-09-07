@@ -1,3 +1,5 @@
+import PropertyTypeMultiSelect from "./PropertyTypeMultiSelect";
+
 const StepTwo = ({ newProperty, setPropertyData }) => {
   return (
     <div className="bg-white h-[55vh] overflow-scroll scrollbar-x-hidden p-2">
@@ -5,302 +7,25 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
         Step 1: Property Overview Details
       </h2>
       <div className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-        {/* Flat Property Type */}
         <div
-          className={` ${
-            newProperty.propertyCategory === "NewFlat" ? "block" : "hidden"
-          } w-full`}
-        >
-          <label
-            className={`${
-              newProperty.propertyType ? "text-green-600" : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}
-          >
-            Property Type <span className="text-red-600">*</span>
-          </label>
-          <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
-            style={{ backgroundImage: "none" }}
-            value={newProperty.propertyType}
-            onChange={(e) =>
-              setPropertyData({
-                ...newProperty,
-                propertyType: e.target.value,
-              })
-            }
-          >
-            <option disabled value="">
-              Select Property Type
-            </option>
-            <option value="1 RK">1 RK (Room, Kitchen)</option>
-            <option value="1 BHK">1 BHK</option>
-            <option value="2 BHK">2 BHK</option>
-            <option value="3 BHK">3 BHK</option>
-            <option value="4 BHK">4 BHK</option>
-            <option value="5 BHK">5 BHK & Above</option>
-            <option value="1,2,3,4 & 5 BHK">1,2,3,4 & 5 BHK</option>
-            <option value=" 1,2,3 & 4BHK"> 1,2,3 & 4 BHK</option>
-            <option value="1,2 & 3BHK">1,2 & 3 BHK</option>
-            <option value=" 2,3 & 4 BHK"> 2,3 & 4 BHK</option>
-            <option value="3 & 4 BHK">3 & 4 BHK</option>
-            <option value="2 & 4 BHK ">2 & 4 BHK </option>
-            <option value=" 2 & 3 BHK"> 2 & 3 BHK</option>
-            <option value="1 & 2 BHK">1 & 2 BHK</option>
-            <option value="1,2,2.5,3,3.5,4 & 5 BHK">
-              1,2,2.5,3,3.5,4 & 5 BHK
-            </option>
-            <option value="2,2.5,3,3.5,4 & 5 BHK">2,2.5,3,3.5,4 & 5 BHK</option>
-            <option value="3,3.5.,4 & 5 BHK"> 3,3.5.,4 & 5 BHK</option>
-            <option value="3.5,4 & 5 BHK ">3.5,4 & 5 BHK</option>
-            <option value="4 & 5 BHK">4 & 5 BHK</option>
-            <option value="Pent House">Pent House</option>
-            <option value="Builder Floor">Builder Floor</option>
-            <option value="Studio Apartment">Studio Apartment</option>
-            <option value="Duplex Apartment">Duplex Apartment</option>
-            <option value="Serviced Apartment">Serviced Apartment</option>
-          </select>
-        </div>
-
-        {/* RentalFlat Property Type */}
-        <div
-          className={` ${
-            newProperty.propertyCategory === "RentalFlat" ? "block" : "hidden"
-          } w-full`}
-        >
-          <label
-            className={`${
-              newProperty.propertyType ? "text-green-600" : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}
-          >
-            Property Type <span className="text-red-600">*</span>
-          </label>
-          <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
-            style={{ backgroundImage: "none" }}
-            value={newProperty.propertyType}
-            onChange={(e) =>
-              setPropertyData({
-                ...newProperty,
-                propertyType: e.target.value,
-              })
-            }
-          >
-            <option disabled value="">
-              Select Property Type
-            </option>
-            <option value="1 RK">1 RK (Room, Kitchen)</option>
-            <option value="1 BHK">1 BHK</option>
-            <option value="2 BHK">2 BHK</option>
-            <option value="3 BHK">3 BHK</option>
-            <option value="4 BHK">4 BHK</option>
-            <option value="5 BHK">5 BHK & Above</option>
-            <option value="1,2,3,4 & 5 BHK">1,2,3,4 & 5 BHK</option>
-            <option value=" 1,2,3 & 4BHK"> 1,2,3 & 4 BHK</option>
-            <option value="1,2 & 3BHK">1,2 & 3 BHK</option>
-            <option value=" 2,3 & 4 BHK"> 2,3 & 4 BHK</option>
-            <option value="3 & 4 BHK">3 & 4 BHK</option>
-            <option value="2 & 4 BHK ">2 & 4 BHK </option>
-            <option value=" 2 & 3 BHK"> 2 & 3 BHK</option>
-            <option value="1 & 2 BHK">1 & 2 BHK</option>
-            <option value="1,2,2.5,3,3.5,4 & 5 BHK">
-              1,2,2.5,3,3.5,4 & 5 BHK
-            </option>
-            <option value="2,2.5,3,3.5,4 & 5 BHK">2,2.5,3,3.5,4 & 5 BHK</option>
-            <option value="3,3.5.,4 & 5 BHK"> 3,3.5.,4 & 5 BHK</option>
-            <option value="3.5,4 & 5 BHK ">3.5,4 & 5 BHK</option>
-            <option value="4 & 5 BHK">4 & 5 BHK</option>
-            <option value="Pent House">Pent House</option>
-            <option value="Builder Floor">Builder Floor</option>
-            <option value="Studio Apartment">Studio Apartment</option>
-            <option value="Duplex Apartment">Duplex Apartment</option>
-            <option value="Serviced Apartment">Serviced Apartment</option>
-          </select>
-        </div>
-
-
-        {/* For Plot Property Category */}
-        <div
-          className={` ${
-            newProperty.propertyCategory === "NewPlot" ? "block" : "hidden"
-          } w-full`}
-        >
-          <label
-            className={`${
-              newProperty.propertyType ? "text-green-600" : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}
-          >
-            Property Type <span className="text-red-600">*</span>
-          </label>
-          <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
-            style={{ backgroundImage: "none" }}
-            value={newProperty.propertyType}
-            onChange={(e) =>
-              setPropertyData({
-                ...newProperty,
-                propertyType: e.target.value,
-              })
-            }
-          >
-            <option disabled value="">
-              Select Property Type
-            </option>
-            <option value="Corner Plot">Corner Plot</option>
-            <option value="Park Facing Plot">Park Facing Plot</option>
-            <option value="Road Facing Plot">Road Facing Plot</option>
-            <option value="Gated Community Plot">Gated Community Plot</option>
-          </select>
-        </div>
-
-        {/* For Commercial Flat Property Category */}
-        <div
-          className={` ${
-            newProperty.propertyCategory === "CommercialFlat"
+          className={`${
+            [
+              "NewFlat",
+              "RentalFlat",
+              "CommercialFlat",
+              "NewPlot",
+              "CommercialPlot",
+              "CommercialShop",
+              "IndustrialSpace",
+            ].includes(newProperty.propertyCategory)
               ? "block"
               : "hidden"
-          } w-full`}
+          } col-span-1 lg:col-span-2 xl:col-span-3`}
         >
-          <label
-            className={`${
-              newProperty.propertyType ? "text-green-600" : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}
-          >
-            Property Type <span className="text-red-600">*</span>
-          </label>
-          <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
-            style={{ backgroundImage: "none" }}
-            value={newProperty.propertyType}
-            onChange={(e) =>
-              setPropertyData({
-                ...newProperty,
-                propertyType: e.target.value,
-              })
-            }
-          >
-            <option disabled value="">
-              Select Property Type
-            </option>
-            <option value="Office Space">Office Space</option>
-            <option value="Co-Working Space">Co-Working Space</option>
-            <option value="Corporate Office">Corporate Office</option>
-            <option value="Studio Office">Studio Office</option>
-          </select>
-        </div>
-
-        {/* For Commercial Shop Property Category */}
-        <div
-          className={` ${
-            newProperty.propertyCategory === "CommercialShop"
-              ? "block"
-              : "hidden"
-          } w-full`}
-        >
-          <label
-            className={`${
-              newProperty.propertyType ? "text-green-600" : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}
-          >
-            Property Type <span className="text-red-600">*</span>
-          </label>
-          <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
-            style={{ backgroundImage: "none" }}
-            value={newProperty.propertyType}
-            onChange={(e) =>
-              setPropertyData({
-                ...newProperty,
-                propertyType: e.target.value,
-              })
-            }
-          >
-            <option disabled value="">
-              Select Property Type
-            </option>
-            <option value="Shop">Shop</option>
-            <option value="Showroom">Showroom</option>
-            <option value="Restaurant / Cafe">Restaurant or Cafe</option>
-            <option value="Bank / ATM">Bank or ATM</option>
-          </select>
-        </div>
-
-        {/* For Industrial Space Property Category */}
-        <div
-          className={` ${
-            newProperty.propertyCategory === "IndustrialSpace"
-              ? "block"
-              : "hidden"
-          } w-full`}
-        >
-          <label
-            className={`${
-              newProperty.propertyType ? "text-green-600" : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}
-          >
-            Property Type <span className="text-red-600">*</span>
-          </label>
-          <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
-            style={{ backgroundImage: "none" }}
-            value={newProperty.propertyType} placeholder:text-black
-            onChange={(e) =>
-              setPropertyData({
-                ...newProperty,
-                propertyType: e.target.value,
-              })
-            }
-          >
-            <option disabled value="">
-              Select Property Type
-            </option>
-            <option value="Godown">Go-Down</option>
-            <option value="Cold Storage">Cold Storage</option>
-            <option value="Small Manufacturing Unit">
-              Small Manufacturing Unit
-            </option>
-          </select>
-        </div>
-
-        {/* For Commercial Plot Property Category */}
-        <div
-          className={` ${
-            newProperty.propertyCategory === "CommercialPlot"
-              ? "block"
-              : "hidden"
-          } w-full`}
-        >
-          <label
-            className={`${
-              newProperty.propertyType ? "text-green-600" : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}
-          >
-            Property Type <span className="text-red-600">*</span>
-          </label>
-          <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
-            style={{ backgroundImage: "none" }}
-            value={newProperty.propertyType}
-            onChange={(e) =>
-              setPropertyData({
-                ...newProperty,
-                propertyType: e.target.value,
-              })
-            }
-          >
-            <option disabled value="">
-              Select Property Type
-            </option>
-            <option value="Office Building Plot">Office Building Plot</option>
-            <option value="Warehouse Plot">Warehouse Plot</option>
-            <option value="Mixed-Use Development Plot">
-              Mixed-Use Development Plot
-            </option>
-            <option value="Highway-Facing Plot">Highway-Facing Plot</option>
-            <option value="Petrol Pump Plot">Petrol Pump Plot</option>
-            <option value="School / Hospital Plot">
-              School or Hospital Plot
-            </option>
-          </select>
+          <PropertyTypeMultiSelect
+            newProperty={newProperty}
+            setPropertyData={setPropertyData}
+          />
         </div>
 
         <div className="w-full">
@@ -400,7 +125,7 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
             type="number"
             required
             placeholder="Enter Area in Sq.Ft."
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
             value={newProperty.carpetArea}
             onChange={(e) =>
               setPropertyData({
@@ -410,7 +135,8 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
             }
           />
         </div>
-        <div className="w-full ">
+
+        <div className="w-full">
           <label
             className={`${
               newProperty.parkingAvailability
@@ -420,11 +146,9 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           >
             Parking Availability <span className="text-red-600">*</span>
           </label>
-          <input
-            type="text"
-            required
-            placeholder="Enter Parking Availability"
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
+          <select
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
+            style={{ backgroundImage: "none" }}
             value={newProperty.parkingAvailability}
             onChange={(e) =>
               setPropertyData({
@@ -432,7 +156,13 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
                 parkingAvailability: e.target.value,
               })
             }
-          />
+          >
+            <option disabled value="">
+              Select Parking Availability
+            </option>
+            <option value="Yes">YES</option>
+            <option value="No">NO</option>
+          </select>
         </div>
         <div className="w-full ">
           <label
@@ -837,7 +567,7 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
         <div className="w-full">
           <label
             className={`${
-              newProperty.amenitiesFeaturee
+              newProperty.amenitiesFeature
                 ? "text-green-600"
                 : "text-[#00000066]"
             } block text-sm leading-4 font-medium`}
@@ -885,7 +615,7 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance- placeholder:text-black"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none placeholder:text-black"
             value={newProperty.propertyStatusFeature}
             onChange={(e) =>
               setPropertyData({

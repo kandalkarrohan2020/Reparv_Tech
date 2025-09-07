@@ -41,6 +41,8 @@ const Properties = () => {
     pincode: "",
     location: "",
     distanceFromCityCenter: "",
+    latitude: "",
+    longitude: "",
     totalSalesPrice: "",
     totalOfferPrice: "",
     stampDuty: "",

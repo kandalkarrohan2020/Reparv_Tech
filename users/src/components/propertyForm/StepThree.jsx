@@ -38,7 +38,11 @@ const StepThree = ({
   return (
     <div className="bg-white h-[55vh] overflow-scroll scrollbar-x-hidden p-2">
       <div className="flex items-center justify-between text-base font-semibold mb-4">
-        Step 3: Upload Property Images <span className="text-red-600 text-xs"> (Maximum Image Size 500kb)</span>
+        Step 3: Upload Property Images{" "}
+        <span className="text-red-600 text-xs">
+          {" "}
+          (Maximum Image Size 500kb)
+        </span>
       </div>
       <div className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         {/* Upload Multiple Images */}
@@ -82,6 +86,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("frontView", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -133,6 +138,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("nearestLandmark", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -184,6 +190,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("developedAmenities", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -243,6 +250,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("sideView", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -302,6 +310,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("hallView", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -363,6 +372,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("kitchenView", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -424,6 +434,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("bedroomView", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -485,6 +496,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("bathroomView", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -544,6 +556,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("balconyView", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >

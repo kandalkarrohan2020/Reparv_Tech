@@ -23,7 +23,24 @@ export const getById = (req, res) => {
     if (result.length === 0) {
       return res.status(404).json({ message: "property info not found" });
     }
-    res.json(result[0]);
+
+    // safely parse JSON fields
+    const formatted = result.map((row) => {
+      let parsedType = null;
+      try {
+        parsedType = row.propertyType ? JSON.parse(row.propertyType) : [];
+      } catch (e) {
+        console.warn("Invalid JSON in propertyType:", row.propertyType);
+        parsedType = [];
+      }
+
+      return {
+        ...row,
+        propertyType: parsedType,
+      };
+    });
+
+    res.json(formatted[0]);
   });
 };
 
@@ -39,6 +56,22 @@ export const getImages = (req, res) => {
     if (result.length === 0) {
       return res.status(404).json({ message: "property info not found" });
     }
-    res.json(result);
+    // safely parse JSON fields
+    const formatted = result.map((row) => {
+      let parsedType = null;
+      try {
+        parsedType = row.propertyType ? JSON.parse(row.propertyType) : [];
+      } catch (e) {
+        console.warn("Invalid JSON in propertyType:", row.propertyType);
+        parsedType = [];
+      }
+
+      return {
+        ...row,
+        propertyType: parsedType,
+      };
+    });
+
+    res.json(formatted);
   });
 };

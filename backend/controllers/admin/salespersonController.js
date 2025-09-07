@@ -3,6 +3,8 @@ import moment from "moment";
 import bcrypt from "bcryptjs";
 import sendEmail from "../../utils/nodeMailer.js";
 import { verifyRazorpayPayment } from "../paymentController.js";
+import fs from "fs";
+import path from "path";
 
 const saltRounds = 10;
 
@@ -325,8 +327,9 @@ export const edit = (req, res) => {
     accountnumber,
     ifsc,
   } = req.body;
-  const salespersonssid = parseInt(req.params.id);
-  if (isNaN(salespersonssid)) {
+
+  const salespersonsid = parseInt(req.params.id);
+  if (isNaN(salespersonsid)) {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
 
@@ -334,69 +337,111 @@ export const edit = (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  // Handle uploaded files
-  const adharImageFile = req.files?.["adharImage"]?.[0];
-  const panImageFile = req.files?.["panImage"]?.[0];
-  const reraImageFile = req.files?.["reraImage"]?.[0];
+  // Handle new uploaded files
+  const adharImageFiles = req.files?.["adharImage"] || [];
+  const panImageFiles = req.files?.["panImage"] || [];
+  const reraImageFiles = req.files?.["reraImage"] || [];
 
-  const adharImageUrl = adharImageFile
-    ? `/uploads/${adharImageFile.filename}`
-    : null;
-  const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
-  const reraImageUrl = reraImageFile
-    ? `/uploads/${reraImageFile.filename}`
-    : null;
+  const adharImageUrls = adharImageFiles.map(
+    (file) => `/uploads/${file.filename}`
+  );
+  const panImageUrls = panImageFiles.map((file) => `/uploads/${file.filename}`);
+  const reraImageUrls = reraImageFiles.map(
+    (file) => `/uploads/${file.filename}`
+  );
 
-  let updateSql = `UPDATE salespersons SET fullname = ?, contact = ?, email = ?, intrest = ?, address = ?, state = ?, city = ?, pincode = ?, experience = ?, 
-  rerano = ?, adharno = ?, panno = ?, bankname = ?, accountholdername = ?, accountnumber = ?, ifsc = ?, updated_at = ?`;
-  const updateValues = [
-    fullname,
-    contact,
-    email,
-    intrest,
-    address,
-    state,
-    city,
-    pincode,
-    experience,
-    rerano,
-    adharno,
-    panno,
-    bankname,
-    accountholdername,
-    accountnumber,
-    ifsc,
-    currentdate,
-  ];
+  // STEP 1: Get old images
+  db.query(
+    "SELECT adharimage, panimage, reraimage FROM salespersons WHERE salespersonsid = ?",
+    [salespersonsid],
+    (selectErr, results) => {
+      if (selectErr) {
+        console.error("Error fetching old images:", selectErr);
+        return res
+          .status(500)
+          .json({ message: "Database error while fetching old images" });
+      }
 
-  if (adharImageUrl) {
-    updateSql += `, adharimage = ?`;
-    updateValues.push(adharImageUrl);
-  }
+      const oldData = results[0];
 
-  if (panImageUrl) {
-    updateSql += `, panimage = ?`;
-    updateValues.push(panImageUrl);
-  }
+      // Utility: delete old images
+      const deleteOldFiles = (oldImagesJson) => {
+        try {
+          const oldImages = JSON.parse(oldImagesJson || "[]");
+          oldImages.forEach((url) => {
+            const filePath = path.join(process.cwd(), "public", url);
+            if (fs.existsSync(filePath)) {
+              fs.unlinkSync(filePath);
+            }
+          });
+        } catch (err) {
+          console.error("Error deleting old files:", err);
+        }
+      };
 
-  if (reraImageUrl) {
-    updateSql += `, reraimage = ?`;
-    updateValues.push(reraImageUrl);
-  }
+      // Prepare SQL
+      let updateSql = `UPDATE salespersons 
+        SET fullname = ?, contact = ?, email = ?, intrest = ?, address = ?, state = ?, city = ?, 
+        pincode = ?, experience = ?, rerano = ?, adharno = ?, panno = ?, bankname = ?, 
+        accountholdername = ?, accountnumber = ?, ifsc = ?, updated_at = ?`;
+      const updateValues = [
+        fullname,
+        contact,
+        email,
+        intrest,
+        address,
+        state,
+        city,
+        pincode,
+        experience,
+        rerano,
+        adharno,
+        panno,
+        bankname,
+        accountholdername,
+        accountnumber,
+        ifsc,
+        currentdate,
+      ];
 
-  updateSql += ` WHERE salespersonsid = ?`;
-  updateValues.push(salespersonssid);
+      // Aadhaar
+      if (adharImageUrls.length > 0) {
+        updateSql += `, adharimage = ?`;
+        updateValues.push(JSON.stringify(adharImageUrls));
+        deleteOldFiles(oldData?.adharimage);
+      }
 
-  db.query(updateSql, updateValues, (updateErr, result) => {
-    if (updateErr) {
-      console.error("Error updating salespersons:", updateErr);
-      return res
-        .status(500)
-        .json({ message: "Database error during update", error: updateErr });
+      // PAN
+      if (panImageUrls.length > 0) {
+        updateSql += `, panimage = ?`;
+        updateValues.push(JSON.stringify(panImageUrls));
+        deleteOldFiles(oldData?.panimage);
+      }
+
+      // RERA
+      if (reraImageUrls.length > 0) {
+        updateSql += `, reraimage = ?`;
+        updateValues.push(JSON.stringify(reraImageUrls));
+        deleteOldFiles(oldData?.reraimage);
+      }
+
+      updateSql += ` WHERE salespersonsid = ?`;
+      updateValues.push(salespersonsid);
+
+      // STEP 2: Update DB
+      db.query(updateSql, updateValues, (updateErr) => {
+        if (updateErr) {
+          console.error("Error updating salespersons:", updateErr);
+          return res.status(500).json({
+            message: "Database error during update",
+            error: updateErr,
+          });
+        }
+
+        res.status(200).json({ message: "Sales person updated successfully" });
+      });
     }
-
-    res.status(200).json({ message: "Sales person updated successfully" });
-  });
+  );
 };
 
 // **Delete **

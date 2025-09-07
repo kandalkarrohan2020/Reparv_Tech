@@ -19,7 +19,9 @@ const PropertyOverview = ({ propertyInfo }) => {
     {
       icon: FaBuilding,
       label: "Property Type",
-      value: propertyInfo.propertyType,
+      value: Array.isArray(propertyInfo.propertyType)
+        ? propertyInfo.propertyType.join(", ")
+        : propertyInfo.propertyType || "N/A",
       show: "flex",
     },
     {

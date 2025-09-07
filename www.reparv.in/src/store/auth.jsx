@@ -29,8 +29,8 @@ export const AuthProvider = ({ children }) => {
   const [videoURL, setVideoURL] = useState("");
   const [showWingInfoPopup, setShowWingInfoPopup] = useState(false);
 
-  //const URI = "https://api.reparv.in";
-  const URI = "http://localhost:3000";
+  const URI = "https://api.reparv.in";
+  //const URI = "http://localhost:3000";
 
   return (
     <AuthContext.Provider

@@ -103,6 +103,8 @@ const MultiStepForm = ({
         pincode: "",
         location: "",
         distanceFromCityCenter: "",
+        latitude: "",
+        longitude: "",
         totalSalesPrice: "",
         totalOfferPrice: "",
         stampDuty: "",
@@ -147,7 +149,7 @@ const MultiStepForm = ({
       await fetchData();
     } catch (err) {
       console.error("Error saving property:", err);
-      alert("Please check empty fields or try again later.");
+      alert("Something Went Wrong Please try again!");
     } finally {
       setLoading(false);
     }
@@ -166,6 +168,8 @@ const MultiStepForm = ({
         "pincode", // number
         "location",
         "distanceFromCityCenter",
+        "latitude",
+        "longitude",
         "totalSalesPrice", // number
         "totalOfferPrice", // number
         "stampDuty", // number
@@ -183,7 +187,6 @@ const MultiStepForm = ({
       setNextButton(allFilled);
     } else if (step === 2) {
       const requiredFieldsStep2 = [
-        "propertyType",
         "builtYear", // number
         "ownershipType",
         "carpetArea", // number

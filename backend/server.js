@@ -53,6 +53,9 @@ import frontendEmiRoutes from "./routes/frontend/emiRoutes.js";
 // Payment Route
 import paymentRoutes from "./routes/paymentRoutes.js";
 
+// Map Route
+import geocodeRoutes from "./routes/geocodeRoutes.js";
+
 // Guest User Routes
 import guestUserLoginRoutes from "./routes/guestUser/userRoutes.js";
 import guestUserProfileRoutes from "./routes/guestUser/profileRoutes.js";
@@ -359,6 +362,9 @@ app.use("/frontend/emi", frontendEmiRoutes);
 // Payment Call
 app.use("/api/payment", paymentRoutes);
 
+// Map Route Call
+app.use("/api/map", geocodeRoutes);
+
 app.use(verifyToken);
 app.use("/admin/profile", profileRoutes);
 app.use("/admin/dashboard", dashboardRoutes);
@@ -514,7 +520,6 @@ app.use("/customerapp/customerTrendRoute", customerTrendRoute);
 app.use("/customerapp/enquiry", customerEnquiryRoute);
 
 //Builder app
-//Builder app
 app.use("/builderapp/user", builderapploginRoute);
 app.use("/builderapp/profile", builderProfileRoute);
 app.use("/builderapp/property", builderpropertyRoute);
@@ -522,6 +527,8 @@ app.use("/builderapp/customer", builderEnquiryCustomerRoute);
 app.use("/builderapp/community", builderCommunityRoute);
 app.use("/builderapp/ticket", builderTicketRoute);
 app.use("/builderapp/post", builderpostRoute);
+
+
 //  Start Server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

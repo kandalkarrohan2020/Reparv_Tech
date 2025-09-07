@@ -3,6 +3,8 @@ import moment from "moment";
 import bcrypt from "bcryptjs";
 import sendEmail from "../../utils/nodeMailer.js";
 import { verifyRazorpayPayment } from "../paymentController.js";
+import fs from "fs";
+import path from "path";
 
 const saltRounds = 10;
 
@@ -419,6 +421,7 @@ export const edit = (req, res) => {
   if (isNaN(partnerid)) {
     return res.status(400).json({ message: "Invalid Partner ID" });
   }
+
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const {
     fullname,
@@ -443,67 +446,105 @@ export const edit = (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  // Handle uploaded files
-  const adharImageFile = req.files?.["adharImage"]?.[0];
-  const panImageFile = req.files?.["panImage"]?.[0];
-  const reraImageFile = req.files?.["reraImage"]?.[0];
+  // Handle uploaded multiple files
+  const adharImageFiles = req.files?.["adharImage"] || [];
+  const panImageFiles = req.files?.["panImage"] || [];
+  const reraImageFiles = req.files?.["reraImage"] || [];
 
-  const adharImageUrl = adharImageFile
-    ? `/uploads/${adharImageFile.filename}`
-    : null;
-  const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
-  const reraImageUrl = reraImageFile
-    ? `/uploads/${reraImageFile.filename}`
-    : null;
+  // Map to URLs
+  const adharImageUrls = adharImageFiles.map((f) => `/uploads/${f.filename}`);
+  const panImageUrls   = panImageFiles.map((f) => `/uploads/${f.filename}`);
+  const reraImageUrls  = reraImageFiles.map((f) => `/uploads/${f.filename}`);
 
-  let updateSql = `UPDATE projectpartner SET fullname = ?, contact = ?, email = ?, intrest = ?, address = ?, state = ?, city = ?, pincode = ?, experience = ?, adharno = ?, panno = ?, rerano = ?, bankname = ?, accountholdername = ?, accountnumber = ?, ifsc = ?, updated_at = ?`;
-  const updateValues = [
-    fullname,
-    contact,
-    email,
-    intrest,
-    address,
-    state,
-    city,
-    pincode,
-    experience,
-    adharno,
-    panno,
-    rerano,
-    bankname,
-    accountholdername,
-    accountnumber,
-    ifsc,
-    currentdate,
-  ];
+  // Convert to JSON for DB
+  const adharImagesJson = adharImageUrls.length > 0 ? JSON.stringify(adharImageUrls) : null;
+  const panImagesJson   = panImageUrls.length > 0 ? JSON.stringify(panImageUrls) : null;
+  const reraImagesJson  = reraImageUrls.length > 0 ? JSON.stringify(reraImageUrls) : null;
 
-  if (adharImageUrl) {
-    updateSql += `, adharimage = ?`;
-    updateValues.push(adharImageUrl);
-  }
-
-  if (panImageUrl) {
-    updateSql += `, panimage = ?`;
-    updateValues.push(panImageUrl);
-  }
-
-  if (reraImageUrl) {
-    updateSql += `, reraimage = ?`;
-    updateValues.push(reraImageUrl);
-  }
-
-  updateSql += ` WHERE id = ?`;
-  updateValues.push(partnerid);
-
-  db.query(updateSql, updateValues, (updateErr, result) => {
-    if (updateErr) {
-      console.error("Error updating project Partner:", updateErr);
-      return res
-        .status(500)
-        .json({ message: "Database error during update", error: updateErr });
+  // Fetch old images first
+  const selectSql = `SELECT adharimage, panimage, reraimage FROM projectpartner WHERE id = ?`;
+  db.query(selectSql, [partnerid], (selectErr, rows) => {
+    if (selectErr) {
+      console.error("Error fetching old images:", selectErr);
+      return res.status(500).json({ message: "Error fetching old images", error: selectErr });
     }
 
-    res.status(200).json({ message: "Project Partner updated successfully" });
+    const oldData = rows[0] || {};
+
+    // Utility: delete old files
+    const deleteOldFiles = (oldImagesJson) => {
+      try {
+        const oldImages = JSON.parse(oldImagesJson || "[]");
+        oldImages.forEach((imgPath) => {
+          const fullPath = path.join(process.cwd(), imgPath);
+          if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+        });
+      } catch (err) {
+        console.error("Error deleting old files:", err);
+      }
+    };
+
+    // Delete old images only if new ones are uploaded
+    if (adharImagesJson) deleteOldFiles(oldData?.adharimage);
+    if (panImagesJson)   deleteOldFiles(oldData?.panimage);
+    if (reraImagesJson)  deleteOldFiles(oldData?.reraimage);
+
+    // Build Update Query
+    let updateSql = `
+      UPDATE projectpartner 
+      SET fullname = ?, contact = ?, email = ?, intrest = ?, address = ?, 
+          state = ?, city = ?, pincode = ?, experience = ?, adharno = ?, 
+          panno = ?, rerano = ?, bankname = ?, accountholdername = ?, 
+          accountnumber = ?, ifsc = ?, updated_at = ?
+    `;
+
+    const updateValues = [
+      fullname,
+      contact,
+      email,
+      intrest,
+      address,
+      state,
+      city,
+      pincode,
+      experience,
+      adharno,
+      panno,
+      rerano,
+      bankname,
+      accountholdername,
+      accountnumber,
+      ifsc,
+      currentdate,
+    ];
+
+    // ---------- UPDATE IMAGE COLUMNS ----------
+    if (adharImagesJson) {
+      updateSql += `, adharimage = ?`;
+      updateValues.push(adharImagesJson);
+    }
+
+    if (panImagesJson) {
+      updateSql += `, panimage = ?`;
+      updateValues.push(panImagesJson);
+    }
+
+    if (reraImagesJson) {
+      updateSql += `, reraimage = ?`;
+      updateValues.push(reraImagesJson);
+    }
+
+    updateSql += ` WHERE id = ?`;
+    updateValues.push(partnerid);
+
+    db.query(updateSql, updateValues, (updateErr) => {
+      if (updateErr) {
+        console.error("Error updating project Partner:", updateErr);
+        return res.status(500).json({ message: "Database error during update", error: updateErr });
+      }
+
+      res.status(200).json({ message: "Project Partner updated successfully" });
+    });
   });
 };
 

@@ -14,7 +14,7 @@ const StepOne = ({
   const { URI } = useAuth();
 
   // For Property Name Checking
-  const [isSame, setIsSame] = useState(false);
+  const [isSame, setIsSame] = useState(true);
   const [message, setMessage] = useState("");
 
   const checkPropertyName = async () => {
@@ -38,10 +38,10 @@ const StepOne = ({
   };
 
   useEffect(() => {
-      if(!newProperty.propertyid){
-        checkPropertyName();
-      }
-    }, [newProperty.propertyName]);
+    if (!newProperty.propertyid) {
+      checkPropertyName();
+    }
+  }, [newProperty.propertyName]);
 
   return (
     <div className="bg-white h-[55vh] overflow-scroll scrollbar-x-hidden p-2">
@@ -387,7 +387,13 @@ const StepOne = ({
         </div>
 
         {/* Map Picker */}
-        <div className="w-full col-span-1 lg:col-span-2 xl:col-span-3">
+        <div
+          className={`${
+            newProperty.state && newProperty.city && newProperty.pincode
+              ? "block"
+              : "hidden"
+          } w-full col-span-1 lg:col-span-2 xl:col-span-3`}
+        >
           <label
             className={`${
               newProperty.latitude && newProperty.longitude
@@ -398,19 +404,24 @@ const StepOne = ({
             Select Correct Location on Map{" "}
             <span className="text-red-600">*</span>
           </label>
-          <LocationPicker
-            state={newProperty.state}
-            city={newProperty.city}
-            pincode={newProperty.pincode}
-            location={newProperty.location}
-            onChange={({ latitude, longitude }) =>
-              setPropertyData({
-                ...newProperty,
-                latitude,
-                longitude,
-              })
-            }
-          />
+
+          {/* Leaflet Picker */}
+          {newProperty.state && newProperty.city && newProperty.pincode && (
+            <LocationPicker
+              onChange={({ latitude, longitude }) =>
+                setPropertyData({
+                  ...newProperty,
+                  latitude,
+                  longitude,
+                })
+              }
+              state={newProperty.state}
+              city={newProperty.city}
+              pincode={newProperty.pincode}
+              latitude={newProperty.latitude}
+              longitude={newProperty.longitude}
+            />
+          )}
         </div>
       </div>
 

@@ -45,18 +45,18 @@ router.get("/:partnerlister", getAll);
 router.post(
   "/add",
   upload.fields([
-    { name: "adharImage", maxCount: 1 },
-    { name: "panImage", maxCount: 1 },
-    { name: "reraImage", maxCount: 1 },
+    { name: "adharImage", maxCount: 2 },
+    { name: "panImage", maxCount: 2 },
+    { name: "reraImage", maxCount: 2 },
   ]),
   add
 );
 router.put(
   "/edit/:id",
   upload.fields([
-    { name: "adharImage", maxCount: 1 },
-    { name: "panImage", maxCount: 1 },
-    { name: "reraImage", maxCount: 1 },
+    { name: "adharImage", maxCount: 2 },
+    { name: "panImage", maxCount: 2 },
+    { name: "reraImage", maxCount: 2 },
   ]),
   edit
 );

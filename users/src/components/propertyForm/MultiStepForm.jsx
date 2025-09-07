@@ -103,6 +103,8 @@ const MultiStepForm = ({
         pincode: "",
         location: "",
         distanceFromCityCenter: "",
+        latitude: "",
+        longitude: "",
         totalSalesPrice: "",
         totalOfferPrice: "",
         stampDuty: "",
@@ -166,6 +168,8 @@ const MultiStepForm = ({
         "pincode", // number
         "location",
         "distanceFromCityCenter",
+        "latitude",
+        "longitude",
         "totalSalesPrice", // number
         "totalOfferPrice", // number
         "stampDuty", // number

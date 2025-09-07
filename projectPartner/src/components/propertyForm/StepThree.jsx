@@ -6,7 +6,6 @@ const StepThree = ({
   imageFiles,
   setImageFiles,
 }) => {
-  
   // Property Image Selector
   const handleImageChange = (event, category) => {
     const files = Array.from(event.target.files);
@@ -87,6 +86,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("frontView", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -138,6 +138,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("nearestLandmark", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -189,6 +190,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("developedAmenities", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -248,6 +250,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("sideView", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -307,6 +310,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("hallView", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -368,6 +372,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("kitchenView", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -429,6 +434,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("bedroomView", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -490,6 +496,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("bathroomView", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >
@@ -549,6 +556,7 @@ const StepThree = ({
                     }`}
                   />
                   <button
+                    type="button"
                     onClick={() => removeImage("balconyView", index)}
                     className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                   >

@@ -142,9 +142,12 @@ function HomePropertySection() {
                   {property.propertyCategory}
                 </span>
                 <span className="text-[#076300] group-hover:text-white">
-                  {property.propertyType?.length > 16
-                    ? `${property.propertyType?.slice(0, 15)}...`
-                    : property.propertyType}
+                  {property.propertyType?.map((type, index) => (
+                    <span key={index}>
+                      {type.length > 16 ? `${type.slice(0, 15)}...` : type}
+                      {index < property.propertyType.length - 1 && ", "}
+                    </span>
+                  ))}
                 </span>
               </div>
 

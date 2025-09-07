@@ -129,7 +129,23 @@ export const getById = (req, res) => {
       return res.status(404).json({ message: "Property not found" });
     }
 
-    res.json(result[0]); // Return only the first property
+    // safely parse JSON fields
+    const formatted = result.map((row) => {
+      let parsedType = null;
+      try {
+        parsedType = row.propertyType ? JSON.parse(row.propertyType) : [];
+      } catch (e) {
+        console.warn("Invalid JSON in propertyType:", row.propertyType);
+        parsedType = [];
+      }
+
+      return {
+        ...row,
+        propertyType: parsedType,
+      };
+    });
+
+    res.json(formatted[0]);
   });
 };
 
@@ -201,6 +217,8 @@ export const addProperty = async (req, res) => {
     pincode,
     location,
     distanceFromCityCenter,
+    latitude,
+    longitude,
     totalSalesPrice,
     totalOfferPrice,
     stampDuty,
@@ -251,6 +269,8 @@ export const addProperty = async (req, res) => {
     !pincode ||
     !location ||
     !distanceFromCityCenter ||
+    !latitude ||
+    !longitude ||
     !totalSalesPrice ||
     !totalOfferPrice ||
     !stampDuty ||
@@ -283,7 +303,13 @@ export const addProperty = async (req, res) => {
   if (totalOfferPrice > 3000000) {
     registrationFees = (30000 / totalOfferPrice) * 100;
   } else {
-    registrationFees = 1;
+    if (
+      ["RentalFlat", "RentalShop", "RentalOffice"].includes(propertyCategory)
+    ) {
+      registrationFees = 0;
+    } else {
+      registrationFees = 1;
+    }
   }
 
   const seoSlug = toSlug(propertyName);
@@ -298,6 +324,24 @@ export const addProperty = async (req, res) => {
   };
 
   const emi = calculateEMI(Number(totalOfferPrice));
+
+  // Convert Property Type Into Array
+  let propertyTypeArray;
+
+  if (Array.isArray(propertyType)) {
+    // already an array
+    propertyTypeArray = propertyType;
+  } else if (typeof propertyType === "string") {
+    // convert comma-separated string into array
+    propertyTypeArray = propertyType
+      .split(",")
+      .map((item) => item.trim())
+      .filter((item) => item !== ""); // remove empty values
+  } else {
+    propertyTypeArray = [];
+  }
+
+  const propertyTypeJson = JSON.stringify(propertyTypeArray);
 
   const getImagePaths = (field) =>
     files[field]
@@ -332,7 +376,7 @@ export const addProperty = async (req, res) => {
       const insertSQL = `
         INSERT INTO properties (
           builderid, propertyCategory, propertyApprovedBy, propertyName, address, state, city, pincode, location,
-          distanceFromCityCenter, totalSalesPrice, totalOfferPrice, emi, stampDuty, registrationFee, gst, advocateFee, 
+          distanceFromCityCenter, latitude, longitude, totalSalesPrice, totalOfferPrice, emi, stampDuty, registrationFee, gst, advocateFee, 
           msebWater, maintenance, other, propertyType, builtYear, ownershipType, builtUpArea, carpetArea,
           parkingAvailability, totalFloors, floorNo, loanAvailability, propertyFacing, reraRegistered, 
           furnishing, waterSupply, powerBackup, locationFeature, sizeAreaFeature, parkingFeature, terraceFeature,
@@ -342,7 +386,7 @@ export const addProperty = async (req, res) => {
           nearestLandmark, developedAmenities, seoSlug,
           updated_at, created_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const values = [
@@ -356,6 +400,8 @@ export const addProperty = async (req, res) => {
         pincode,
         location,
         distanceFromCityCenter,
+        latitude,
+        longitude,
         totalSalesPrice,
         totalOfferPrice,
         emi,
@@ -366,7 +412,7 @@ export const addProperty = async (req, res) => {
         msebWater,
         maintenance,
         other,
-        propertyType,
+        propertyTypeJson,
         builtYear,
         ownershipType,
         builtUpArea,
@@ -450,6 +496,8 @@ export const update = async (req, res) => {
     pincode,
     location,
     distanceFromCityCenter,
+    latitude,
+    longitude,
     totalSalesPrice,
     totalOfferPrice,
     stampDuty,
@@ -500,6 +548,8 @@ export const update = async (req, res) => {
     !pincode ||
     !location ||
     !distanceFromCityCenter ||
+    !latitude ||
+    !longitude ||
     !totalSalesPrice ||
     !totalOfferPrice ||
     !stampDuty ||
@@ -530,12 +580,36 @@ export const update = async (req, res) => {
   // Property Registration Fee is 1% or Maximum 30,000 Rs
   let registrationFees;
   if (totalOfferPrice > 3000000) {
-    registrationFees = (30000 / totalOfferPrice) * 100; // percentage for ₹30,000
+    registrationFees = (30000 / totalOfferPrice) * 100;
   } else {
-    registrationFees = 1; // 1%
+    if (
+      ["RentalFlat", "RentalShop", "RentalOffice"].includes(propertyCategory)
+    ) {
+      registrationFees = 0;
+    } else {
+      registrationFees = 1;
+    }
   }
 
   const emi = calculateEMI(Number(totalOfferPrice));
+
+  // Convert Property Type Into Array
+  let propertyTypeArray;
+
+  if (Array.isArray(propertyType)) {
+    // already an array
+    propertyTypeArray = propertyType;
+  } else if (typeof propertyType === "string") {
+    // convert comma-separated string into array
+    propertyTypeArray = propertyType
+      .split(",")
+      .map((item) => item.trim())
+      .filter((item) => item !== ""); // remove empty values
+  } else {
+    propertyTypeArray = [];
+  }
+
+  const propertyTypeJson = JSON.stringify(propertyTypeArray);
 
   // Fetch existing property to retain old image paths if not replaced
   db.query(
@@ -557,7 +631,7 @@ export const update = async (req, res) => {
       const updateSQL = `
       UPDATE properties SET 
         builderid=?, propertyCategory=?, propertyApprovedBy=?, propertyName=?, address=?, state=?, city=?, pincode=?, location=?,
-        distanceFromCityCenter=?, totalSalesPrice=?, totalOfferPrice=?, emi=?, stampDuty=?, registrationFee=?, gst=?, advocateFee=?, 
+        distanceFromCityCenter=?, latitude=?, longitude=?, totalSalesPrice=?, totalOfferPrice=?, emi=?, stampDuty=?, registrationFee=?, gst=?, advocateFee=?, 
         msebWater=?, maintenance=?, other=?, propertyType=?, builtYear=?, ownershipType=?,
         builtUpArea=?, carpetArea=?, parkingAvailability=?, totalFloors=?, floorNo=?, loanAvailability=?,
         propertyFacing=?, reraRegistered=?, furnishing=?, waterSupply=?, powerBackup=?, locationFeature=?, sizeAreaFeature=?, parkingFeature=?, terraceFeature=?,
@@ -579,6 +653,8 @@ export const update = async (req, res) => {
         pincode,
         location,
         distanceFromCityCenter,
+        latitude,
+        longitude,
         totalSalesPrice,
         totalOfferPrice,
         emi,
@@ -589,7 +665,7 @@ export const update = async (req, res) => {
         msebWater,
         maintenance,
         other,
-        propertyType,
+        propertyTypeJson,
         builtYear,
         ownershipType,
         builtUpArea,

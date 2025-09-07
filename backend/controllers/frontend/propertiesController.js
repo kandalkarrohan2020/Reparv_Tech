@@ -24,7 +24,23 @@ export const getAll = (req, res) => {
       console.error("Error fetching:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    res.json(result);
+    // safely parse JSON fields
+    const formatted = result.map((row) => {
+      let parsedType = null;
+      try {
+        parsedType = row.propertyType ? JSON.parse(row.propertyType) : [];
+      } catch (e) {
+        console.warn("Invalid JSON in propertyType:", row.propertyType);
+        parsedType = [];
+      }
+
+      return {
+        ...row,
+        propertyType: parsedType,
+      };
+    });
+
+    res.json(formatted);
   });
 };
 
@@ -50,9 +66,14 @@ export const getAllBySlug = (req, res) => {
     params.push(propertyCategory);
   }
 
-  if (propertyType && propertyType.trim() !== "") {
-    sql += ` AND p.propertyType = ?`;
-    params.push(propertyType);
+  // Handle propertyType (stored as JSON array in DB)
+  if (propertyType && propertyType !== "properties") {
+    const types = propertyType.split(","); // e.g. "Flat,Villa" -> ["Flat","Villa"]
+    const orConditions = types
+      .map(() => "JSON_CONTAINS(p.propertyType, ?)")
+      .join(" OR ");
+    sql += ` AND (${orConditions})`;
+    types.forEach((cat) => params.push(JSON.stringify(cat)));
   }
 
   if (city && city.trim() !== "") {
@@ -65,46 +86,25 @@ export const getAllBySlug = (req, res) => {
   db.query(sql, params, (err, result) => {
     if (err) {
       console.error("Error fetching:", err);
-      return res
-        .status(500)
-        .json({ message: "Database error", error: err });
+      return res.status(500).json({ message: "Database error", error: err });
     }
-    res.json(result);
-  });
-};
+    // safely parse JSON fields
+    const formatted = result.map((row) => {
+      let parsedType = null;
+      try {
+        parsedType = row.propertyType ? JSON.parse(row.propertyType) : [];
+      } catch (e) {
+        console.warn("Invalid JSON in propertyType:", row.propertyType);
+        parsedType = [];
+      }
 
-// Get All Properties By Slug like 1-BHK-NewFlat-in-Nagpur
-export const getAllBySlugOld = (req, res) => {
-  const { city, propertyCategory, propertyType } = req.query;
+      return {
+        ...row,
+        propertyType: parsedType,
+      };
+    });
 
-  let sql = `SELECT * FROM properties WHERE status='Active' AND approve='Approved'`;
-  const params = [];
-
-  if (propertyCategory && propertyCategory !== "properties") {
-    sql += ` AND propertyCategory = ?`;
-    params.push(propertyCategory);
-  }
-
-  if (propertyType && propertyType.trim() !== "") {
-    sql += ` AND propertyType = ?`;
-    params.push(propertyType);
-  }
-
-  if (city && city.trim() !== "") {
-    sql += ` AND city = ?`;
-    params.push(city);
-  }
-
-  sql += ` ORDER BY propertyid DESC`;
-
-  db.query(sql, params, (err, result) => {
-    if (err) {
-      console.error("Error fetching:", err);
-      return res
-        .status(500)
-        .json({ message: "Database error", error: err });
-    }
-    res.json(result);
+    res.json(formatted);
   });
 };
 
@@ -165,7 +165,6 @@ export const getLocationsByCityAndCategory = (req, res) => {
     res.status(200).json(locations);
   });
 };
-
 
 // ** Fetch Property Information by ID **
 export const fetchAdditionalInfo = (req, res) => {

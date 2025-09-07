@@ -31,26 +31,29 @@ export default function KYC() {
     accountholdername: "",
   });
 
+  // State: each category stores an array of files
   const [imageFiles, setImageFiles] = useState({
-    adharImage: null,
-    panImage: null,
-    reraImage: null,
+    adharImage: [],
+    panImage: [],
+    reraImage: [],
   });
 
+  // Handle multiple file selection
   const handleImageChange = (event, category) => {
-    const file = event.target.files[0];
-    if (!file) return;
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
 
     setImageFiles((prev) => ({
       ...prev,
-      [category]: file,
+      [category]: [...prev[category], ...files], // append new files
     }));
   };
 
-  const removeImage = (category) => {
+  // Remove a specific image by index
+  const removeImage = (category, index) => {
     setImageFiles((prev) => ({
       ...prev,
-      [category]: null,
+      [category]: prev[category].filter((_, i) => i !== index),
     }));
   };
 
@@ -111,24 +114,44 @@ export default function KYC() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(!imageFiles.adharImage){
-       alert("Please Add New Aadhaar Image for KYC");
-       return
+
+    // Validation
+    if (imageFiles.adharImage.length !== 2) {
+      alert("Please Add Aadhaar Front & Back Images for KYC");
+      return;
     }
-    if(!imageFiles.panImage){
-       alert("Please Add New Pan Image for KYC");
-       return
+    if (imageFiles.panImage.length !== 2) {
+      alert("Please Add PAN Front & Back Images for KYC");
+      return;
     }
 
     const formData = new FormData();
+
+    // Append user data
     Object.entries(userData).forEach(([key, value]) => {
       formData.append(key, value);
     });
-    if (imageFiles.adharImage)
-      formData.append("adharImage", imageFiles.adharImage);
-    if (imageFiles.panImage) formData.append("panImage", imageFiles.panImage);
-    if (imageFiles.reraImage)
-      formData.append("reraImage", imageFiles.reraImage);
+
+    // Append Aadhaar images
+    if (imageFiles.adharImage.length > 1) {
+      imageFiles.adharImage.forEach((file, index) => {
+        formData.append("adharImage", file);
+      });
+    }
+
+    // Append PAN images
+    if (imageFiles.panImage.length > 1) {
+      imageFiles.panImage.forEach((file, index) => {
+        formData.append("panImage", file);
+      });
+    }
+
+    // Append RERA images (optional)
+    if (imageFiles.reraImage.length > 0) {
+      imageFiles.reraImage.forEach((file, index) => {
+        formData.append("reraImage", file);
+      });
+    }
 
     try {
       setLoading(true);
@@ -141,12 +164,8 @@ export default function KYC() {
         }
       );
 
-      if (response.status === 409) {
-        alert("Onboarding Partner already exists!");
-      } else if (!response.ok) {
-        throw new Error(`Failed to save property. Status: ${response.status}`);
-      } else {
-        alert("Data SuccessFully Send For KYC!");
+      if (response.ok) {
+        alert("Data Successfully Sent For KYC!");
         alert("Login Again!");
         navigate("/", { replace: true });
         setUserData({
@@ -166,6 +185,9 @@ export default function KYC() {
           accountnumber: "",
           accountholdername: "",
         });
+        setImageFiles({ adharImage: [], panImage: [], reraImage: [] });
+      } else {
+        throw new Error(`Failed to save kyc data. Status: ${response.status}`);
       }
     } catch (err) {
       console.error("Error saving Onboarding Partner:", err);
@@ -207,11 +229,11 @@ export default function KYC() {
           />
 
           <div className="w-full ">
-            <label className={`${
-              userData.bankname
-                ? "text-green-600"
-                : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}>
+            <label
+              className={`${
+                userData.bankname ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Bank Name <span className="text-red-600">*</span>
             </label>
             <input
@@ -230,11 +252,13 @@ export default function KYC() {
           </div>
 
           <div className="w-full ">
-            <label className={`${
-              userData.accountholdername
-                ? "text-green-600"
-                : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}>
+            <label
+              className={`${
+                userData.accountholdername
+                  ? "text-green-600"
+                  : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Account Holder Name <span className="text-red-600">*</span>
             </label>
             <input
@@ -253,11 +277,11 @@ export default function KYC() {
           </div>
 
           <div className="w-full">
-            <label className={`${
-              userData.accountnumber
-                ? "text-green-600"
-                : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}>
+            <label
+              className={`${
+                userData.accountnumber ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Account Number <span className="text-red-600">*</span>
             </label>
             <input
@@ -276,11 +300,11 @@ export default function KYC() {
           </div>
 
           <div className="w-full ">
-            <label className={`${
-              userData.ifsc
-                ? "text-green-600"
-                : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}>
+            <label
+              className={`${
+                userData.ifsc ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               IFSC Code of Your Bank <span className="text-red-600">*</span>
             </label>
             <input
@@ -303,11 +327,11 @@ export default function KYC() {
         </h2>
         <div className="w-full grid gap-4 place-items-center grid-cols-1 md:grid-cols-3 xl:grid-cols-4 mb-4">
           <div className="w-full">
-            <label className={`${
-              userData.address
-                ? "text-green-600"
-                : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}>
+            <label
+              className={`${
+                userData.address ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Address <span className="text-red-600">*</span>
             </label>
             <input
@@ -327,11 +351,11 @@ export default function KYC() {
 
           {/* State Select Input */}
           <div className="w-full">
-            <label className={`${
-              userData.state
-                ? "text-green-600"
-                : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}>
+            <label
+              className={`${
+                userData.state ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Select State <span className="text-red-600">*</span>
             </label>
             <select
@@ -357,11 +381,11 @@ export default function KYC() {
 
           {/* City Select Input */}
           <div className="w-full">
-            <label className={`${
-              userData.city
-                ? "text-green-600"
-                : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}>
+            <label
+              className={`${
+                userData.city ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Select City <span className="text-red-600">*</span>
             </label>
             <select
@@ -386,11 +410,11 @@ export default function KYC() {
           </div>
 
           <div className="w-full">
-            <label className={`${
-              userData.pincode
-                ? "text-green-600"
-                : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}>
+            <label
+              className={`${
+                userData.pincode ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Pin-Code <span className="text-red-600">*</span>
             </label>
             <input
@@ -417,11 +441,11 @@ export default function KYC() {
         </h2>
         <div className="w-full grid gap-4 place-items-center grid-cols-1 md:grid-cols-3 xl:grid-cols-4 mb-4">
           <div className="w-full">
-            <label className={`${
-              userData.adharno
-                ? "text-green-600"
-                : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}>
+            <label
+              className={`${
+                userData.adharno ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Adhar Card Number <span className="text-red-600">*</span>
             </label>
             <input
@@ -440,11 +464,11 @@ export default function KYC() {
           </div>
 
           <div className="w-full">
-            <label className={`${
-              userData.panno
-                ? "text-green-600"
-                : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}>
+            <label
+              className={`${
+                userData.panno ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Pan Card Number <span className="text-red-600">*</span>
             </label>
             <input
@@ -462,11 +486,11 @@ export default function KYC() {
             />
           </div>
           <div className="w-full">
-            <label className={`${
-              userData.experience
-                ? "text-green-600"
-                : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}>
+            <label
+              className={`${
+                userData.experience ? "text-green-600" : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
               Experience <span className="text-red-600">*</span>
             </label>
             <input
@@ -486,126 +510,114 @@ export default function KYC() {
           <div></div>
           {/* Aadhaar Image Upload */}
           <div className="w-full">
-            <label className={`${
-              imageFiles.adharImage
-                ? "text-green-600"
-                : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}>
-              Upload Aadhaar Card Image <span className="text-red-600">*</span>
-            </label>
-            <div
+            <label
               className={`${
-                userData.adharimage ? "block" : "hidden"
-              } relative mt-2`}
+                imageFiles.adharImage.length > 0
+                  ? "text-green-600"
+                  : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
             >
-              <img
-                src={URI + userData?.adharimage}
-                onClick={()=>{
-                  window.open(URI + userData?.adharimage, "_blank");
-                }}
-                alt="Aadhaar Preview"
-                className="w-full max-w-[100px] object-cover rounded-lg border border-gray-300 cursor-pointer"
-              />
-            </div>
-            <div className="w-full max-h-[200px] mt-2">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageChange(e, "adharImage")}
-                className="hidden"
-                id="adharImageUpload"
-              />
-              <label
-                htmlFor="adharImageUpload"
-                className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-              >
-                <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                  Upload Image
-                </span>
-                <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white placeholder:text-black">
-                  Browse
-                </div>
-              </label>
-            </div>
+              Aadhaar Front & Back Images{" "}
+              <span className="text-red-600">*</span>
+            </label>
 
-            {/* Preview Section */}
-            {imageFiles.adharImage && (
-              <div className="relative mt-2">
-                <img
-                  src={URL.createObjectURL(imageFiles.adharImage)}
-                  alt="Aadhaar Preview"
-                  className="w-full object-cover rounded-lg border border-gray-300"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeImage("adharImage")}
-                  className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-                >
-                  ✕
-                </button>
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={(e) => handleImageChange(e, "adharImage")}
+              className="hidden"
+              id="adharImageUpload"
+            />
+
+            <label
+              htmlFor="adharImageUpload"
+              className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer mt-2"
+            >
+              <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
+                Upload Images
+              </span>
+              <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                Browse
+              </div>
+            </label>
+
+            {/* Preview Aadhaar Images */}
+            {imageFiles.adharImage.length > 0 && (
+              <div className="flex flex-wrap gap-3 mt-3">
+                {imageFiles.adharImage.map((file, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt="Aadhaar"
+                      className="w-full max-w-[120px] object-cover rounded border"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage("adharImage", index)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </div>
 
           {/* PAN Image Upload */}
           <div className="w-full">
-            <label className={`${
-              imageFiles.panImage
-                ? "text-green-600"
-                : "text-[#00000066]"
-            } block text-sm leading-4 font-medium`}>
-              Upload PAN Card Image <span className="text-red-600">*</span>
-            </label>
-            <div
+            <label
               className={`${
-                userData.panimage ? "block" : "hidden"
-              } relative mt-2`}
-            > 
-              <img
-                src={URI + userData?.panimage}
-                onClick={()=>{
-                  window.open(URI + userData?.adharimage, "_blank");
-                }}
-                alt="Pancard Preview"
-                className="w-full max-w-[100px] object-cover rounded-lg border border-gray-300 cursor-pointer"
-              />
-            </div>
-            <div className="w-full mt-2">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageChange(e, "panImage")}
-                className="hidden"
-                id="panImageUpload"
-              />
-              <label
-                htmlFor="panImageUpload"
-                className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-              >
-                <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                  Upload Image
-                </span>
-                <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white placeholder:text-black">
-                  Browse
-                </div>
-              </label>
-            </div>
+                imageFiles.panImage.length > 0
+                  ? "text-green-600"
+                  : "text-[#00000066]"
+              } block text-sm leading-4 font-medium`}
+            >
+              PAN Card Front & Back Images{" "}
+              <span className="text-red-600">*</span>
+            </label>
+
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={(e) => handleImageChange(e, "panImage")}
+              className="hidden"
+              id="panImageUpload"
+            />
+
+            <label
+              htmlFor="panImageUpload"
+              className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer mt-2"
+            >
+              <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
+                Upload Images
+              </span>
+              <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                Browse
+              </div>
+            </label>
 
             {/* Preview Section */}
-            {imageFiles.panImage && (
-              <div className="relative mt-2">
-                <img
-                  src={URL.createObjectURL(imageFiles.panImage)}
-                  alt="PAN Preview"
-                  className="w-full object-cover rounded-lg border border-gray-300"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeImage("panImage")}
-                  className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-                >
-                  ✕
-                </button>
+            {imageFiles.panImage.length > 0 && (
+              <div className="flex flex-wrap gap-3 mt-3">
+                {imageFiles.panImage.map((file, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt="PAN Preview"
+                      className="w-full max-w-[120px] object-cover rounded border"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage("panImage", index)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </div>

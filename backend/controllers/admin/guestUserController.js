@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 import bcrypt from "bcryptjs";
@@ -147,6 +149,7 @@ export const edit = (req, res) => {
   if (!userid) {
     return res.status(400).json({ message: "Invalid User ID" });
   }
+
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const {
     fullname,
@@ -178,47 +181,84 @@ export const edit = (req, res) => {
     : null;
   const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
 
-  let updateSql = `UPDATE guestUsers SET fullname = ?, contact = ?, email = ?, address = ?, state = ?, city = ?, pincode = ?, experience = ?, adharno = ?, panno = ?, bankname = ?, accountholdername = ?, accountnumber = ?, ifsc = ?, updated_at = ?`;
-  const updateValues = [
-    fullname,
-    contact,
-    email,
-    address,
-    state,
-    city,
-    pincode,
-    experience,
-    adharno,
-    panno,
-    bankname,
-    accountholdername,
-    accountnumber,
-    ifsc,
-    currentdate,
-  ];
-
-  if (adharImageUrl) {
-    updateSql += `, adharimage = ?`;
-    updateValues.push(adharImageUrl);
-  }
-
-  if (panImageUrl) {
-    updateSql += `, panimage = ?`;
-    updateValues.push(panImageUrl);
-  }
-
-  updateSql += ` WHERE id = ?`;
-  updateValues.push(userid);
-
-  db.query(updateSql, updateValues, (updateErr, result) => {
-    if (updateErr) {
-      console.error("Error updating User:", updateErr);
-      return res
-        .status(500)
-        .json({ message: "Database error during update", error: updateErr });
+  // First fetch old images (to delete if replaced)
+  const selectSql = `SELECT adharimage, panimage FROM guestUsers WHERE id = ?`;
+  db.query(selectSql, [userid], (selectErr, rows) => {
+    if (selectErr) {
+      console.error("Error fetching old images:", selectErr);
+      return res.status(500).json({ message: "Database error" });
     }
 
-    res.status(200).json({ message: "User updated successfully" });
+    const oldAdhar = rows[0]?.adharimage;
+    const oldPan = rows[0]?.panimage;
+
+    let updateSql = `
+      UPDATE guestUsers 
+      SET fullname = ?, contact = ?, email = ?, address = ?, state = ?, city = ?, 
+          pincode = ?, experience = ?, adharno = ?, panno = ?, bankname = ?, 
+          accountholdername = ?, accountnumber = ?, ifsc = ?, updated_at = ?
+    `;
+    const updateValues = [
+      fullname,
+      contact,
+      email,
+      address,
+      state,
+      city,
+      pincode,
+      experience,
+      adharno,
+      panno,
+      bankname,
+      accountholdername,
+      accountnumber,
+      ifsc,
+      currentdate,
+    ];
+
+    if (adharImageUrl) {
+      updateSql += `, adharimage = ?`;
+      updateValues.push(adharImageUrl);
+    }
+
+    if (panImageUrl) {
+      updateSql += `, panimage = ?`;
+      updateValues.push(panImageUrl);
+    }
+
+    updateSql += ` WHERE id = ?`;
+    updateValues.push(userid);
+
+    db.query(updateSql, updateValues, (updateErr) => {
+      if (updateErr) {
+        console.error("Error updating User:", updateErr);
+        return res
+          .status(500)
+          .json({ message: "Database error during update", error: updateErr });
+      }
+
+      // Delete old Aadhaar image if replaced
+      if (adharImageUrl && oldAdhar) {
+        const oldPath = path.join(process.cwd(), oldAdhar.replace(/^\//, ""));
+        if (fs.existsSync(oldPath)) {
+          fs.unlink(oldPath, (err) => {
+            if (err) console.warn("Failed to delete old Aadhaar image:", err);
+          });
+        }
+      }
+
+      // Delete old PAN image if replaced
+      if (panImageUrl && oldPan) {
+        const oldPath = path.join(process.cwd(), oldPan.replace(/^\//, ""));
+        if (fs.existsSync(oldPath)) {
+          fs.unlink(oldPath, (err) => {
+            if (err) console.warn("Failed to delete old PAN image:", err);
+          });
+        }
+      }
+
+      res.status(200).json({ message: "User updated successfully" });
+    });
   });
 };
 

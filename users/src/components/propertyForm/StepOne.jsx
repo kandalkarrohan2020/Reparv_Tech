@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../store/auth";
+import LocationPicker from "./LocationPicker";
 
 const StepOne = ({
   newProperty,
@@ -13,7 +14,7 @@ const StepOne = ({
   const { URI } = useAuth();
 
   // For Property Name Checking
-  const [isSame, setIsSame] = useState(false);
+  const [isSame, setIsSame] = useState(true);
   const [message, setMessage] = useState("");
 
   const checkPropertyName = async () => {
@@ -376,6 +377,43 @@ const StepOne = ({
           </select>
         </div>
         
+      {/* Map Picker */}
+        <div
+          className={`${
+            newProperty.state && newProperty.city && newProperty.pincode
+              ? "block"
+              : "hidden"
+          } w-full col-span-1 lg:col-span-2 xl:col-span-3`}
+        >
+          <label
+            className={`${
+              newProperty.latitude && newProperty.longitude
+                ? "text-green-600"
+                : "text-[#00000066]"
+            } block text-sm leading-4 font-medium mb-2`}
+          >
+            Select Correct Location on Map{" "}
+            <span className="text-red-600">*</span>
+          </label>
+
+          {/* Leaflet Picker */}
+          {newProperty.state && newProperty.city && newProperty.pincode && (
+            <LocationPicker
+              onChange={({ latitude, longitude }) =>
+                setPropertyData({
+                  ...newProperty,
+                  latitude,
+                  longitude,
+                })
+              }
+              state={newProperty.state}
+              city={newProperty.city}
+              pincode={newProperty.pincode}
+              latitude={newProperty.latitude}
+              longitude={newProperty.longitude}
+            />
+          )}
+        </div>
       </div>
 
       <h2 className="text-base font-semibold mt-6 mb-4">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -9,12 +9,11 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { FaMapMarkerAlt } from "react-icons/fa";
+import { useAuth } from "../../store/auth";
 
-// Custom Marker Icon with HTML
-// Custom Marker Icon with HTML
+// Custom Marker Icon
 const markerIcon = new L.DivIcon({
-  className: "custom-marker", // optional for styling
+  className: "custom-marker",
   html: `
     <div style="
       position: relative;
@@ -39,22 +38,26 @@ const markerIcon = new L.DivIcon({
     </div>
   `,
   iconSize: [30, 30],
-  iconAnchor: [15, 30], // bottom center
+  iconAnchor: [15, 30],
   popupAnchor: [0, -30],
 });
 
-// Helper: Fly map to new location
+// Cache for geocoding results
+const geocodeCache = {};
+
+// Smooth map movement
 function FlyToLocation({ coords }) {
   const map = useMap();
   useEffect(() => {
     if (coords) {
-      map.flyTo(coords, 12); // zoom level 12 for city
+      map.flyTo(coords, 12, { animate: true, duration: 1.2 });
     }
   }, [coords, map]);
   return null;
 }
 
-function LocationMarker({ onLocationSelect }) {
+// Handles clicks + reverse geocoding
+function LocationMarker({ onLocationSelect, URI }) {
   const [position, setPosition] = useState(null);
 
   useMapEvents({
@@ -63,25 +66,26 @@ function LocationMarker({ onLocationSelect }) {
       setPosition([lat, lng]);
 
       try {
-        // Reverse geocoding for pincode
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
-        );
+        const cacheKey = `${lat},${lng}`;
+        if (geocodeCache[cacheKey]) {
+          onLocationSelect({
+            latitude: lat,
+            longitude: lng,
+            pincode: geocodeCache[cacheKey],
+          });
+          return;
+        }
+
+        // call backend reverse geocode API
+        const res = await fetch(`${URI}/api/map/reverse?lat=${lat}&lon=${lng}`);
         const data = await res.json();
         const pincode = data?.address?.postcode || "";
 
-        onLocationSelect({
-          latitude: lat,
-          longitude: lng,
-          pincode,
-        });
+        geocodeCache[cacheKey] = pincode;
+        onLocationSelect({ latitude: lat, longitude: lng, pincode });
       } catch (err) {
         console.error("Reverse geocoding error:", err);
-        onLocationSelect({
-          latitude: lat,
-          longitude: lng,
-          pincode: "",
-        });
+        onLocationSelect({ latitude: lat, longitude: lng, pincode: "" });
       }
     },
   });
@@ -91,60 +95,110 @@ function LocationMarker({ onLocationSelect }) {
   );
 }
 
-export default function LocationPicker({ onChange, state, city, pincode }) {
+// Main Component
+export default function LocationPicker({
+  onChange,
+  state,
+  city,
+  pincode,
+  latitude,
+  longitude,
+}) {
+  const { URI } = useAuth();
   const [coords, setCoords] = useState(null);
+  const isFetching = useRef(false);
 
+  // If lat/lon already present → set as initial marker
   useEffect(() => {
-    if (!city && !state && !pincode) return;
+    if (latitude && longitude) {
+      setCoords([parseFloat(latitude), parseFloat(longitude)]);
+    }
+  }, [latitude, longitude]);
 
-    const query = `${city ? city + "," : ""} ${state ? state + "," : ""} ${
-      pincode ? pincode + "," : ""
-    } India`;
+  // If no coords, try geocoding from state/city/pincode
+  useEffect(() => {
+    if (coords || (!city && !state && !pincode)) return;
 
-    fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-        query
-      )}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.length > 0) {
-          setCoords([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
-        }
-      })
-      .catch((err) => console.error("Geocoding error:", err));
-  }, [city, state, pincode]);
+    const query = `${pincode ? pincode + "," : ""} ${city ? city + "," : ""} ${
+      state ? state + "," : ""
+    } India`.trim();
+
+    if (geocodeCache[query]) {
+      setCoords(geocodeCache[query]);
+      return;
+    }
+
+    if (isFetching.current) return;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      isFetching.current = true;
+
+      fetch(`${URI}/api/map/geocode?q=${encodeURIComponent(query)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.length > 0) {
+            const newCoords = [
+              parseFloat(data[0].lat),
+              parseFloat(data[0].lon),
+            ];
+            setCoords(newCoords);
+            geocodeCache[query] = newCoords;
+          }
+        })
+        .catch((err) => {
+          if (err.name !== "AbortError") {
+            console.error("Geocoding error:", err);
+          }
+        })
+        .finally(() => {
+          isFetching.current = false;
+        });
+    }, 400);
+
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [city, state, pincode, URI, coords]);
 
   return (
     <div className="w-full">
       <div className="w-full h-[300px] rounded-lg overflow-hidden border">
         <MapContainer
-          center={[20.5937, 78.9629]} // Default India
-          zoom={2}
+          center={coords || [20.5937, 78.9629]}
+          zoom={coords ? 12 : 5}
           style={{ height: "100%", width: "100%" }}
         >
           <LayersControl position="topright">
-            {/* Normal OSM Map */}
-            <LayersControl.BaseLayer checked name="Street Map">
+            <LayersControl.BaseLayer checked name="Street Map (English)">
               <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/">OSM</a>'
+                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                subdomains={["a", "b", "c", "d"]}
               />
             </LayersControl.BaseLayer>
 
-            {/* Satellite View (from ESRI) */}
             <LayersControl.BaseLayer name="Satellite View">
               <TileLayer
                 attribution="Tiles &copy; Esri"
                 url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
               />
             </LayersControl.BaseLayer>
+
+            <LayersControl.Overlay checked name="Buildings (English)">
+              <TileLayer
+                attribution='&copy; <a href="https://carto.com/">Carto + OSM</a>'
+                url="https://cartodb-basemaps-a.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png"
+                subdomains={["a", "b", "c", "d"]}
+              />
+            </LayersControl.Overlay>
           </LayersControl>
 
-          {/* Fly to new state/city/pincode when coords update */}
+          {/* Other children */}
           <FlyToLocation coords={coords} />
-
-          <LocationMarker onLocationSelect={onChange} />
+          {coords && <Marker position={coords} icon={markerIcon} />}
+          <LocationMarker onLocationSelect={onChange} URI={URI} />
         </MapContainer>
       </div>
     </div>

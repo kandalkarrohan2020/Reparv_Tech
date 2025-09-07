@@ -183,6 +183,59 @@ const UpdateImagesForm = ({
   useEffect(() => {
     //fetchImages(propertyId);
   }, []);
+  const imageOptions = [
+    { value: "frontView", label: "Front View" },
+    {
+      value: "sideView",
+      label: "Side View",
+      exclude: ["CommercialPlot", "NewPlot", "FarmLand"],
+    },
+    {
+      value: "hallView",
+      label: "Hall View",
+      exclude: ["CommercialPlot", "NewPlot", "FarmLand"],
+    },
+    {
+      value: "kitchenView",
+      label: "Kitchen View",
+      exclude: [
+        "CommercialPlot",
+        "NewPlot",
+        "FarmLand",
+        "IndustrialSpace",
+        "RentalShop",
+      ],
+    },
+    {
+      value: "bedroomView",
+      label: "Bedroom View",
+      exclude: [
+        "CommercialPlot",
+        "NewPlot",
+        "FarmLand",
+        "IndustrialSpace",
+        "RentalShop",
+      ],
+    },
+    {
+      value: "bathroomView",
+      label: "Bathroom View",
+      exclude: [
+        "CommercialPlot",
+        "NewPlot",
+        "FarmLand",
+        "IndustrialSpace",
+        "RentalShop",
+      ],
+    },
+    {
+      value: "balconyView",
+      label: "Balcony View",
+      exclude: ["CommercialPlot", "NewPlot", "FarmLand"],
+    },
+    { value: "nearestLandmark", label: "Nearest Landmark" },
+    { value: "developedAmenities", label: "Developed Amenities" },
+  ];
 
   return (
     <div
@@ -209,66 +262,35 @@ const UpdateImagesForm = ({
                 setPropertyId(e.target.value);
               }}
             />
+            {/* Select Image Type for Update */}
             <div className="w-full">
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+              <label
+                className={`${
+                  selectedImageType ? "text-green-600" : "text-[#00000066]"
+                } block text-sm leading-4 font-medium`}
+              >
                 Select Image Type <span className="text-red-600">*</span>
               </label>
               <select
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
-                style={{ backgroundImage: "none" }}
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent"
                 value={selectedImageType}
                 onChange={(e) => setselectedImageType(e.target.value)}
               >
                 <option value="" disabled>
-                  {" "}
-                  Select Image Type{" "}
+                  Select Image Type
                 </option>
-                <option value="frontView">Front View</option>
 
-                {newProperty.propertyCategory !== "CommercialPlot" ||
-                  newProperty.propertyCategory !== "NewPlot" ||
-                  (newProperty.propertyCategory !== "FarmLand" && (
-                    <option value="sideView">Side View</option>
+                {imageOptions
+                  .filter(
+                    (opt) =>
+                      !opt.exclude ||
+                      !opt.exclude.includes(newProperty.propertyCategory)
+                  )
+                  .map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
                   ))}
-
-                {newProperty.propertyCategory !== "CommercialPlot" ||
-                  newProperty.propertyCategory !== "NewPlot" ||
-                  (newProperty.propertyCategory !== "FarmLand" && (
-                    <option value="hallView">Hall View</option>
-                  ))}
-
-                {newProperty.propertyCategory !== "CommercialPlot" ||
-                  newProperty.propertyCategory !== "NewPlot" ||
-                  newProperty.propertyCategory !== "FarmLand" ||
-                  newProperty.propertyCategory !== "IndustrialSpace" ||
-                  (newProperty.propertyCategory !== "RentalShop" && (
-                    <option value="kitchenView">Kitchen View</option>
-                  ))}
-
-                {newProperty.propertyCategory !== "CommercialPlot" ||
-                  newProperty.propertyCategory !== "NewPlot" ||
-                  newProperty.propertyCategory !== "FarmLand" ||
-                  newProperty.propertyCategory !== "IndustrialSpace" ||
-                  (newProperty.propertyCategory !== "RentalShop" && (
-                    <option value="bedroomView">Bedroom View</option>
-                  ))}
-
-                {newProperty.propertyCategory !== "CommercialPlot" ||
-                  newProperty.propertyCategory !== "NewPlot" ||
-                  newProperty.propertyCategory !== "FarmLand" ||
-                  newProperty.propertyCategory !== "IndustrialSpace" ||
-                  (newProperty.propertyCategory !== "RentalShop" && (
-                    <option value="bathroomView">Bathroom View</option>
-                  ))}
-
-                {newProperty.propertyCategory !== "CommercialPlot" ||
-                  newProperty.propertyCategory !== "NewPlot" ||
-                  (newProperty.propertyCategory !== "FarmLand" && (
-                    <option value="balconyView">Balcony View</option>
-                  ))}
-
-                <option value="nearestLandmark">Nearest Landmark</option>
-                <option value="developedAmenities">Developed Amenities</option>
               </select>
             </div>
 
@@ -339,6 +361,7 @@ const UpdateImagesForm = ({
                         }`}
                       />
                       <button
+                        type="button"
                         onClick={() => removeImage("frontView", index)}
                         className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                       >
@@ -418,6 +441,7 @@ const UpdateImagesForm = ({
                         }`}
                       />
                       <button
+                        type="button"
                         onClick={() => removeImage("nearestLandmark", index)}
                         className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                       >
@@ -496,6 +520,7 @@ const UpdateImagesForm = ({
                         }`}
                       />
                       <button
+                        type="button"
                         onClick={() => removeImage("developedAmenities", index)}
                         className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                       >
@@ -509,9 +534,9 @@ const UpdateImagesForm = ({
 
             <div
               className={`${
-                newProperty.propertyCategory === "CommercialPlot" ||
-                newProperty.propertyCategory === "NewPlot" ||
-                newProperty.propertyCategory === "FarmLand"
+                ["CommercialPlot", "NewPlot", "FarmLand"].includes(
+                  newProperty.propertyCategory
+                )
                   ? "hidden"
                   : selectedImageType === "sideView"
                   ? "block"
@@ -581,6 +606,7 @@ const UpdateImagesForm = ({
                         }`}
                       />
                       <button
+                        type="button"
                         onClick={() => removeImage("sideView", index)}
                         className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                       >
@@ -594,9 +620,9 @@ const UpdateImagesForm = ({
 
             <div
               className={`${
-                newProperty.propertyCategory === "CommercialPlot" ||
-                newProperty.propertyCategory === "NewPlot" ||
-                newProperty.propertyCategory === "FarmLand"
+                ["CommercialPlot", "NewPlot", "FarmLand"].includes(
+                  newProperty.propertyCategory
+                )
                   ? "hidden"
                   : selectedImageType === "hallView"
                   ? "block"
@@ -666,6 +692,7 @@ const UpdateImagesForm = ({
                         }`}
                       />
                       <button
+                        type="button"
                         onClick={() => removeImage("hallView", index)}
                         className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                       >
@@ -679,11 +706,13 @@ const UpdateImagesForm = ({
 
             <div
               className={`${
-                newProperty.propertyCategory === "CommercialPlot" ||
-                newProperty.propertyCategory === "NewPlot" ||
-                newProperty.propertyCategory === "FarmLand" ||
-                newProperty.propertyCategory === "IndustrialSpace" ||
-                newProperty.propertyCategory === "RentalShop"
+                [
+                  "CommercialPlot",
+                  "NewPlot",
+                  "FarmLand",
+                  "IndustrialSpace",
+                  "RentalShop",
+                ].includes(newProperty.propertyCategory)
                   ? "hidden"
                   : selectedImageType === "kitchenView"
                   ? "block"
@@ -753,6 +782,7 @@ const UpdateImagesForm = ({
                         }`}
                       />
                       <button
+                        type="button"
                         onClick={() => removeImage("kitchenView", index)}
                         className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                       >
@@ -766,11 +796,13 @@ const UpdateImagesForm = ({
 
             <div
               className={`${
-                newProperty.propertyCategory === "CommercialPlot" ||
-                newProperty.propertyCategory === "NewPlot" ||
-                newProperty.propertyCategory === "FarmLand" ||
-                newProperty.propertyCategory === "IndustrialSpace" ||
-                newProperty.propertyCategory === "RentalShop"
+                [
+                  "CommercialPlot",
+                  "NewPlot",
+                  "FarmLand",
+                  "IndustrialSpace",
+                  "RentalShop",
+                ].includes(newProperty.propertyCategory)
                   ? "hidden"
                   : selectedImageType === "bedroomView"
                   ? "block"
@@ -840,6 +872,7 @@ const UpdateImagesForm = ({
                         }`}
                       />
                       <button
+                        type="button"
                         onClick={() => removeImage("bedroomView", index)}
                         className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                       >
@@ -853,11 +886,13 @@ const UpdateImagesForm = ({
 
             <div
               className={`${
-                newProperty.propertyCategory === "CommercialPlot" ||
-                newProperty.propertyCategory === "NewPlot" ||
-                newProperty.propertyCategory === "FarmLand" ||
-                newProperty.propertyCategory === "IndustrialSpace" ||
-                newProperty.propertyCategory === "RentalShop"
+                [
+                  "CommercialPlot",
+                  "NewPlot",
+                  "FarmLand",
+                  "IndustrialSpace",
+                  "RentalShop",
+                ].includes(newProperty.propertyCategory)
                   ? "hidden"
                   : selectedImageType === "bathroomView"
                   ? "block"
@@ -927,6 +962,7 @@ const UpdateImagesForm = ({
                         }`}
                       />
                       <button
+                        type="button"
                         onClick={() => removeImage("bathroomView", index)}
                         className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                       >
@@ -940,9 +976,9 @@ const UpdateImagesForm = ({
 
             <div
               className={`${
-                newProperty.propertyCategory === "CommercialPlot" ||
-                newProperty.propertyCategory === "NewPlot" ||
-                newProperty.propertyCategory === "FarmLand"
+                ["CommercialPlot", "NewPlot", "FarmLand"].includes(
+                  newProperty.propertyCategory
+                )
                   ? "hidden"
                   : selectedImageType === "balconyView"
                   ? "block"
@@ -1012,6 +1048,7 @@ const UpdateImagesForm = ({
                         }`}
                       />
                       <button
+                        type="button"
                         onClick={() => removeImage("balconyView", index)}
                         className="absolute top-1 right-1 bg-red-500 text-white text-xs p-1 rounded-full"
                       >

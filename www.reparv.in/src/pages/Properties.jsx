@@ -96,7 +96,7 @@ export default function Properties() {
   const filteredData = filteredProperties?.filter(
     (item) =>
       item.propertyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.propertyType?.toLowerCase().includes(searchTerm.toLowerCase())
+      item.propertyCategory?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const fetchData = async () => {
@@ -129,7 +129,7 @@ export default function Properties() {
       if (!response.ok) throw new Error("Failed to fetch properties.");
 
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       setProperties(data);
     } catch (err) {
       console.error("Error fetching:", err);
@@ -250,8 +250,14 @@ export default function Properties() {
   return (
     <>
       <SEO
-        title={properties[0]?.metaTitle || "Explore All Property Types on Reparv – Buy, Rent or Invest"}
-        description={properties[0]?.metaDescription || "Find flats, plots, rentals, farmhouses, shops & commercial spaces in Nagpur & beyond. Explore verified listings & start your property journey with Reparv today!"}
+        title={
+          properties[0]?.metaTitle ||
+          "Explore All Property Types on Reparv – Buy, Rent or Invest"
+        }
+        description={
+          properties[0]?.metaDescription ||
+          "Find flats, plots, rentals, farmhouses, shops & commercial spaces in Nagpur & beyond. Explore verified listings & start your property journey with Reparv today!"
+        }
       />
       <div className="properties w-full max-w-[1400px] flex flex-col p-4 sm:py-4 sm:px-0 mx-auto">
         <div className="w-full flex flex-wrap gap-3 justify-beteen sm:justify-end sm:py-2 sm:px-5">
@@ -314,9 +320,9 @@ export default function Properties() {
                 {filteredData.length} Result
                 <span className="text-[#9C9CA3] font-normal"> Found </span>
               </h2>
-              <h2 className="text-base text-[#606060] font-semibold mr-3">
-                {selectedCity && properties[0]?.heading} 
-              </h2>
+              <h1 className="text-base text-[#606060] font-semibold mr-3">
+                {selectedCity && properties[0]?.heading}
+              </h1>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-4">
@@ -380,9 +386,14 @@ export default function Properties() {
                           {property.propertyCategory}
                         </span>
                         <span className="text-[#076300] group-hover:text-white">
-                          {property.propertyType?.length > 16
-                            ? `${property.propertyType?.slice(0, 15)}...`
-                            : property.propertyType}
+                          {property.propertyType?.map((type, index) => (
+                            <span key={index}>
+                              {type.length > 16
+                                ? `${type.slice(0, 15)}...`
+                                : type}
+                              {index < property.propertyType.length - 1 && ", "}
+                            </span>
+                          ))}
                         </span>
                       </div>
 

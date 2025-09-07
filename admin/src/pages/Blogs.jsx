@@ -40,12 +40,27 @@ const Blogs = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const singleImageChange = (event) => {
     const file = event.target.files[0];
-    if (file && file.size <= 1 * 1024 * 1024) {
-      setSelectedImage(file);
-      setNewBlog((prev) => ({ ...prev, blogImage: file }));
-    } else {
-      alert("File size must be less than 1MB");
+    if (!file) return;
+
+    // Allowed file types
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+
+    if (!allowedTypes.includes(file.type)) {
+      alert("Only PNG, JPG and JPEG formats are allowed!");
+      event.target.value = ""; // reset input
+      return;
     }
+
+    // File size check (1 MB max)
+    if (file.size > 1 * 1024 * 1024) {
+      alert("File size must be less than 1MB!");
+      event.target.value = ""; // reset input
+      return;
+    }
+
+    // If valid, set state
+    setSelectedImage(file);
+    setNewBlog((prev) => ({ ...prev, blogImage: file }));
   };
   const removeSingleImage = () => {
     setSelectedImage(null);

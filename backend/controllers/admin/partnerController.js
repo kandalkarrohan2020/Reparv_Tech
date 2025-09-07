@@ -3,6 +3,8 @@ import moment from "moment";
 import bcrypt from "bcryptjs";
 import sendEmail from "../../utils/nodeMailer.js";
 import { verifyRazorpayPayment } from "../paymentController.js";
+import fs from "fs";
+import path from "path";
 
 const saltRounds = 10;
 
@@ -407,6 +409,136 @@ export const add = (req, res) => {
 };
 
 export const edit = (req, res) => {
+  const partnerid = parseInt(req.params.id);
+  if (isNaN(partnerid)) {
+    return res.status(400).json({ message: "Invalid Partner ID" });
+  }
+
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const {
+    fullname,
+    contact,
+    email,
+    intrest,
+    address,
+    state,
+    city,
+    pincode,
+    experience,
+    adharno,
+    panno,
+    bankname,
+    accountholdername,
+    accountnumber,
+    ifsc,
+  } = req.body;
+
+  if (!fullname || !contact || !email) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  // Handle uploaded files
+  const adharImageFiles = req.files?.["adharImage"] || [];
+  const panImageFiles   = req.files?.["panImage"] || [];
+
+  const newAdharImageUrls = adharImageFiles.map(f => `/uploads/${f.filename}`);
+  const newPanImageUrls   = panImageFiles.map(f => `/uploads/${f.filename}`);
+
+  // Fetch old images first
+  const selectSql = `SELECT adharimage, panimage FROM onboardingpartner WHERE partnerid = ?`;
+  db.query(selectSql, [partnerid], (selectErr, rows) => {
+    if (selectErr) {
+      console.error("Error fetching old images:", selectErr);
+      return res.status(500).json({ message: "Database error", error: selectErr });
+    }
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Partner not found" });
+    }
+
+    // Delete old adhar images
+    if (rows[0].adharimage) {
+      try {
+        const oldAdharImages = JSON.parse(rows[0].adharimage);
+        oldAdharImages.forEach(imgPath => {
+          const filePath = path.join(process.cwd(), imgPath);
+          if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        });
+      } catch (err) {
+        console.warn("Error parsing old adharimage:", err);
+      }
+    }
+
+    // Delete old pan images
+    if (rows[0].panimage) {
+      try {
+        const oldPanImages = JSON.parse(rows[0].panimage);
+        oldPanImages.forEach(imgPath => {
+          const filePath = path.join(process.cwd(), imgPath);
+          if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        });
+      } catch (err) {
+        console.warn("Error parsing old panimage:", err);
+      }
+    }
+
+    // Prepare new JSON arrays
+    const adharImagesJson = newAdharImageUrls.length > 0 ? JSON.stringify(newAdharImageUrls) : null;
+    const panImagesJson   = newPanImageUrls.length > 0 ? JSON.stringify(newPanImageUrls) : null;
+
+    // Build update query
+    let updateSql = `
+      UPDATE onboardingpartner 
+      SET fullname = ?, contact = ?, email = ?, intrest = ?, address = ?, state = ?, city = ?, 
+          pincode = ?, experience = ?, adharno = ?, panno = ?, bankname = ?, accountholdername = ?, 
+          accountnumber = ?, ifsc = ?, updated_at = ?
+    `;
+    const updateValues = [
+      fullname,
+      contact,
+      email,
+      intrest,
+      address,
+      state,
+      city,
+      pincode,
+      experience,
+      adharno,
+      panno,
+      bankname,
+      accountholdername,
+      accountnumber,
+      ifsc,
+      currentdate,
+    ];
+
+    if (adharImagesJson) {
+      updateSql += `, adharimage = ?`;
+      updateValues.push(adharImagesJson);
+    }
+
+    if (panImagesJson) {
+      updateSql += `, panimage = ?`;
+      updateValues.push(panImagesJson);
+    }
+
+    updateSql += ` WHERE partnerid = ?`;
+    updateValues.push(partnerid);
+
+    db.query(updateSql, updateValues, (updateErr) => {
+      if (updateErr) {
+        console.error("Error updating Partner:", updateErr);
+        return res
+          .status(500)
+          .json({ message: "Database error during update", error: updateErr });
+      }
+
+      res.status(200).json({ message: "Partner updated successfully" });
+    });
+  });
+};
+
+export const editOld = (req, res) => {
   const partnerid = parseInt(req.params.id);
   if (isNaN(partnerid)) {
     return res.status(400).json({ message: "Invalid Partner ID" });

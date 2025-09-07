@@ -28,7 +28,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // ✅ Limit file size (5MB)
+  limits: { fileSize: 5 * 1024 * 1024 }, //  Limit file size (5MB)
   fileFilter: (req, file, cb) => {
     const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
     if (!allowedTypes.includes(file.mimetype)) {
@@ -45,18 +45,18 @@ router.get("/:partnerlister", getAll);
 router.post(
   "/add",
   upload.fields([
-    { name: "adharImage", maxCount: 1 },
-    { name: "panImage", maxCount: 1 },
-    { name: "reraImage", maxCount: 1 },
+    { name: "adharImage", maxCount: 2 },
+    { name: "panImage", maxCount: 2 },
+    { name: "reraImage", maxCount: 2 },
   ]),
   add
 );
 router.put(
   "/edit/:id",
   upload.fields([
-    { name: "adharImage", maxCount: 1 },
-    { name: "panImage", maxCount: 1 },
-    { name: "reraImage", maxCount: 1 },
+    { name: "adharImage", maxCount: 2 },
+    { name: "panImage", maxCount: 2 },
+    { name: "reraImage", maxCount: 2 },
   ]),
   edit
 );

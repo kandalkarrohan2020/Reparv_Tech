@@ -31,26 +31,29 @@ export default function KYC() {
     accountholdername: "",
   });
 
+  // State: each category stores an array of files
   const [imageFiles, setImageFiles] = useState({
-    adharImage: null,
-    panImage: null,
-    reraImage: null,
+    adharImage: [],
+    panImage: [],
+    reraImage: [],
   });
 
+  // Handle multiple file selection
   const handleImageChange = (event, category) => {
-    const file = event.target.files[0];
-    if (!file) return;
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
 
     setImageFiles((prev) => ({
       ...prev,
-      [category]: file,
+      [category]: [...prev[category], ...files], // append new files
     }));
   };
 
-  const removeImage = (category) => {
+  // Remove a specific image by index
+  const removeImage = (category, index) => {
     setImageFiles((prev) => ({
       ...prev,
-      [category]: null,
+      [category]: prev[category].filter((_, i) => i !== index),
     }));
   };
 
@@ -111,68 +114,89 @@ export default function KYC() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!imageFiles.adharImage) {
-      alert("Please Add New Aadhaar Image for KYC");
-      return;
-    }
-    if (!imageFiles.panImage) {
-      alert("Please Add New Pan Image for KYC");
-      return;
-    }
-    const formData = new FormData();
-    Object.entries(userData).forEach(([key, value]) => {
-      formData.append(key, value);
+  e.preventDefault();
+
+  // Validation
+  if (imageFiles.adharImage.length !== 2) {
+    alert("Please Add Aadhaar Front & Back Images for KYC");
+    return;
+  }
+  if (imageFiles.panImage.length !== 2) {
+    alert("Please Add PAN Front & Back Images for KYC");
+    return;
+  }
+
+  const formData = new FormData();
+
+  // Append user data
+  Object.entries(userData).forEach(([key, value]) => {
+    formData.append(key, value);
+  });
+
+  // Append Aadhaar images
+  if (imageFiles.adharImage.length > 1) {
+    imageFiles.adharImage.forEach((file, index) => {
+      formData.append("adharImage", file); 
     });
-    if (imageFiles.adharImage)
-      formData.append("adharImage", imageFiles.adharImage);
-    if (imageFiles.panImage) formData.append("panImage", imageFiles.panImage);
-    if (imageFiles.reraImage)
-      formData.append("reraImage", imageFiles.reraImage);
+  }
 
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `${URI}/admin/salespersons/edit/${userData.salespersonsid}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          body: formData,
-        }
-      );
+  // Append PAN images
+  if (imageFiles.panImage.length > 1) {
+    imageFiles.panImage.forEach((file, index) => {
+      formData.append("panImage", file);
+    });
+  }
 
-      if (response.status === 409) {
-        alert("Sales Person already exists!");
-      } else if (!response.ok) {
-        throw new Error(`Failed to save property. Status: ${response.status}`);
-      } else {
-        alert("Data SuccessFully Send For KYC!");
-        alert("Login Again!");
-        navigate("/", { replace: true });
-        setUserData({
-          fullname: "",
-          contact: "",
-          email: "",
-          address: "",
-          state: "",
-          city: "",
-          pincode: "",
-          experience: "",
-          adharno: "",
-          panno: "",
-          rerano: "",
-          ifsc: "",
-          bankname: "",
-          accountnumber: "",
-          accountholdername: "",
-        });
+  // Append RERA images (optional)
+  if (imageFiles.reraImage.length > 0) {
+    imageFiles.reraImage.forEach((file, index) => {
+      formData.append("reraImage", file);
+    });
+  }
+
+  try {
+    setLoading(true);
+    const response = await fetch(
+      `${URI}/admin/salespersons/edit/${userData.salespersonsid}`,
+      {
+        method: "PUT",
+        credentials: "include",
+        body: formData,
       }
-    } catch (err) {
-      console.error("Error saving Sales Person:", err);
-    } finally {
-      setLoading(false);
+    );
+
+    if (response.ok) {
+      alert("Data Successfully Sent For KYC!");
+      alert("Login Again!");
+      navigate("/", { replace: true });
+      setUserData({
+        fullname: "",
+        contact: "",
+        email: "",
+        address: "",
+        state: "",
+        city: "",
+        pincode: "",
+        experience: "",
+        adharno: "",
+        panno: "",
+        rerano: "",
+        ifsc: "",
+        bankname: "",
+        accountnumber: "",
+        accountholdername: "",
+      });
+      setImageFiles({ adharImage: [], panImage: [], reraImage: [] });
+    } else {
+      throw new Error(`Failed to save kyc Data. Status: ${response.status}`);
+      
     }
-  };
+  } catch (err) {
+    console.error("Error saving Partner:", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     showDetails();
@@ -509,61 +533,55 @@ export default function KYC() {
           <div className="w-full">
             <label
               className={`${
-                imageFiles.adharImage ? "text-green-600" : "text-[#00000066]"
+                imageFiles.adharImage.length > 0
+                  ? "text-green-600"
+                  : "text-[#00000066]"
               } block text-sm leading-4 font-medium`}
             >
-              Upload Aadhaar Card Image <span className="text-red-600">*</span>
+              Aadhaar Front & Back Images{" "}
+              <span className="text-red-600">*</span>
             </label>
-            <div
-              className={`${
-                userData.adharimage ? "block" : "hidden"
-              } relative mt-2`}
-            >
-              <img
-                src={URI + userData?.adharimage}
-                onClick={() => {
-                  window.open(URI + userData?.adharimage, "_blank");
-                }}
-                alt="Aadhaar Preview"
-                className="w-full max-w-[100px] object-cover rounded-lg border border-gray-300 cursor-pointer"
-              />
-            </div>
-            <div className="w-full max-h-[200px] mt-2">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageChange(e, "adharImage")}
-                className="hidden"
-                id="adharImageUpload"
-              />
-              <label
-                htmlFor="adharImageUpload"
-                className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-              >
-                <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                  Upload Image
-                </span>
-                <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
-                  Browse
-                </div>
-              </label>
-            </div>
 
-            {/* Preview Section */}
-            {imageFiles.adharImage && (
-              <div className="relative mt-2">
-                <img
-                  src={URL.createObjectURL(imageFiles.adharImage)}
-                  alt="Aadhaar Preview"
-                  className="w-full object-cover rounded-lg border border-gray-300"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeImage("adharImage")}
-                  className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-                >
-                  ✕
-                </button>
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={(e) => handleImageChange(e, "adharImage")}
+              className="hidden"
+              id="adharImageUpload"
+            />
+
+            <label
+              htmlFor="adharImageUpload"
+              className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer mt-2"
+            >
+              <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
+                Upload Images
+              </span>
+              <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                Browse
+              </div>
+            </label>
+
+            {/* Preview Aadhaar Images */}
+            {imageFiles.adharImage.length > 0 && (
+              <div className="flex flex-wrap gap-3 mt-3">
+                {imageFiles.adharImage.map((file, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt="Aadhaar"
+                      className="w-full max-w-[120px] object-cover rounded border"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage("adharImage", index)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -572,61 +590,55 @@ export default function KYC() {
           <div className="w-full">
             <label
               className={`${
-                imageFiles.panImage ? "text-green-600" : "text-[#00000066]"
+                imageFiles.panImage.length > 0
+                  ? "text-green-600"
+                  : "text-[#00000066]"
               } block text-sm leading-4 font-medium`}
             >
-              Upload PAN Card Image <span className="text-red-600">*</span>
+              PAN Card Front & Back Images{" "}
+              <span className="text-red-600">*</span>
             </label>
-            <div
-              className={`${
-                userData.panimage ? "block" : "hidden"
-              } relative mt-2`}
+
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={(e) => handleImageChange(e, "panImage")}
+              className="hidden"
+              id="panImageUpload"
+            />
+
+            <label
+              htmlFor="panImageUpload"
+              className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer mt-2"
             >
-              <img
-                src={URI + userData?.panimage}
-                onClick={() => {
-                  window.open(URI + userData?.adharimage, "_blank");
-                }}
-                alt="Pancard Preview"
-                className="w-full max-w-[100px] object-cover rounded-lg border border-gray-300 cursor-pointer"
-              />
-            </div>
-            <div className="w-full mt-2">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageChange(e, "panImage")}
-                className="hidden"
-                id="panImageUpload"
-              />
-              <label
-                htmlFor="panImageUpload"
-                className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
-              >
-                <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                  Upload Image
-                </span>
-                <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
-                  Browse
-                </div>
-              </label>
-            </div>
+              <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
+                Upload Images
+              </span>
+              <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                Browse
+              </div>
+            </label>
 
             {/* Preview Section */}
-            {imageFiles.panImage && (
-              <div className="relative mt-2">
-                <img
-                  src={URL.createObjectURL(imageFiles.panImage)}
-                  alt="PAN Preview"
-                  className="w-full object-cover rounded-lg border border-gray-300"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeImage("panImage")}
-                  className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-                >
-                  ✕
-                </button>
+            {imageFiles.panImage.length > 0 && (
+              <div className="flex flex-wrap gap-3 mt-3">
+                {imageFiles.panImage.map((file, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt="PAN Preview"
+                      className="w-full max-w-[120px] object-cover rounded border"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage("panImage", index)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -635,29 +647,19 @@ export default function KYC() {
           <div className="w-full">
             <label
               className={`${
-                imageFiles.reraImage ? "text-green-600" : "text-[#00000066]"
+                imageFiles.reraImage.length > 0
+                  ? "text-green-600"
+                  : "text-[#00000066]"
               } block text-sm leading-4 font-medium`}
             >
-              Upload Rera Image
+              Upload RERA Images
             </label>
-            <div
-              className={`${
-                userData.reraimage ? "block" : "hidden"
-              } relative mt-2`}
-            >
-              <img
-                src={URI + userData?.reraimage}
-                onClick={() => {
-                  window.open(URI + userData?.adharimage, "_blank");
-                }}
-                alt="RERA Preview"
-                className="w-full max-w-[100px] object-cover rounded-lg border border-gray-300 cursor-pointer"
-              />
-            </div>
+
             <div className="w-full mt-2">
               <input
                 type="file"
                 accept="image/*"
+                multiple
                 onChange={(e) => handleImageChange(e, "reraImage")}
                 className="hidden"
                 id="reraImageUpload"
@@ -667,7 +669,7 @@ export default function KYC() {
                 className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
               >
                 <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                  Upload Image
+                  Upload Images
                 </span>
                 <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
                   Browse
@@ -677,20 +679,24 @@ export default function KYC() {
           </div>
 
           {/* Preview Section */}
-          {imageFiles.reraImage && (
-            <div className="relative mt-2">
-              <img
-                src={URL.createObjectURL(imageFiles.reraImage)}
-                alt="Rera Preview"
-                className="w-full object-cover rounded-lg border border-gray-300"
-              />
-              <button
-                type="button"
-                onClick={() => removeImage("reraImage")}
-                className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
-              >
-                ✕
-              </button>
+          {imageFiles.reraImage.length > 0 && (
+            <div className="grid grid-cols-3 gap-3 mt-3">
+              {imageFiles.reraImage.map((file, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={`RERA Preview ${index + 1}`}
+                    className="w-full h-[100px] object-cover rounded-lg border border-gray-300"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage("reraImage", index)}
+                    className="absolute top-1 right-1 bg-red-500 text-white text-sm px-2 py-1 rounded-full"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
             </div>
           )}
         </div>

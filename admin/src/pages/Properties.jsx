@@ -73,6 +73,8 @@ const Properties = () => {
     pincode: "",
     location: "",
     distanceFromCityCenter: "",
+    latitude: "",
+    longitude: "",
     totalSalesPrice: "",
     totalOfferPrice: "",
     stampDuty: "",
@@ -319,7 +321,7 @@ const Properties = () => {
       );
       if (!response.ok) throw new Error("Failed to fetch cities.");
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       setCities(data);
     } catch (err) {
       console.error("Error fetching :", err);
@@ -331,7 +333,7 @@ const Properties = () => {
     try {
       const response = await fetch(URI + "/admin/builders/active", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },

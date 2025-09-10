@@ -28,3 +28,21 @@
   align-items: center;
   justify-content: center;
 }
+
+
+.leaflet-popup-close-button {
+  margin: 14px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px !important;   /* make it bigger */
+  width: 24px !important;       /* increase clickable area */
+  height: 24px !important;
+  color: gray !important;       /* darker color */
+}
+
+/* Reduce default popup <p> spacing */
+.leaflet-popup-content p {
+  margin: 10px 0 !important; /* instead of 1em */
+  line-height: 1.3; /* tighter line spacing */
+}

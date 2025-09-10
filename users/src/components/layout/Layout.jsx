@@ -3,6 +3,7 @@ import { useLocation, NavLink } from "react-router-dom";
 import reparvMainLogo from "../../assets/layout/reparvMainLogo.svg";
 import overviewIcon from "../../assets/layout/overviewIcon.svg";
 import enquirersIcon from "../../assets/layout/enquirersIcon.svg";
+import mapIcon from "../../assets/layout/mapIcon.svg";
 import { Outlet } from "react-router-dom";
 import { IoMenu } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
@@ -17,7 +18,8 @@ function Layout() {
   const [isShortBar, setIsShortbar] = useState(false);
   const [heading, setHeading] = useState(localStorage.getItem("head"));
   const {
-    showProfile, URI,
+    showProfile,
+    URI,
     setShowProfile,
     showPropertyForm,
     setShowPropertyForm,
@@ -25,10 +27,12 @@ function Layout() {
     setShowAdditionalInfoForm,
     showPropertyInfo,
     setShowPropertyInfo,
-    showUpdateImagesForm, 
+    showUpdateImagesForm,
     setShowUpdateImagesForm,
     showVideoUploadForm,
     setShowVideoUploadForm,
+    showPropertyLocationForm,
+    setShowPropertyLocationForm,
     isLoggedIn,
   } = useAuth();
 
@@ -38,6 +42,7 @@ function Layout() {
     { state: showPropertyInfo, setter: setShowPropertyInfo },
     { state: showUpdateImagesForm, setter: setShowUpdateImagesForm },
     { state: showVideoUploadForm, setter: setShowVideoUploadForm },
+    { state: showPropertyLocationForm, setter: setShowPropertyLocationForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -130,6 +135,7 @@ function Layout() {
             {[
               { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
+              { to: "/map", icon: mapIcon, label: "Map" },
             ].map(({ to, icon, label }) => (
               <NavLink
                 onClick={() => {

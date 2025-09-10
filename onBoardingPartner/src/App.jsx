@@ -10,6 +10,7 @@ import ScrollToTop from "./components/ScrollToTop.jsx";
 import KYC from "./pages/KYC.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
+import Map from "./pages/Map.jsx";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/kyc/:userid" element={<KYC />} />
         <Route path="/" element={<Layout />}>
           <Route path="/dashboard" element={<Overview />} />
+          <Route path="/map" element={<Map />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/tickets" element={<Ticketing />} />
           <Route path="/brand-accessories" element={<BrandAccessories />} />

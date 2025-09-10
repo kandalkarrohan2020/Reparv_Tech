@@ -204,7 +204,7 @@ function Layout() {
           } hidden min-w-[100px] max-w-[230px] relative`}
         >
           <Select
-            className="w-full cursor-pointer text-xs font-semibold"
+            className="w-full min-w-[200px] cursor-pointer text-xs font-semibold"
             styles={customStyles}
             options={cityOptions}
             value={

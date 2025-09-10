@@ -1,6 +1,7 @@
 import express from "express";
-import { getAll } from "../../controllers/territoryApp/UsersController.js";
+// import { getAll } from "../../controllers/territoryApp/territorypartnerController.js";
 import db from "../../config/dbconnect.js";
+import { getAll } from "../../controllers/territoryApp/UsersController.js";
 const router = express.Router();
 
 router.get("/", getAll);
@@ -329,6 +330,134 @@ router.get("/add/:id/:type/following", (req, res) => {
 
     res.json(results);
   });
+});
+
+// Update availability
+router.post("/update-availability/:id", async (req, res) => {
+  try {
+    console.log("loggg");
+
+    const Id = req.params.id;
+    const { isAvailable, inactiveUntil } = req.body;
+
+    await db.query(
+      "UPDATE territorypartner SET is_active = ?, inactive_until = ? WHERE id = ?",
+      [isAvailable, inactiveUntil || null, Id]
+    );
+
+    res.json({ success: true, message: "Availability updated" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: "DB error" });
+  }
+});
+
+// Set inactive date
+// router.post("/set-inactive/:id", async (req, res) => {
+//   const partnerId = req.params.id;
+//   const { isAvailable, inactiveUntil } = req.body;
+
+//   try {
+//     await db.query(
+//       "UPDATE territorypartner SET is_active = ?, inactive_until = ? WHERE id = ?",
+//       [isAvailable, inactiveUntil, partnerId]
+//     );
+
+//     res.json({ success: true, message: "Availability updated successfully" });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// });
+
+router.post("/set-inactive/:id", async (req, res) => {
+  const partnerId = req.params.id;
+  const { isAvailable, inactiveDates } = req.body; // expect array
+
+  try {
+    await db.query(
+      "UPDATE territorypartner SET is_active = ?, inactive_until = ? WHERE id = ?",
+      [isAvailable, JSON.stringify(inactiveDates), partnerId]
+    );
+
+    res.json({ success: true, message: "Availability updated successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// GET /territorypartner/:id/unavailable-dates
+router.get("/unavailable-dates/:id", async (req, res) => {
+  const partnerId = req.params.id;
+
+  try {
+    const [rows] = await db.query(
+      "SELECT inactive_until FROM territorypartner WHERE id = ?",
+      [partnerId]
+    );
+
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Partner not found" });
+    }
+
+    let unavailableDates = [];
+    if (rows[0].inactive_until) {
+      try {
+        unavailableDates = JSON.parse(rows[0].inactive_until);
+      } catch (err) {
+        console.error("Invalid JSON in inactive_until:", err);
+      }
+    }
+
+    res.json({ success: true, unavailableDates });
+  } catch (err) {
+    console.error("❌ Error fetching unavailable dates:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// DELETE /territorypartner/:id/unavailable-dates
+router.delete("/delete/unavailable-dates/:id", async (req, res) => {
+  const partnerId = req.params.id;
+  const { date } = req.body; // single date to remove, e.g., "2025-09-12"
+
+  if (!date) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Provide a date to remove" });
+  }
+
+  try {
+    // Find the path of the date in the JSON array
+    const [rows] = await db.query(
+      `SELECT JSON_SEARCH(inactive_until, 'one', ?) AS path
+       FROM territorypartner
+       WHERE id = ?`,
+      [date, partnerId]
+    );
+
+    const path = rows[0]?.path;
+
+    if (!path) {
+      return res.json({ success: false, message: "Date not found" });
+    }
+
+    // Remove the date from the JSON array
+    await db.query(
+      `UPDATE territorypartner
+       SET inactive_until = JSON_REMOVE(inactive_until, ?)
+       WHERE id = ?`,
+      [path, partnerId]
+    );
+
+    res.json({ success: true, message: "Date removed successfully" });
+  } catch (err) {
+    console.error("❌ Error removing date:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
 });
 
 export default router;

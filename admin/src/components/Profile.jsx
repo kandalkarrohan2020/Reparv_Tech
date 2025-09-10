@@ -155,7 +155,7 @@ const Profile = () => {
 
   return (
     <div
-      className={`ProfileContainer fixed z-30 w-full h-screen bg-[#4242428b] flex items-center justify-end `}
+      className={`ProfileContainer fixed z-[1001] w-full h-screen bg-[#4242428b] flex items-center justify-end `}
     >
       <div className="Profile w-full md:w-[384px] h-screen overflow-scroll scrollbar-hide bg-[#F5F5F6] flex flex-col items-center justify-start gap-4 px-8 py-14 ">
         <div className="arrow w-[320px] h-[30px] px-3 flex justify-between">

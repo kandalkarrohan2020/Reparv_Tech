@@ -22,6 +22,8 @@ const Properties = () => {
     setShowUpdateImagesForm,
     showVideoUploadForm,
     setShowVideoUploadForm,
+    showPropertyLocationForm,
+    setShowPropertyLocationForm,
   } = useAuth();
   const [datas, setDatas] = useState([]);
   const [authorities, setAuthorities] = useState([]);
@@ -30,6 +32,9 @@ const Properties = () => {
   const [builderData, setBuilderData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [propertyKey, setPropertyKey] = useState();
+  // Property Location Latitude & Longitude
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
   const [newProperty, setPropertyData] = useState({
     builderid: "",
     propertyCategory: "",
@@ -244,6 +249,66 @@ const Properties = () => {
       setShowUpdateImagesForm(true);
     } catch (err) {
       console.error("Error fetching :", err);
+    }
+  };
+
+  //fetch data on form
+  const fetchPropertyLocation = async (id) => {
+    try {
+      const response = await fetch(
+        URI + `/admin/properties/location/get/${id}`,
+        {
+          method: "GET",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch property location.");
+      const data = await response.json();
+      setLatitude(data.latitude);
+      setLongitude(data.longitude);
+      setShowPropertyLocationForm(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // Update Property Loaction Latitude and Longitude
+  const updatePropertyLocation = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const response = await fetch(
+        URI + `/admin/properties/location/edit/${propertyKey}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            latitude,
+            longitude,
+          }),
+        }
+      );
+      const data = await response.json();
+      //console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      setShowPropertyLocationForm(false);
+      setLatitude("");
+      setLongitude("");
+      await fetchData();
+    } catch (error) {
+      console.error("Error adding property Location:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -522,6 +587,10 @@ const Properties = () => {
         case "update":
           edit(propertyid);
           break;
+        case "updateLocation":
+          setPropertyKey(propertyid);
+          fetchPropertyLocation(propertyid);
+          break;
         case "updateImages":
           setPropertyKey(propertyid);
           fetchImages(propertyid);
@@ -556,6 +625,7 @@ const Properties = () => {
           <option value="update">Update</option>
           <option value="updateImages">Update Images</option>
           <option value="videoUpload">Brochure & Video</option>
+          <option value="updateLocation">Latitude & Longitude</option>
         </select>
       </div>
     );
@@ -636,6 +706,93 @@ const Properties = () => {
         imageFiles={imageFiles}
         setImageFiles={setImageFiles}
       />
+
+      {/* ADD Property Location Latitude & Longitude Form */}
+      <div
+        className={` ${
+          !showPropertyLocationForm && "hidden"
+        } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
+      >
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] max-h-[80vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">
+              Update Latitude & Longitude
+            </h2>
+            <IoMdClose
+              onClick={() => {
+                setShowPropertyLocationForm(false);
+                setLatitude(null);
+                setLongitude(null);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={updatePropertyLocation}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-1">
+              <input
+                type="hidden"
+                value={propertyKey || ""}
+                onChange={(e) => setPropertyKey(e.target.value)}
+              />
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                  Latitude
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  placeholder="Enter Latitude"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={latitude ?? ""}
+                  onChange={(e) =>
+                    setLatitude(
+                      e.target.value === "" ? null : parseFloat(e.target.value)
+                    )
+                  }
+                />
+              </div>
+
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                  Longitude
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  placeholder="Enter Longitude"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={longitude ?? ""}
+                  onChange={(e) =>
+                    setLongitude(
+                      e.target.value === "" ? null : parseFloat(e.target.value)
+                    )
+                  }
+                />
+              </div>
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPropertyLocationForm(false);
+                  setLatitude("");
+                  setLongitude("");
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Update
+              </button>
+              <Loader></Loader>
+            </div>
+          </form>
+        </div>
+      </div>
 
       {/* ADD Brochure and Video Upload Form */}
       <div

@@ -148,4 +148,112 @@ router.get("/:id/following-posts", (req, res) => {
   });
 });
 
+// Update availability
+
+// router.post("/set-inactive/:id", async (req, res) => {
+//   const salespersonId = req.params.id;
+//   const { isAvailable, inactiveUntil } = req.body;
+
+//   try {
+//     await db.query(
+//       "UPDATE salesperson SET is_active = ?, inactive_until = ? WHERE id = ?",
+//       [isAvailable, inactiveUntil, salespersonId]
+//     );
+
+//     res.json({ success: true, message: "Availability updated successfully" });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// });
+
+router.post("/set-inactive/:id", async (req, res) => {
+  const salespersonId = req.params.id;
+  const { isAvailable, inactiveDates } = req.body; // expect array of dates
+
+  try {
+    await db.query(
+      "UPDATE salesperson SET is_active = ?, inactive_until = ? WHERE salespersonsid = ?",
+      [isAvailable, JSON.stringify(inactiveDates), salespersonId]
+    );
+
+    res.json({ success: true, message: "Availability updated successfully" });
+  } catch (err) {
+    console.error("Error updating salesperson availability:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// GET /unavailable-dates/:id
+router.get("/unavailable-dates/:id", async (req, res) => {
+  const salespersonId = req.params.id;
+
+  try {
+    const [rows] = await db.query(
+      "SELECT inactive_until FROM salesperson WHERE salespersonsid = ?",
+      [salespersonId]
+    );
+
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Salesperson not found" });
+    }
+
+    let unavailableDates = [];
+    if (rows[0].inactive_until) {
+      try {
+        unavailableDates = JSON.parse(rows[0].inactive_until); // parse JSON array
+      } catch (err) {
+        console.error("Invalid JSON in inactive_until:", err);
+      }
+    }
+
+    res.json({ success: true, unavailableDates });
+  } catch (err) {
+    console.error("❌ Error fetching unavailable dates:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// DELETE /salesperson/:id/unavailable-dates
+router.delete("/delete/unavailable-dates/:id", async (req, res) => {
+  const salespersonId = req.params.id;
+  const { date } = req.body; // single date to remove, e.g., "2025-09-12"
+
+  if (!date) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Provide a date to remove" });
+  }
+
+  try {
+    // Find the index of the date in the JSON array
+    const [rows] = await db.query(
+      `SELECT JSON_SEARCH(inactive_until, 'one', ?) AS path
+       FROM salesperson
+       WHERE salespersonsid = ?`,
+      [date, salespersonId]
+    );
+
+    const path = rows[0]?.path;
+
+    if (!path) {
+      return res.json({ success: false, message: "Date not found" });
+    }
+
+    // Remove the date from the JSON array
+    await db.query(
+      `UPDATE salesperson
+       SET inactive_until = JSON_REMOVE(inactive_until, ?)
+       WHERE salespersonsid = ?`,
+      [path, salespersonId]
+    );
+
+    res.json({ success: true, message: "Date removed successfully" });
+  } catch (err) {
+    console.error("❌ Error removing date:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
 export default router;

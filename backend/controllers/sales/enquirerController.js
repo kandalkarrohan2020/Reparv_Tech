@@ -546,3 +546,51 @@ export const getByStatus = (req, res) => {
     res.json(results); // Send the list of enquiries with status
   });
 };
+
+//get availableTps
+// export const getAvailableTPsForDate = (req, res) => {
+//   const propertyCity = req.params.city;
+//   const { selectedDate } = req.query; // e.g., '2025-09-12'
+
+//   const sql = `
+//     SELECT *
+//     FROM territorypartner
+//     WHERE status = 'Active'
+//       AND city = ?
+//       AND (inactive_until IS NULL OR inactive_until <> ?)
+//     ORDER BY id DESC
+//   `;
+
+//   db.query(sql, [propertyCity, selectedDate], (err, result) => {
+//     if (err) {
+//       console.error("Error fetching:", err);
+//       return res.status(500).json({ message: "Database error", error: err });
+//     }
+//     res.json(result);
+//   });
+// };
+
+export const getAvailableTPsForDate = (req, res) => {
+  const propertyCity = req.params.city;
+  const { selectedDate } = req.query; // e.g., '2025-09-12'
+
+  const sql = `
+    SELECT * 
+    FROM territorypartner
+    WHERE is_active = 'Active'
+      AND city = ?
+      AND (
+        inactive_until IS NULL 
+        OR NOT JSON_CONTAINS(inactive_until, JSON_QUOTE(?))
+      )
+    ORDER BY id DESC
+  `;
+
+  db.query(sql, [propertyCity, selectedDate], (err, result) => {
+    if (err) {
+      console.error("Error fetching:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    res.json(result);
+  });
+};

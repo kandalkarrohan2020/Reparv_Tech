@@ -30,6 +30,8 @@ export const AuthProvider = ({ children }) => {
   const [showPropertyInfo, setShowPropertyInfo] = useState(false);
   const [showUpdateImagesForm, setShowUpdateImagesForm] = useState(false);
   const [showVideoUploadForm, setShowVideoUploadForm] = useState(false);
+  const [showPropertyLocationForm, setShowPropertyLocationForm] =
+    useState(false);
 
   return (
     <AuthContext.Provider
@@ -56,9 +58,12 @@ export const AuthProvider = ({ children }) => {
         setShowAdditionalInfoForm,
         showPropertyInfo,
         setShowPropertyInfo,
-        showUpdateImagesForm, setShowUpdateImagesForm,
+        showUpdateImagesForm,
+        setShowUpdateImagesForm,
         showVideoUploadForm,
         setShowVideoUploadForm,
+        showPropertyLocationForm,
+        setShowPropertyLocationForm,
       }}
     >
       {children}

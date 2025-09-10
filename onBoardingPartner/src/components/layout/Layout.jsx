@@ -4,6 +4,7 @@ import reparvMainLogo from "../../assets/layout/reparvMainLogo.svg";
 import overviewIcon from "../../assets/layout/overviewIcon.svg";
 import materialIcon from "../../assets/layout/materialIcon.svg";
 import enquirersIcon from "../../assets/layout/enquirersIcon.svg";
+import mapIcon from "../../assets/layout/mapIcon.svg";
 import ticketingIcon from "../../assets/layout/ticketingIcon.svg";
 import marketingIcon from "../../assets/layout/marketingIcon.svg";
 import { Outlet } from "react-router-dom";
@@ -47,6 +48,8 @@ function Layout() {
     setShowProductForm,
     showVideoUploadForm,
     setShowVideoUploadForm,
+    showPropertyLocationForm,
+    setShowPropertyLocationForm,
     isLoggedIn,
   } = useAuth();
 
@@ -61,7 +64,8 @@ function Layout() {
     { state: showOrder, setter: setShowOrder },
     { state: showOrderForm, setter: setShowOrderForm },
     { state: showProductForm, setter: setShowProductForm },
-     { state: showVideoUploadForm, setter: setShowVideoUploadForm },
+    { state: showVideoUploadForm, setter: setShowVideoUploadForm },
+    { state: showPropertyLocationForm, setter: setShowPropertyLocationForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -179,6 +183,7 @@ function Layout() {
             {[
               { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
+              { to: "/map", icon: mapIcon, label: "Map" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
               {
                 to: "/brand-accessories",

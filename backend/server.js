@@ -18,6 +18,7 @@ import departmentRoutes from "./routes/admin/departmentRoutes.js";
 import authoritiesRoutes from "./routes/admin/authoritiesRoutes.js";
 import stateRoutes from "./routes/admin/stateRoutes.js";
 import cityRoutes from "./routes/admin/cityRoutes.js";
+import mapRoutes from "./routes/admin/mapRoutes.js";
 import promoterRoutes from "./routes/admin/promoterRoutes.js";
 import salespersonRoutes from "./routes/admin/salespersonRoutes.js";
 import partnerRoutes from "./routes/admin/partnerRoutes.js";
@@ -61,6 +62,7 @@ import guestUserLoginRoutes from "./routes/guestUser/userRoutes.js";
 import guestUserProfileRoutes from "./routes/guestUser/profileRoutes.js";
 import guestUserDashboardRoutes from "./routes/guestUser/dashboardRoutes.js";
 import guestUserPropertyRoutes from "./routes/guestUser/propertyRoutes.js";
+import guestUserMapRoutes from "./routes/guestUser/mapRoutes.js";
 import guestUserBuilderRoutes from "./routes/guestUser/builderRoutes.js";
 
 // builder
@@ -115,6 +117,7 @@ import partnerProfileRoutes from "./routes/onboardingPartner/partnerProfileRoute
 import partnerAgreementRoutes from "./routes/onboardingPartner/agreementRoutes.js";
 import partnerDashboardRoutes from "./routes/onboardingPartner/dashboardRoutes.js";
 import partnerPropertyRoutes from "./routes/onboardingPartner/partnerPropertyRoutes.js";
+import partnerMapRoutes from "./routes/onboardingPartner/mapRoutes.js";
 import partnerBuilderRoutes from "./routes/onboardingPartner/partnerBuilderRoutes.js";
 import partnerTicketRoutes from "./routes/onboardingPartner/partnerTicketRoutes.js";
 
@@ -124,6 +127,7 @@ import projectPartnerProfileRoutes from "./routes/projectPartner/profileRoutes.j
 import projectPartnerAgreementRoutes from "./routes/projectPartner/agreementRoutes.js";
 import projectPartnerDashboardRoutes from "./routes/projectPartner/dashboardRoutes.js";
 import projectPartnerPropertyRoutes from "./routes/projectPartner/propertyRoutes.js";
+import projectPartnerMapRoutes from "./routes/projectPartner/mapRoutes.js";
 import projectPartnerCustomerRoutes from "./routes/projectPartner/customerRoutes.js";
 import projectPartnerBuilderRoutes from "./routes/projectPartner/builderRoutes.js";
 import projectPartnerTicketRoutes from "./routes/projectPartner/ticketRoutes.js";
@@ -300,6 +304,7 @@ const verifyToken = (req, res, next) => {
     "/salesapp/client",
     //Territory App
     "/territoryapp/user",
+
     "/territoryapp/post",
     "/territoryapp/post/get",
     "/customerapp/enquiry",
@@ -377,6 +382,7 @@ app.use("/admin/departments", departmentRoutes);
 app.use("/admin/authorities", authoritiesRoutes);
 app.use("/admin/states", stateRoutes);
 app.use("/admin/cities", cityRoutes);
+app.use("/admin/map", mapRoutes);
 app.use("/admin/promoter", promoterRoutes);
 app.use("/admin/salespersons", salespersonRoutes);
 app.use("/admin/partner", partnerRoutes);
@@ -405,6 +411,7 @@ app.use("/guest-user/profile", guestUserProfileRoutes);
 app.use("/guest-user/dashboard", guestUserDashboardRoutes);
 app.use("/guest-user/builders", guestUserBuilderRoutes);
 app.use("/guest-user/properties", guestUserPropertyRoutes);
+app.use("/guest-user/map", guestUserMapRoutes);
 
 // Builder Routes
 app.use("/builder", builderLoginRoutes);
@@ -458,6 +465,7 @@ app.use("/partner/profile", partnerProfileRoutes);
 app.use("/partner/agreement", partnerAgreementRoutes);
 app.use("/partner/dashboard", partnerDashboardRoutes);
 app.use("/partner/properties", partnerPropertyRoutes);
+app.use("/partner/map", partnerMapRoutes);
 app.use("/partner/builders", partnerBuilderRoutes);
 app.use("/partner/tickets", partnerTicketRoutes);
 
@@ -467,6 +475,7 @@ app.use("/project-partner/profile", projectPartnerProfileRoutes);
 app.use("/project-partner/agreement", projectPartnerAgreementRoutes);
 app.use("/project-partner/dashboard", projectPartnerDashboardRoutes);
 app.use("/project-partner/properties", projectPartnerPropertyRoutes);
+app.use("/project-partner/map", projectPartnerMapRoutes);
 app.use("/project-partner/customers", projectPartnerCustomerRoutes);
 app.use("/project-partner/builders", projectPartnerBuilderRoutes);
 app.use("/project-partner/tickets", projectPartnerTicketRoutes);
@@ -527,7 +536,6 @@ app.use("/builderapp/customer", builderEnquiryCustomerRoute);
 app.use("/builderapp/community", builderCommunityRoute);
 app.use("/builderapp/ticket", builderTicketRoute);
 app.use("/builderapp/post", builderpostRoute);
-
 
 //  Start Server
 app.listen(PORT, () => {

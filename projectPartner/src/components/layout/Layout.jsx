@@ -64,6 +64,8 @@ function Layout() {
     setShowCustomerPaymentForm,
     showVideoUploadForm,
     setShowVideoUploadForm,
+    showPropertyLocationForm,
+    setShowPropertyLocationForm,
     isLoggedIn,
   } = useAuth();
 
@@ -84,7 +86,8 @@ function Layout() {
     { state: showOrder, setter: setShowOrder },
     { state: showOrderForm, setter: setShowOrderForm },
     { state: showProductForm, setter: setShowProductForm },
-     { state: showVideoUploadForm, setter: setShowVideoUploadForm },
+    { state: showVideoUploadForm, setter: setShowVideoUploadForm },
+    { state: showPropertyLocationForm, setter: setShowPropertyLocationForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -204,6 +207,7 @@ function Layout() {
             {[
               { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
+              { to: "/map", icon: mapIcon, label: "Map" },
               { to: "/builders", icon: partnerIcon, label: "Builders" },
               { to: "/customers", icon: customersIcon, label: "Customers" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },

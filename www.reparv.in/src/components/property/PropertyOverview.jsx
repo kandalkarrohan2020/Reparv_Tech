@@ -12,6 +12,8 @@ import {
   FaBolt,
   FaArrowRight,
   FaHome,
+  FaHashtag,
+
 } from "react-icons/fa";
 
 const PropertyOverview = ({ propertyInfo }) => {
@@ -20,9 +22,9 @@ const PropertyOverview = ({ propertyInfo }) => {
       icon: FaBuilding,
       label: "Property Type",
       value: Array.isArray(propertyInfo.propertyType)
-        ? propertyInfo.propertyType.join(", ")
+        ? propertyInfo.propertyType.join(" | ")
         : propertyInfo.propertyType || "N/A",
-      show: "flex",
+      show: "flex col-span-2 lg:col-span-3",
     },
     {
       icon: FaCalendarAlt,
@@ -59,7 +61,7 @@ const PropertyOverview = ({ propertyInfo }) => {
       show: "flex",
     },
     {
-      icon: FaParking,
+      icon: FaLevelUpAlt,
       label: "Total Floors",
       value: propertyInfo.totalFloors,
       show: ["NewPlot", "CommercialPlot"].includes(
@@ -94,7 +96,7 @@ const PropertyOverview = ({ propertyInfo }) => {
       icon: FaRegClipboard,
       label: "RERA Registered",
       value: propertyInfo.reraRegistered,
-      show: "flex",
+      show: "flex col-span-2 lg:col-span-2",
     },
     {
       icon: FaCouch,
@@ -117,6 +119,12 @@ const PropertyOverview = ({ propertyInfo }) => {
       label: "Power Backup",
       value: propertyInfo.powerBackup,
       show: "flex",
+    },
+    {
+      icon: FaHashtag,
+      label: "Tags",
+      value: propertyInfo.tags,
+      show: !propertyInfo.tags ? "flex col-span-2 lg:col-span-3" : "hidden",
     },
   ];
 

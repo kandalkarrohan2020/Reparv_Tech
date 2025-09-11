@@ -34,6 +34,8 @@ export default function Properties() {
     setFilteredLocations,
     selectedType,
     setSelectedType,
+    selectedBHKType,
+    setSelectedBHKType,
     minBudget,
     maxBudget,
   } = usePropertyFilter();
@@ -112,8 +114,8 @@ export default function Properties() {
         params.push(`propertyCategory=${encodeURIComponent(propertyType)}`);
       }
 
-      if (bhkType && bhkType.trim() !== "") {
-        params.push(`propertyType=${encodeURIComponent(bhkType)}`);
+      if (selectedBHKType && selectedBHKType.trim() !== "") {
+        params.push(`propertyType=${encodeURIComponent(selectedBHKType)}`);
       }
 
       url += params.join("&");
@@ -221,6 +223,7 @@ export default function Properties() {
     setSelectedCity(city || selectedCity);
     setPropertyType(propertyCategory || propertyType);
     setSelectedType(propertyCategory || selectedType);
+    setSelectedBHKType(bhkType || selectedBHKType);
   }, [bhkType, propertyCategory, city]);
   useEffect(() => {
     fetchData();
@@ -308,7 +311,7 @@ export default function Properties() {
           <div
             className={`${isIntersecting ? "absolute bottom-0 " : "fixed"} 
           propertiesFilter overflow-y-scroll overflow-x-visible scrollbar-hide hidden sm:block
-          !min-w-[220px] w-[220px] h-[75vh] transition-all duration-300`}
+          !min-w-[220px] w-[220px] h-[75vh] max-h-[85vh] transition-all duration-300`}
           >
             <FilterSidebar />
           </div>
@@ -381,20 +384,20 @@ export default function Properties() {
                         </span>
                       </div>
 
-                      <div className="w-full px-4 flex gap-2 text-sm font-semibold">
+                      <div className="w-full flex px-4 gap-2 text-[15px] font-semibold">
                         <span className="text-[#076300] group-hover:text-white">
                           {property.propertyCategory}
                         </span>
-                        <span className="text-[#076300] group-hover:text-white">
+                        <div className="flex flex-wrap gap-2 text-black text-xs group-hover:text-white">
                           {property.propertyType?.map((type, index) => (
-                            <span key={index}>
-                              {type.length > 16
-                                ? `${type.slice(0, 15)}...`
+                            <span key={index} className="px-2 py-1 bg-gray-200 rounded-xl">
+                              {type.length > 18
+                                ? `${type.slice(0, 17)}...`
                                 : type}
-                              {index < property.propertyType.length - 1 && ", "}
+                              {index < property.propertyType.length - 1 && ""}
                             </span>
                           ))}
-                        </span>
+                        </div>
                       </div>
 
                       <div className="w-full px-4 flex flex-col items-center justify-between">

@@ -4,16 +4,24 @@ import { FaCheck } from "react-icons/fa6";
 import { Range } from "react-range";
 import { useAuth } from "../store/auth";
 import { usePropertyFilter } from "../store/propertyFilter";
-import { RxCross2 } from "react-icons/rx";
+import { IoMdClose } from "react-icons/io";
 
 export default function FilterSidebar() {
-  const { URI, propertyType, setPropertyType, selectedCity, setSelectedCity, setShowFilterPopup } =
-    useAuth();
+  const {
+    URI,
+    propertyType,
+    setPropertyType,
+    selectedCity,
+    setSelectedCity,
+    setShowFilterPopup,
+  } = useAuth();
   const {
     filteredLocations,
     setFilteredLocations,
     selectedType,
     setSelectedType,
+    selectedBHKType,
+    setSelectedBHKType,
     minBudget,
     setMinBudget,
     maxBudget,
@@ -36,12 +44,91 @@ export default function FilterSidebar() {
     "IndustrialSpace",
   ];
 
+  const bhkTypes = [
+    {
+      category: "NewFlat",
+      types: [
+        "1 RK",
+        "1 BHK",
+        "2 BHK",
+        "2.5 BHK",
+        "3 BHK",
+        "3.5 BHK",
+        "4 BHK",
+        "5 BHK",
+        "Above 5 BHK",
+        "Pent House",
+        "Builder Floor",
+        "Studio Apartment",
+        "Duplex Apartment",
+        "Serviced Apartment",
+      ],
+    },
+    {
+      category: "RentalFlat",
+      types: [
+        "1 RK",
+        "1 BHK",
+        "2 BHK",
+        "2.5 BHK",
+        "3 BHK",
+        "3.5 BHK",
+        "4 BHK",
+        "5 BHK",
+        "Above 5 BHK",
+        "Pent House",
+        "Builder Floor",
+        "Studio Apartment",
+        "Duplex Apartment",
+        "Serviced Apartment",
+      ],
+    },
+    {
+      category: "NewPlot",
+      types: [
+        "Corner Plot",
+        "Park Facing Plot",
+        "Road Facing Plot",
+        "Gated Community Plot",
+      ],
+    },
+    {
+      category: "CommercialFlat",
+      types: [
+        "Office Space",
+        "Co-Working Space",
+        "Corporate Office",
+        "Studio Office",
+      ],
+    },
+    {
+      category: "CommercialShop",
+      types: ["Shop", "Showroom", "Restaurant / Cafe", "Bank / ATM"],
+    },
+    {
+      category: "IndustrialSpace",
+      types: ["Godown", "Cold Storage", "Small Manufacturing Unit"],
+    },
+    {
+      category: "CommercialPlot",
+      types: [
+        "Office Building Plot",
+        "Warehouse Plot",
+        "Mixed-Use Development Plot",
+        "Highway-Facing Plot",
+        "Petrol Pump Plot",
+        "School / Hospital Plot",
+      ],
+    },
+  ];
+
   const [locations, setLocations] = useState([]);
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [budgetRange, setBudgetRange] = useState([minBudget, maxBudget]);
 
   const [showLocations, setShowLocations] = useState(true);
   const [showTypes, setShowTypes] = useState(true);
+  const [showBHKTypes, setShowBHKTypes] = useState(true);
   const [showBudget, setShowBudget] = useState(true);
 
   const MIN = 5000;
@@ -64,6 +151,10 @@ export default function FilterSidebar() {
         queryParams.push(
           `propertyCategory=${encodeURIComponent(selectedType)}`
         );
+      }
+
+      if (selectedBHKType && selectedBHKType.trim() !== "") {
+        queryParams.push(`propertyType=${encodeURIComponent(selectedBHKType)}`);
       }
 
       if (selectedCity && selectedCity.trim() !== "") {
@@ -98,26 +189,27 @@ export default function FilterSidebar() {
   const resetFilters = () => {
     setSelectedLocations([]);
     setSelectedType("");
+    setSelectedBHKType("");
     setBudgetRange([MIN, MAX]);
   };
 
   useEffect(() => {
     fetchLocations();
-  }, [selectedType]);
+  }, [selectedType, selectedBHKType, selectedCity]);
 
   return (
-    <div className="w-full p-5 sm:p-0 rounded-tl-2xl rounded-tr-2xl sm:rounded-0 bg-[#FAFAFA] space-y-6">
+    <div className="w-full max-h-[85vh] overflow-scroll scrollbar-hide p-5 sm:p-0 rounded-tl-2xl rounded-tr-2xl sm:rounded-0 bg-[#FAFAFA] space-y-4">
       {/* Property Types */}
       <div>
         <div
           className="flex sm:hidden justify-end items-center cursor-pointer pb-4"
           onClick={() => setShowTypes(!showTypes)}
         >
-          <RxCross2
+          <IoMdClose
             onClick={() => {
               setShowFilterPopup(false);
             }}
-            className="w-5 h-5 sm:w-7 p-1 sm:h-7 rounded-sm bg-gray-100 cursor-pointer hover:text-[#076300] active:scale-95"
+            className="w-5 h-5 sm:w-7 sm:h-7 rounded-sm bg-gray-100 cursor-pointer hover:text-[#076300] active:scale-95"
           />
         </div>
 
@@ -125,12 +217,12 @@ export default function FilterSidebar() {
           className="flex justify-between items-center cursor-pointer"
           onClick={() => setShowTypes(!showTypes)}
         >
-          <h3 className="font-semibold text-lg">Type of Property</h3>
+          <h3 className="font-semibold text-lg">Types of Property</h3>
           {showTypes ? <FaChevronUp /> : <FaChevronDown />}
         </div>
 
         {showTypes && (
-          <div className="space-y-2 mt-2 max-h-50 sm:max-h-30 overflow-y-auto scrollbar-hide">
+          <div className="space-y-2 mt-2 max-h-40 sm:max-h-30 overflow-y-auto scrollbar-hide">
             {propertyTypes.map((type, i) => (
               <label
                 key={i}
@@ -156,6 +248,56 @@ export default function FilterSidebar() {
                 <span className="text-sm sm:text-xs">{type}</span>
               </label>
             ))}
+          </div>
+        )}
+      </div>
+
+      <div>
+        <div
+          className="flex justify-between items-center cursor-pointer"
+          onClick={() => setShowBHKTypes(!showBHKTypes)}
+        >
+          <h3 className="font-semibold text-lg">BHK | Property Types</h3>
+          {showBHKTypes ? <FaChevronUp /> : <FaChevronDown />}
+        </div>
+        {showBHKTypes && (
+          <div className="mt-2">
+            {/* Filter bhkTypes by selectedType */}
+            {bhkTypes
+              .filter((group) => group.category === selectedType)
+              .map((group, i) => (
+                <div key={i}>
+                  <div className="space-y-2 max-h-40 sm:max-h-35 overflow-y-auto scrollbar-hide">
+                    {group.types.map((type, j) => (
+                      <label
+                        key={j}
+                        className="flex items-center space-x-2 cursor-pointer select-none"
+                      >
+                        <input
+                          type="radio"
+                          name="bhkType"
+                          value={type}
+                          checked={selectedBHKType === type}
+                          onChange={() => setSelectedBHKType(type)}
+                          className="hidden"
+                        />
+                        <span
+                          className={`w-4 h-4 flex items-center justify-center rounded-full border-2 text-xs ${
+                            selectedBHKType === type
+                              ? "bg-[#076300] border-[#076300] text-white"
+                              : "border-gray-400"
+                          }`}
+                        >
+                          {selectedBHKType === type && (
+                            <FaCheck className="text-white" />
+                          )}
+                        </span>
+                        <span className="text-sm sm:text-xs">{type}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
           </div>
         )}
       </div>
@@ -218,41 +360,6 @@ export default function FilterSidebar() {
 
         {showBudget && (
           <div className="mt-2">
-            {/*<Range
-              values={budgetRange}
-              step={STEP}
-              min={MIN}
-              max={MAX}
-              onChange={(vals) => setBudgetRange(vals)}
-              renderTrack={({ props, children }) => (
-                <div
-                  {...props}
-                  className="h-2 w-full bg-gray-300 rounded relative"
-                  style={{ ...props.style }}
-                >
-                  <div
-                    className="absolute max-w-full h-2 bg-[#076300] rounded"
-                    style={{
-                      left: `${((budgetRange[0] - MIN) / (MAX - MIN)) * 100}%`,
-                      width: `${
-                        ((budgetRange[1] - budgetRange[0]) / (MAX - MIN)) * 100
-                      }%`,
-                    }}
-                  />
-                  {children}
-                </div>
-              )}
-              renderThumb={({ props }) => {
-                const { key, ...rest } = props;
-                return (
-                  <div
-                    key={key}
-                    {...rest}
-                    className="w-5 h-5 bg-white border border-[#D1D1D1] rounded-full shadow-md flex items-center justify-center"
-                  />
-                );
-              }}
-            />*/}
             <div className="w-full flex items-center justify-between gap-4 mt-5 text-sm text-gray-700">
               <div className="flex flex-col">
                 <span className="ml-1 mb-1 text-black text-xs font-semibold">
@@ -303,7 +410,7 @@ export default function FilterSidebar() {
             setMaxBudget(budgetRange[1]);
             setShowFilterPopup(false);
           }}
-          className="flex-1 bg-[#0BB501] text-white py-2 rounded cursor-pointer"
+          className="flex-1 bg-[#0BB501] text-white py-2 rounded cursor-pointer active:scale-95"
         >
           Apply
         </button>

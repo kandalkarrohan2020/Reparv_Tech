@@ -114,6 +114,7 @@ const MultiStepForm = ({
         msebWater: "",
         maintenance: "",
         other: "",
+        tags: "",
         propertyType: "",
         builtYear: "",
         ownershipType: "",
@@ -174,6 +175,7 @@ const MultiStepForm = ({
         "totalOfferPrice", // number
         "stampDuty", // number
         "other", //number
+        "tags",
       ];
 
       const allFilled = requiredFieldsStep1.every((field) => {

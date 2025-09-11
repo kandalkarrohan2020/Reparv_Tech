@@ -115,6 +115,7 @@ export const addProperty = async (req, res) => {
     msebWater,
     maintenance,
     other,
+    tags,
     propertyType,
     builtYear,
     ownershipType,
@@ -161,6 +162,7 @@ export const addProperty = async (req, res) => {
     !totalOfferPrice ||
     !stampDuty ||
     !other ||
+    !tags ||
     !builtYear ||
     !ownershipType ||
     !carpetArea ||
@@ -252,7 +254,7 @@ export const addProperty = async (req, res) => {
       INSERT INTO properties ( projectpartnerid,
         builderid, propertyCategory, propertyApprovedBy, propertyName, address, state, city, pincode, location,
         distanceFromCityCenter, latitude, longitude, totalSalesPrice, totalOfferPrice, emi, stampDuty, registrationFee, gst, advocateFee, 
-        msebWater, maintenance, other, propertyType, builtYear, ownershipType, builtUpArea, carpetArea,
+        msebWater, maintenance, other, tags, propertyType, builtYear, ownershipType, builtUpArea, carpetArea,
         parkingAvailability, totalFloors, floorNo, loanAvailability, propertyFacing, reraRegistered, 
         furnishing, waterSupply, powerBackup, locationFeature, sizeAreaFeature, parkingFeature, terraceFeature,
         ageOfPropertyFeature, amenitiesFeature, propertyStatusFeature, smartHomeFeature,
@@ -261,7 +263,7 @@ export const addProperty = async (req, res) => {
         nearestLandmark, developedAmenities, seoSlug,
         updated_at, created_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const values = [
@@ -288,6 +290,7 @@ export const addProperty = async (req, res) => {
         msebWater,
         maintenance,
         other,
+        tags,
         propertyTypeJson,
         builtYear,
         ownershipType,
@@ -387,6 +390,7 @@ export const update = async (req, res) => {
     msebWater,
     maintenance,
     other,
+    tags,
     propertyType,
     builtYear,
     ownershipType,
@@ -435,6 +439,7 @@ export const update = async (req, res) => {
     !totalOfferPrice ||
     !stampDuty ||
     !other ||
+    !tags ||
     !builtYear ||
     !ownershipType ||
     !carpetArea ||
@@ -527,7 +532,7 @@ export const update = async (req, res) => {
       UPDATE properties SET rejectreason=NULL, approve=?,
         builderid=?, propertyCategory=?, propertyApprovedBy=?, propertyName=?, address=?, state=?, city=?, pincode=?, location=?,
         distanceFromCityCenter=?, latitude=?, longitude=?, totalSalesPrice=?, totalOfferPrice=?, emi=?, stampDuty=?, registrationFee=?, gst=?, advocateFee=?, 
-        msebWater=?, maintenance=?, other=?, propertyType=?, builtYear=?, ownershipType=?,
+        msebWater=?, maintenance=?, other=?, tags=?, propertyType=?, builtYear=?, ownershipType=?,
         builtUpArea=?, carpetArea=?, parkingAvailability=?, totalFloors=?, floorNo=?, loanAvailability=?,
         propertyFacing=?, reraRegistered=?, furnishing=?, waterSupply=?, powerBackup=?, locationFeature=?, sizeAreaFeature=?, parkingFeature=?, terraceFeature=?,
         ageOfPropertyFeature=?, furnishingFeature=?, amenitiesFeature=?, propertyStatusFeature=?, floorNumberFeature=?, smartHomeFeature=?,
@@ -561,6 +566,7 @@ export const update = async (req, res) => {
         msebWater,
         maintenance,
         other,
+        tags,
         propertyTypeJson,
         builtYear,
         ownershipType,

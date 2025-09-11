@@ -5,6 +5,7 @@ export const PropertyFilterContext = createContext();
 export const PropertyFilterProvider = ({ children }) => {
   
   const [selectedType, setSelectedType] = useState("");
+  const [selectedBHKType, setSelectedBHKType] = useState("");
   const [filteredLocations, setFilteredLocations] = useState([]);
   const [minBudget, setMinBudget] = useState(5000);
   const [maxBudget, setMaxBudget] = useState(50000000);
@@ -13,6 +14,7 @@ export const PropertyFilterProvider = ({ children }) => {
     <PropertyFilterContext.Provider
       value={{
         selectedType, setSelectedType,
+        selectedBHKType, setSelectedBHKType,
         filteredLocations, setFilteredLocations,
         minBudget, setMinBudget,
         maxBudget, setMaxBudget

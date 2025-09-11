@@ -114,18 +114,21 @@ function OtherProperties({ propertyCity, propertyCategory, propertyId }) {
               </span>
             </div>
 
-            <div className="w-full px-4 flex gap-2 text-sm font-semibold">
+            <div className="w-full flex px-4 gap-2  text-[15px] font-semibold">
               <span className="text-[#076300] group-hover:text-white">
                 {property.propertyCategory}
               </span>
-              <span className="text-[#076300] group-hover:text-white">
+              <div className="flex flex-wrap gap-2 text-black text-xs group-hover:text-white">
                 {property.propertyType?.map((type, index) => (
-                  <span key={index}>
-                    {type.length > 16 ? `${type.slice(0, 15)}...` : type}
-                    {index < property.propertyType.length - 1 && ", "}
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-gray-200 rounded-xl"
+                  >
+                    {type.length > 18 ? `${type.slice(0, 17)}...` : type}
+                    {index < property.propertyType.length - 1 && ""}
                   </span>
                 ))}
-              </span>
+              </div>
             </div>
 
             <div className="w-full px-4 flex flex-col items-center justify-between">

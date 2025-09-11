@@ -2,36 +2,56 @@ import db from "../../config/dbconnect.js";
 import moment from "moment";
 
 export const getAll = (req, res) => {
-  const { city, propertyCategory } = req.query;
+  const { city, propertyCategory, propertyType } = req.query;
 
-  let sql = `SELECT * FROM properties WHERE status='Active' AND approve='Approved'`;
+  let sql = `
+    SELECT * 
+    FROM properties p 
+    WHERE p.status='Active' 
+    AND p.approve='Approved'
+  `;
   const params = [];
 
-  if (propertyCategory !== "properties") {
-    sql += ` AND propertyCategory = ?`;
-    params.push(propertyCategory);
+  // Filter by propertyCategory (ignore if 'properties' or empty)
+  if (propertyCategory && propertyCategory.trim() && propertyCategory !== "properties") {
+    sql += ` AND LOWER(p.propertyCategory) = LOWER(?)`;
+    params.push(propertyCategory.trim());
   }
 
-  if (city && city.trim() !== "") {
-    sql += ` AND city = ?`;
-    params.push(city);
+  // Handle propertyType (stored as JSON array in DB)
+  if (propertyType && propertyType.trim()) {
+    const types = propertyType.split(",").map((t) => t.trim()).filter(Boolean);
+    if (types.length > 0) {
+      const orConditions = types.map(() => "JSON_CONTAINS(p.propertyType, ?)").join(" OR ");
+      sql += ` AND (${orConditions})`;
+      types.forEach((cat) => params.push(JSON.stringify(cat)));
+    }
   }
 
-  sql += ` ORDER BY propertyid DESC`;
+  // Filter by city if provided
+  if (city && city.trim()) {
+    sql += ` AND LOWER(p.city) = LOWER(?)`;
+    params.push(city.trim());
+  }
+
+  sql += ` ORDER BY p.propertyid DESC`;
 
   db.query(sql, params, (err, result) => {
     if (err) {
       console.error("Error fetching:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    // safely parse JSON fields
+
+    // Safely parse JSON fields
     const formatted = result.map((row) => {
-      let parsedType = null;
+      let parsedType = [];
       try {
-        parsedType = row.propertyType ? JSON.parse(row.propertyType) : [];
+        if (row.propertyType) {
+          const parsed = JSON.parse(row.propertyType);
+          parsedType = Array.isArray(parsed) ? parsed : [parsed];
+        }
       } catch (e) {
         console.warn("Invalid JSON in propertyType:", row.propertyType);
-        parsedType = [];
       }
 
       return {
@@ -143,7 +163,7 @@ export const getAllLocation = (req, res) => {
 };
 
 export const getLocationsByCityAndCategory = (req, res) => {
-  const { propertyCategory, city } = req.query;
+  const { propertyCategory, propertyType, city } = req.query;
 
   if (!propertyCategory || !city) {
     return res
@@ -151,17 +171,41 @@ export const getLocationsByCityAndCategory = (req, res) => {
       .json({ message: "propertyCategory and city are required." });
   }
 
-  const sql = `SELECT DISTINCT location FROM properties 
-                 WHERE city = ? AND propertyCategory = ? 
-                 AND status='Active' AND approve='Approved'`;
+  let sql = `
+    SELECT DISTINCT location 
+    FROM properties p
+    WHERE LOWER(p.city) = LOWER(?) 
+    AND LOWER(p.propertyCategory) = LOWER(?)
+    AND p.status='Active' 
+    AND p.approve='Approved'
+  `;
+  const params = [city.trim(), propertyCategory.trim()];
 
-  db.query(sql, [city.trim(), propertyCategory.trim()], (err, result) => {
+  // Handle propertyType (stored as JSON array in DB)
+  if (propertyType && propertyType.trim() && propertyType !== "properties") {
+    const types = propertyType.split(","); // e.g. "Flat,Villa"
+    const orConditions = types
+      .map(() => "JSON_CONTAINS(p.propertyType, ?)")
+      .join(" OR ");
+    sql += ` AND (${orConditions})`;
+    types.forEach((cat) => params.push(JSON.stringify(cat.trim())));
+  }
+
+  db.query(sql, params, (err, result) => {
     if (err) {
       console.error("Error fetching locations:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
 
-    const locations = result.map((row) => row.location);
+    // Trim + deduplicate with Set
+    const locations = [
+      ...new Set(
+        result
+          .map((row) => row.location && row.location.trim())
+          .filter((loc) => loc && loc !== "")
+      ),
+    ];
+
     res.status(200).json(locations);
   });
 };

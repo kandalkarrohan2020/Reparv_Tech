@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../store/auth";
 import LocationPicker from "./LocationPicker";
+import TagsInput from "./TagsInput";
 //import MapLibreBuildings from "./MapLibreBuildings";
 
 
@@ -650,6 +651,9 @@ const StepOne = ({
               });
             }}
           />
+        </div>
+        <div className="col-span-1 lg:col-span-2 xl:col-span-3" >
+          <TagsInput newProperty={newProperty} setPropertyData={setPropertyData} />
         </div>
       </div>
     </div>

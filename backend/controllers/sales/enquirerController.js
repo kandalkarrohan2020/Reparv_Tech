@@ -577,7 +577,7 @@ export const getAvailableTPsForDate = (req, res) => {
   const sql = `
     SELECT * 
     FROM territorypartner
-    WHERE is_active = 'Active'
+    WHERE status = 'Active'
       AND city = ?
       AND (
         inactive_until IS NULL 

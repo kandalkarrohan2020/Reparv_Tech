@@ -59,6 +59,7 @@ const Properties = () => {
     msebWater: "",
     maintenance: "",
     other: "",
+    tags: "",
     propertyType: "",
     builtYear: "",
     ownershipType: "",

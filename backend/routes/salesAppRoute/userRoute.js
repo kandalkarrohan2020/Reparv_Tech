@@ -168,13 +168,13 @@ router.get("/:id/following-posts", (req, res) => {
 // });
 
 router.post("/set-inactive/:id", async (req, res) => {
-  const salespersonId = req.params.id;
+  const Id = req.params.id;
   const { isAvailable, inactiveDates } = req.body; // expect array of dates
 
   try {
     await db.query(
-      "UPDATE salesperson SET is_active = ?, inactive_until = ? WHERE salespersonsid = ?",
-      [isAvailable, JSON.stringify(inactiveDates), salespersonId]
+      "UPDATE salespersons SET is_active = ?, inactive_until = ? WHERE salespersonsid = ?",
+      [isAvailable, JSON.stringify(inactiveDates), Id]
     );
 
     res.json({ success: true, message: "Availability updated successfully" });

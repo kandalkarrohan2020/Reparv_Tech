@@ -19,6 +19,8 @@ export default function ImageSlider() {
     setSelectedCity,
     propertySearch,
     setPropertySearch,
+    showCitySelector,
+    setShowCitySelector
   } = useAuth();
   const navigate = useNavigate();
   const [sliderImages, setSliderImages] = useState([]);
@@ -88,27 +90,9 @@ export default function ImageSlider() {
 
   return (
     <div className="relative w-full mx-auto max-w-[1650px] flex flex-col items-center justify-center mb-5">
-      <div className="w-full flex flex-col sm:hidden gap-2 px-4 pt-3 pb-2">
-        {/* Mobile City Selector */}
-        <div className="selectCity w-full relative inline-block">
-          <Select
-            className="w-full text-xs p-0 cursor-pointer z-10"
-            styles={customStyles}
-            options={cityOptions}
-            value={
-              cityOptions.find((opt) => opt.value === selectedCity) || null
-            }
-            onChange={(selectedOption) => {
-              const value = selectedOption?.value || "";
-              setSelectedCity(value);
-              //navigate("/properties");
-            }}
-            placeholder="Select City"
-            isClearable={false}
-          />
-        </div>
+      <div className="w-full flex items-center justify-between sm:hidden gap-2 px-4 pt-3 pb-2">
         {/* Mobile Search */}
-        <div className="relative w-full bg-white rounded-md">
+        <div className="relative w-[60%] bg-white rounded-md">
           <span className="absolute inset-y-0 left-2 md:left-6 flex items-center text-gray-400">
             <IoSearchSharp className="w-4 md:w-5 h-4 md:h-5" />
           </span>
@@ -121,6 +105,31 @@ export default function ImageSlider() {
             placeholder="Search Property"
             className="w-full pl-7 md:pl-14 pr-4 py-[10px] text-xs md:text-base rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-[#00000066]"
           />
+        </div>
+
+        {/* Mobile City Selector */}
+        <div
+          onClick={() => {
+            setShowCitySelector(true);
+            navigate("/properties");
+          }}
+          className={`selectCity ${
+            location.pathname !== "/check-eligibility"
+              ? "sm:inline-block"
+              : "hidden"
+          } inline-block min-w-[100px] max-w-[250px] relative py-2 rounded-lg px-4 cursor-pointer`}
+        >
+          <div className="flex gap-1 items-center justify-center text-base font-semibold  text-black">
+            <CiLocationOn className="w-5 h-5" />
+            <span className="block whitespace-nowrap ">
+              {selectedCity
+                ? selectedCity.length > 12
+                  ? `${selectedCity.slice(0, 11)}...`
+                  : selectedCity
+                : "Select City"}
+            </span>
+            <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+          </div>
         </div>
       </div>
       <Swiper

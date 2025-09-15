@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }) => {
   const [showPlayVideo, setShowPlayVideo] = useState(false);
   const [videoURL, setVideoURL] = useState("");
   const [showWingInfoPopup, setShowWingInfoPopup] = useState(false);
+  const [showCitySelector, setShowCitySelector] = useState(true);
 
   const URI = "https://api.reparv.in";
   //const URI = "http://localhost:3000";
@@ -39,7 +40,7 @@ export const AuthProvider = ({ children }) => {
         setIsActive,
         propertyId,
         setPropertyId,
-        propertyInfoId, 
+        propertyInfoId,
         setPropertyInfoId,
         propertyCategory,
         setPropertyCategory,
@@ -51,7 +52,8 @@ export const AuthProvider = ({ children }) => {
         setPropertyImage,
         propertyType,
         setPropertyType,
-        bhkType, setBhkType,
+        bhkType,
+        setBhkType,
         propertySearch,
         setPropertySearch,
         selectedCity,
@@ -72,7 +74,9 @@ export const AuthProvider = ({ children }) => {
         setVideoURL,
         showWingInfoPopup,
         setShowWingInfoPopup,
-      
+        showCitySelector,
+        setShowCitySelector,
+
         URI,
         loading,
         setLoading,

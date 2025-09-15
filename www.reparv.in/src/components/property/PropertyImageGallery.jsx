@@ -111,16 +111,21 @@ const PropertyImageGallery = ({ property }) => {
             <div
               key={key}
               onClick={() => handleCategoryClick(key)}
-              className={`cursor-pointer border-2 rounded-lg overflow-hidden ${
+              className={`cursor-pointer border-2 rounded-lg overflow-hidden relative group ${
                 activeCategory === key ? "border-[#0BB501]" : "border-gray-200"
               }`}
             >
+              {/* Image */}
               <img
                 src={`${URI}${firstImage}`}
                 alt={label}
-                className="w-[100px] h-[55px] object-cover"
+                className="w-[100px] h-[65px] object-cover transition-transform duration-200 group-hover:scale-105"
               />
-              <div className="text-[10px] text-center text-black">{label}</div>
+
+              {/* Label */}
+              <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[12px] font-semibold p-[2px] text-center">
+                {label}
+              </div>
             </div>
           );
         })}

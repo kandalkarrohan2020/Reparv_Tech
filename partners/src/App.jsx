@@ -9,6 +9,8 @@ import SalesPartner from "./pages/SalesPertner";
 import TerritoryPartner from "./pages/TerritoryPartner";
 import ProjectPartner from "./pages/ProjectPartner";
 import OnboardingPartner from "./pages/OnboardingPartner";
+// User Account Cancellation
+import AccountCancellation from "./pages/AccountCancellation";
 
 // privacy Pages
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -29,6 +31,7 @@ function App() {
           <Route path="/territory-partner" element={<TerritoryPartner />} />
           <Route path="/project-partner" element={<ProjectPartner />} />
           <Route path="/onboarding-partner" element={<OnboardingPartner />} />
+          <Route path="/account-cancellation" element={<AccountCancellation />} />
 
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route

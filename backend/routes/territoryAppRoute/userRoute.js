@@ -420,9 +420,9 @@ router.get("/unavailable-dates/:id", async (req, res) => {
 });
 
 // DELETE /territorypartner/:id/unavailable-dates
-router.delete("/delete/unavailable-dates/:id", async (req, res) => {
+router.delete("/delete/unavailable-dates/:id", (req, res) => {
   const partnerId = req.params.id;
-  const { date } = req.body; // single date to remove, e.g., "2025-09-12"
+  const date = req.body?.date || req.query?.date; // allow both body & query param
 
   if (!date) {
     return res
@@ -430,14 +430,20 @@ router.delete("/delete/unavailable-dates/:id", async (req, res) => {
       .json({ success: false, message: "Provide a date to remove" });
   }
 
-  try {
-    // Find the path of the date in the JSON array
-    const [rows] = await db.query(
-      `SELECT JSON_SEARCH(inactive_until, 'one', ?) AS path
-       FROM territorypartner
-       WHERE id = ?`,
-      [date, partnerId]
-    );
+  // First find the path of the date in the JSON array
+  const searchSQL = `
+    SELECT JSON_UNQUOTE(JSON_SEARCH(inactive_until, 'one', ?)) AS path
+    FROM territorypartner
+    WHERE id = ?
+  `;
+
+  db.query(searchSQL, [date, partnerId], (err, rows) => {
+    if (err) {
+      console.error("❌ Error searching date:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database error", error: err });
+    }
 
     const path = rows[0]?.path;
 
@@ -445,19 +451,28 @@ router.delete("/delete/unavailable-dates/:id", async (req, res) => {
       return res.json({ success: false, message: "Date not found" });
     }
 
-    // Remove the date from the JSON array
-    await db.query(
-      `UPDATE territorypartner
-       SET inactive_until = JSON_REMOVE(inactive_until, ?)
-       WHERE id = ?`,
-      [path, partnerId]
-    );
+    // Now remove the date from JSON array
+    const updateSQL = `
+      UPDATE territorypartner
+      SET inactive_until = JSON_REMOVE(inactive_until, ?)
+      WHERE id = ?
+    `;
 
-    res.json({ success: true, message: "Date removed successfully" });
-  } catch (err) {
-    console.error("❌ Error removing date:", err);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
+    db.query(updateSQL, [path, partnerId], (err2, result) => {
+      if (err2) {
+        console.error("❌ Error removing date:", err2);
+        return res
+          .status(500)
+          .json({ success: false, message: "Database error", error: err2 });
+      }
+
+      if (!result.affectedRows) {
+        return res.json({ success: false, message: "Nothing updated" });
+      }
+
+      res.json({ success: true, message: "Date removed successfully" });
+    });
+  });
 });
 
 export default router;

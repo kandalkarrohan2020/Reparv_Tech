@@ -31,6 +31,7 @@ export default function FilterSidebar() {
   const propertyTypes = [
     "NewFlat",
     "NewPlot",
+    "NewShop",
     "RentalFlat",
     "RentalShop",
     "RentalOffice",
@@ -260,11 +261,10 @@ export default function FilterSidebar() {
           <h3 className="font-semibold text-lg">BHK | Property Types</h3>
           {showBHKTypes ? <FaChevronUp /> : <FaChevronDown />}
         </div>
-        {showBHKTypes && (
+        {showBHKTypes &&  bhkTypes.length > 0 && (
           <div className="mt-2">
             {/* Filter bhkTypes by selectedType */}
-            {bhkTypes
-              .filter((group) => group.category === selectedType)
+            {bhkTypes.filter((group) => group.category === selectedType)
               .map((group, i) => (
                 <div key={i}>
                   <div className="space-y-2 max-h-40 sm:max-h-35 overflow-y-auto scrollbar-hide">
@@ -313,7 +313,7 @@ export default function FilterSidebar() {
         </div>
         {showLocations && (
           <div className="space-y-2 mt-2 max-h-40 sm:max-h-35 overflow-y-auto scrollbar-hide ">
-            {locations.map((loc, i) => (
+            {locations?.map((loc, i) => (
               <label
                 key={i}
                 className="flex items-center space-x-2 cursor-pointer select-none"

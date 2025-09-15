@@ -52,6 +52,8 @@ export default function Properties() {
     setShowFilterPopup,
     setVideoURL,
     setShowPlayVideo,
+    showCitySelector,
+    setShowCitySelector,
   } = useAuth();
 
   // Split the slug into parts
@@ -95,11 +97,19 @@ export default function Properties() {
     }),
   };
 
-  const filteredData = filteredProperties?.filter(
-    (item) =>
-      item.propertyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.propertyCategory?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredData = filteredProperties?.filter((item) => {
+    const term = searchTerm?.toLowerCase() || "";
+
+    return (
+      item?.propertyName?.toLowerCase().includes(term) ||
+      item?.propertyCategory?.toLowerCase().includes(term) ||
+      (Array.isArray(item?.propertyType) &&
+        item.propertyType.some((type) => type.toLowerCase().includes(term))) ||
+      (Array.isArray(item?.tags)
+        ? item.tags.some((tag) => tag.toLowerCase().includes(term))
+        : item?.tags?.toLowerCase().includes(term)) // fallback if stored as string
+    );
+  });
 
   const fetchData = async () => {
     try {
@@ -237,6 +247,12 @@ export default function Properties() {
 
   useEffect(() => {
     const filtered = properties.filter((item) => {
+      const matchesBHK =
+        !selectedBHKType || // if none selected → allow all
+        (Array.isArray(item.propertyType)
+          ? item.propertyType.includes(selectedBHKType) // when stored as array
+          : item.propertyType === selectedBHKType); // when stored as string
+
       const matchesLocation =
         filteredLocations.length === 0 ||
         filteredLocations.includes(item.location);
@@ -244,11 +260,18 @@ export default function Properties() {
       const matchesBudget =
         item.totalOfferPrice >= minBudget && item.totalOfferPrice <= maxBudget;
 
-      return matchesLocation && matchesBudget;
+      return matchesBHK && matchesLocation && matchesBudget;
     });
 
     setFilteredProperties(filtered);
-  }, [properties, filteredLocations, minBudget, maxBudget]);
+  }, [
+    properties,
+    propertyType,
+    filteredLocations,
+    minBudget,
+    maxBudget,
+    selectedBHKType,
+  ]);
 
   return (
     <>
@@ -266,22 +289,25 @@ export default function Properties() {
         <div className="w-full flex flex-wrap gap-3 justify-beteen sm:justify-end sm:py-2 sm:px-5">
           {/* City Selector And Location Filter For MobileScreen  */}
           <div className="w-full flex sm:hidden gap-2 items-center justify-between">
-            <div className="selectCity w-[300px] min-w-[200px] max-w-[350px] relative inline-block">
-              <Select
-                className="w-full text-xs p-0 cursor-pointer"
-                styles={customStyles}
-                options={cityOptions}
-                value={
-                  cityOptions.find((opt) => opt.value === selectedCity) || null
-                }
-                onChange={(selectedOption) => {
-                  const value = selectedOption?.value || "";
-                  setSelectedCity(value);
-                  //navigate("/properties");
-                }}
-                placeholder="Select City"
-                isClearable={false}
-              />
+            {/* City Selector  */}
+            <div
+              onClick={() => {
+                setShowCitySelector(true);
+                navigate("/properties");
+              }}
+              className={`selectCity sm:hidden min-w-[200px] max-w-[300px] relative py-[6px] rounded-lg px-4 cursor-pointer border border-gray-300`}
+            >
+              <div className="flex gap-2 items-center justify-center text-base font-semibold  text-black lg:p-1 ">
+                <CiLocationOn className="w-5 h-5" />
+                <span className="block whitespace-nowrap ">
+                  {selectedCity
+                    ? selectedCity.length > 12
+                      ? `${selectedCity.slice(0, 11)}...`
+                      : selectedCity
+                    : "Select City"}
+                </span>
+                <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+              </div>
             </div>
             <div
               onClick={() => {
@@ -302,7 +328,7 @@ export default function Properties() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search For Your Favourite Property"
-              className="w-full pl-10 md:pl-11 pr-4 py-[10px] text-xs md:text-base rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#00C42B] placeholder:text-[#00000066]"
+              className="w-full pl-10 md:pl-11 pr-4 py-[10px] text-sm font-medium md:text-base rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#00C42B] placeholder:text-[#00000066]"
             />
           </div>
         </div>
@@ -390,7 +416,10 @@ export default function Properties() {
                         </span>
                         <div className="flex flex-wrap gap-2 text-black text-xs group-hover:text-white">
                           {property.propertyType?.map((type, index) => (
-                            <span key={index} className="px-2 py-1 bg-gray-200 rounded-xl">
+                            <span
+                              key={index}
+                              className="px-2 py-1 bg-gray-200 rounded-xl"
+                            >
                               {type.length > 18
                                 ? `${type.slice(0, 17)}...`
                                 : type}

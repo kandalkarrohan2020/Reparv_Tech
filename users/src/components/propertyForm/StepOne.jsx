@@ -100,6 +100,7 @@ const StepOne = ({
           >
             <option value="">Select Property Category</option>
             <option value="RentalFlat">Rental Flat</option>
+            <option value="NewShop">New Shop</option>
             <option value="RentalShop">Rental Shop</option>
             <option value="RentalOffice">Rental Office</option>
             <option value="Resale">Resale</option>

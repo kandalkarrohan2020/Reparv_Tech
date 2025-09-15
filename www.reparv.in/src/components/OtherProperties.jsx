@@ -124,7 +124,7 @@ function OtherProperties({ propertyCity, propertyCategory, propertyId }) {
                     key={index}
                     className="px-2 py-1 bg-gray-200 rounded-xl"
                   >
-                    {type.length > 18 ? `${type.slice(0, 17)}...` : type}
+                    {type?.length > 18 ? `${type.slice(0, 17)}...` : type}
                     {index < property.propertyType.length - 1 && ""}
                   </span>
                 ))}

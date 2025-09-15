@@ -26,6 +26,7 @@ import FilterSidebar from "../FilterSidebar";
 import Select from "react-select";
 import PlayVideo from "../property/PlayVideo";
 import WingInfo from "../property/WingInfo";
+import CitySelector from "../CitySelector";
 
 function Layout() {
   const {
@@ -47,6 +48,8 @@ function Layout() {
     setShowPlayVideo,
     showWingInfoPopup,
     setShowWingInfoPopup,
+    showCitySelector,
+    setShowCitySelector,
   } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -196,29 +199,32 @@ function Layout() {
             />
           </Link>
         </div>
+        
+        {/* City Selector  */}
         <div
+          onClick={() => {
+            setShowCitySelector(true);
+            navigate("/properties");
+          }}
           className={`selectCity ${
             location.pathname !== "/check-eligibility"
               ? "sm:inline-block"
               : "hidden"
-          } hidden min-w-[100px] max-w-[230px] relative`}
+          } hidden min-w-[50px] max-w-[210px] relative py-2 rounded-lg px-4 cursor-pointer`}
         >
-          <Select
-            className="w-full min-w-[200px] cursor-pointer text-xs font-semibold"
-            styles={customStyles}
-            options={cityOptions}
-            value={
-              cityOptions.find((opt) => opt.value === selectedCity) || null
-            }
-            onChange={(selectedOption) => {
-              const value = selectedOption?.value || "";
-              setSelectedCity(value);
-              navigate("/properties");
-            }}
-            placeholder="Select City"
-            isClearable={false}
-          />
+          <div className="flex lg:gap-1 items-center justify-center text-base font-semibold  text-black lg:p-1 ">
+            <CiLocationOn className="w-5 h-5" />
+            <span className="block whitespace-nowrap ">
+              {selectedCity
+                ? selectedCity.length > 12
+                  ? `${selectedCity.slice(0, 11)}...`
+                  : selectedCity
+                : "Select City"}
+            </span>
+            <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+          </div>
         </div>
+
         <div className="menu flex items-center justify-between md:hidden">
           <IoMdMenu
             onClick={() => {
@@ -475,8 +481,16 @@ function Layout() {
         </div>
       </div>
 
-      {/* Show Book Site Form Screen */}
+      {/* City Selector Popup */}
+      {showCitySelector && (
+        <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
+          <div className="w-full flex flex-col items-center justify-end sm:justify-center h-[90vh] absolute bottom-0 sm:top-10">
+            <CitySelector cities={cities} />
+          </div>
+        </div>
+      )}
 
+      {/* Show Book Site Form Screen */}
       {showSiteVisitPopup && (
         <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
           <div className="w-full flex flex-col items-center justify-end sm:justify-center h-[90vh] absolute bottom-0">

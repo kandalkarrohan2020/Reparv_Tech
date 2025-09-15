@@ -13,6 +13,7 @@ import farmLandIcon from "../../assets/home/farmLandIcon.svg";
 import commercialFlatIcon from "../../assets/home/commercialFlatIcon.svg";
 import commercialPlotIcon from "../../assets/home/commercialPlotIcon.svg";
 import industrialSpaceIcon from "../../assets/home/industrialSpaceIcon.svg";
+import shopIcon from "../../assets/home/shopIcon.png";
 
 import { IoSearchSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
@@ -38,11 +39,12 @@ const PropertyNavbar = () => {
   const propertyTypes = [
     { icon: flatIcon, label: "New Flat", type: "NewFlat", show: "true"},
     { icon: plotIcon, label: "New Plot", type: "NewPlot", show: "true" },
+    { icon: shopIcon, label: "New Shop", type: "NewShop", show: "true" },
     { icon: rentalIcon, label: "Rental Flat", type: "RentalFlat", show: "true" },
     { icon: resaleIcon, label: "Resale", type: "Resale", show: "true" },
     { icon: rowHouseIcon, label: "Row House", type: "RowHouse", show: "true" },
-    { icon: leaseIcon, label: "Lease", type: "Lease", show: "true" },
     { icon: null, label: !showMore ? "Show More" : "Show Less", type: "", show: "true" },
+    { icon: leaseIcon, label: "Lease", type: "Lease", show: showMore },
     { icon: farmHouseIcon, label: "Farm House", type: "FarmHouse", show: showMore },
     { icon: farmLandIcon, label: "Farm Land", type: "FarmLand", show: showMore },
     { icon: commercialFlatIcon, label: "Commercial Flat", type: "CommercialFlat", show: showMore },
@@ -73,7 +75,7 @@ const PropertyNavbar = () => {
             <img
               src={property.icon}
               alt=""
-              className={` ${property.icon !== null ? "block":"hidden"} w-15 sm:w-16 h-14 sm:h-16 object-cover `}
+              className={` ${property.icon !== null ? "block":"hidden"} ${property.icon === "shopIcon" ? "w-8 sm:w-10" : "w-15 sm:w-16 h-14 sm:h-16"} object-cover `}
             />
             <span className={`text-[10px] sm:text-xs md:text-sm lg:text-sm font-medium `} >{property.label}</span>
           </div>

@@ -54,6 +54,9 @@ import frontendEmiRoutes from "./routes/frontend/emiRoutes.js";
 // Payment Route
 import paymentRoutes from "./routes/paymentRoutes.js";
 
+// Account Cancellation Route
+import accountCancellation from "./routes/accountCancellationRoutes.js";
+
 // Map Route
 import geocodeRoutes from "./routes/geocodeRoutes.js";
 
@@ -315,6 +318,9 @@ const verifyToken = (req, res, next) => {
     "/builderapp/user",
     "/builderapp/post",
     "/projectpartner/post",
+
+    // account cancellation request from partner
+    "/api/partner/account/cancellation"
   ];
 
   //  Allow public routes to pass through
@@ -366,6 +372,9 @@ app.use("/frontend/testimonial", testimonialFeedbackRoutes);
 app.use("/frontend/emi", frontendEmiRoutes);
 // Payment Call
 app.use("/api/payment", paymentRoutes);
+
+// Account Cancellation Request
+app.use("/api/partner/account", accountCancellation);
 
 // Map Route Call
 app.use("/api/map", geocodeRoutes);

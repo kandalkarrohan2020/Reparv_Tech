@@ -23,12 +23,17 @@ function Layout() {
     return location.pathname === path ? "font-bold text-[#0BB501]" : "";
   };
 
-  const customerApkUrl = apks?.find((apk) => apk.apkName === "Customer")?.filePath || null;
-  const salesApkUrl = apks?.find((apk) => apk.apkName === "Sales Partner")?.filePath || null;
-  const projectApkUrl = apks?.find((apk) => apk.apkName === "Project Partner")?.filePath || null;
-  const territoryApkUrl = apks?.find((apk) => apk.apkName === "Territory Partner")?.filePath || null;
-  const onboardingApkUrl = apks?.find((apk) => apk.apkName === "Onboarding Partner")?.filePath || null;
-  
+  const customerApkUrl =
+    apks?.find((apk) => apk.apkName === "Customer")?.filePath || null;
+  const salesApkUrl =
+    apks?.find((apk) => apk.apkName === "Sales Partner")?.filePath || null;
+  const projectApkUrl =
+    apks?.find((apk) => apk.apkName === "Project Partner")?.filePath || null;
+  const territoryApkUrl =
+    apks?.find((apk) => apk.apkName === "Territory Partner")?.filePath || null;
+  const onboardingApkUrl =
+    apks?.find((apk) => apk.apkName === "Onboarding Partner")?.filePath || null;
+
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
@@ -84,9 +89,9 @@ function Layout() {
                 onClick={() => {
                   setShowSidebar(false);
                 }}
-                className={`${getNavLinkClass(
+                className={`${getNavLinkClass("/promoter")} ${getNavLinkClass(
                   "/promoter"
-                )} ${getNavLinkClass("/promoter")}`}
+                )}`}
               >
                 Promoter
               </NavLink>
@@ -269,20 +274,9 @@ function Layout() {
             </div>
 
             <div className="downloadBody hidden lg:flex flex-col gap-4 text-lg font-medium !text-White">
-              <h3 className="text-xl font-bold">Download Apps</h3>
+              <h3 className="text-xl font-bold">Delete Your Account</h3>
               <p className="cursor-pointer">
-                <a href={`${URI}/${salesApkUrl}`} download="Sales.apk" className="hover:text-[#0BB501]">
-                  Sales.apk
-                </a>
-              </p>
-              <p className="cursor-pointer">
-                <a
-                  href={`${URI}/${territoryApkUrl}`}
-                  download="Territory.apk"
-                  className="hover:text-[#0BB501]"
-                >
-                  Territory.apk
-                </a>
+                <Link to="/account-cancellation">Delete Account</Link>
               </p>
             </div>
 
@@ -318,7 +312,9 @@ function Layout() {
           </div>
 
           <div className="footerBottom text-lg py-3 leading-6 flex gap-4 md:gap-6 tracking-[0.6%] text-white/60 ">
-            <span>@{new Date().getFullYear()} reparv.in All Rights Reserved</span>
+            <span>
+              @{new Date().getFullYear()} reparv.in All Rights Reserved
+            </span>
             <Link to="/terms-and-conditions" className="cursor-pointer">
               Terms & Conditions
             </Link>
@@ -369,6 +365,11 @@ function Layout() {
               }}
             >
               Contact Us
+            </Link>
+            <Link
+              to={"/account-cancellation"}
+            >
+              Delete Account
             </Link>
           </div>
         </div>

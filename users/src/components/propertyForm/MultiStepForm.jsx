@@ -94,6 +94,8 @@ const MultiStepForm = ({
       setPropertyData({
         propertyid: "",
         builderid: "",
+        projectBy: "",
+        possessionDate: "",
         propertyCategory: "",
         propertyApprovedBy: "",
         propertyName: "",
@@ -175,7 +177,7 @@ const MultiStepForm = ({
         "totalOfferPrice", // number
         "stampDuty", // number
         "other", // number
-        "tags"
+        "tags",
       ];
 
       const allFilled = requiredFieldsStep1.every((field) => {
@@ -262,7 +264,9 @@ const MultiStepForm = ({
           <IoMdClose
             onClick={() => {
               setShowPropertyForm(false);
-              setPropertyData(prev => Object.fromEntries(Object.keys(prev).map(k => [k, ""])));
+              setPropertyData((prev) =>
+                Object.fromEntries(Object.keys(prev).map((k) => [k, ""]))
+              );
             }}
             className="w-7 h-7 cursor-pointer"
           />

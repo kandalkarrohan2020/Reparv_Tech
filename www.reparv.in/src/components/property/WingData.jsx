@@ -11,7 +11,7 @@ function WingData({ propertyInfo }) {
     setLoading(true);
     try {
       const response = await fetch(
-        `${URI}/frontend/properties/additionalinfo/get/${propertyInfo?.propertyid}`,
+        `${URI}/frontend/properties/flat/additionalinfo/get/${propertyInfo?.propertyid}`,
         {
           method: "GET",
           credentials: "include", //  Ensures cookies are sent

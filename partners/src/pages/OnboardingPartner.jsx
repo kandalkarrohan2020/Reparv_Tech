@@ -1,12 +1,12 @@
 import React from "react";
-import { useState } from "react";
-import { useEffect } from "react";
-import { useAuth } from "../store/auth";
+import { lazy, Suspense } from "react";
 import partnerMobileBackImage from "../assets/joinOurTeam/onboardingPartner/partnerMobileBack.svg";
 import partnerBackImage from "../assets/joinOurTeam/onboardingPartner/partnerBack.svg";
-import RegisterForm from "../components/onboardingPartner/RegisterForm";
 import { RiMapPinUserLine } from "react-icons/ri";
-import VideoSection from "../components/VideoSection";
+
+// Lazy load heavy components
+const VideoSection = lazy(() => import("../components/VideoSection"));
+
 import MarketRealityGrid from "../components/onboardingPartner/MarketRealityGrid";
 import SolutionReparvGrid from "../components/onboardingPartner/SolutionReparvGrid";
 import BottomGrid from "../components/onboardingPartner/BottomGrid";
@@ -14,33 +14,6 @@ import SEO from "../components/SEO";
 import RegistrationForm from "../components/onboardingPartner/RegistrationForm";
 
 function OnboardingPartner() {
-  const { URI } = useAuth();
-  const [apks, setApks] = useState([]);
-  const onboardingApkUrl = apks?.find((apk) => apk.apkName === "Onboarding Partner")?.filePath || null;
-
-  // **Fetch Data from API**
-  const fetchData = async () => {
-    try {
-      const response = await fetch(URI + "/admin/apk", {
-        method: "GET",
-        credentials: "include", // Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch apps.");
-      const data = await response.json();
-      console.log(data);
-      setApks(data);
-    } catch (err) {
-      console.error("Error fetching :", err);
-    }
-  };
-
-  useEffect(() => {
-    //fetchData();
-  }, []);
-
   return (
     <>
       <SEO
@@ -90,9 +63,18 @@ function OnboardingPartner() {
                   </a>
                 </div>
               </div>
-              <div className="right w-full md:w-1/2 pt-2 xl:pt-10">
-                <VideoSection videoFor="onboarding partner" />
-              </div>
+
+              <Suspense
+                fallback={
+                  <div className="w-full py-10 text-center font-bold text-black">
+                    Video Loading...
+                  </div>
+                }
+              >
+                <div className="right w-full md:w-1/2 pt-2 xl:pt-10">
+                  <VideoSection videoFor="onboarding partner" />
+                </div>
+              </Suspense>
             </div>
           </div>
         </div>

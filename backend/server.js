@@ -164,7 +164,7 @@ import territoryUserController from "./routes/territoryAppRoute/userRoute.js";
 import territorypostRoute from "./routes/territoryAppRoute/postRoutes.js";
 import territoryBooking from "./routes/territoryPartner/propertyBookingRoute.js";
 import territoryClientRoute from "./routes/territoryAppRoute/profileRoute.js";
-
+import territoryEnquiryRoute from "./routes/territoryAppRoute/enquiryRoute.js";
 //Onboarding App
 import onboardingAppRoute from "./routes/onboardingAppRoute/userRoute.js";
 
@@ -320,7 +320,7 @@ const verifyToken = (req, res, next) => {
     "/projectpartner/post",
 
     // account cancellation request from partner
-    "/api/partner/account/cancellation"
+    "/api/partner/account/cancellation",
   ];
 
   //  Allow public routes to pass through
@@ -518,6 +518,7 @@ app.use("/salesapp/enquiry", enquiryRoutesSaleApp);
 app.use("/territoryapp/user", territoryUserController);
 app.use("/territoryapp/post", territorypostRoute);
 app.use("/territoryapp/client", territoryClientRoute);
+app.use("/territoryapp/enquiry", territoryEnquiryRoute);
 //Book Enquiry Property
 app.use("/api/booking", bookPropertyRoute);
 //get territory Book Enquiry Property

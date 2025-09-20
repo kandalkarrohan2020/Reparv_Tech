@@ -27,6 +27,8 @@ export const AuthProvider = ({ children }) => {
   const [showPropertyForm, setShowPropertyForm] = useState(false);
   const [showUpdateImagesForm, setShowUpdateImagesForm] = useState(false);
   const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
+  const [showNewPlotAdditionalInfoForm, setShowNewPlotAdditionalInfoForm] =
+    useState(false);
   const [showPropertyInfo, setShowPropertyInfo] = useState(false);
   const [showTicketInfo, setShowTicketInfo] = useState(true);
   const [showTicketForm, setShowTicketForm] = useState(false);
@@ -73,6 +75,8 @@ export const AuthProvider = ({ children }) => {
         setShowUpdateImagesForm,
         showAdditionalInfoForm,
         setShowAdditionalInfoForm,
+        showNewPlotAdditionalInfoForm,
+        setShowNewPlotAdditionalInfoForm,
         showPropertyInfo,
         setShowPropertyInfo,
         showTicketInfo,

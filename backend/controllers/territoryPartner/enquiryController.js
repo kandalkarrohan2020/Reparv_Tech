@@ -150,6 +150,7 @@ export const addEnquiry = async (req, res) => {
     message,
     assign,
     source,
+   
     territorystatus,
     updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
@@ -168,6 +169,7 @@ export const addEnquiry = async (req, res) => {
       message,
       territoryInfo,
       "Direct",
+
       "Accepted",
       currentdate,
       currentdate,

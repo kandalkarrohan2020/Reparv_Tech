@@ -274,3 +274,31 @@ export const fetchFlatById = (req, res) => {
     res.json(data);
   });
 };
+
+// ** Fetch Property Information by ID **
+export const fetchPlotById = (req, res) => {
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  const sql = `SELECT * FROM propertiesinfo WHERE propertyinfoid = ? ORDER BY propertyinfoid`;
+
+  db.query(sql, [Id], (err, result) => {
+    if (err) {
+      console.error("Error fetching property Details:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Property Additional Information not found" });
+    }
+
+    const data = result[0];
+
+    // Now set the updated object in state
+    res.json(data);
+  });
+};

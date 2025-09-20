@@ -94,6 +94,8 @@ const MultiStepForm = ({
       setPropertyData({
         propertyid: "",
         builderid: "",
+        projectBy: "",
+    possessionDate: "",
         propertyCategory: "",
         propertyApprovedBy: "",
         propertyName: "",

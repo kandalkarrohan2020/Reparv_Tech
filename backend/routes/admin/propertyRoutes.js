@@ -14,7 +14,6 @@ import {
   additionalInfoAdd,
   propertyInfo,
   addRejectReason,
-  addCsvFile,
   fetchAdditionalInfo,
   seoDetails,
   setPropertyCommission,
@@ -22,6 +21,8 @@ import {
   checkPropertyName,
   changePropertyLocation,
   getPropertyLocation,
+  addCsvFileForFlat,
+  addCsvFileForPlot,
 } from "../../controllers/admin/propertyController.js";
 import multer from "multer";
 import path from "path";
@@ -242,9 +243,14 @@ const uploadCsvMiddleware = (req, res, next) => {
 // Fetch & Upload CSV File
 router.get("/additionalinfo/get/:id", fetchAdditionalInfo);
 router.post(
-  "/additionalinfo/csv/add/:propertyid",
+  "/additionalinfo/flat/csv/add/:propertyid",
   uploadCsvMiddleware,
-  addCsvFile
+  addCsvFileForFlat
+);
+router.post(
+  "/additionalinfo/plot/csv/add/:propertyid",
+  uploadCsvMiddleware,
+  addCsvFileForPlot
 );
 
 export default router;

@@ -26,6 +26,7 @@ export default function FilterSidebar() {
     setMinBudget,
     maxBudget,
     setMaxBudget,
+    resetSidebarFilter,
   } = usePropertyFilter();
 
   const propertyTypes = [
@@ -397,7 +398,10 @@ export default function FilterSidebar() {
       {/* Buttons */}
       <div className="flex space-x-4 pt-2 mb-8 sm:mb-2">
         <button
-          onClick={resetFilters}
+          onClick={()=>{
+            resetFilters();
+            resetSidebarFilter();
+          }}
           className="flex-1 bg-gray-200 text-gray-700 py-2 rounded"
         >
           Reset

@@ -30,6 +30,11 @@ export const AuthProvider = ({ children }) => {
   const [showAuctionForm, setShowAuctionForm] = useState(false);
   const [showPropertyForm, setShowPropertyForm] = useState(false);
   const [showPropertyTypeForm, setShowPropertyTypeForm] = useState(false);
+
+  // Set Object For Show Property and Partner Commission
+  const [propertyCommissionData, setPropertyCommissionData] = useState({});
+  const [showPropertyCommissionPopup, setShowPropertyCommissionPopup] =
+    useState(false);
   const [showRoleForm, setShowRoleForm] = useState(false);
   const [showDepartmentForm, setShowDepartmentForm] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
@@ -44,6 +49,8 @@ export const AuthProvider = ({ children }) => {
   const [showAssignTaskForm, setShowAssignTaskForm] = useState(false);
   const [showUpdateImagesForm, setShowUpdateImagesForm] = useState(false);
   const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
+  const [showNewPlotAdditionalInfoForm, setShowNewPlotAdditionalInfoForm] =
+    useState(false);
   const [showAssignSalesForm, setShowAssignSalesForm] = useState(false);
   const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
   const [showEnquiryForm, setShowEnquiryForm] = useState(false);
@@ -142,6 +149,8 @@ export const AuthProvider = ({ children }) => {
         setShowUpdateImagesForm,
         showAdditionalInfoForm,
         setShowAdditionalInfoForm,
+        showNewPlotAdditionalInfoForm,
+        setShowNewPlotAdditionalInfoForm,
         showAssignSalesForm,
         setShowAssignSalesForm,
         showEnquiryStatusForm,
@@ -214,6 +223,10 @@ export const AuthProvider = ({ children }) => {
         setShowVideoUploadForm,
         showPropertyLocationForm,
         setShowPropertyLocationForm,
+        propertyCommissionData,
+        setPropertyCommissionData,
+        showPropertyCommissionPopup,
+        setShowPropertyCommissionPopup,
       }}
     >
       {children}

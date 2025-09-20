@@ -3,6 +3,7 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 import { IoSearchSharp } from "react-icons/io5";
 import { FiX } from "react-icons/fi";
 import { useAuth } from "../store/auth";
+import { usePropertyFilter } from "../store/propertyFilter";
 
 import delhiImage from "../assets/citySelector/delhi.jpeg";
 import mumbaiImage from "../assets/citySelector/mumbai.jpeg";
@@ -38,16 +39,48 @@ export const popularCities = [
   { name: "Chandigarh", image: chandigarhImage },
 ];
 
-export default function CitySelector({ cities }) {
+export default function CitySelector() {
   const {
+    URI,
     showCitySelector,
     setShowCitySelector,
     selectedCity,
     setSelectedCity,
   } = useAuth();
 
+  const { resetSidebarFilter } = usePropertyFilter();
+
   const [search, setSearch] = useState("");
   const [loadingLocation, setLoadingLocation] = useState(false);
+  const [cities, setCities] = useState([]);
+
+  // *Fetch Data from API*
+  const fetchAllCity = async () => {
+    try {
+      const response = await fetch(URI + "/frontend/properties/cities", {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch cities.");
+
+      const data = await response.json();
+      setCities(data); // Sets the cities array
+    } catch (err) {
+      console.error("Error fetching:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllCity();
+  }, []);
+
+  useEffect(() => {
+    resetSidebarFilter();
+  }, [selectedCity]);
 
   const filteredCities = cities?.filter((city) =>
     city.toLowerCase().includes(search.toLowerCase())
@@ -143,13 +176,15 @@ export default function CitySelector({ cities }) {
           filteredCities.map((city, index) => (
             <div
               key={index}
-              onClick={() => {setSelectedCity(city);
+              onClick={() => {
+                setSelectedCity(city);
                 setShowCitySelector(false);
-              }
-              }
+              }}
               className="flex items-center justify-center font-semibold border-2 border-gray-300 hover:border-[#0BB501] px-4 py-1 rounded-xl text-[#0BB501] active:scale-95 whitespace-nowrap cursor-pointer"
             >
-              <span className="whitespace-nowrap text-sm md:text-base">{city}</span>
+              <span className="whitespace-nowrap text-sm md:text-base">
+                {city}
+              </span>
             </div>
           ))
         ) : (
@@ -163,7 +198,8 @@ export default function CitySelector({ cities }) {
         {popularCities.map((city, idx) => (
           <div
             key={idx}
-            onClick={() => {setSelectedCity(city.name);
+            onClick={() => {
+              setSelectedCity(city.name);
               setShowCitySelector(false);
             }}
             className="flex flex-col items-center cursor-pointer hover:scale-103 active:scale-100 transition-transform"

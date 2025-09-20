@@ -208,6 +208,8 @@ export const addProperty = async (req, res) => {
 
   const {
     builderid,
+    projectBy,
+    possessionDate,
     propertyCategory,
     propertyApprovedBy,
     propertyName,
@@ -377,7 +379,7 @@ export const addProperty = async (req, res) => {
       // Insert query
       const insertSQL = `
         INSERT INTO properties (
-          builderid, propertyCategory, propertyApprovedBy, propertyName, address, state, city, pincode, location,
+          builderid, projectBy, possessionDate, propertyCategory, propertyApprovedBy, propertyName, address, state, city, pincode, location,
           distanceFromCityCenter, latitude, longitude, totalSalesPrice, totalOfferPrice, emi, stampDuty, registrationFee, gst, advocateFee, 
           msebWater, maintenance, other, tags, propertyType, builtYear, ownershipType, builtUpArea, carpetArea,
           parkingAvailability, totalFloors, floorNo, loanAvailability, propertyFacing, reraRegistered, 
@@ -388,11 +390,13 @@ export const addProperty = async (req, res) => {
           nearestLandmark, developedAmenities, seoSlug,
           updated_at, created_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const values = [
         builderid,
+        projectBy,
+        possessionDate,
         propertyCategory,
         propertyApprovedBy,
         propertyName,
@@ -490,6 +494,8 @@ export const update = async (req, res) => {
 
   const {
     builderid,
+    projectBy,
+    possessionDate,
     propertyCategory,
     propertyApprovedBy,
     propertyName,
@@ -635,7 +641,7 @@ export const update = async (req, res) => {
 
       const updateSQL = `
       UPDATE properties SET 
-        builderid=?, propertyCategory=?, propertyApprovedBy=?, propertyName=?, address=?, state=?, city=?, pincode=?, location=?,
+        builderid=?, projectBy=?, possessionDate=?, propertyCategory=?, propertyApprovedBy=?, propertyName=?, address=?, state=?, city=?, pincode=?, location=?,
         distanceFromCityCenter=?, latitude=?, longitude=?, totalSalesPrice=?, totalOfferPrice=?, emi=?, stampDuty=?, registrationFee=?, gst=?, advocateFee=?, 
         msebWater=?, maintenance=?, other=?, tags=?, propertyType=?, builtYear=?, ownershipType=?,
         builtUpArea=?, carpetArea=?, parkingAvailability=?, totalFloors=?, floorNo=?, loanAvailability=?,
@@ -649,6 +655,8 @@ export const update = async (req, res) => {
 
       const values = [
         builderid,
+        projectBy,
+        possessionDate,
         propertyCategory,
         propertyApprovedBy,
         propertyName,
@@ -1576,7 +1584,7 @@ export const propertyInfo = (req, res) => {
 };
 
 // Add Additional Info Using CSV
-export const addCsvFile = async (req, res) => {
+export const addCsvFileForFlat = async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "CSV file is required" });
   }
@@ -1679,6 +1687,104 @@ export const addCsvFile = async (req, res) => {
     }
   });
 };
+
+// Add Additional Info Using CSV
+export const addCsvFileForPlot = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "CSV file is required" });
+  }
+
+  const propertyId = parseInt(req.params?.propertyid);
+  if (isNaN(propertyId)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  const results = [];
+
+  const filePath = req.file.path;
+
+  const stream = fs.createReadStream(filePath).pipe(csv());
+
+  let responded = false; // Prevent multiple responses
+
+  stream.on("data", (row) => {
+    results.push(row);
+  });
+
+  stream.on("end", () => {
+    const values = results.map((row) => [
+      row.propertyid || propertyId,
+      row.Mouza || null,
+      row.Khasra_No || null,
+      row.Plot_No || null,
+      row.Facing || null,
+      row.Plot_Size || null,
+      row.Plot_Area || null,
+      row.SQFT_Price || null,
+      row.Basic_Cost || null,
+      row.Stamp_Duty || null,
+      row.Registration || null,
+      row.Advocate_Fee || null,
+      row.Maintenance || null,
+      row.GST || null,
+      row.Other_Charges || null,
+      row.Total_Cost || null,
+      row.updated_at || new Date(),
+      row.created_at || new Date(),
+    ]);
+
+    const query = `
+      INSERT INTO propertiesinfo (
+        propertyid, mouza, khasrano, plotno, plotfacing, plotsize,
+        payablearea, sqftprice, basiccost,
+        stampduty, registration, advocatefee, maintenance, gst, other, totalcost,
+        updated_at, created_at
+      ) VALUES ?
+    `;
+
+    db.query(query, [values], (err, result) => {
+      fs.unlink(filePath, (unlinkErr) => {
+        if (unlinkErr) {
+          console.error("Error deleting file:", unlinkErr);
+        }
+      });
+
+      if (responded) return; // Avoid duplicate response
+      if (err) {
+        console.error("Database error:", err);
+        responded = true;
+        return res.status(500).json({
+          message: "Failed to insert CSV data into database.",
+          error: err.sqlMessage || err.message,
+        });
+      }
+
+      responded = true;
+      return res.status(200).json({
+        message: "CSV data inserted successfully.",
+        insertedRows: result.affectedRows,
+      });
+    });
+  });
+
+  stream.on("error", (csvError) => {
+    fs.unlink(filePath, (unlinkErr) => {
+      if (unlinkErr) {
+        console.error("Error deleting file after CSV error:", unlinkErr);
+      }
+    });
+
+    if (!responded) {
+      responded = true;
+      console.error("CSV parsing error:", csvError);
+      return res.status(500).json({
+        message: "Error reading CSV file.",
+        error: csvError.message,
+      });
+    }
+  });
+};
+
 
 // ** Fetch Property Information by ID **
 export const fetchAdditionalInfo = (req, res) => {

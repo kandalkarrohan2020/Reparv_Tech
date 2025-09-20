@@ -189,24 +189,6 @@ function HomePropertySection() {
                 </div>
               </div>
 
-              {/*
-              <div className="flex justify-between text-xs md:text-sm text-[#00092966] group-hover:text-[#e2e2e2] mt-2 px-2">
-                <div className="flex items-center justify-start gap-2 ">
-                  <MdOutlineKingBed className="text-[#07630066] group-hover:text-white w-5 h-5" />
-                  3 Beds
-                </div>
-                <div className="flex items-center justify-start gap-2 ">
-                  <BiBath className="text-[#07630066] group-hover:text-white w-5 h-5" />
-                  2 Bathrooms
-                </div>
-
-                <div className="flex items-center justify-start gap-2 ">
-                  <FaDiamond className="text-[#07630066] group-hover:text-white w-3 h-3" />
-                  {property.area} Sqft
-                </div>
-              </div>
-              */}
-
               <div className="flex flex-wrap gap-2 px-4 text-[10px] md:text-xs font-medium  text-[#00092966] group-hover:text-[#e2e2e2] mt-2">
                 <div
                   className={`${

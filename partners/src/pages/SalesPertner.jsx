@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useEffect } from "react";
 import { useAuth } from "../store/auth";
 import salesBackImage from "../assets/joinOurTeam/salesPartner/salesBack.svg";
@@ -7,7 +7,10 @@ import salesMobileBackImage from "../assets/joinOurTeam/salesPartner/salesMobile
 import WhyJoinReparv from "../components/salesPartner/WhyJoinReparv";
 import { IoMdDownload } from "react-icons/io";
 import StepSection from "../components/salesPartner/StepSection";
-import SalesTestimonial from "../components/salesPartner/SalesTestimonial";
+// Lazy load heavy components
+const SalesTestimonial = lazy(() =>
+  import("../components/salesPartner/SalesTestimonial")
+);
 import SEO from "../components/SEO";
 import RegistrationForm from "../components/salesPartner/RegistrationForm";
 
@@ -104,10 +107,18 @@ function SalesPartner() {
           </a>
         </div>
 
-        {/* Sales Testimonial */}
-        <div className="flex items-center justify-center mx-auto max-w-[1600px] ">
-          <SalesTestimonial />
-        </div>
+        {/* Lazy Loaded Sales Testimonial */}
+        <Suspense
+          fallback={
+            <div className="w-full py-10 font-bold text-center text-gray-500">
+              Loading Testimonials...
+            </div>
+          }
+        >
+          <div className="flex items-center justify-center mx-auto max-w-[1600px]">
+            <SalesTestimonial />
+          </div>
+        </Suspense>
 
         {/* Registration Form */}
         <div

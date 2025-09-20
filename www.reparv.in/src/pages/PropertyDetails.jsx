@@ -1,18 +1,20 @@
-import React from "react";
-import { useState } from "react";
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect, lazy, Suspense } from "react";
+import { useParams, useOutletContext } from "react-router-dom";
 import { useAuth } from "../store/auth";
-import PropertyImageGallery from "../components/property/PropertyImageGallery";
 import PropertyBookingCard from "../components/property/PropertyBookingCard";
 import PropertyOverview from "../components/property/PropertyOverview";
 import PropertyFeatures from "../components/property/PropertyFeatures";
 import EMICalculator from "../components/property/EMICalculator";
-import OtherProperties from "../components/OtherProperties";
-import { useOutletContext } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 import SEO from "../components/SEO";
 import WingData from "../components/property/WingData";
+import PlotData from "../components/property/PlotData";
+
+// Lazy-loaded components
+const PropertyImageGallery = lazy(() =>
+  import("../components/property/PropertyImageGallery")
+);
+const OtherProperties = lazy(() => import("../components/OtherProperties"));
 
 function PropertyDetails() {
   const { setOtherPropertiesInView, isScrolling } = useOutletContext();
@@ -36,7 +38,6 @@ function PropertyDetails() {
       });
       if (!response.ok) throw new Error("Failed to fetch property info.");
       const data = await response.json();
-      //console.log("Property Info", data);
       setPropertyInfo(data);
       setPropertyCategory(data.propertyCategory);
     } catch (err) {
@@ -81,30 +82,31 @@ function PropertyDetails() {
       <div className="w-full max-w-7xl flex flex-col sm:p-4 mx-auto">
         <div className="flex w-full">
           <div className="leftSection w-full md:w-[50%] flex flex-col gap-2 sm:gap-10">
-            <PropertyImageGallery property={propertyInfo} />
+            {/* Lazy load Image Gallery */}
+            <Suspense
+              fallback={
+                <div className="text-center py-10">Loading Images...</div>
+              }
+            >
+              <PropertyImageGallery property={propertyInfo} />
+            </Suspense>
+
             <div className=" block md:hidden">
               <PropertyBookingCard propertyInfo={propertyInfo} />
             </div>
 
-            {/* Show Wing Data Only in the New And Commercial Flat Or Plot */}
-            {[
-              "NewFlat",
-              "NewPlot",
-              "CommercialFlat",
-              "CommercialPlot",
-            ].includes(propertyInfo.propertyCategory) && (
-              <WingData propertyInfo={propertyInfo} />
-            )}
+            {/* Show Wing Data */}
+            {["NewFlat", "CommercialFlat"].includes(
+              propertyInfo.propertyCategory
+            ) && <WingData propertyInfo={propertyInfo} />}
+
+            {/* Show Plot Data */}
+            {["NewPlot", "CommercialPlot"].includes(
+              propertyInfo.propertyCategory
+            ) && <PlotData propertyInfo={propertyInfo} />}
 
             {/* Property Details */}
-            <div
-              className={`${
-                propertyInfo?.propertyDescription === null ||
-                propertyInfo?.propertyDescription === ""
-                  ? "hidden"
-                  : "block"
-              }`}
-            >
+            {propertyInfo?.propertyDescription && (
               <div className="bg-white rounded-lg p-4">
                 <h2 className="text-base font-semibold mb-4">
                   Property Details
@@ -113,16 +115,18 @@ function PropertyDetails() {
                   {propertyInfo.propertyDescription}
                 </div>
               </div>
-            </div>
+            )}
 
             <PropertyOverview propertyInfo={propertyInfo} />
             <PropertyFeatures propertyInfo={propertyInfo} />
 
-            {/* Hide EMI Calculator in Rental Properties */}
+            {/* Hide EMI Calculator in Rentals */}
             {!["RentalFlat", "RentalShop", "RentalOffice"].includes(
               propertyInfo.propertyCategory
             ) && <EMICalculator totalAmount={propertyInfo.totalOfferPrice} />}
           </div>
+
+          {/* Booking card */}
           <div
             className={`${
               isScrolling ? "absolute " : "fixed"
@@ -132,7 +136,7 @@ function PropertyDetails() {
           </div>
         </div>
 
-        {/* Property Booking Inquiry Button */}
+        {/* Book Site Visit Button (Mobile) */}
         <div className="fixed z-30 w-full sm:w-auto right-0 bottom-0 sm:hidden p-4 rounded-2xl text-white text-md shadow-lg ">
           <button
             onClick={() => {
@@ -147,20 +151,28 @@ function PropertyDetails() {
           </button>
         </div>
 
-        {/* Other Properties Section */}
+        {/* Lazy load Other Properties */}
         <div
           ref={videoRef}
-          className={` w-full flex flex-col px-5 pt-10 sm:pt-13 sm:p-5`}
+          className="w-full flex flex-col px-5 pt-10 sm:pt-13 sm:p-5"
         >
           <h2 className="text-lg md:text-3xl mx-auto text-black font-semibold mb-4">
             Explore Similar Properties
           </h2>
-          <OtherProperties
-            propertyCity={propertyInfo.city}
-            propertyCategory={propertyInfo.propertyCategory}
-            propertyId={id}
-            key={propertyInfo.seoSlug}
-          />
+          <Suspense
+            fallback={
+              <div className="text-center py-10">
+                Loading Similar Properties...
+              </div>
+            }
+          >
+            <OtherProperties
+              propertyCity={propertyInfo.city}
+              propertyCategory={propertyInfo.propertyCategory}
+              propertyId={id}
+              key={propertyInfo.seoSlug}
+            />
+          </Suspense>
         </div>
       </div>
     </>

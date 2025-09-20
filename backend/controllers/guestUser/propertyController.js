@@ -106,6 +106,8 @@ export const addProperty = async (req, res) => {
 
   const {
     builderid,
+    projectBy,
+    possessionDate,
     propertyCategory,
     propertyApprovedBy,
     propertyName,
@@ -262,7 +264,7 @@ export const addProperty = async (req, res) => {
 
       const insertSQL = `
       INSERT INTO properties (
-        guestUserId, builderid, propertyCategory, propertyApprovedBy, propertyName, address, state, city, pincode, location,
+        guestUserId, builderid, projectBy, possessionDate, propertyCategory, propertyApprovedBy, propertyName, address, state, city, pincode, location,
         distanceFromCityCenter, latitude, longitude, totalSalesPrice, totalOfferPrice, emi, stampDuty, registrationFee, gst, advocateFee, 
         msebWater, maintenance, other, tags, propertyType, builtYear, ownershipType, builtUpArea, carpetArea,
         parkingAvailability, totalFloors, floorNo, loanAvailability, propertyFacing, reraRegistered, 
@@ -273,12 +275,14 @@ export const addProperty = async (req, res) => {
         nearestLandmark, developedAmenities,
         updated_at, created_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const values = [
         partnerId,
         builderid,
+        projectBy,
+        possessionDate,
         propertyCategory,
         propertyApprovedBy,
         propertyName,
@@ -377,6 +381,8 @@ export const update = async (req, res) => {
 
   const {
     builderid,
+    projectBy,
+    possessionDate,
     propertyCategory,
     propertyApprovedBy,
     propertyName,
@@ -536,7 +542,7 @@ export const update = async (req, res) => {
 
       const updateSQL = `
       UPDATE properties SET rejectreason=NULL, approve=?,
-        builderid=?, propertyCategory=?, propertyApprovedBy=?, propertyName=?, address=?, state=?, city=?, pincode=?, location=?,
+        builderid=?, projectBy=?, possessionDate=?, propertyCategory=?, propertyApprovedBy=?, propertyName=?, address=?, state=?, city=?, pincode=?, location=?,
         distanceFromCityCenter=?, latitude=?, longitude=?, totalSalesPrice=?, totalOfferPrice=?, emi=?, stampDuty=?, registrationFee=?, gst=?, advocateFee=?, 
         msebWater=?, maintenance=?, other=?, tags=?, propertyType=?, builtYear=?, ownershipType=?,
         builtUpArea=?, carpetArea=?, parkingAvailability=?, totalFloors=?, floorNo=?, loanAvailability=?,
@@ -551,6 +557,8 @@ export const update = async (req, res) => {
       const values = [
         approve,
         builderid,
+        projectBy,
+        possessionDate,
         propertyCategory,
         propertyApprovedBy,
         propertyName,

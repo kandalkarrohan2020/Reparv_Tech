@@ -37,6 +37,8 @@ const Properties = () => {
   const [longitude, setLongitude] = useState(null);
   const [newProperty, setPropertyData] = useState({
     builderid: "",
+    projectBy: "",
+    possessionDate: "",
     propertyCategory: "",
     propertyApprovedBy: "",
     propertyName: "",

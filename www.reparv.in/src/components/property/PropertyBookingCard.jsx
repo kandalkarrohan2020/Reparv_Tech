@@ -28,24 +28,40 @@ const PropertyBookingCard = ({ propertyInfo }) => {
         {propertyInfo.propertyName}
       </h2>
 
+      <div
+        className={`flex flex-col lg:flex-row gap-2 lg:gap-4 `}
+      >
+        <span  className={`${propertyInfo.projectBy ? "flex" : "hidden"} text-xs font-semibold`}>Project By : {propertyInfo.projectBy}</span>
+        <span  className={`${propertyInfo.poccessionDate ? "flex" : "hidden"} text-xs font-semibold`}>Possession Date : {propertyInfo.possessionDate}</span>
+      </div>
+
       {/* Flat/Plot Count */}
       <div
         className={`${
-          ["NewFlat", "NewPlot", "CommercialFlat", "CommercialPlot"].includes(propertyInfo.propertyCategory)
+          ["NewFlat", "NewPlot", "CommercialFlat", "CommercialPlot"].includes(
+            propertyInfo.propertyCategory
+          )
             ? "flex"
             : "hidden"
         } flex flex-wrap gap-4 text-sm md:text-base font-medium text-[#00092966] group-hover:text-[#e2e2e2] mt-1`}
       >
-        <div className={`py-[6px] sm:py-[8px] px-4 sm:px-6 flex gap-2 items-center justify-center text-green-700 bg-[#eeffec] rounded-xl`} >
+        <div
+          className={`py-[6px] sm:py-[8px] px-4 sm:px-6 flex gap-2 items-center justify-center text-green-700 bg-[#eeffec] rounded-xl`}
+        >
           <span>Available</span>
-          <div className="flex items-center justify-center text-xs md:text-sm py-[2px] px-2 bg-white rounded-lg">{propertyInfo.availableCount}</div>
+          <div className="flex items-center justify-center text-xs md:text-sm py-[2px] px-2 bg-white rounded-lg">
+            {propertyInfo.availableCount}
+          </div>
         </div>
-        
-        <div className={`py-[6px] sm:py-[8px] px-4 sm:px-6 flex gap-2 items-center justify-center text-red-500 bg-red-100 rounded-xl`} >
+
+        <div
+          className={`py-[6px] sm:py-[8px] px-4 sm:px-6 flex gap-2 items-center justify-center text-red-500 bg-red-100 rounded-xl`}
+        >
           <span>Booked </span>
-          <div className="flex items-center justify-center text-xs md:text-sm py-[2px] px-2 bg-white rounded-lg">{propertyInfo.bookedCount}</div>
+          <div className="flex items-center justify-center text-xs md:text-sm py-[2px] px-2 bg-white rounded-lg">
+            {propertyInfo.bookedCount}
+          </div>
         </div>
-  
       </div>
 
       {/* Tags */}
@@ -127,7 +143,12 @@ const PropertyBookingCard = ({ propertyInfo }) => {
               <span className="text-base font-medium">/mo</span>
             </p>
           </div>
-          <button onClick={()=>{navigate("/check-eligibility")}} className="flex items-center text-black text-xs sm:text-sm font-medium gap-1 hover:text-[#0BB501] transition cursor-pointer">
+          <button
+            onClick={() => {
+              navigate("/check-eligibility");
+            }}
+            className="flex items-center text-black text-xs sm:text-sm font-medium gap-1 hover:text-[#0BB501] transition cursor-pointer"
+          >
             Check eligibility{" "}
             <HiOutlineArrowNarrowRight className="text-xl font-normal" />
           </button>

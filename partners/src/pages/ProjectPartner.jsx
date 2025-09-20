@@ -1,10 +1,13 @@
 import React from "react";
+import { lazy, Suspense } from "react";
 import projectPartnerMobileBackImage from "../assets/joinOurTeam/projectPartner/projectPartnerMobileBack.svg";
 import projectPartnerBackImage from "../assets/joinOurTeam/projectPartner/projectPartnerBack.svg";
 import deskTopImage from "../assets/joinOurTeam/projectPartner/deskTop.svg";
-import RegisterForm from "../components/projectPartner/RegisterForm";
 import { RiMapPinUserLine } from "react-icons/ri";
-import VideoSection from "../components/VideoSection";
+
+// Lazy load heavy components
+const VideoSection = lazy(() => import("../components/VideoSection"));
+
 import MarketRealityGrid from "../components/projectPartner/MarketRealityGrid";
 import SolutionReparvGrid from "../components/projectPartner/SolutionReparvGrid";
 import BottomGrid from "../components/projectPartner/BottomGrid";
@@ -58,9 +61,18 @@ function ProjectPartner() {
                   </a>
                 </div>
               </div>
-              <div className="right w-full md:w-1/2 pt-2 xl:pt-10">
-                <VideoSection videoFor="project partner" />
-              </div>
+
+              <Suspense
+                fallback={
+                  <div className="w-full py-10 text-center font-bold text-black">
+                    Video Loading...
+                  </div>
+                }
+              >
+                <div className="right w-full md:w-1/2 pt-2 xl:pt-10">
+                  <VideoSection videoFor="project partner" />
+                </div>
+              </Suspense>
             </div>
           </div>
         </div>

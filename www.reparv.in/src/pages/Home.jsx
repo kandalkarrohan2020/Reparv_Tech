@@ -1,23 +1,31 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { useAuth } from "../store/auth";
-import ImageSlider from "../components/home/ImageSlider";
-import StepsSection from "../components/home/StepsSection";
-import VideoReviewSection from "../components/VideoReviewSection";
-import PropertyNavbar from "../components/home/PropertyNavbar";
-import HomePropertySection from "../components/home/HomePropertySection";
 import SEO from "../components/SEO";
+
+// lazy load heavy components
+const ImageSlider = lazy(() => import("../components/home/ImageSlider"));
+const StepsSection = lazy(() => import("../components/home/StepsSection"));
+const VideoReviewSection = lazy(() => import("../components/VideoReviewSection"));
+const PropertyNavbar = lazy(() => import("../components/home/PropertyNavbar"));
+const HomePropertySection = lazy(() => import("../components/home/HomePropertySection"));
 
 function Home() {
   const { selectedCity } = useAuth();
+
   return (
     <>
       <SEO
-        title={"Reparv – Buy, Sell, or Rent Property in Maharashtra"}
-        description={"Reparv is your trusted real estate platform in Vidarbha – Flats, Plots, Rentals, Legal Support & Loan Help."}
+        title="Reparv – Buy, Sell, or Rent Property in Maharashtra"
+        description="Reparv is your trusted real estate platform in Vidarbha – Flats, Plots, Rentals, Legal Support & Loan Help."
       />
+
       <div className="full">
-        <ImageSlider />
-        <div className="w-full flex items-center justify-center ">
+        {/* Lazy loaded components wrapped in Suspense */}
+        <Suspense fallback={<div className="text-center py-10">Loading...</div>}>
+          <ImageSlider />
+        </Suspense>
+
+        <div className="w-full flex items-center justify-center">
           <div
             onClick={() => {
               window.open("https://users.reparv.in/", "_blank");
@@ -28,12 +36,24 @@ function Home() {
             Sell Your Property
           </div>
         </div>
+
         <div className="block lg:hidden">
-          <PropertyNavbar />
+          <Suspense fallback={<div>Loading navbar...</div>}>
+            <PropertyNavbar />
+          </Suspense>
         </div>
-        <HomePropertySection />
-        <VideoReviewSection />
-        <StepsSection />
+
+        <Suspense fallback={<div className="text-center">Loading properties...</div>}>
+          <HomePropertySection />
+        </Suspense>
+
+        <Suspense fallback={<div className="text-center">Loading reviews...</div>}>
+          <VideoReviewSection />
+        </Suspense>
+
+        <Suspense fallback={<div className="text-center">Loading steps...</div>}>
+          <StepsSection />
+        </Suspense>
       </div>
     </>
   );

@@ -26,6 +26,8 @@ const Properties = () => {
     setShowUpdateImagesForm,
     showAdditionalInfoForm,
     setShowAdditionalInfoForm,
+    showNewPlotAdditionalInfoForm,
+    setShowNewPlotAdditionalInfoForm,
     showPropertyInfo,
     setShowPropertyInfo,
     showRejectReasonForm,
@@ -69,6 +71,8 @@ const Properties = () => {
   const [propertyDescription, setPropertyDescription] = useState("");
   const [newProperty, setPropertyData] = useState({
     builderid: "",
+    projectBy: "",
+    possessionDate: "",
     propertyCategory: "",
     propertyApprovedBy: "",
     propertyName: "",
@@ -167,6 +171,26 @@ const Properties = () => {
       Advocate_Fee: 20000,
       Other_Charges: 50000,
       Total_Cost: "=O2+P2+Q2+R2+S2+T2+U2+V2",
+    },
+  ];
+
+  const additionalInfoNewPlotCSVFileFormat = [
+    {
+      Mouza: "Nagpur",
+      Khasra_No: "123/ABC",
+      Plot_No: "3",
+      Facing: "East",
+      Plot_Size: "20 X 30",
+      Plot_Area: 2200,
+      SQFT_Price: 1000,
+      Basic_Cost: 2200 * 1000,
+      Stamp_Duty: 10000,
+      Registration: 30000,
+      GST: 500000,
+      Maintenance: 50000,
+      Advocate_Fee: 20000,
+      Other_Charges: 50000,
+      Total_Cost: 2200000 + 10000 + 30000 + 50000 + 50000 + 20000 + 50000,
     },
   ];
 
@@ -808,7 +832,7 @@ const Properties = () => {
     }
   };
 
-  // Add Additional Info as a CSV File
+  // Add Additional Info as a CSV File For Flat
   const addCsv = async (e) => {
     e.preventDefault();
 
@@ -823,7 +847,7 @@ const Properties = () => {
 
     try {
       const response = await fetch(
-        `${URI}/admin/properties/additionalinfo/csv/add`,
+        `${URI}/admin/properties/additionalinfo/flat/csv/add`,
         {
           method: "POST",
           credentials: "include",
@@ -840,6 +864,45 @@ const Properties = () => {
 
       alert(data.message || "CSV uploaded successfully.");
       setShowAdditionalInfoForm(false);
+      setFile(null); // Clear selected file
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("An unexpected error occurred while uploading the CSV file.");
+    }
+  };
+
+  // Add Additional Info as a CSV File for New Plot
+  const addCsvForNewPlot = async (e) => {
+    e.preventDefault();
+
+    if (!file) {
+      alert("Please select a CSV file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("propertyid", propertyKey);
+    formData.append("csv", file);
+
+    try {
+      const response = await fetch(
+        `${URI}/admin/properties/additionalinfo/plot/csv/add/${propertyKey}`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        console.error("Server responded with an error:", data);
+        alert(data.message || "CSV upload failed due to a server error.");
+        return;
+      }
+
+      alert(data.message || "CSV uploaded successfully.");
+      setShowNewPlotAdditionalInfoForm(false);
       setFile(null); // Clear selected file
     } catch (error) {
       console.error("Upload error:", error);
@@ -1254,6 +1317,10 @@ const Properties = () => {
           setPropertyKey(propertyid);
           setShowAdditionalInfoForm(true);
           break;
+        case "additionalinfoforplot":
+          setPropertyKey(propertyid);
+          setShowNewPlotAdditionalInfoForm(true);
+          break;
         case "updateImages":
           setPropertyKey(propertyid);
           fetchImages(propertyid);
@@ -1286,10 +1353,14 @@ const Properties = () => {
           <option value="delete">Delete</option>
           <option value="approve">Approve</option>
           {row.propertyCategory === "NewFlat" ||
-          row.propertyCategory === "NewPlot" ||
-          row.propertyCategory === "CommercialFlat" ||
-          row.propertyCategory === "CommercialPlot" ? (
+          row.propertyCategory === "CommercialFlat" ? (
             <option value="additionalinfo">Additional Info</option>
+          ) : (
+            <></>
+          )}
+          {row.propertyCategory === "NewPlot" ||
+          row.propertyCategory === "CommercialPlot" ? (
+            <option value="additionalinfoforplot">Additional Info</option>
           ) : (
             <></>
           )}
@@ -1676,6 +1747,78 @@ const Properties = () => {
               <DownloadCSV
                 data={additionalInfoCSVFileFormat}
                 filename={"Additional_Info_File_Format.csv"}
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 text-white font-semibold bg-[#076300] rounded active:scale-[0.98]"
+              >
+                ADD CSV File
+              </button>
+              <Loader />
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* This is For New Plot Additional Info */}
+      <div
+        className={`${
+          showNewPlotAdditionalInfoForm ? "flex" : "hidden"
+        } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
+      >
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] max-h-[80vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">
+              Additional Information
+            </h2>
+            <IoMdClose
+              onClick={() => {
+                setShowNewPlotAdditionalInfoForm(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form
+            onSubmit={addCsvForNewPlot}
+          >
+            <div className="w-full grid gap-4 place-items-center grid-cols-1">
+              <input
+                type="hidden"
+                value={newAddInfo.propertyid || ""}
+                onChange={(e) =>
+                  setNewAddInfo({
+                    ...newAddInfo,
+                    propertyid: e.target.value,
+                  })
+                }
+              />
+
+              <div className="w-full mt-2">
+                <input
+                  type="file"
+                  accept=".csv"
+                  multiple
+                  onChange={(e) => setFile(e.target.files[0])}
+                  className="hidden"
+                  id="csvFile"
+                />
+                <label
+                  htmlFor="csvFile"
+                  className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
+                >
+                  <span className="m-3 p-2 overflow-hidden text-[16px] font-medium text-[#00000066]">
+                    {file ? file.name : "Upload File"}
+                  </span>
+                  <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                    Browse
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-center gap-6">
+              <DownloadCSV
+                data={additionalInfoNewPlotCSVFileFormat}
+                filename={"Plot_Additional_Info_File_Format.csv"}
               />
               <button
                 type="submit"

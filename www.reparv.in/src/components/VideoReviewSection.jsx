@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../store/auth";
 import { Link, Navigate } from "react-router-dom";
 import { IoPlayCircleOutline } from "react-icons/io5";
-import image from "../assets/joinOurTeam/formImage.svg";
+import image from "../assets/home/formimage.svg";
 import cardShadow from "../assets/home/cardShadow.svg";
 const VideoReviewSection = () => {
   const { URI } = useAuth();

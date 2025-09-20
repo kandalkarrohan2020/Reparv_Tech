@@ -13,7 +13,7 @@ import farmLandIcon from "../../assets/home/farmLandIcon.svg";
 import commercialFlatIcon from "../../assets/home/commercialFlatIcon.svg";
 import commercialPlotIcon from "../../assets/home/commercialPlotIcon.svg";
 import industrialSpaceIcon from "../../assets/home/industrialSpaceIcon.svg";
-import shopIcon from "../../assets/home/shopIcon.png";
+import shopIcon from "../../assets/home/shopIcon.svg";
 
 import { IoSearchSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
@@ -63,8 +63,8 @@ const PropertyNavbar = () => {
           <div
             onClick={() => {
               if (property.label !== "Show More" && property.label !== "Show Less"){
-                navigate("/properties");
                 setPropertyType(property.type);
+                navigate("/properties");
               } else {
                 setShowMore(!showMore);
               }

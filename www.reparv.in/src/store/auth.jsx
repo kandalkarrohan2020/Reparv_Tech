@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }) => {
   const [showPlayVideo, setShowPlayVideo] = useState(false);
   const [videoURL, setVideoURL] = useState("");
   const [showWingInfoPopup, setShowWingInfoPopup] = useState(false);
+  const [showPlotInfoPopup, setShowPlotInfoPopup] = useState(false);
   const [showCitySelector, setShowCitySelector] = useState(true);
 
   const URI = "https://api.reparv.in";
@@ -74,6 +75,8 @@ export const AuthProvider = ({ children }) => {
         setVideoURL,
         showWingInfoPopup,
         setShowWingInfoPopup,
+        showPlotInfoPopup,
+        setShowPlotInfoPopup,
         showCitySelector,
         setShowCitySelector,
 

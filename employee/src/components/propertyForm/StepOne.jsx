@@ -76,8 +76,6 @@ const StepOne = ({
             ))}
           </select>
         </div>
-
-        
         <div className="w-full ">
           <label
             className={`text-green-600 block text-sm leading-4 font-medium`}
@@ -94,21 +92,28 @@ const StepOne = ({
             }
           />
         </div>
-
         <div className="w-full ">
-          <label
-            className={`text-green-600 block text-sm leading-4 font-medium`}
-          >
+          <label className="text-green-600 block text-sm leading-4 font-medium">
             Possession Date
           </label>
           <input
             type="date"
             placeholder="Enter Possession Date"
             className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
-            value={newProperty.possessionDate}
-            onChange={(e) =>
-              setPropertyData({ ...newProperty, possessionDate: e.target.value })
+            value={
+              newProperty.possessionDate
+                ? new Date(newProperty.possessionDate)
+                    .toISOString()
+                    .split("T")[0]
+                : ""
             }
+            onChange={(e) => {
+              const selectedDate = e.target.value;
+              setPropertyData({
+                ...newProperty,
+                possessionDate: selectedDate === "" ? null : selectedDate,
+              });
+            }}
           />
         </div>
 
@@ -150,7 +155,6 @@ const StepOne = ({
             <option value="IndustrialSpace">Industrial Space</option>
           </select>
         </div>
-
         <div
           className={`${
             newProperty.propertyCategory === "FarmLand" ? "hidden" : "block"
@@ -184,7 +188,6 @@ const StepOne = ({
             ))}
           </select>
         </div>
-
         <div className="w-full ">
           <label
             className={`${
@@ -215,7 +218,6 @@ const StepOne = ({
             }
           />
         </div>
-
         <div className="w-full">
           <label
             className={`${
@@ -268,7 +270,6 @@ const StepOne = ({
             }}
           />
         </div>
-
         <div className="w-full ">
           <label
             className={`${
@@ -288,7 +289,6 @@ const StepOne = ({
             }
           />
         </div>
-
         {/* State Select Input */}
         <div className="w-full">
           <label
@@ -315,7 +315,6 @@ const StepOne = ({
             ))}
           </select>
         </div>
-
         {/* City Select Input */}
         <div className="w-full">
           <label
@@ -345,7 +344,6 @@ const StepOne = ({
             ))}
           </select>
         </div>
-
         <div className="w-full">
           <label
             className={`${
@@ -368,7 +366,6 @@ const StepOne = ({
             className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none  focus:ring-2 focus:ring-green-600 placeholder:text-black"
           />
         </div>
-
         <div className="w-full ">
           <label
             className={`${
@@ -392,7 +389,6 @@ const StepOne = ({
             }
           />
         </div>
-
         <div className="w-full">
           <label
             className={`${
@@ -422,7 +418,6 @@ const StepOne = ({
             ))}
           </select>
         </div>
-
         {/* Map Picker */}
         <div
           className={`${

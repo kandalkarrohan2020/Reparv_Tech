@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import csv from "csv-parser";
 import { convertImagesToWebp } from "../../utils/convertImagesToWebp.js";
+import { sanitize } from "../../utils/sanitize.js";
 
 function toSlug(text) {
   return text
@@ -396,7 +397,7 @@ export const addProperty = async (req, res) => {
       const values = [
         builderid,
         projectBy,
-        possessionDate,
+        sanitize(possessionDate),
         propertyCategory,
         propertyApprovedBy,
         propertyName,
@@ -656,7 +657,7 @@ export const update = async (req, res) => {
       const values = [
         builderid,
         projectBy,
-        possessionDate,
+        sanitize(possessionDate),
         propertyCategory,
         propertyApprovedBy,
         propertyName,

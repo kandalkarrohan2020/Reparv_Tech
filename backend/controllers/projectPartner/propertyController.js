@@ -3,6 +3,7 @@ import moment from "moment";
 import fs from "fs";
 import path from "path";
 import { convertImagesToWebp } from "../../utils/convertImagesToWebp.js";
+import { sanitize } from "../../utils/sanitize.js";
 
 function toSlug(text) {
   return text
@@ -272,7 +273,7 @@ export const addProperty = async (req, res) => {
         partnerId,
         builderid,
         projectBy,
-        possessionDate,
+        sanitize(possessionDate),
         propertyCategory,
         propertyApprovedBy,
         propertyName,
@@ -552,7 +553,7 @@ export const update = async (req, res) => {
         approve,
         builderid,
         projectBy,
-        possessionDate,
+        sanitize(possessionDate),
         propertyCategory,
         propertyApprovedBy,
         propertyName,

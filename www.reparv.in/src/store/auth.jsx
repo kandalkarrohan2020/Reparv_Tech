@@ -31,8 +31,8 @@ export const AuthProvider = ({ children }) => {
   const [showPlotInfoPopup, setShowPlotInfoPopup] = useState(false);
   const [showCitySelector, setShowCitySelector] = useState(true);
 
-  const URI = "https://api.reparv.in";
-  //const URI = "http://localhost:3000";
+  //const URI = "https://api.reparv.in";
+  const URI = "http://localhost:3000";
 
   return (
     <AuthContext.Provider

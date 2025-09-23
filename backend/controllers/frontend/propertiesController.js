@@ -302,3 +302,34 @@ export const fetchPlotById = (req, res) => {
     res.json(data);
   });
 };
+
+export const getAdditionalInfo = (req, res) => {
+  const { propertyId } = req.params;
+  const { type } = req.query;
+
+  if (!propertyId) {
+    return res.status(400).json({ message: "Property ID is required" });
+  }
+  if (!type) {
+    return res.status(400).json({ message: "Property type is required" });
+  }
+
+  const sql = `
+    SELECT *
+    FROM propertiesinfo
+    WHERE propertyid = ? AND type = ?
+  `;
+
+  db.query(sql, [propertyId, type], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "No data found" });
+    }
+
+    res.status(200).json(result[0]); 
+  });
+};

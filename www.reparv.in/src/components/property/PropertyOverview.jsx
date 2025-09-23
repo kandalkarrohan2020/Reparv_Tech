@@ -19,14 +19,6 @@ import {
 const PropertyOverview = ({ propertyInfo }) => {
   const overviewData = [
     {
-      icon: FaBuilding,
-      label: "Property Type",
-      value: Array.isArray(propertyInfo.propertyType)
-        ? propertyInfo.propertyType.join(" | ")
-        : propertyInfo.propertyType || "N/A",
-      show: "flex col-span-2 lg:col-span-3",
-    },
-    {
       icon: FaCalendarAlt,
       label: "Built Year",
       value: propertyInfo.builtYear,

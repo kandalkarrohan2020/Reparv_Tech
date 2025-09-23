@@ -24,19 +24,21 @@ export const getById = (req, res) => {
       return res.status(404).json({ message: "property info not found" });
     }
 
-    // safely parse JSON fields
+    // safely parse JSON + format dates
     const formatted = result.map((row) => {
-      let parsedType = null;
+      let parsedType = [];
       try {
         parsedType = row.propertyType ? JSON.parse(row.propertyType) : [];
       } catch (e) {
         console.warn("Invalid JSON in propertyType:", row.propertyType);
-        parsedType = [];
       }
 
       return {
         ...row,
         propertyType: parsedType,
+        possessionDate: row.possessionDate
+          ? moment(row.possessionDate).format("DD MMM YYYY")
+          : null,
       };
     });
 

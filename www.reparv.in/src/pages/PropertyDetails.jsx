@@ -107,7 +107,7 @@ function PropertyDetails() {
             ) && <PlotData propertyInfo={propertyInfo} />}
             
             {/* Show Type Wise Property */}
-            <TypeWisePricing propertyId={propertyInfo?.propertyId} propertyCategory={propertyInfo?.propertyCategory} propertyType={propertyInfo.propertyType} />
+            <TypeWisePricing propertyId={propertyInfo?.propertyid} propertyCategory={propertyInfo?.propertyCategory} propertyType={propertyInfo.propertyType} />
 
             {/* Property Details */}
             {propertyInfo?.propertyDescription && (

@@ -209,6 +209,20 @@ export const addProperty = async (req, res) => {
   // calculate EMI On OFFER PRICE
   const emi = calculateEMI(Number(totalOfferPrice));
 
+  // Format dates to remove time portion
+  let formattedPossessionDate = null;
+
+  if (possessionDate && possessionDate.trim() !== "") {
+    // Check if it's a valid date
+    if (
+      moment(possessionDate, ["YYYY-MM-DD", moment.ISO_8601], true).isValid()
+    ) {
+      formattedPossessionDate = moment(possessionDate).format("YYYY-MM-DD");
+    } else {
+      formattedPossessionDate = null; // fallback instead of "Invalid date"
+    }
+  }
+  
   // Convert Property Type Into Array
   let propertyTypeArray;
 
@@ -274,7 +288,7 @@ export const addProperty = async (req, res) => {
         partnerId,
         builderid,
         projectBy,
-        sanitize(possessionDate),
+        sanitize(formattedPossessionDate),
         propertyCategory,
         propertyApprovedBy,
         propertyName,
@@ -484,6 +498,20 @@ export const update = async (req, res) => {
   // calculate EMI On OFFER PRICE
   const emi = calculateEMI(Number(totalOfferPrice));
 
+  // Format dates to remove time portion
+  let formattedPossessionDate = null;
+
+  if (possessionDate && possessionDate.trim() !== "") {
+    // Check if it's a valid date
+    if (
+      moment(possessionDate, ["YYYY-MM-DD", moment.ISO_8601], true).isValid()
+    ) {
+      formattedPossessionDate = moment(possessionDate).format("YYYY-MM-DD");
+    } else {
+      formattedPossessionDate = null; // fallback instead of "Invalid date"
+    }
+  }
+
   // Convert Property Type Into Array
   let propertyTypeArray;
 
@@ -550,7 +578,7 @@ export const update = async (req, res) => {
         approve,
         builderid,
         projectBy,
-        sanitize(possessionDate),
+        sanitize(formattedPossessionDate),
         propertyCategory,
         propertyApprovedBy,
         propertyName,

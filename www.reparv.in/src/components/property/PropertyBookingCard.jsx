@@ -32,7 +32,7 @@ const PropertyBookingCard = ({ propertyInfo }) => {
         className={`flex flex-col lg:flex-row gap-2 lg:gap-4 `}
       >
         <span className={`${propertyInfo.projectBy ? "flex" : "hidden"} text-xs font-semibold`}>Project By : {propertyInfo.projectBy}</span>
-        <span className={`${propertyInfo.poccessionDate ? "flex" : "hidden"} text-xs font-semibold`}>Possession Date : {propertyInfo.possessionDate}</span>
+        <span className={`${propertyInfo.possessionDate ? "flex" : "hidden"} text-xs font-semibold`}>Possession Date : {propertyInfo.possessionDate}</span>
       </div>
 
       {/* Flat/Plot Count */}

@@ -257,14 +257,25 @@ function HomePropertySection() {
                 </div>
               </div>
 
-              <div className="w-full flex gap-1 items-center justify-start py-3 px-4 rounded-bl-lg rounded-br-lg address text-[10px] md:text-xs lg:text-sm font-normal text-[#808080] group-hover:text-[#e2e2e2] bg-[#0000000F] ">
-                <CiLocationOn className="text-[#07630066] group-hover:text-white w-5 h-5" />
-                <p className="text-[#808080] group-hover:text-[#e2e2e2]">
-                  {property.location.length > 25
-                    ? `${property.location.slice(0, 24)}...`
-                    : property.location}
-                  , {property.city}
-                </p>
+              <div className="w-full flex flex-wrap gap-2 items-center justify-start py-3 px-4 rounded-bl-lg rounded-br-lg address text-[10px] md:text-xs lg:text-sm font-normal text-[#808080] group-hover:text-[#e2e2e2] border-t-1 border-[#F0EFFB]">
+                <CiLocationOn className="text-[#076300] group-hover:text-white w-5 h-5" />
+                <div className="flex flex-col">
+                  <p className="text-[#808080] ">
+                    {property.location.length > 25
+                      ? `${property.location.slice(0, 24)}...`
+                      : property.location}
+                    , {property.city}
+                  </p>
+                  <p
+                    className={`${
+                      property.projectBy
+                        ? "flex font-semibold text-[#000000]"
+                        : "hidden"
+                    }`}
+                  >
+                    Project By : {property.projectBy}
+                  </p>
+                </div>
               </div>
             </div>
           </div>

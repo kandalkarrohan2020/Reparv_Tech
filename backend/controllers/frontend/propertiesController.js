@@ -307,6 +307,8 @@ export const getAdditionalInfo = (req, res) => {
   const { propertyId } = req.params;
   const { type } = req.query;
 
+  console.log("propertyId:", propertyId, "type:", type);
+
   if (!propertyId) {
     return res.status(400).json({ message: "Property ID is required" });
   }

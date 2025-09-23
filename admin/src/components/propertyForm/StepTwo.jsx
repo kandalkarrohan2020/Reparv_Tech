@@ -355,8 +355,6 @@ const StepTwo = ({ newProperty, setPropertyData }) => {
             </option>
             <option value="Borewell / Tube Well">Borewell / Tube Well</option>
             <option value="Open Well">Open Well</option>
-            <option value="Tanker Water Supply">Tanker Water Supply</option>
-            <option value="Rainwater Harvesting">Rainwater Harvesting</option>
             <option value="Combination / Mixed">Combination / Mixed</option>
           </select>
         </div>

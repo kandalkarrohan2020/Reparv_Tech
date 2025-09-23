@@ -200,7 +200,7 @@ export default function FilterSidebar() {
   }, [selectedType, selectedBHKType, selectedCity]);
 
   return (
-    <div className="w-full max-h-[85vh] overflow-scroll scrollbar-hide p-5 sm:p-0 rounded-tl-2xl rounded-tr-2xl sm:rounded-0 bg-[#FAFAFA] space-y-4">
+    <div className="w-full max-h-[85vh] overflow-scroll scrollbar-hide p-5 sm:p-0 rounded-tl-2xl rounded-tr-2xl sm:rounded-none bg-[#FAFAFA] space-y-4">
       {/* Property Types */}
       <div>
         <div
@@ -224,32 +224,23 @@ export default function FilterSidebar() {
         </div>
 
         {showTypes && (
-          <div className="space-y-2 mt-2 max-h-40 sm:max-h-30 overflow-y-auto scrollbar-hide">
-            {propertyTypes.map((type, i) => (
-              <label
-                key={i}
-                className="flex items-center space-x-2 cursor-pointer select-none"
-              >
-                <input
-                  type="radio"
-                  name="propertyType"
-                  value={type}
-                  checked={selectedType === type}
-                  onChange={() => setSelectedType(type)}
-                  className="hidden"
-                />
-                <span
-                  className={`w-4 h-4 flex items-center justify-center rounded-full border-2 text-xs ${
+          <div className="w-full flex flex-wrap gap-2 md:gap-2 mt-4">
+            {propertyTypes?.length > 0 &&
+              propertyTypes.map((type, i) => (
+                <div
+                  key={i}
+                  onClick={() => setSelectedType(type)}
+                  className={`${
                     selectedType === type
-                      ? "bg-[#076300] border-[#076300] text-white"
-                      : "border-gray-400"
-                  }`}
+                      ? "border-green-500 bg-[#0BB501] text-white"
+                      : "border-gray-300 text-black"
+                  } active:scale-95 cursor-pointer
+                    flex items-center justify-center px-2 py-[2px] text-xs font-medium
+                    border-[1px] rounded-lg transition`}
                 >
-                  {selectedType === type && <FaCheck className="text-white" />}
-                </span>
-                <span className="text-sm sm:text-xs">{type}</span>
-              </label>
-            ))}
+                  {type}
+                </div>
+              ))}
           </div>
         )}
       </div>
@@ -262,41 +253,28 @@ export default function FilterSidebar() {
           <h3 className="font-semibold text-lg">BHK | Property Types</h3>
           {showBHKTypes ? <FaChevronUp /> : <FaChevronDown />}
         </div>
-        {showBHKTypes &&  bhkTypes.length > 0 && (
-          <div className="mt-2">
-            {/* Filter bhkTypes by selectedType */}
-            {bhkTypes.filter((group) => group.category === selectedType)
+
+        {showBHKTypes && bhkTypes.length > 0 && (
+          <div className="mt-3">
+            {bhkTypes
+              .filter((group) => group.category === selectedType)
               .map((group, i) => (
-                <div key={i}>
-                  <div className="space-y-2 max-h-40 sm:max-h-35 overflow-y-auto scrollbar-hide">
-                    {group.types.map((type, j) => (
-                      <label
-                        key={j}
-                        className="flex items-center space-x-2 cursor-pointer select-none"
-                      >
-                        <input
-                          type="radio"
-                          name="bhkType"
-                          value={type}
-                          checked={selectedBHKType === type}
-                          onChange={() => setSelectedBHKType(type)}
-                          className="hidden"
-                        />
-                        <span
-                          className={`w-4 h-4 flex items-center justify-center rounded-full border-2 text-xs ${
-                            selectedBHKType === type
-                              ? "bg-[#076300] border-[#076300] text-white"
-                              : "border-gray-400"
-                          }`}
-                        >
-                          {selectedBHKType === type && (
-                            <FaCheck className="text-white" />
-                          )}
-                        </span>
-                        <span className="text-sm sm:text-xs">{type}</span>
-                      </label>
-                    ))}
-                  </div>
+                <div key={i} className="w-full flex flex-wrap gap-2">
+                  {group.types.map((type, j) => (
+                    <div
+                      key={j}
+                      onClick={() => setSelectedBHKType(type)}
+                      className={`${
+                        selectedBHKType === type
+                          ? "border-green-500 bg-[#0BB501] text-white"
+                          : "border-gray-300 text-black"
+                      } active:scale-95 cursor-pointer
+                        flex items-center justify-center px-2 py-[2px] text-xs font-medium
+                        border-[1.5px] rounded-lg transition`}
+                    >
+                      {type}
+                    </div>
+                  ))}
                 </div>
               ))}
           </div>
@@ -398,7 +376,7 @@ export default function FilterSidebar() {
       {/* Buttons */}
       <div className="flex space-x-4 pt-2 mb-8 sm:mb-2">
         <button
-          onClick={()=>{
+          onClick={() => {
             resetFilters();
             resetSidebarFilter();
           }}

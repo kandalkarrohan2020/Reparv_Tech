@@ -9,6 +9,7 @@ import { useInView } from "react-intersection-observer";
 import SEO from "../components/SEO";
 import WingData from "../components/property/WingData";
 import PlotData from "../components/property/PlotData";
+import TypeWisePricing from "../components/property/TypeWisePricing";
 
 // Lazy-loaded components
 const PropertyImageGallery = lazy(() =>
@@ -104,6 +105,9 @@ function PropertyDetails() {
             {["NewPlot", "CommercialPlot"].includes(
               propertyInfo.propertyCategory
             ) && <PlotData propertyInfo={propertyInfo} />}
+            
+            {/* Show Type Wise Property */}
+            <TypeWisePricing propertyId={propertyInfo?.propertyId} propertyCategory={propertyInfo?.propertyCategory} propertyType={propertyInfo.propertyType} />
 
             {/* Property Details */}
             {propertyInfo?.propertyDescription && (

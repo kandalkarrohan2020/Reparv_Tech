@@ -225,7 +225,7 @@ export default function Properties() {
           <div
             className={`${isIntersecting ? "absolute bottom-0 " : "fixed"} 
           propertiesFilter overflow-y-scroll overflow-x-visible scrollbar-hide hidden sm:block
-          !min-w-[220px] w-[220px] h-[75vh] max-h-[85vh] transition-all duration-300`}
+          !min-w-[220px] w-[220px] h-[75vh] pb-10 transition-all duration-300`}
           >
             <FilterSidebar />
           </div>
@@ -264,17 +264,17 @@ export default function Properties() {
                 )}
               </div>
             </Suspense>
-          </div>
-        </div>
 
-        <div className="w-full  hidden md:block h-[1px] mt-5 bg-[#00000033] "></div>
-        <div ref={videoRef}>
-          <PropertyCategories />
-        </div>
-        <div className="w-full  hidden md:block h-[1px] mt-5 bg-[#00000033] "></div>
-        {/* Customer Review */}
-        <div>
-          <VideoReviewSection />
+            <div className="w-full  hidden md:block h-[1px] mt-5 bg-[#00000033] "></div>
+            <div>
+              <PropertyCategories />
+            </div>
+            <div className="w-full  hidden md:block h-[1px] mt-5 bg-[#00000033] "></div>
+            {/* Customer Review */}
+            <div>
+              <VideoReviewSection />
+            </div>
+          </div>
         </div>
       </div>
     </>

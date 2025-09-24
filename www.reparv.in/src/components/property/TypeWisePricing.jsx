@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaRupeeSign, FaVectorSquare } from "react-icons/fa";
 import { useAuth } from "../../store/auth";
+import FormatPrice from "../FormatPrice";
 
 function TypeWisePricing({ propertyId, propertyCategory, propertyType }) {
   const { URI, setLoading } = useAuth();
@@ -47,7 +48,7 @@ function TypeWisePricing({ propertyId, propertyCategory, propertyType }) {
     {
       icon: FaRupeeSign,
       label: "Total Price",
-      value: propertyData?.totalcost,
+      value: <FormatPrice price={parseFloat(propertyData?.totalcost)} />,
       show: true,
     },
   ];

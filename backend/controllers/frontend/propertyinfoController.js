@@ -37,7 +37,7 @@ export const getById = (req, res) => {
         ...row,
         propertyType: parsedType,
         possessionDate: row.possessionDate
-          ? moment(row.possessionDate).format("DD MMM YYYY")
+          ? moment.utc(row.possessionDate).format("DD MMM YYYY")
           : null,
       };
     });

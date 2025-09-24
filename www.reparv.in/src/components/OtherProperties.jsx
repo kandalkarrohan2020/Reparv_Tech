@@ -242,7 +242,7 @@ function OtherProperties({ propertyCity, propertyCategory, propertyId }) {
                 </p>
                 <p
                   className={`${
-                    property.projectBy
+                    property.projectBy && property.projectBy !== "null"
                       ? "flex font-semibold text-[#000000]"
                       : "hidden"
                   }`}

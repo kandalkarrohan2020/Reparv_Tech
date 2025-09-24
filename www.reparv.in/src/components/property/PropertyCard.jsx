@@ -192,7 +192,7 @@ function PropertyCard({ property }) {
                 : property.location}
               , {property.city}
             </p>
-            <p className={`${property.projectBy ? "flex font-semibold text-black" : "hidden"}`}>
+            <p className={`${property.projectBy && property.projectBy !== "null" ? "flex font-semibold text-black" : "hidden"}`}>
               Project By : {property.projectBy}
             </p>
           </div>

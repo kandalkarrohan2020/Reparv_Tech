@@ -222,7 +222,7 @@ export const addProperty = async (req, res) => {
       formattedPossessionDate = null; // fallback instead of "Invalid date"
     }
   }
-  
+
   // Convert Property Type Into Array
   let propertyTypeArray;
 
@@ -287,7 +287,7 @@ export const addProperty = async (req, res) => {
       const values = [
         partnerId,
         builderid,
-        projectBy,
+        sanitize(projectBy),
         sanitize(formattedPossessionDate),
         propertyCategory,
         propertyApprovedBy,
@@ -577,7 +577,7 @@ export const update = async (req, res) => {
       const values = [
         approve,
         builderid,
-        projectBy,
+        sanitize(projectBy),
         sanitize(formattedPossessionDate),
         propertyCategory,
         propertyApprovedBy,

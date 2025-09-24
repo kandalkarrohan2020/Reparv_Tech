@@ -18,11 +18,19 @@ function Overview() {
   const [overviewCountData, setOverviewCountData] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
 
+  const [range, setRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
+  ]);
+
   const filteredData = overviewData?.filter(
     (item) =>
-      item.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.propertyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.builderName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.dealAmount.toLowerCase().includes(searchTerm.toLowerCase())
+      item.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const customStyles = {
@@ -52,25 +60,81 @@ function Overview() {
   };
 
   const columns = [
-    { name: "SN", selector: (row, index) => index + 1, sortable: true },
     {
-      name: "Project Name",
-      selector: (row) => row.projectName,
-      sortable: true,
+      name: "SN",
+      cell: (row, index) => (
+        <div className="relative group flex items-center w-full">
+          {/* Serial Number Box */}
+          <span
+            className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md cursor-pointer ${
+              row.status === "Active"
+                ? "bg-[#EAFBF1] text-[#0BB501]"
+                : "bg-[#FFEAEA] text-[#ff2323]"
+            }`}
+          >
+            {index + 1}
+          </span>
+
+          {/* Tooltip */}
+          <div className="absolute w-[65px] text-center -top-12 left-[30px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
+            {row.status === "Active" ? "Active" : "Inactive"}
+          </div>
+        </div>
+      ),
+      width: "70px",
     },
     {
-      name: "Builder Name",
-      selector: (row) => row.builderName,
-      sortable: true,
+      name: "Image",
+      cell: (row) => {
+        let imageSrc = "default.jpg";
+
+        try {
+          const parsed = JSON.parse(row.frontView);
+          if (Array.isArray(parsed) && parsed[0]) {
+            imageSrc = `${URI}${parsed[0]}`;
+          }
+        } catch (e) {
+          console.warn("Invalid or null frontView:", row.frontView);
+        }
+
+        return (
+          <div className="w-[130px] h-14 overflow-hidden flex items-center justify-center">
+            <img
+              src={imageSrc}
+              alt="Property"
+              onClick={() => {
+                window.open(
+                  "https://www.reparv.in/property-info/" + row.seoSlug,
+                  "_blank"
+                );
+              }}
+              className="w-full h-[100%] object-cover cursor-pointer"
+            />
+          </div>
+        );
+      },
+      width: "130px",
     },
-    { name: "Deals", selector: (row) => row.deals, sortable: true },
-    { name: "Deal Amount", selector: (row) => row.dealAmount, sortable: true },
+    { name: "Name", selector: (row) => row.propertyName, sortable: true },
     {
-      name: "Reparv Share",
-      selector: (row) => row.reparvShare,
+      name: "Builder",
+      selector: (row) => row.company_name,
+      sortable: true,
+      minWidth: "130px",
+    },
+    { name: "Type", selector: (row) => row.propertyCategory, sortable: true },
+    {
+      name: "City",
+      selector: (row) => row.city,
+      sortable: true,
+      width: "120px",
+    },
+    { name: "Pin Code", selector: (row) => row.pincode, width: "120px" },
+    {
+      name: "Total Price",
+      selector: (row) => row.totalOfferPrice,
       sortable: true,
     },
-    { name: "Deal In SQFT", selector: (row) => row.dealInSqFt, sortable: true },
   ];
 
   const fetchCountData = async () => {
@@ -134,9 +198,9 @@ function Overview() {
           <div
             key={index}
             onClick={() => navigate(card.to)}
-            className="overview-card w-full max-w-[190px] sm:max-w-[272px] h-[85px] sm:h-[132px] flex flex-col items-center justify-center gap-2 rounded-lg sm:rounded-[24px] p-4 sm:p-6 bg-gradient-to-b from-[#0BB501] to-[#076300] hover:to-[#0f930f] bg-blend-multiply cursor-pointer"
+            className="overview-card w-full max-w-[190px] sm:max-w-[280px] h-[85px] sm:h-[132px] flex flex-col items-center justify-center gap-2 rounded-lg sm:rounded-[16px] p-4 sm:p-6 border-2 hover:border-[#0BB501] bg-white cursor-pointer"
           >
-            <div className="upside w-full sm:max-w-[224px] h-[30px] sm:h-[40px] flex items-center justify-between gap-2 sm:gap-3 text-xs sm:text-base font-medium text-white">
+            <div className="upside w-full sm:max-w-[224px] h-[30px] sm:h-[40px] flex items-center justify-between gap-2 sm:gap-3 text-xs sm:text-base font-medium text-black">
               <p>{card.label}</p>
               <img
                 src={card.icon}
@@ -146,7 +210,7 @@ function Overview() {
                 } w-5 sm:w-10 h-5 sm:h-10`}
               />
             </div>
-            <div className="downside w-full h-[30px] sm:w-[224px] sm:h-[40px] flex items-center text-xl sm:text-[32px] font-semibold text-white">
+            <div className="downside w-full h-[30px] sm:w-[224px] sm:h-[40px] flex items-center text-xl sm:text-[32px] font-semibold text-black">
               <p className="flex items-center justify-center">
                 <FaRupeeSign
                   className={`${
@@ -160,25 +224,31 @@ function Overview() {
         ))}
       </div>
 
-      <div className="overview-table w-full h-[500px] sm:h-[420px] flex flex-col p-6 gap-4 bg-white rounded-[24px]">
-        <p className="block md:hidden text-lg font-semibold">Overview</p>
-        <div className="searchBarContainer w-full flex sm:flex-row flex-col items-center justify-between gap-3">
-          <div className="search-bar w-full sm:w-1/2 min-w-[150px] max:w-[289px] md:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start md:justify-between bg-[#0000000A]">
+      <div className="properties-table w-full h-[578px] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+        <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
+          <p className="block md:hidden text-lg font-semibold">Dashboard</p>
+        </div>
+        <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
+          <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A] border">
             <CiSearch />
             <input
               type="text"
               placeholder="Search"
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="rightTableHead w-full sm:w-1/2 min-w-[307px] sm:h-[36px] flex justify-end items-center">
-            <div className="flex flex-wrap-reverse sm:flex-nowrap gap-2 px-2">
-              <CitySelector></CitySelector>
-              <CustomDateRangePicker />
+          <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
+            <div className="flex flex-wrap items-center justify-end gap-3 px-2">
+              <div className="block">
+                <CustomDateRangePicker range={range} setRange={setRange} />
+              </div>
             </div>
           </div>
         </div>
 
+        <h2 className="text-[16px] ml-1 font-semibold">Property List</h2>
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaRupeeSign } from "react-icons/fa";
+import { FaChartArea } from "react-icons/fa";
 import { IoArrowRedo } from "react-icons/io5";
 import { CiSearch } from "react-icons/ci";
 import card1 from "../assets/overview/card1.svg";
@@ -31,7 +32,7 @@ function Overview() {
         }
         return acc;
       },
-      { Enquired: 0, Booked: 0}
+      { Enquired: 0, Booked: 0 }
     );
   };
 
@@ -78,7 +79,8 @@ function Overview() {
       return "";
     };
 
-    const matchesProperty = !dashboardFilter || getProperty() === dashboardFilter;
+    const matchesProperty =
+      !dashboardFilter || getProperty() === dashboardFilter;
 
     // Final return
     return matchesSearch && matchesDate && matchesProperty;
@@ -204,6 +206,7 @@ function Overview() {
       });
       if (!response.ok) throw new Error("Failed to fetch Count.");
       const data = await response.json();
+      //console.log(data);
       setOverviewCountData(data);
     } catch (err) {
       console.error("Error fetching :", err);
@@ -238,39 +241,46 @@ function Overview() {
       <div className="overview-card-container px-4 md:px-0 gap-2 sm:gap-5 w-full grid place-items-center grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 my-5">
         {[
           {
+            label: "Self Earning",
+            value:
+              (Number(overviewCountData?.selfEarning) / 100000).toFixed(2) +
+                " Lac" || "00",
+            icon: <FaRupeeSign className="text-[#29bc1e] hover:text-[#0bb501] sm:w-6 sm:h-6" />,
+          },
+          {
+            label: "Deal in Sq. Ft.",
+            value: overviewCountData?.totalDealInSquareFeet || "00",
+            icon: <FaChartArea className="text-[#29bc1e] hover:text-[#0bb501] sm:w-6 sm:h-6" />,
+          },
+          {
             label: "Properties",
             value: overviewCountData?.totalProperty || "00",
-            //icon: card4,
+            icon: <IoArrowRedo className="text-[#29bc1e] hover:text-[#0bb501] sm:w-6 sm:h-6" />,
             to: "/properties",
           },
           {
             label: "Total Tickets",
             value: overviewCountData?.totalTicket || "00",
-            //icon: card4,
+            icon: <IoArrowRedo className="text-[#29bc1e] hover:text-[#0bb501] sm:w-6 sm:h-6" />,
             to: "/tickets",
           },
         ].map((card, index) => (
           <div
             key={index}
             onClick={() => navigate(card.to)}
-            className="overview-card w-full max-w-[200px] sm:max-w-[250px] h-[85px] sm:h-[120px] flex flex-col items-center justify-center gap-2 rounded-lg sm:rounded-[16px] p-4 sm:p-6 border-2 hover:border-[#0BB501] bg-white cursor-pointer"
+            className="overview-card w-full max-w-[200px] sm:max-w-[280px] h-[85px] sm:h-[132px] flex flex-col items-center justify-center gap-2 rounded-lg sm:rounded-[16px] p-4 sm:p-6 border-2 hover:border-[#0BB501] bg-white cursor-pointer"
           >
             <div className="upside w-full sm:max-w-[224px] h-[30px] sm:h-[40px] flex items-center justify-between gap-2 sm:gap-3 text-xs sm:text-base font-medium text-black">
               <p>{card.label}</p>
-              <IoArrowRedo className="text-[#076300] hover:text-[#0bb501] sm:w-6 sm:h-6"/>
-              <img
-                src={card.icon}
-                alt=""
-                className={`${
-                  card.icon ? "block" : "hidden"
-                } w-5 sm:w-10 h-5 sm:h-10`}
-              />
+              <div className={`${card.icon ? "block" : "hidden"}`}>
+                {card.icon}
+              </div>
             </div>
             <div className="downside w-full h-[30px] sm:max-w-[224px] sm:h-[40px] flex items-center text-xl sm:text-[28px] font-semibold text-black">
               <p className="flex items-center justify-center">
                 <FaRupeeSign
                   className={`${
-                    card.label === "Total Deal Amount" ? "block" : "hidden"
+                    card.label === "Self Earning" ? "block" : "hidden"
                   }`}
                 />
                 {card.value}

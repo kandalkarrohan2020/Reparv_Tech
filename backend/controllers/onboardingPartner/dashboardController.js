@@ -2,13 +2,32 @@ import db from "../../config/dbconnect.js";
 import moment from "moment";
 
 export const getCount = (req, res) => {
-  const query = `SELECT
-  (SELECT COUNT(propertyid) FROM properties WHERE partnerid = ?) AS totalProperty,
-  (SELECT COUNT(ticketid) FROM tickets 
-   INNER JOIN onboardingpartner ON onboardingpartner.adharno = tickets.ticketadder 
-   WHERE tickets.ticketadder = ?) AS totalTicket`;
+  const query = `
+    SELECT
+      -- Self Earning = Half of Reparv Commission where partnerid = req.user.id
+      (SELECT IFNULL(SUM(pf.reparvcommission) / 2, 0)
+       FROM propertyfollowup pf
+       JOIN enquirers e ON pf.enquirerid = e.enquirersid
+       JOIN properties p ON e.propertyid = p.propertyid
+       WHERE pf.status = 'Token' AND p.partnerid = ?) AS selfEarning,
 
-  db.query(query, [req.user.id, req.user.adharId], (err, results) => {
+      -- Total Deal In Square Feet
+      (SELECT IFNULL(SUM(p.carpetArea), 0)
+       FROM enquirers e
+       JOIN properties p ON e.propertyid = p.propertyid
+       WHERE e.status = 'Token' AND p.partnerid = ?) AS totalDealInSquareFeet,
+
+      -- Total Properties of this Partner
+      (SELECT COUNT(propertyid) FROM properties WHERE partnerid = ?) AS totalProperty,
+
+      -- Total Tickets
+      (SELECT COUNT(ticketid) 
+       FROM tickets 
+       INNER JOIN onboardingpartner op ON op.adharno = tickets.ticketadder 
+       WHERE tickets.ticketadder = ?) AS totalTicket
+  `;
+
+  db.query(query, [req.user.id, req.user.id, req.user.id, req.user.adharId], (err, results) => {
     if (err) {
       console.error("Error fetching dashboard stats:", err);
       return res.status(500).json({ error: "Database error" });

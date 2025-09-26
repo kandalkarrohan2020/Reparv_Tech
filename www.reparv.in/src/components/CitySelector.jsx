@@ -9,7 +9,7 @@ import delhiImage from "../assets/citySelector/delhi.jpeg";
 import mumbaiImage from "../assets/citySelector/mumbai.jpeg";
 import nagpurImage from "../assets/citySelector/nagpur.jpeg";
 import puneImage from "../assets/citySelector/pune.jpeg";
-import ahmadabadImage from "../assets/citySelector/ahmadabad.jpeg";
+import ahmedabadImage from "../assets/citySelector/ahmedabad.jpeg";
 import bangloreImage from "../assets/citySelector/banglore.jpeg";
 import kolkataImage from "../assets/citySelector/kolkata.jpeg";
 import hyderabadImage from "../assets/citySelector/hyderabad.jpeg";
@@ -29,7 +29,7 @@ export const popularCities = [
   { name: "Pune", image: puneImage },
   { name: "Lucknow", image: lucknowImage },
   { name: "Hyderabad", image: hyderabadImage },
-  { name: "Ahmadabad", image: ahmadabadImage },
+  { name: "Ahmedabad", image: ahmedabadImage },
   { name: "Noida", image: noidaImage },
   { name: "Chennai", image: chennaiImage },
   { name: "Nashik", image: nashikImage },

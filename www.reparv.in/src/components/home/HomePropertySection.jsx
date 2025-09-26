@@ -87,7 +87,7 @@ function HomePropertySection() {
       <h2 className="hidden sm:block text-[20px] sm:text-[28px] leading-6 md:leading-15 font-medium text-black ">
         Property Nearest To You
       </h2>
-      <div className=" HomeProperties w-full max-w-[1135px] overflow-scroll scrollbar-hide grid place-items-center grid-flow-col gap-6 py-4 px-1 sm:p-5">
+      <div className=" HomeProperties w-full max-w-[1135px] overflow-scroll scrollbar-hide grid grid-flow-col gap-6 py-4 px-1 sm:p-5">
         {filteredProperties.map((property) => (
           <div
             key={property.seoSlug}

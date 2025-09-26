@@ -64,7 +64,7 @@ function OtherProperties({ propertyCity, propertyCategory, propertyId }) {
   }, [propertyCategory]);
 
   return (
-    <div className="otherProperties w-full overflow-scroll scrollbar-hide grid place-items-center grid-flow-col gap-6 py-4 sm:p-5">
+    <div className="otherProperties w-full overflow-scroll scrollbar-hide grid grid-flow-col gap-6 py-4 sm:p-5">
       {properties.map((property) => (
         <div
           key={property.seoSlug}

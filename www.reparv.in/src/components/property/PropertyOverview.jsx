@@ -85,12 +85,6 @@ const PropertyOverview = ({ propertyInfo }) => {
       show: "flex",
     },
     {
-      icon: FaRegClipboard,
-      label: "RERA Registered",
-      value: propertyInfo.reraRegistered,
-      show: "flex col-span-2 lg:col-span-2",
-    },
-    {
       icon: FaCouch,
       label: "Furnishing",
       value: propertyInfo.furnishing,
@@ -117,6 +111,12 @@ const PropertyOverview = ({ propertyInfo }) => {
       label: "Tags",
       value: propertyInfo.tags,
       show: !propertyInfo.tags ? "flex col-span-2 lg:col-span-3" : "hidden",
+    },
+    {
+      icon: FaRegClipboard,
+      label: "RERA Registered",
+      value: propertyInfo.reraRegistered,
+      show: "flex col-span-2 lg:col-span-2",
     },
   ];
 

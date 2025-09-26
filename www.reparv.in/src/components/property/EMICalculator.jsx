@@ -47,7 +47,8 @@ const EMICalculator = ({ totalAmount }) => {
           {<FormatPrice price={emi} />} / month*
         </p>
         <p className="text-xs font-normal text-black">
-          for {tenure} Years @ {interest}%
+          For {tenure} Years @ {interest}% | Total{" "}
+          {<FormatPrice price={emi * 12 * tenure + downPayment} />}
         </p>
       </div>
 

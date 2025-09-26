@@ -901,11 +901,11 @@ export const addFollowUp = async (req, res) => {
 
           // Update partnerLister in onboardingpartner
           db.query(
-            "UPDATE onboardingpartner SET partnerLister = 'Follow Up', updated_at = ? WHERE partnerid = ?",
+            "UPDATE onboardingpartner SET paymentstatus = 'Follow Up', updated_at = ? WHERE partnerid = ?",
             [currentdate, Id],
             (updateErr, updateResult) => {
               if (updateErr) {
-                console.error("Error updating partnerLister:", updateErr);
+                console.error("Error updating paymentstatus:", updateErr);
                 return res
                   .status(500)
                   .json({ message: "Database error", error: updateErr });

@@ -111,7 +111,7 @@ function Footer({footerRef}) {
                   <FaLinkedin />
                 </Link>
                 <Link
-                  to="https://www.instagram.com/reparv.official/"
+                  to="https://www.instagram.com/reparv_/"
                   className="twitter flex items-center justify-center w-13 h-13 bg-[#141414] rounded-full"
                 >
                   <FaInstagram />
@@ -178,7 +178,7 @@ function Footer({footerRef}) {
               <FaLinkedin />
             </Link>
             <Link
-              to="https://www.instagram.com/reparv.official/"
+              to="https://www.instagram.com/reparv_/"
               className="twitter flex items-center justify-center w-11 h-11 bg-[#141414] rounded-full"
             >
               <FaInstagram />

@@ -93,7 +93,7 @@ function Layout() {
       });
       if (!response.ok) throw new Error("Failed to fetch Agreement.");
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       setAgreementData(data);
     } catch (err) {
       console.error("Error fetching:", err);

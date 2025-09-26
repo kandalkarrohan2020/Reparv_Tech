@@ -15,6 +15,7 @@ import phoneIcon from "../assets/contact/phoneIcon.svg";
 import messageIcon from "../assets/contact/messageIcon.svg";
 import mapIcon from "../assets/contact/mapIcon.svg";
 import FAQ from "../components/contact/FAQ";
+import DirectionButton from "../components/contact/DirectionButton";
 
 const ContactUs = () => {
   return (
@@ -92,9 +93,8 @@ const ContactUs = () => {
               <FaMapMarkerAlt /> <span>Nagpur</span>
             </button>
           </div>
-          <button className="w-full mt-3 bg-[#0BB501] text-white py-3 rounded-lg">
-            Get Direction
-          </button>
+          {/* Direction Button */}
+          <DirectionButton />
         </div>
 
         <div className="w-full md:w-1/2 flex gap-3 flex-col bg-white p-6 rounded-lg border border-[#00000033] ">
@@ -115,9 +115,8 @@ const ContactUs = () => {
               <FaMapMarkerAlt /> <span>Chandrapur</span>
             </button>
           </div>
-          <button className="w-full mt-3 bg-[#0BB501] text-white py-3 rounded-lg">
-            Get Direction
-          </button>
+          {/* Direction Button */}
+          <DirectionButton />
         </div>
       </div>
 

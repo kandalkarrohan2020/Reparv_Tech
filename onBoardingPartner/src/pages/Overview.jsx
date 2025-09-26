@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaRupeeSign } from "react-icons/fa";
+import { IoArrowRedo } from "react-icons/io5";
 import { CiSearch } from "react-icons/ci";
 import card1 from "../assets/overview/card1.svg";
 import card2 from "../assets/overview/card2.svg";
@@ -10,13 +11,31 @@ import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import DataTable from "react-data-table-component";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../store/auth";
+import DashboardFilter from "../components/dashboard/DashboardFilter";
+import { parse } from "date-fns";
 
 function Overview() {
-  const { URI } = useAuth();
+  const { URI, dashboardFilter } = useAuth();
   const navigate = useNavigate();
   const [overviewData, setOverviewData] = useState([]);
   const [overviewCountData, setOverviewCountData] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
+
+  const getPropertyCounts = (data) => {
+    return data.reduce(
+      (acc, item) => {
+        if (item.enquiryStatus === "Enquired") {
+          acc.Enquired++;
+        } else if (item.enquiryStatus === "Booked") {
+          acc.Booked++;
+        }
+        return acc;
+      },
+      { Enquired: 0, Booked: 0}
+    );
+  };
+
+  const propertyCounts = getPropertyCounts(overviewData);
 
   const [range, setRange] = useState([
     {
@@ -26,12 +45,44 @@ function Overview() {
     },
   ]);
 
-  const filteredData = overviewData?.filter(
-    (item) =>
-      item.propertyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.builderName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredData = overviewData?.filter((item) => {
+    // Text search filter
+    const matchesSearch =
+      item.propertyName?.toLowerCase().includes(searchTerm) ||
+      item.company_name?.toLowerCase().includes(searchTerm) ||
+      item.propertyCategory?.toLowerCase().includes(searchTerm) ||
+      item.city?.toLowerCase().includes(searchTerm);
+
+    // Date range filter
+    let startDate = range[0].startDate;
+    let endDate = range[0].endDate;
+
+    if (startDate) startDate = new Date(startDate.setHours(0, 0, 0, 0));
+    if (endDate) endDate = new Date(endDate.setHours(23, 59, 59, 999));
+
+    // Parse item.created_at (format: "26 Apr 2025 | 06:28 PM")
+    const itemDate = parse(
+      item.created_at,
+      "dd MMM yyyy | hh:mm a",
+      new Date()
+    );
+
+    const matchesDate =
+      (!startDate && !endDate) || // no filter
+      (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
+
+    // Enquiry filter logic: New, Alloted, Assign
+    const getProperty = () => {
+      if (item.enquiryStatus === "Booked") return "Booked";
+      if (item.enquiryStatus === "Enquired") return "Enquired";
+      return "";
+    };
+
+    const matchesProperty = !dashboardFilter || getProperty() === dashboardFilter;
+
+    // Final return
+    return matchesSearch && matchesDate && matchesProperty;
+  });
 
   const customStyles = {
     rows: {
@@ -68,7 +119,7 @@ function Overview() {
           <span
             className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md cursor-pointer ${
               row.status === "Active"
-                ? "bg-[#EAFBF1] text-[#0BB501]"
+                ? "bg-[#E3FFDF] text-[#0BB501]"
                 : "bg-[#FFEAEA] text-[#ff2323]"
             }`}
           >
@@ -115,7 +166,12 @@ function Overview() {
       },
       width: "130px",
     },
-    { name: "Name", selector: (row) => row.propertyName, sortable: true },
+    {
+      name: "Name",
+      selector: (row) => row.propertyName,
+      sortable: true,
+      minWidth: "150px",
+    },
     {
       name: "Builder",
       selector: (row) => row.company_name,
@@ -154,34 +210,33 @@ function Overview() {
     }
   };
 
+  //Fetch Data
+  const fetchData = async () => {
+    try {
+      const response = await fetch(URI + "/partner/dashboard/properties", {
+        method: "GET",
+        credentials: "include", //  Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch properties.");
+      const data = await response.json();
+      setOverviewData(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
   useEffect(() => {
     fetchCountData();
+    fetchData();
   }, []);
 
   return (
     <div className="overview overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
       <div className="overview-card-container px-4 md:px-0 gap-2 sm:gap-5 w-full grid place-items-center grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 my-5">
         {[
-          {
-            label: "Total Deal Amount",
-            value: "00 Lac",
-            icon: card1,
-          },
-          {
-            label: "No. of Deal Done",
-            value: "00",
-            icon: card2,
-          },
-          {
-            label: "Self Earning",
-            value: "00",
-            icon: card3,
-          },
-          {
-            label: "Deal in Sq. Ft.",
-            value: "00 Sq. Ft.",
-            icon: card4,
-          },
           {
             label: "Properties",
             value: overviewCountData?.totalProperty || "00",
@@ -198,10 +253,11 @@ function Overview() {
           <div
             key={index}
             onClick={() => navigate(card.to)}
-            className="overview-card w-full max-w-[190px] sm:max-w-[280px] h-[85px] sm:h-[132px] flex flex-col items-center justify-center gap-2 rounded-lg sm:rounded-[16px] p-4 sm:p-6 border-2 hover:border-[#0BB501] bg-white cursor-pointer"
+            className="overview-card w-full max-w-[200px] sm:max-w-[250px] h-[85px] sm:h-[120px] flex flex-col items-center justify-center gap-2 rounded-lg sm:rounded-[16px] p-4 sm:p-6 border-2 hover:border-[#0BB501] bg-white cursor-pointer"
           >
             <div className="upside w-full sm:max-w-[224px] h-[30px] sm:h-[40px] flex items-center justify-between gap-2 sm:gap-3 text-xs sm:text-base font-medium text-black">
               <p>{card.label}</p>
+              <IoArrowRedo className="text-[#076300] hover:text-[#0bb501] sm:w-6 sm:h-6"/>
               <img
                 src={card.icon}
                 alt=""
@@ -210,7 +266,7 @@ function Overview() {
                 } w-5 sm:w-10 h-5 sm:h-10`}
               />
             </div>
-            <div className="downside w-full h-[30px] sm:w-[224px] sm:h-[40px] flex items-center text-xl sm:text-[32px] font-semibold text-black">
+            <div className="downside w-full h-[30px] sm:max-w-[224px] sm:h-[40px] flex items-center text-xl sm:text-[28px] font-semibold text-black">
               <p className="flex items-center justify-center">
                 <FaRupeeSign
                   className={`${
@@ -224,7 +280,7 @@ function Overview() {
         ))}
       </div>
 
-      <div className="properties-table w-full h-[578px] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+      <div className="properties-table w-full h-[60vh] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
         <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
           <p className="block md:hidden text-lg font-semibold">Dashboard</p>
         </div>
@@ -247,6 +303,9 @@ function Overview() {
             </div>
           </div>
         </div>
+        <div className="filterContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
+          <DashboardFilter counts={propertyCounts} />
+        </div>
 
         <h2 className="text-[16px] ml-1 font-semibold">Property List</h2>
         <div className="overflow-scroll scrollbar-hide">
@@ -256,7 +315,7 @@ function Overview() {
             columns={columns}
             data={filteredData}
             pagination
-            paginationPerPage={15}
+            paginationPerPage={10}
             paginationComponentOptions={{
               rowsPerPageText: "Rows per page:",
               rangeSeparatorText: "of",

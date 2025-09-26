@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [showPropertyForm, setShowPropertyForm] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [dashboardFilter, setDashboardFilter] = useState("Booked");
   const [showTicketInfo, setShowTicketInfo] = useState(false);
   const [showTicketForm, setShowTicketForm] = useState(false);
   const [isActive, setIsActive] = useState(false);
@@ -52,6 +53,8 @@ export const AuthProvider = ({ children }) => {
         delTokenInCookie,
         accessToken,
         setAccessToken,
+        dashboardFilter,
+        setDashboardFilter,
         showProfile,
         setShowProfile,
         showTicketInfo,

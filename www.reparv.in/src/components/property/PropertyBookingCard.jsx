@@ -96,7 +96,7 @@ const PropertyBookingCard = ({ propertyInfo }) => {
         <div className="flex items-center justify-center gap-1 text-sm sm:text-base text-[#00000099] ">
           <FaMapMarkerAlt className="text-[#00000099]" />
           <span>
-            {propertyInfo.city}, {propertyInfo.state || "Maharashtra"}
+            {propertyInfo.city}, {propertyInfo.state}
           </span>
         </div>
 

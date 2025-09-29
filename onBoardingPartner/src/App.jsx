@@ -2,7 +2,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
 import Login from "./pages/Login.jsx";
-import Overview from "./pages/Overview.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 import Properties from "./pages/Properties.jsx";
 import Ticketing from "./pages/Ticketing.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
@@ -12,6 +12,7 @@ import MarketingContent from "./pages/MarketingContent.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
 import Map from "./pages/Map.jsx";
 
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -20,7 +21,7 @@ const App = () => {
         <Route path="" element={<Login />} />
         <Route path="/kyc/:userid" element={<KYC />} />
         <Route path="/" element={<Layout />}>
-          <Route path="/dashboard" element={<Overview />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/map" element={<Map />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/tickets" element={<Ticketing />} />

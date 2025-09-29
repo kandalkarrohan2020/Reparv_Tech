@@ -30,28 +30,56 @@ export const getCount = (req, res) => {
   });
 };
 
-export const getData = (req, res) => {
-  const query = `
-      SELECT
-        (SELECT COUNT(enquirersid) FROM enquirers) AS totalenquiry,
-        (SELECT COUNT(propertyid) FROM properties) AS totalproperty,
-        (SELECT COUNT(builderid) FROM builders) AS totalbuilder,
-        (SELECT COUNT(salespersonsid) FROM salespersons) AS totalsalesperson,
-        (SELECT COUNT(id) FROM territorypartner) AS totalterritoryperson,
-        (SELECT COUNT(partnerid) FROM onboardingpartner) AS totalonboardingpartner,
-        (SELECT COUNT(id) FROM projectpartner) AS totalprojectpartner,
-        (SELECT COUNT(ticketid)
-          FROM tickets
-          INNER JOIN salespersons ON salespersons.adharno = tickets.ticketadder
-        ) AS totalticket;
-    `;
+// **Get Partner Properties with Enquiry/Booking Status**
+export const getProperties = (req, res) => {
+  const partnerId = req.user?.id;
 
-  db.query(query, (err, results) => {
+  if (!partnerId) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized Access, Please Login Again!" });
+  }
+
+  const sql = `
+    SELECT 
+      p.*,
+      builders.company_name,      
+      COUNT(e.enquirersid) AS totalEnquiries,
+      SUM(CASE WHEN e.status = 'Token' THEN 1 ELSE 0 END) AS bookedCount,
+      SUM(CASE WHEN e.status != 'Token' THEN 1 ELSE 0 END) AS enquiryCount
+    FROM properties p
+    INNER JOIN builders ON p.builderid = builders.builderid
+    LEFT JOIN enquirers e ON p.propertyid = e.propertyid
+    WHERE p.builderid = ?
+    GROUP BY p.propertyid
+    ORDER BY p.created_at DESC;
+  `;
+
+  db.query(sql, [partnerId], (err, result) => {
     if (err) {
-      console.error("Error fetching dashboard stats:", err);
-      return res.status(500).json({ error: "Database error" });
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database error", error: err });
     }
 
-    return res.json(results[0]); // Since it's a single row
+    if (result.length === 0) {
+      return res.status(404).json({ message: "No properties found" });
+    }
+
+    // Format with status
+    let formatted = result.map((row) => {
+      let enquiryStatus = "None";
+      if (row.bookedCount > 0) {
+        enquiryStatus = "Booked";
+      } else if (row.enquiryCount > 0) {
+        enquiryStatus = "Enquired";
+      }
+
+      return {
+        ...row,
+        enquiryStatus,
+      };
+    });
+
+    res.status(200).json(formatted);
   });
 };

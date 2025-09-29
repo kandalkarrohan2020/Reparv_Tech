@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }) => {
   const [isActive, setIsActive] = useState(false);
   const [action, setAction] = useState("Save Details");
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [dashboardFilter, setDashboardFilter] = useState("Booked");
   const [showCustomer, setShowCustomer] = useState(false);
   const [showCustomerPaymentForm, setShowCustomerPaymentForm] = useState(false);
   const [showTicket, setShowTicket] = useState(false);
@@ -40,6 +41,8 @@ export const AuthProvider = ({ children }) => {
         isLoggedIn,
         storeTokenInCookie,
         delTokenInCookie,
+        dashboardFilter,
+        setDashboardFilter,
         accessToken,
         setAccessToken,
         showProfile,

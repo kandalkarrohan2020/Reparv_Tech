@@ -1,10 +1,8 @@
 import moment from "moment";
 import db from "../../config/dbconnect.js";
 
-
 export const add = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-
 
   const {
     user_id,
@@ -15,10 +13,13 @@ export const add = async (req, res) => {
     city,
     minbudget,
     maxbudget,
+    visitdate, // <-- optional
   } = req.body;
+  console.log(req.body);
 
+  // ✅ Required field validation (visitdate removed)
   if (
-    !user_id ||  // Include user_id in validation
+    !user_id ||
     !propertyid ||
     !fullname ||
     !phone ||
@@ -27,10 +28,12 @@ export const add = async (req, res) => {
     !minbudget ||
     !maxbudget
   ) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res
+      .status(400)
+      .json({ message: "All fields except visitdate are required" });
   }
 
-  // Step 1: Fetch property category
+  // 1️⃣ Fetch property category
   const categorySQL = `SELECT propertyCategory FROM properties WHERE propertyid = ?`;
 
   db.query(categorySQL, [propertyid], (err, results) => {
@@ -45,11 +48,24 @@ export const add = async (req, res) => {
 
     const propertyCategory = results[0].propertyCategory;
 
-    // Step 2: Insert enquiry
-    const insertSQL = `INSERT INTO enquirers (
-      propertyid, category, customer, contact, state, city, minbudget, maxbudget, source,
-      updated_at, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    // 2️⃣ Insert enquiry
+    const insertSQL = `
+      INSERT INTO enquirers (
+        propertyid,
+        category,
+        customer,
+        contact,
+        state,
+        city,
+        minbudget,
+        maxbudget,
+        source,
+        visitdate,
+        updated_at,
+        created_at
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
 
     db.query(
       insertSQL,
@@ -63,6 +79,7 @@ export const add = async (req, res) => {
         minbudget,
         maxbudget,
         "Onsite",
+        visitdate || null, // ✅ optional (NULL if not provided)
         currentdate,
         currentdate,
       ],
@@ -74,26 +91,23 @@ export const add = async (req, res) => {
             .json({ message: "Database error", error: err });
         }
 
-        // Step 3: Remove from wishlist if exists
+        // 3️⃣ Remove from wishlist if exists
         const deleteWishlistSql = `
           DELETE FROM user_property_wishlist 
           WHERE user_id = ? AND property_id = ?
         `;
 
-        db.query(deleteWishlistSql, [user_id, propertyid], (delErr, delResult) => {
+        db.query(deleteWishlistSql, [user_id, propertyid], (delErr) => {
           if (delErr) {
-            console.error("Error auto-removing from wishlist after enquiry:", delErr);
-            // Optional: don't block success response
-          } else {
-            console.log("Removed property from wishlist after enquiry.");
+            console.error("Error auto-removing from wishlist:", delErr);
+            // Don't block success if wishlist delete fails
           }
 
-           console.error("Error inserting enquiry:", err);
-          // Final response
+          // ✅ Final success response
           res.status(201).json({
             message: "Enquiry added successfully",
             Id: result.insertId,
-            propertyCategory: propertyCategory,
+            propertyCategory,
           });
         });
       }
@@ -101,9 +115,8 @@ export const add = async (req, res) => {
   });
 };
 
-
 export const getAll = (req, res) => {
-   const { contact } = req.query;
+  const { contact } = req.query;
   // Validate contact
   if (!contact || !contact.trim()) {
     return res.status(400).json({
@@ -140,14 +153,11 @@ export const getAll = (req, res) => {
       data: formatted,
     });
   });
-
 };
 
-//Fetch only Visit Enquiry 
+//Fetch only Visit Enquiry
 export const getVisitsOnly = (req, res) => {
   const { contact, fullname } = req.query;
-
-
 
   //Validate required query parameters
   if (!contact) {
@@ -193,10 +203,9 @@ export const getVisitsOnly = (req, res) => {
   });
 };
 
-
 export const getBookingOnly = (req, res) => {
-    const { contact } = req.query;
-    console.log(contact);
+  const { contact } = req.query;
+  console.log(contact);
   if (!contact) {
     console.log("Invalid User Id: " + contact);
     return res.status(400).json({ message: "Invalid User Id" });
@@ -231,9 +240,6 @@ export const getBookingOnly = (req, res) => {
       updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
     }));
 
-
-  return  res.json(formatted);
+    return res.json(formatted);
   });
 };
-
-

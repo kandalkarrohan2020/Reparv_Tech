@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
   const URI = "https://api.reparv.in";
 
   const [loading, setLoading] = useState(false);
+  const [dashboardFilter, setDashboardFilter] = useState("Booked");
   const [showPropertyForm, setShowPropertyForm] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [isActive, setIsActive] = useState(false);
@@ -44,6 +45,8 @@ export const AuthProvider = ({ children }) => {
         delTokenInCookie,
         accessToken,
         setAccessToken,
+        dashboardFilter,
+        setDashboardFilter,
         showProfile,
         setShowProfile,
         isActive,

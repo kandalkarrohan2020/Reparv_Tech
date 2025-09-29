@@ -4,7 +4,7 @@ import Layout from "./components/layout/Layout.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import KYC from "./pages/KYC.jsx";
-import Overview from "./pages/Overview.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 import Properties from "./pages/Properties.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
@@ -20,7 +20,7 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/kyc/:userid" element={<KYC />} />
         <Route path="/" element={<Layout />}>
-          <Route path="/dashboard" element={<Overview />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/map" element={<Map />} />
           <Route path="/properties" element={<Properties />} />
         </Route>

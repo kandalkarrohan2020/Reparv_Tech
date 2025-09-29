@@ -71,6 +71,8 @@ const Enquirers = () => {
   });
 
   const [selectedSource, setSelectedSource] = useState("Select Enquiry Source");
+  //const [selectedEnquiryLister, setSelectedEnquiryLister] = useState("Select Enquiry Lister");
+
   const [propertyList, setPropertyList] = useState([]);
 
   const [newEnquiry, setNewEnquiry] = useState({
@@ -683,6 +685,23 @@ const Enquirers = () => {
   ]);
 
   const filteredData = datas.filter((item) => {
+    // Enquiry Lister
+    {
+      /*const getEnquiryLister = () => {
+      if (!item.salespersonid && !item.territorypartnerid && !item.propertyid)
+        return "Admin";
+      if (!item.salespersonid && !item.territorypartnerid && item.propertyid)
+        return "Customer";
+      if (item.salespersonid) return "Sales Partner";
+      if (item.territorypartnerid) return "Territory Partner";
+      return "";
+    };
+
+    const matchesEnquiryLister =
+      !selectedEnquiryLister || getEnquiryLister() === selectedEnquiryLister;
+    */
+    }
+
     // Status filter
     const matchesStatus = item.status
       ?.toLowerCase()
@@ -728,7 +747,6 @@ const Enquirers = () => {
   const customStyles = {
     rows: {
       style: {
-        
         padding: "5px 0px",
         fontSize: "14px",
         fontWeight: 500,
@@ -955,8 +973,9 @@ const Enquirers = () => {
 
   return (
     <div className="enquirers overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
-      <div className="enquirers-table w-full h-[80vh] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+      <div className="enquirers-table w-full h-[80vh] flex flex-col p-4 md:p-6 gap-3 my-[10px] bg-white md:rounded-[24px]">
         {/* <p className="block md:hidden text-lg font-semibold">Enquirers</p> */}
+
         <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
           <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
             <div className="flex gap-1 sm:gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
@@ -985,6 +1004,30 @@ const Enquirers = () => {
             <AddButton label={"Add "} func={setShowEnquiryForm} />
           </div>
         </div>
+
+        {/*}
+        <div className="w-full sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+          <div className="flex gap-1 sm:gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+            <span>{selectedEnquiryLister || "Select Enquiry Lister"}</span>
+            <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+          </div>
+          <select
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            value={selectedEnquiryLister}
+            onChange={(e) => {
+              const action = e.target.value;
+              setSelectedEnquiryLister(action);
+            }}
+          >
+            <option value="Select Enquiry Lister">Select Enquiry Lister</option>
+            <option value="Admin">Admin</option>
+            <option value="Customer">Customer</option>
+            <option value="Sales Partner">Sales Partner</option>
+            <option value="Territory Partner">Territory Partner</option>
+          </select>
+        </div>
+        */}
+
         <div className="searchBarContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
             <CiSearch />

@@ -1,8 +1,14 @@
 import express from "express";
 import multer from "multer";
 import path from "path";
-import { changePassword, editProfile, getProfile } from "../../controllers/builderApp/profileController.js";
-
+import {
+  changePassword,
+  editProfile,
+  getProfile,
+  resetPassword,
+  sendOtp,
+  verifyOtp,
+} from "../../controllers/builderApp/profileController.js";
 
 const router = express.Router();
 
@@ -27,8 +33,11 @@ const upload = multer({
   },
 });
 
-
 router.get("/", getProfile);
-router.put("/edit",upload.single("image"), editProfile);
+router.put("/edit", upload.single("image"), editProfile);
 router.put("/changepassword", changePassword);
+router.get("/send-otp/:id", sendOtp);
+router.post("/verify-otp", verifyOtp);
+router.post("/reset-password", resetPassword);
+
 export default router;

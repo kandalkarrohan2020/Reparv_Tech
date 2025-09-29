@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
 
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [loading, setLoading] = useState(false);
+  const [dashboardFilter, setDashboardFilter] = useState("Booked");
   const [showProfile, setShowProfile] = useState(false);
   const [showBuilderForm, setShowBuilderForm] = useState(false);
   const [showBuilder, setShowBuilder] = useState(false);
@@ -109,6 +110,7 @@ export const AuthProvider = ({ children }) => {
         setShowVideoUploadForm,
         showPropertyLocationForm,
         setShowPropertyLocationForm,
+        dashboardFilter, setDashboardFilter,
       }}
     >
       {children}

@@ -37,59 +37,6 @@ export const getCount = (req, res) => {
   });
 };
 
-export const getData = (req, res) => {
-  const query = `
-      SELECT
-        (SELECT COUNT(enquirersid) FROM enquirers) AS totalenquiry,
-        (SELECT COUNT(propertyid) FROM properties) AS totalproperty,
-        (SELECT COUNT(builderid) FROM builders) AS totalbuilder,
-        (SELECT COUNT(salespersonsid) FROM salespersons) AS totalsalesperson,
-        (SELECT COUNT(id) FROM territorypartner) AS totalterritoryperson,
-        (SELECT COUNT(partnerid) FROM onboardingpartner) AS totalonboardingpartner,
-        (SELECT COUNT(id) FROM projectpartner) AS totalprojectpartner,
-        (SELECT COUNT(ticketid)
-          FROM tickets
-          INNER JOIN salespersons ON salespersons.adharno = tickets.ticketadder
-        ) AS totalticket;
-    `;
-
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error("Error fetching dashboard stats:", err);
-      return res.status(500).json({ error: "Database error" });
-    }
-
-    return res.json(results[0]); // Since it's a single row
-  });
-};
-
-// Fetch All Properties
-export const getPropertiesOld = (req, res) => {
-  const userId = req.user.id;
-  if (!userId) {
-    return res
-      .status(400)
-      .json({ message: "Unauthorized, Please Login Again!" });
-  }
-  const sql = `SELECT properties.*, builders.company_name FROM properties 
-               INNER JOIN builders ON properties.builderid = builders.builderid 
-               WHERE properties.partnerid = ? 
-               ORDER BY properties.propertyid DESC`;
-  db.query(sql, [userId], (err, result) => {
-    if (err) {
-      console.error("Error fetching properties:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-    const formatted = result.map((row) => ({
-      ...row,
-      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
-      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
-    }));
-
-    res.json(formatted);
-  });
-};
-
 // **Get Partner Properties with Enquiry/Booking Status**
 export const getProperties = (req, res) => {
   const partnerId = req.user?.id;

@@ -96,7 +96,6 @@ export const getAll = (req, res) => {
   });
 };
 
-//add enquiry
 export const addEnquiry = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const salesId = req.body.salesId;
@@ -105,7 +104,7 @@ export const addEnquiry = async (req, res) => {
   }
 
   const {
-    propertyid,
+    propertyid, // optional now
     customer,
     contact,
     minbudget,
@@ -119,9 +118,8 @@ export const addEnquiry = async (req, res) => {
     salesPersonContact,
   } = req.body;
 
-  // Validate required fields
+  // Validate required fields (exclude propertyid)
   if (
-    !propertyid ||
     !customer ||
     !contact ||
     !minbudget ||
@@ -153,13 +151,14 @@ export const addEnquiry = async (req, res) => {
     message,
     assign,
     source,
-    updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?)`;
+    updated_at, created_at
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(
     insertSQL,
     [
       salesId,
-      propertyid,
+      propertyid || null, // allow NULL if not provided
       customer,
       contact,
       minbudget,

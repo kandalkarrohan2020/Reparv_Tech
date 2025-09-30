@@ -108,6 +108,7 @@ function PropertyDetails() {
 
             {/* Show Type Wise Property */}
             <TypeWisePricing
+              propertyInfo={propertyInfo}
               propertyId={propertyInfo?.propertyid}
               propertyCategory={propertyInfo?.propertyCategory}
               propertyType={propertyInfo.propertyType}

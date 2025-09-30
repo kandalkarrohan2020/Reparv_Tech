@@ -105,9 +105,15 @@ function PropertyDetails() {
             {["NewPlot", "CommercialPlot"].includes(
               propertyInfo.propertyCategory
             ) && <PlotData propertyInfo={propertyInfo} />}
-            
+
             {/* Show Type Wise Property */}
-            <TypeWisePricing propertyId={propertyInfo?.propertyid} propertyCategory={propertyInfo?.propertyCategory} propertyType={propertyInfo.propertyType} />
+            <TypeWisePricing
+              propertyId={propertyInfo?.propertyid}
+              propertyCategory={propertyInfo?.propertyCategory}
+              propertyType={propertyInfo.propertyType}
+              brochureFile={propertyInfo.brochureFile}
+              videoFile={propertyInfo.videoFile}
+            />
 
             {/* Property Details */}
             {propertyInfo?.propertyDescription && (

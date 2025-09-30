@@ -11,6 +11,7 @@ import DataTable from "react-data-table-component";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from "../store/auth";
+import DashboardFilter from "../components/dashboard/DashboardFilter";
 
 function Dashboard() {
   const { URI } = useAuth();
@@ -255,25 +256,34 @@ function Dashboard() {
         ))}
       </div>
 
-      <div className="overview-table w-full h-[500px] sm:h-[420px] flex flex-col p-6 gap-4 bg-white rounded-[24px]">
-        <p className="block md:hidden text-lg font-semibold">Overview</p>
-        <div className="searchBarContainer w-full flex sm:flex-row flex-col items-center justify-between gap-3">
-          <div className="search-bar w-full sm:w-1/2 min-w-[150px] max:w-[289px] md:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start md:justify-between bg-[#0000000A]">
+      <div className="overview-table w-full h-[60vh] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+        <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
+          <p className="block md:hidden text-lg font-semibold">Dashboard</p>
+        </div>
+        <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
+          <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A] border">
             <CiSearch />
             <input
               type="text"
               placeholder="Search"
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="rightTableHead w-full sm:w-1/2 min-w-[307px] sm:h-[36px] flex justify-end items-center">
-            <div className="flex flex-wrap-reverse sm:flex-nowrap gap-2 px-2">
-              <CitySelector></CitySelector>
-              <CustomDateRangePicker />
+          <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
+            <div className="flex flex-wrap items-center justify-end gap-3 px-2">
+              <div className="block">
+                <CustomDateRangePicker range={range} setRange={setRange} />
+              </div>
             </div>
           </div>
         </div>
+        <div className="filterContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
+          <DashboardFilter counts={propertyCounts} />
+        </div>
 
+        <h2 className="text-[16px] ml-1 font-semibold">Customer List</h2>
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"
@@ -281,7 +291,7 @@ function Dashboard() {
             columns={columns}
             data={filteredData}
             pagination
-            paginationPerPage={15}
+            paginationPerPage={10}
             paginationComponentOptions={{
               rowsPerPageText: "Rows per page:",
               rangeSeparatorText: "of",

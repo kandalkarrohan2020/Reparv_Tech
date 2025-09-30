@@ -18,7 +18,7 @@ export const getAll = (req, res) => {
            FROM enquirers 
            LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
            LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
-           WHERE properties.status = 'active' AND properties.approve = 'Approved' AND enquirers.status != 'Token'
+           WHERE properties.status = 'active' AND properties.approve = 'Approved' AND enquirers.source = "Onsite" AND enquirers.status != 'Token'
            ORDER BY enquirers.enquirersid DESC`;
   } else if (enquirySource === "Direct") {
     sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,

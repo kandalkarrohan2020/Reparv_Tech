@@ -158,7 +158,7 @@ export const addEnquiry = async (req, res) => {
     insertSQL,
     [
       salesId,
-      propertyid || null, // allow NULL if not provided
+      propertyid,
       customer,
       contact,
       minbudget,
@@ -254,7 +254,7 @@ export const updateEnquiry = async (req, res) => {
         updateSQL,
         [
           customer,
-          propertyid,
+          propertyid ?? null,
           contact,
           minbudget,
           maxbudget,

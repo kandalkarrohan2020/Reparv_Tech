@@ -2,8 +2,15 @@ import { useState, useEffect } from "react";
 import { FaRupeeSign, FaVectorSquare } from "react-icons/fa";
 import { useAuth } from "../../store/auth";
 import FormatPrice from "../FormatPrice";
+import BrochureAndVideo from "./BrochureAndVideo";
 
-function TypeWisePricing({ propertyId, propertyCategory, propertyType }) {
+function TypeWisePricing({
+  propertyId,
+  propertyCategory,
+  propertyType,
+  brochureFile,
+  videoFile,
+}) {
   const { URI, setLoading } = useAuth();
   const [isActive, setIsActive] = useState(propertyType?.[0] || "");
   const [propertyData, setPropertyData] = useState({});
@@ -85,9 +92,14 @@ function TypeWisePricing({ propertyId, propertyCategory, propertyType }) {
 
   return (
     <div className="flex flex-col gap-2 bg-white rounded-lg p-4 md:p-6">
-      <h2 className="text-black text-lg mb-3 font-semibold mx-1">
-        {propertyCategory}
-      </h2>
+      <div className="w-full flex gap-4 items-center justify-between">
+        <h2 className="text-black text-lg mb-3 font-semibold mx-1">
+          {propertyCategory}
+        </h2>
+        <div className="flex gap-4 mb-3">
+          <BrochureAndVideo brochureFile={brochureFile} videoFile={videoFile} />
+        </div>
+      </div>
 
       {/* Property Type Selector */}
       <div className="w-full flex flex-wrap gap-3 md:gap-4">

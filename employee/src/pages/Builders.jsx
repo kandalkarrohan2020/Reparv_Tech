@@ -577,7 +577,7 @@ const Builders = () => {
               />
               <div className="w-full ">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Company Name
+                  Company Name <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -595,7 +595,7 @@ const Builders = () => {
               </div>
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Contact Person
+                  Contact Person <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -613,7 +613,7 @@ const Builders = () => {
               </div>
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Contact Number
+                  Contact Number <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="number"
@@ -632,7 +632,7 @@ const Builders = () => {
               </div>
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Email
+                  Email <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="email"
@@ -647,7 +647,7 @@ const Builders = () => {
               </div>
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Aadhaar Number
+                  Aadhaar Number <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="number"
@@ -666,7 +666,7 @@ const Builders = () => {
               </div>
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Office Address
+                  Office Address <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -685,7 +685,7 @@ const Builders = () => {
 
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Registration No.
+                  Registration No. <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -704,7 +704,7 @@ const Builders = () => {
 
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Date Of Registration
+                  Date Of Registration <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="date"
@@ -720,7 +720,7 @@ const Builders = () => {
               </div>
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Website
+                  Website <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -735,7 +735,7 @@ const Builders = () => {
               </div>
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Notes
+                  Notes <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"

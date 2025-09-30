@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     description: "Our Representative will call you shortly",
   });
   const [priceSummery, setPriceSummery] = useState({});
-  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedCity, setSelectedCity] = useState("Nagpur");
   const [propertyImage, setPropertyImage] = useState("");
   const [propertyType, setPropertyType] = useState("properties");
   const [bhkType, setBhkType] = useState("2 BHK");
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   const [videoURL, setVideoURL] = useState("");
   const [showWingInfoPopup, setShowWingInfoPopup] = useState(false);
   const [showPlotInfoPopup, setShowPlotInfoPopup] = useState(false);
-  const [showCitySelector, setShowCitySelector] = useState(true);
+  const [showCitySelector, setShowCitySelector] = useState(false);
 
   const URI = "https://api.reparv.in";
   //const URI = "http://localhost:3000";

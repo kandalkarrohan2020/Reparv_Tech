@@ -26,7 +26,6 @@ export const addEnquiry = async (req, res) => {
 
   // Validate required fields
   if (
-    !propertyid ||
     !customer ||
     !contact ||
     !minbudget ||
@@ -65,7 +64,7 @@ export const addEnquiry = async (req, res) => {
     insertSQL,
     [
       territoryId,
-      propertyid,
+      propertyid ?? null,
       customer,
       contact,
       minbudget,

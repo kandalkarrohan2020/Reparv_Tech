@@ -379,18 +379,6 @@ const GuestUser = () => {
       minWidth: "250px",
     },
     {
-      name: "State",
-      selector: (row) => row.state,
-      sortable: true,
-      width: "150px",
-    },
-    {
-      name: "City",
-      selector: (row) => row.city,
-      sortable: true,
-      width: "150px",
-    },
-    {
       name: "Action",
       cell: (row) => <ActionDropdown row={row} />,
       width: "120px",

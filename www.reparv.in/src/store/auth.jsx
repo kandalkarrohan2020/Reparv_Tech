@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
   const [showWingInfoPopup, setShowWingInfoPopup] = useState(false);
   const [showPlotInfoPopup, setShowPlotInfoPopup] = useState(false);
   const [showCitySelector, setShowCitySelector] = useState(false);
+  const [showSharePopup, setShowSharePopup] = useState(false);
 
   const URI = "https://api.reparv.in";
   //const URI = "http://localhost:3000";
@@ -79,7 +80,9 @@ export const AuthProvider = ({ children }) => {
         setShowPlotInfoPopup,
         showCitySelector,
         setShowCitySelector,
-
+        showSharePopup,
+        setShowSharePopup,
+    
         URI,
         loading,
         setLoading,

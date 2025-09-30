@@ -12,6 +12,7 @@ import FilterSidebar from "../FilterSidebar";
 import PlayVideo from "../property/PlayVideo";
 import WingInfo from "../property/WingInfo";
 import PlotInfo from "../property/PlotInfo";
+import Share from "../property/Share";
 
 // lazy load
 const CitySelector = lazy(() => import("../CitySelector"));
@@ -40,6 +41,9 @@ function Layout() {
     setShowPlotInfoPopup,
     showCitySelector,
     setShowCitySelector,
+    showSharePopup,
+    setShowSharePopup,
+    propertyInformation
   } = useAuth();
 
   const { ref: footerRef, inView: footerInView } = useInView({
@@ -128,6 +132,12 @@ function Layout() {
       {showPlayVideo && (
         <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
           <PlayVideo />
+        </div>
+      )}
+
+      {showSharePopup && (
+        <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
+          <Share propertyData={propertyInformation}/>
         </div>
       )}
 

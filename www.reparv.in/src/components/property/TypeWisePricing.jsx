@@ -3,6 +3,7 @@ import { FaRupeeSign, FaVectorSquare } from "react-icons/fa";
 import { useAuth } from "../../store/auth";
 import FormatPrice from "../FormatPrice";
 import BrochureAndVideo from "./BrochureAndVideo";
+import { IoShareSocial } from "react-icons/io5";
 
 function TypeWisePricing({
   propertyId,
@@ -11,7 +12,7 @@ function TypeWisePricing({
   brochureFile,
   videoFile,
 }) {
-  const { URI, setLoading } = useAuth();
+  const { URI, setLoading, setShowSharePopup } = useAuth();
   const [isActive, setIsActive] = useState(propertyType?.[0] || "");
   const [propertyData, setPropertyData] = useState({});
 
@@ -96,8 +97,20 @@ function TypeWisePricing({
         <h2 className="text-black text-lg mb-3 font-semibold mx-1">
           {propertyCategory}
         </h2>
-        <div className="flex gap-4 mb-3">
+        <div className="flex gap-3 mb-3">
           <BrochureAndVideo brochureFile={brochureFile} videoFile={videoFile} />
+          <div
+            onClick={() => {
+              setShowSharePopup(true);
+            }}
+            className="px-[10px] py-[6px] text-white bg-[#107c0b] rounded-lg cursor-pointer relative overflow-hidden active:scale-95"
+          >
+            <div className="overflow-hidden relative z-10 flex items-center justify-center ">
+              <span className="text-sm mr-1">Share</span>{" "}
+              <IoShareSocial className="w-5 h-5" />
+              <span className="absolute shine-layer"></span>
+            </div>
+          </div>
         </div>
       </div>
 

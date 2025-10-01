@@ -54,18 +54,8 @@ function BlogDetails() {
               "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
             }
             alt=""
-            className="w-full max-h-[500px] max-w-[1600px] mx-auto object-cover"
+            className="w-full max-w-[1200px] mx-auto object-cover"
           />
-          <div className="absolute max-h-[500px] w-full max-w-[1600px] h-full backdrop-blur-[0.5px] bg-black/30">
-            {" "}
-          </div>
-          {/* Text On BackImage */}
-          <div className="hidden lg:block registerForm w-full max-w-[1050px] mx-auto absolute bottom-10 ">
-            <p className="text-base text-white mb-2">{blog?.updated_at}</p>
-            <h2 className="text-4xl font-semibold text-[white] mb-2">
-              {blog?.tittle}
-            </h2>
-          </div>
         </div>
 
         {/* Blog Section */}
@@ -83,6 +73,12 @@ function BlogDetails() {
               <p className="text-sm font-semibold">Reparv Team</p>
               <p className="text-xs text-gray-500">{blog?.updated_at}</p>
             </div>
+          </div>
+
+          <div className="hidden lg:block registerForm w-full max-w-[1050px] mb-5">
+            <h2 className="text-3xl font-semibold text-[black]">
+              {blog?.tittle}
+            </h2>
           </div>
           
           <div

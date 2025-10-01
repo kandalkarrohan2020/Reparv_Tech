@@ -73,6 +73,7 @@ export default function Properties() {
     return (
       item?.propertyName?.toLowerCase().includes(term) ||
       item?.propertyCategory?.toLowerCase().includes(term) ||
+      item?.tags?.toLowerCase().includes(term) ||
       (Array.isArray(item?.propertyType) &&
         item.propertyType.some((type) => type.toLowerCase().includes(term))) ||
       (Array.isArray(item?.tags)

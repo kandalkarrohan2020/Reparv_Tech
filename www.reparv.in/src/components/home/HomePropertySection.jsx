@@ -30,21 +30,36 @@ function HomePropertySection() {
   const [properties, setProperties] = useState([]);
 
   const filteredProperties = properties?.filter((property) => {
-    const nameMatch = property.propertyName
-      .toLowerCase()
-      .includes(propertySearch?.toLowerCase());
+    const term = propertySearch?.toLowerCase() || "";
+
+    // Property name match
+    const nameMatch = property?.propertyName?.toLowerCase().includes(term);
+
+    // Tags match (works with string or array)
+    const tagMatch =
+      (Array.isArray(property?.tags) &&
+        property.tags.some((tag) => tag?.toLowerCase().includes(term))) ||
+      property?.tags?.toLowerCase?.().includes(term);
+
+    // Built-up area match
     const areaMatch =
-      property.builtUpArea &&
-      property.builtUpArea.toString().includes(propertySearch?.toLowerCase());
+      property?.builtUpArea &&
+      property.builtUpArea.toString().toLowerCase().includes(term);
+
+    // Property type match (works with string or array)
     const typeMatch =
-      property.propertyType &&
-      property.propertyType.toString().includes(propertySearch?.toLowerCase());
+      (Array.isArray(property?.propertyType) &&
+        property.propertyType.some((type) =>
+          type?.toLowerCase().includes(term)
+        )) ||
+      property?.propertyType?.toString().toLowerCase().includes(term);
+
+    // Property category match
     const categoryMatch =
-      property.propertyCategory &&
-      property.propertyCategory
-        .toString()
-        .includes(propertySearch?.toLowerCase());
-    return nameMatch || areaMatch || typeMatch || categoryMatch;
+      property?.propertyCategory &&
+      property.propertyCategory.toString().toLowerCase().includes(term);
+
+    return nameMatch || tagMatch || areaMatch || typeMatch || categoryMatch;
   });
 
   // fetch Properties

@@ -59,7 +59,7 @@ function Blog() {
                     "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
                   }
                   alt={blog?.tittle}
-                  className="h-60 w-full object-cover"
+                  className="h-50 w-full object-cover"
                 />
 
                 <div className="flex flex-col gap-2 p-4 ">

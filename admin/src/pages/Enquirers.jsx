@@ -711,6 +711,8 @@ const Enquirers = () => {
     const matchesSearch =
       item.customer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.assign?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.territoryName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.source?.toLowerCase().includes(searchTerm.toLowerCase());
 
     // Date range filter

@@ -90,6 +90,8 @@ const Properties = () => {
     ecofriendlyBenefit: "",
   });
 
+  // For Update images
+  const [propertyImageData, setPropertyImageData] = useState({});
   const [imageFiles, setImageFiles] = useState({
     frontView: [],
     sideView: [],
@@ -247,7 +249,7 @@ const Properties = () => {
       });
       if (!response.ok) throw new Error("Failed to fetch property.");
       const data = await response.json();
-      setPropertyData(data);
+      setPropertyImageData(data);
       //console.log(data);
       setShowUpdateImagesForm(true);
     } catch (err) {
@@ -704,8 +706,8 @@ const Properties = () => {
         fetchData={fetchData}
         propertyId={propertyKey}
         setPropertyId={setPropertyKey}
-        newProperty={newProperty}
-        setPropertyData={setPropertyData}
+        newProperty={propertyImageData}
+        setPropertyData={setPropertyImageData}
         imageFiles={imageFiles}
         setImageFiles={setImageFiles}
       />

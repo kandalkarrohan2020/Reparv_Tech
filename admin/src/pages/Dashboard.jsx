@@ -333,19 +333,19 @@ function Dashboard() {
             onClick={() => {
               scrollToTable();
             }}
-            className="overview-card w-full max-w-[190px] sm:max-w-[290px] h-[85px] sm:h-[132px] flex flex-col items-center justify-center gap-2 rounded-lg sm:rounded-[24px] p-4 sm:p-6 bg-gradient-to-b from-[#0BB501] to-[#076300] hover:to-[#0f930f] bg-blend-multiply cursor-pointer"
+            className="group overview-card w-full max-w-[190px] sm:max-w-[290px] h-[85px] sm:h-[132px] flex flex-col items-center justify-center gap-2 rounded-lg sm:rounded-[16px] p-4 sm:p-6 border-2 hover:border-[#0BB501] bg-white cursor-pointer"
           >
-            <div className="upside w-full sm:max-w-[224px] h-[30px] sm:h-[40px] flex items-center justify-between gap-2 sm:gap-3 text-xs sm:text-base font-medium text-white">
+            <div className="upside w-full sm:max-w-[224px] h-[30px] sm:h-[40px] flex items-center justify-between gap-2 sm:gap-3 text-xs sm:text-base font-semibold">
               <p>{card.label}</p>
               <img
                 src={card.icon}
                 alt=""
                 className={`${
                   card.icon ? "block" : "hidden"
-                } w-5 sm:w-10 h-5 sm:h-10`}
+                } w-5 sm:w-10 h-5 sm:h-10 bg-[#cbcbcb] group-hover:bg-[#0BB501] rounded-full`}
               />
             </div>
-            <div className="downside w-full h-[30px] sm:w-[224px] sm:h-[40px] flex items-center text-xl sm:text-[32px] font-semibold text-white">
+            <div className="downside w-full h-[30px] sm:w-[224px] sm:h-[40px] flex items-center text-xl sm:text-[32px] font-semibold">
               <p className="flex items-center justify-center">
                 {[
                   "Total Deal Amount",

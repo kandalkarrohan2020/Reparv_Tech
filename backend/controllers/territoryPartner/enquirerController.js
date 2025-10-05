@@ -1,5 +1,6 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
+import { sanitize } from "../../utils/sanitize.js";
 
 // **Fetch All **
 export const getAll = (req, res) => {
@@ -191,7 +192,7 @@ export const status = (req, res) => {
   );
 };
 
-export const followUp = (req, res) => {
+export const followUpOld = (req, res) => {
   const { followUpRemark, territoryId } = req.body;
   if (!followUpRemark || !territoryId) {
     return res.status(400).json({ message: "All Fields are Required!" });
@@ -234,6 +235,80 @@ export const followUp = (req, res) => {
           });
         }
       );
+    }
+  );
+};
+
+export const followUp = (req, res) => {
+  const { followUpRemark, territoryId, visitDate } = req.body;
+
+  // Validate required fields (visitDate is optional)
+  if (!followUpRemark || !territoryId) {
+    return res
+      .status(400)
+      .json({ message: "followUpRemark and territoryId are required!" });
+  }
+
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Enquiry ID" });
+  }
+
+  db.query(
+    "SELECT * FROM enquirers WHERE enquirersid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Enquiry not found" });
+      }
+
+      // Format dates to remove time portion
+      let formattedVisitDate = null;
+
+      if (visitDate && visitDate.trim() !== "") {
+        // Check if it's a valid date
+        if (
+          moment(visitDate, ["YYYY-MM-DD", moment.ISO_8601], true).isValid()
+        ) {
+          formattedVisitDate = moment(visitDate).format("YYYY-MM-DD");
+        } else {
+          formattedVisitDate = null; // fallback instead of "Invalid date"
+        }
+      }
+
+      // Build SQL dynamically depending on whether visitDate is provided
+      let updateSQL;
+      let values;
+
+      if (visitDate) {
+        updateSQL =
+          "UPDATE territoryenquiry SET followup = ?, visitdate = ? WHERE teid = ?";
+        values = [followUpRemark, sanitize(formattedVisitDate), territoryId];
+      } else {
+        updateSQL = "UPDATE territoryenquiry SET followup = ? WHERE teid = ?";
+        values = [followUpRemark, territoryId];
+      }
+
+      db.query(updateSQL, values, (err, updateResult) => {
+        if (err) {
+          console.error("Error updating follow-up:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+
+        res.status(200).json({
+          message: visitDate
+            ? "Follow Up remark and visit date updated successfully"
+            : "Follow Up remark updated successfully",
+          affectedRows: updateResult.affectedRows,
+        });
+      });
     }
   );
 };

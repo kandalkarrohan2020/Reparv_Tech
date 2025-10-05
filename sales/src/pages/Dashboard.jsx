@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../store/auth";
 import DashboardFilter from "../components/dashboard/DashboardFilter";
 import { parse } from "date-fns";
+import propertyPicture from "../assets/propertyPicture.svg";
 
 function Dashboard() {
   const { URI, dashboardFilter } = useAuth();
@@ -17,21 +18,21 @@ function Dashboard() {
   const [overviewCountData, setOverviewCountData] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
 
-  const getPropertyCounts = (data) => {
+  const getEnquiryCounts = (data) => {
     return data.reduce(
       (acc, item) => {
-        if (item.enquiryStatus === "Enquired") {
-          acc.Enquired++;
-        } else if (item.enquiryStatus === "Booked") {
-          acc.Booked++;
+        if (item.status !== "Token") {
+          acc.Enquiries++;
+        } else if (item.status === "Token") {
+          acc.DealDone++;
         }
         return acc;
       },
-      { Enquired: 0, Booked: 0 }
+      { Enquiries: 0, DealDone: 0 }
     );
   };
 
-  const propertyCounts = getPropertyCounts(overviewData);
+  const enquiryCounts = getEnquiryCounts(overviewData);
 
   const [range, setRange] = useState([
     {
@@ -44,10 +45,9 @@ function Dashboard() {
   const filteredData = overviewData?.filter((item) => {
     // Text search filter
     const matchesSearch =
-      item.propertyName?.toLowerCase().includes(searchTerm) ||
-      item.company_name?.toLowerCase().includes(searchTerm) ||
-      item.propertyCategory?.toLowerCase().includes(searchTerm) ||
-      item.city?.toLowerCase().includes(searchTerm);
+      item.customer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.source?.toLowerCase().includes(searchTerm.toLowerCase());
 
     // Date range filter
     let startDate = range[0].startDate;
@@ -68,17 +68,17 @@ function Dashboard() {
       (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
 
     // Enquiry filter logic: New, Alloted, Assign
-    const getProperty = () => {
-      if (item.enquiryStatus === "Booked") return "Booked";
-      if (item.enquiryStatus === "Enquired") return "Enquired";
+    const getEnquiry = () => {
+      if (item.status !== "Token") return "Enquiries";
+      if (item.status === "Token") return "Deal Done";
       return "";
     };
 
-    const matchesProperty =
-      !dashboardFilter || getProperty() === dashboardFilter;
+    const matchesEnquiry =
+      !dashboardFilter || getEnquiry() === dashboardFilter;
 
     // Final return
-    return matchesSearch && matchesDate && matchesProperty;
+    return matchesSearch && matchesDate && matchesEnquiry;
   });
 
   const customStyles = {
@@ -111,30 +111,54 @@ function Dashboard() {
     {
       name: "SN",
       cell: (row, index) => (
-        <div className="relative group flex items-center w-full">
-          {/* Serial Number Box */}
-          <span
-            className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md cursor-pointer ${
-              row.status === "Active"
-                ? "bg-[#E3FFDF] text-[#0BB501]"
-                : "bg-[#FFEAEA] text-[#ff2323]"
-            }`}
-          >
-            {index + 1}
-          </span>
-
-          {/* Tooltip */}
-          <div className="absolute w-[65px] text-center -top-12 left-[30px] -translate-x-1/2 px-2 py-2 rounded bg-black text-white text-xs hidden group-hover:block transition">
-            {row.status === "Active" ? "Active" : "Inactive"}
-          </div>
-        </div>
+        <span
+          className={`px-2 py-1 rounded-md ${
+            row.status === "New"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : row.status === "Visit Scheduled"
+              ? "bg-[#E9F2FF] text-[#0068FF]"
+              : row.status === "Token"
+              ? "bg-[#FFF8DD] text-[#FFCA00]"
+              : row.status === "Cancelled"
+              ? "bg-[#FFEAEA] text-[#ff2323]"
+              : row.status === "Follow Up"
+              ? "bg-[#F4F0FB] text-[#5D00FF]"
+              : "text-[#000000]"
+          }`}
+        >
+          {index + 1}
+        </span>
       ),
-      width: "70px",
+      sortable: false,
+      width: "80px",
     },
     {
-      name: "Image",
+      name: "Enquiry Status",
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 rounded-md ${
+            row.status === "New"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : row.status === "Visit Scheduled"
+              ? "bg-[#E9F2FF] text-[#0068FF]"
+              : row.status === "Token"
+              ? "bg-[#FFF8DD] text-[#FFCA00]"
+              : row.status === "Cancelled"
+              ? "bg-[#FFEAEA] text-[#ff2323]"
+              : row.status === "Follow Up"
+              ? "bg-[#F4F0FB] text-[#5D00FF]"
+              : "text-[#000000]"
+          }`}
+        >
+          {row.status}
+        </span>
+      ),
+      width: "150px",
+    },
+    {
+      name: "Intrested Property",
       cell: (row) => {
-        let imageSrc = "default.jpg";
+        let imageSrc = propertyPicture;
 
         try {
           const parsed = JSON.parse(row.frontView);
@@ -146,7 +170,7 @@ function Dashboard() {
         }
 
         return (
-          <div className="w-[130px] h-14 overflow-hidden flex items-center justify-center">
+          <div className="w-full h-16 overflow-hidden flex items-center justify-center">
             <img
               src={imageSrc}
               alt="Property"
@@ -156,37 +180,32 @@ function Dashboard() {
                   "_blank"
                 );
               }}
-              className="w-full h-[100%] object-cover cursor-pointer"
+              className="!w-full h-[100%] object-cover cursor-pointer"
             />
           </div>
         );
       },
-      width: "130px",
+      width: "140px",
     },
+    { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
+    { name: "Source", selector: (row) => row.source, width: "120px" },
     {
-      name: "Name",
-      selector: (row) => row.propertyName,
+      name: "Customer",
+      selector: (row) => row.customer,
       sortable: true,
       minWidth: "150px",
+      maxWidth: "250px",
     },
+    { name: "Contact", selector: (row) => row.contact, width: "150px" },
     {
-      name: "Builder",
-      selector: (row) => row.company_name,
-      sortable: true,
-      minWidth: "130px",
-    },
-    { name: "Type", selector: (row) => row.propertyCategory, sortable: true },
-    {
-      name: "City",
-      selector: (row) => row.city,
-      sortable: true,
-      width: "120px",
-    },
-    { name: "Pin Code", selector: (row) => row.pincode, width: "120px" },
-    {
-      name: "Total Price",
-      selector: (row) => row.totalOfferPrice,
-      sortable: true,
+      name: "Territory Partner",
+      cell: (row) => (
+        <div className="flex flex-col gap-[2px]">
+          <span>{row.territoryName || "-- NOT ASSIGN --"}</span>
+          <span>{row.territoryContact}</span>
+        </div>
+      ),
+      minWidth: "200px",
     },
   ];
 
@@ -211,14 +230,14 @@ function Dashboard() {
   //Fetch Data
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/sales/dashboard/properties", {
+      const response = await fetch(URI + "/sales/dashboard/enquiries", {
         method: "GET",
         credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch properties.");
+      if (!response.ok) throw new Error("Failed to fetch enquiries.");
       const data = await response.json();
       setOverviewData(data);
     } catch (err) {
@@ -294,7 +313,7 @@ function Dashboard() {
         ))}
       </div>
 
-      <div className="properties-table w-full h-[60vh] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+      <div className="enquiries-table w-full h-[60vh] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
         <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
           <p className="block md:hidden text-lg font-semibold">Dashboard</p>
         </div>
@@ -318,7 +337,7 @@ function Dashboard() {
           </div>
         </div>
         <div className="filterContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
-          <DashboardFilter counts={propertyCounts} />
+          <DashboardFilter counts={enquiryCounts} />
         </div>
 
         <h2 className="text-[16px] ml-1 font-semibold">Enquiry List</h2>

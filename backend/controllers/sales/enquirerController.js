@@ -1,5 +1,6 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
+import { sanitize } from "../../utils/sanitize.js";
 
 // **Fetch All **
 export const getAll = (req, res) => {
@@ -358,79 +359,7 @@ export const token = (req, res) => {
   );
 };
 
-export const tokenOld = (req, res) => {
-  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { paymenttype, tokenamount, remark, dealamount, enquiryStatus } =
-    req.body;
-
-  const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
-
-  if (
-    !paymenttype ||
-    !tokenamount ||
-    !remark ||
-    !dealamount ||
-    !enquiryStatus
-  ) {
-    return res
-      .status(400)
-      .json({ message: "Please add visit date and remark!" });
-  }
-
-  const Id = parseInt(req.params.id);
-  if (isNaN(Id)) {
-    return res.status(400).json({ message: "Invalid Enquiry ID" });
-  }
-
-  db.query(
-    "SELECT * FROM enquirers WHERE enquirersid = ?",
-    [Id],
-    (err, result) => {
-      if (err) {
-        console.error("Database error:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-
-      if (result.length === 0) {
-        return res.status(404).json({ message: "Enquirer not found" });
-      }
-
-      const insertSQL = `
-      INSERT INTO propertyfollowup (enquirerid, paymenttype, tokenamount, remark, dealamount, status, paymentimage, updated_at, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-      db.query(
-        insertSQL,
-        [
-          Id,
-          paymenttype,
-          tokenamount,
-          remark,
-          dealamount,
-          enquiryStatus,
-          imagePath,
-          currentdate,
-          currentdate,
-        ],
-        (err, insertResult) => {
-          if (err) {
-            console.error("Error inserting visit:", err);
-            return res
-              .status(500)
-              .json({ message: "Database error", error: err });
-          }
-
-          res.status(201).json({
-            message: "Token added successfully",
-            Id: insertResult.insertId,
-          });
-        }
-      );
-    }
-  );
-};
-
-export const followUp = (req, res) => {
+export const followUpOld = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const { followUpRemark, enquiryStatus } = req.body;
 
@@ -474,6 +403,80 @@ export const followUp = (req, res) => {
           res.status(201).json({
             message: "Follow Up remark added successfully",
             Id: insertResult.insertId,
+          });
+        }
+      );
+    }
+  );
+};
+
+export const followUp = (req, res) => {
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const { visitDate, followUpRemark, enquiryStatus } = req.body;
+
+  //console.log(visitDate, "ss");
+
+  if (!followUpRemark || !enquiryStatus) {
+    return res.status(400).json({ message: "Please add remark and status!" });
+  }
+
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Enquiry ID" });
+  }
+
+  // Format dates to remove time portion
+  let formattedVisitDate = null;
+
+  if (visitDate && visitDate.trim() !== "") {
+    // Check if it's a valid date
+    if (moment(visitDate, ["YYYY-MM-DD", moment.ISO_8601], true).isValid()) {
+      formattedVisitDate = moment(visitDate).format("YYYY-MM-DD");
+    } else {
+      formattedVisitDate = null; // fallback instead of "Invalid date"
+    }
+  }
+
+  db.query(
+    "SELECT * FROM enquirers WHERE enquirersid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Enquiry not found" });
+      }
+
+      const insertSQL = `
+        INSERT INTO propertyfollowup (enquirerid, visitdate, remark, status, updated_at, created_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `;
+
+      db.query(
+        insertSQL,
+        [
+          Id,
+          sanitize(formattedVisitDate),
+          followUpRemark,
+          enquiryStatus,
+          currentdate,
+          currentdate,
+        ],
+        (err, insertResult) => {
+          if (err) {
+            console.error("Error inserting follow-up:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+
+          res.status(201).json({
+            message: "Follow Up added successfully",
+            Id: insertResult.insertId,
+            visitDate: visitDate || null,
           });
         }
       );

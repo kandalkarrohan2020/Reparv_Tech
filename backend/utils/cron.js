@@ -3,14 +3,89 @@ import db from "../config/dbconnect.js";
 import cron from "node-cron";
 import dayjs from "dayjs";
 import fetch from "node-fetch"; // For Node <18; on Node 18+ global fetch works
+import utc from "dayjs/plugin/utc.js";
+import timezone from "dayjs/plugin/timezone.js";
+import fs from "fs";
+import admin from "firebase-admin";
 
-// 🔔 OneSignal config – set these in your .env
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
-const ONE_SIGNAL_APP_ID = "1627d043-41c5-4f5b-8287-ae817b2c6f00";
-const ONE_SIGNAL_API_KEY = "oljiyijn3ecbmmudbktzydsbc";
-/* ---------------------------------------------------
-   1️⃣  Clean past dates in `territorypartner.inactive_until`
----------------------------------------------------- */
+// 🔔 Territory Partner Firebase app
+
+// utils/cron.js → backend/config/...
+const tpServiceAccount = JSON.parse(
+  fs.readFileSync(
+    new URL(
+      "../config/territorypush-firebase-adminsdk-fbsvc-7b5ddd57ed.json",
+      import.meta.url
+    ),
+    "utf8"
+  )
+);
+
+const spServiceAccount = JSON.parse(
+  fs.readFileSync(
+    new URL(
+      "../config/salespush-3c2e2-firebase-adminsdk-fbsvc-443437baa5.json",
+      import.meta.url
+    ),
+    "utf8"
+  )
+);
+
+const tpApp = admin.initializeApp(
+  {
+    credential: admin.credential.cert(tpServiceAccount),
+  },
+  "territoryPartnerApp"
+); // give a name for clarity
+
+// 🔔 Salesperson Firebase app
+
+const spApp = admin.initializeApp(
+  {
+    credential: admin.credential.cert(spServiceAccount),
+  },
+  "salespersonApp"
+); // must give a unique name
+
+// Send notification to Territory Partner
+async function sendTPNotification(token, title, body) {
+  if (!token) return; // safety check
+  const message = {
+    token,
+    notification: { title, body },
+    android: { priority: "high" },
+    apns: { headers: { "apns-priority": "10" } },
+  };
+
+  try {
+    const response = await tpApp.messaging().send(message);
+    console.log("✅ Territory Partner notification sent:", response);
+  } catch (err) {
+    console.error("❌ Error sending TP notification:", err);
+  }
+}
+
+// Send notification to Salesperson
+async function sendSPNotification(token, title, body) {
+  if (!token) return; // safety check
+  const message = {
+    token,
+    notification: { title, body },
+    android: { priority: "high" },
+    apns: { headers: { "apns-priority": "10" } },
+  };
+
+  try {
+    const response = await spApp.messaging().send(message);
+    console.log("✅ Salesperson notification sent:", response);
+  } catch (err) {
+    console.error("❌ Error sending SP notification:", err);
+  }
+}
+
 const cleanInactiveUntil = async () => {
   console.log("Running cron job to clean inactive_until...");
 
@@ -50,9 +125,6 @@ const cleanInactiveUntil = async () => {
   }
 };
 
-/* ---------------------------------------------------
-   2️⃣  Reject old enquiries after 10 minutes
----------------------------------------------------- */
 export const checkEnquiriesWithTime = () => {
   const selectSql = `
     SELECT teid
@@ -88,9 +160,11 @@ export const checkEnquiriesWithTime = () => {
   });
 };
 
-/* ---------------------------------------------------
-   3️⃣  NEW: Send 8:30 AM notifications for today's 9–10 slot
----------------------------------------------------- */
+cron.schedule("0 0 * * *", cleanInactiveUntil);
+
+// 🕐 Run every minute to reject old enquiries
+cron.schedule("* * * * *", checkEnquiriesWithTime);
+// 🕣 NEW: Run every day at 8:30 AM to alert territory partners for 9–10 slot
 const allTimeSlots = [
   "8 - 9AM",
   "9 - 10AM",
@@ -104,181 +178,262 @@ const allTimeSlots = [
   "5 - 6PM", // fixed typo 5-6AM → 5-6PM
 ];
 
-// const notifyMorningSlot = (timeSlot) => {
-//   // Format today as "DD-M-YYYY" to match your DB
-//   const today = dayjs().format("D-M-YYYY"); // e.g., 24-7-2025
-//   console.log(`Running notification job for ${timeSlot} slot on ${today}...`);
+const slotStartAMPM = {
+  8: "AM",
+  9: "AM",
+  10: "AM",
+  11: "AM",
+  12: "PM",
+  1: "PM",
+  2: "PM",
+  3: "PM",
+  4: "PM",
+  5: "PM",
+};
 
-//   const selectSql = `
-//     SELECT e.enquirersid,
-//            e.visitdate,
-//            e.territorytimeslot,
-//            tp.onesignalId
-//     FROM enquirers e
-//     JOIN territorypartner tp
-//       ON tp.id = e.territorypartnerid
-//     WHERE e.visitdate = ?
-//       AND e.territorytimeslot = ?
-//   `;
-
-//   db.query(selectSql, [today, timeSlot], (err, results) => {
-//     if (err) {
-//       console.error("❌ Database Query Error:", err);
-//       return;
-//     }
-
-//     if (!results.length) {
-//       console.log(`No enquiries for ${timeSlot} slot today.`);
-//       return;
-//     }
-
-//     results.forEach((row) => {
-//       if (!row.onesignalId) return;
-
-//       const payload = {
-//         app_id: ONE_SIGNAL_APP_ID,
-//         include_player_ids: ["a09306d1-4730-408e-acac-60de221fca35"],
-//         headings: { en: "Upcoming Visit Reminder" },
-//         contents: {
-//           en: `Enquiry #${row.enquirersid} visit scheduled today ${timeSlot}.`,
-//         },
-//         priority: 10,
-//       };
-
-//       fetch("https://api.onesignal.com/notifications", {
-//         method: "POST",
-//         headers: {
-//           Authorization: `Basic ${ONE_SIGNAL_API_KEY}`,
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify(payload),
-//       })
-//         .then((res) => res.json())
-//         .then((data) => {
-//           console.log(
-//             `✅ Notification sent to partner ${row.onesignalId}`,
-//             data.id
-//           );
-//         })
-//         .catch((notifyErr) => {
-//           console.error(
-//             `❌ Error sending notification to ${row.onesignalId}:`,
-//             notifyErr
-//           );
-//         });
-//     });
-//   });
-// };
-
-const notifySlot = (timeSlot) => {
-  const today = dayjs().format("D-M-YYYY"); // match DB format
-  console.log(`\nRunning notification job for slot "${timeSlot}" on ${today}`);
+async function notifySlot(timeSlot) {
+  const today = dayjs().tz("Asia/Kolkata").format("D-M-YYYY");
+  console.log(`\n🔔 Running notifySlot for "${timeSlot}" on ${today}`);
 
   const sql = `
-    SELECT e.enquirersid, e.visitdate, e.territorytimeslot, tp.onesignalId
-    FROM enquirers e
-    JOIN territorypartner tp ON tp.id = e.territorypartnerid
-    WHERE e.visitdate = ? AND e.territorytimeslot = ?
-  `;
+  SELECT 
+    e.enquirersid,
+    e.customer,  
+    e.contact,  
+    e.location,       
+    e.city,          
+    tp.onesignalid
+  FROM enquirers e
+  JOIN territorypartner tp ON tp.id = e.territorypartnerid
+  WHERE e.visitdate = ?
+    AND e.territorytimeslot = ?
+`;
 
-  db.query(sql, [today, timeSlot], (err, results) => {
-    if (err) return console.error("❌ Database Query Error:", err);
-    if (!results.length)
-      return console.log(`No enquiries for slot "${timeSlot}" today.`);
+  db.query(sql, [today, timeSlot], async (err, results) => {
+    if (err) {
+      console.error(`❌ Database Query Error in notifySlot(${timeSlot}):`, err);
+      return;
+    }
 
-    results.forEach((row) => {
-      if (!row.onesignalId) {
-        console.log(`❌ No OneSignal ID for enquirer ${row.enquirersid}`);
-        return;
+    if (!results.length) {
+      console.log(`ℹ️ No enquiries for slot ${timeSlot} on ${today}`);
+      return;
+    }
+
+    console.log(`📌 Found ${results.length} enquiries for slot ${timeSlot}`);
+
+    for (const row of results) {
+      if (!row.onesignalid) {
+        console.warn(`⚠️ No FCM token for enquiry ${row.enquirersid}`);
+        continue;
       }
 
-      console.log(`Sending notification to OneSignal ID: ${row.onesignalId}`);
+      await sendTPNotification(
+        row.onesignalid,
+        "🔔 Visit Reminder",
+        `Hello Territory Partner 👋,
 
-      //   const payload = {
-      //     app_id: ONE_SIGNAL_APP_ID,
-      //     included_segments: ["Subscribed Users"], // or ["All"]
-      //     headings: { en: "Global Announcement" },
-      //     contents: { en: "Hello to every subscribed user!" },
-      //     priority: 10,
-      //   };
+You have a scheduled visit today! 
 
-      //   fetch("https://onesignal.com/api/v1/notifications", {
-      //     method: "POST",
-      //     headers: {
-      //       Authorization: `Basic ${"os_v2_app_cyt5aq2byvhvxauhv2axwldpab6xsxxrqhuua5uohzjm3wugk2qj3jtkxy77blh4a6jl4nkf2u45pavvzzy4ikq7sxynxki62dfqdfa"}`, // REST API Key from OneSignal dashboard
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify(payload),
-      //   })
-      //     .then((res) => res.json())
-      //     .then((data) => console.log("✅ Notification response:", data))
-      //     .catch((err) => console.error("❌ Error sending notification:", err));
-      // });
+🗓 Date: ${today}
+⏰ Time Slot: ${timeSlot}
+👤 Customer: ${row.customer} 
+📞 Contact: ${row.contact}
+📍 Location: ${row.location}, ${row.city}
 
-      const url = "https://onesignal.com/api/v1/notifications";
+Please make sure to follow up on time and provide the best service.
 
-      const payload = {
-        app_id: ONE_SIGNAL_APP_ID,
-        included_segments: ["3a85a86e-cda2-4c33-bcc2-c89df380d376"], // sends to all subscribed users
-        headings: { en: "Global Announcement" },
-        contents: {
-          en: "Hello! This is a test notification to all subscribed users.",
-        },
-        priority: 10,
-      };
+✅ Reminder: Be punctual and prepared for the visit!
 
-      const options = {
-        method: "POST",
-        headers: {
-          Authorization: `Basic os_v2_app_cyt5aq2byvhvxauhv2axwldpab6xsxxrqhuua5uohzjm3wugk2qj3jtkxy77blh4a6jl4nkf2u45pavvzzy4ikq7sxynxki62dfqdfa`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      };
+Thank you,
+Team Reparv`
+      );
+    }
+  });
+}
 
-      (async () => {
-        try {
-          const response = await fetch(url, options);
-          const data = await response.json();
-          console.log("✅ Notification response:", data);
-        } catch (error) {
-          console.error("❌ Error sending notification:", error);
-        }
-      })();
-    });
+const notifiedSlotsToday = new Set();
+
+// Reset the set at midnight
+cron.schedule("0 0 * * *", () => {
+  notifiedSlotsToday.clear();
+  console.log("🗓 Reset notified slots for the new day");
+});
+// Notification cron: runs every minute
+cron.schedule("* * * * *", () => {
+  const now = dayjs().tz("Asia/Kolkata");
+  const currentHour = now.hour();
+  const currentMinute = now.minute();
+  const today = now.format("D-M-YYYY");
+
+  allTimeSlots.forEach((slot) => {
+    const [startStr] = slot.split(" - ");
+    let hour = parseInt(startStr);
+    const ampm = slotStartAMPM[startStr];
+
+    if (ampm === "PM" && hour < 12) hour += 12;
+    if (ampm === "AM" && hour === 12) hour = 0;
+
+    // Notification time = 30 min before slot
+    const notifyTime = dayjs()
+      .hour(hour)
+      .minute(0)
+      .second(0)
+      .subtract(40, "minute");
+    const notifyHour = notifyTime.hour();
+    const notifyMinute = notifyTime.minute();
+
+    const slotKey = `${today}-${slot}`; // unique key for slot today
+
+    // Only notify if current time matches AND we haven't notified yet
+    if (
+      currentHour === notifyHour &&
+      currentMinute === notifyMinute &&
+      !notifiedSlotsToday.has(slotKey)
+    ) {
+      console.log(
+        `🔔 Sending notification for slot "${slot}" at ${now.format("HH:mm")}`
+      );
+      notifySlot(slot);
+      notifiedSlotsToday.add(slotKey); // mark as notified
+    }
+  });
+});
+
+export const checkNewEnquiries = async () => {
+  const query = `
+    SELECT e.*, t.onesignalId
+    FROM enquirers e
+    INNER JOIN territorypartner t
+      ON e.territorypartnerid = t.id
+    WHERE e.territorypartnerid IS NOT NULL
+      AND e.status = 'New'
+  `;
+
+  db.query(query, async (err, results) => {
+    if (err) {
+      console.error("❌ Database query error:", err);
+      return;
+    }
+
+    if (results.length === 0) {
+      console.log("No new enquiries for territory partners.");
+      return;
+    }
+
+    // Use for...of to allow await
+    for (const enquiry of results) {
+      console.log(
+        `Sending notification to OneSignal ID: ${enquiry.onesignalid} for enquiry ID: ${enquiry.id}`
+      );
+
+      await sendTPNotification(
+        enquiry.onesignalid,
+        "🔔 New Enquiry Assigned",
+        `Hello Territory Partner 👋,
+
+You have been assigned a new enquiry!  
+
+👤 Customer: ${enquiry.customer} 
+📞 Contact: ${enquiry.contact}
+📍 Location: ${enquiry.location}, ${enquiry.city}
+
+Please take action on this enquiry: Accept ✅ or Reject ❌. 
+
+Ensure timely follow-up and provide the best service.
+
+Thank you,
+Team Reparv`
+      );
+    }
   });
 };
 
-/* ---------------------------------------------------
-   CRON SCHEDULES
----------------------------------------------------- */
-// 🕛 Run every day at midnight to clean inactive_until
-cron.schedule("0 0 * * *", cleanInactiveUntil);
+export const sendVisitReminders = async () => {
+  const visitDate = new Date().toISOString().split("T")[0];
+  const sql = `
+    SELECT pf.*, 
+           e.territorypartnerid, 
+           e.salespersonid, 
+           tp.onesignalid AS territoryOneSignalId, 
+           sp.onesignalid AS salesOneSignalId,
+           e.customer, e.contact, e.location, e.city
+    FROM propertyfollowup pf
+    JOIN enquirers e ON pf.enquirerid = e.enquirersid
+    LEFT JOIN territorypartner tp ON e.territorypartnerid = tp.id
+    LEFT JOIN salespersons sp ON e.salespersonid = sp.salespersonsid
+    WHERE pf.visitdate = ?
+      AND pf.status IN ('Follow Up', 'Visit Scheduled')
+      AND (pf.notification_sent IS NULL OR pf.notification_sent = 0)
+  `;
 
-// 🕐 Run every minute to reject old enquiries
-cron.schedule("* * * * *", checkEnquiriesWithTime);
+  db.query(sql, [visitDate], async (err, results) => {
+    if (err) {
+      console.error("❌ Database query error:", err);
+      return;
+    }
 
-// 🕣 NEW: Run every day at 8:30 AM to alert territory partners for 9–10 slot
+    for (const row of results) {
+      // Notify Salesperson
+      if (row.salesOneSignalId) {
+        await sendSPNotification(
+          row.salesOneSignalId,
+          "🔔 Visit Reminder",
+          `Hello Sales Partner 👋,
 
-allTimeSlots.forEach((slot) => {
-  const [startStr, endStr] = slot.split(" - "); // e.g., "11", "12PM"
-  let hour = parseInt(startStr);
+You have a scheduled visit today!  
 
-  // Only add 12 for PM if start hour < 12 AND start hour >= 1PM
-  if (hour >= 1 && hour <= 5 && endStr.includes("PM")) {
-    hour += 12;
-  }
-  // 12 PM stays 12, all AM slots keep their hour
+👤 Customer: ${row.customer} 
+📞 Contact: ${row.contact}
+📍 Location: ${row.location}, ${row.city}
 
-  const cronHour = hour - 1 >= 0 ? hour - 1 : 23; // 30 min before
-  const cronMinute = 30;
+Please make sure to follow up on time and provide the best service.
 
-  cron.schedule(`${cronMinute} ${cronHour} * * *`, () => {
-    notifySlot(slot);
+Thank you,
+Team Reparv
+
+
+
+
+`
+        );
+      }
+      // Notify Territory Partner
+      if (row.territoryOneSignalId) {
+        await sendTPNotification(
+          row.territoryOneSignalId,
+          "🔔 Visit  Reminder",
+          `Hello Territory Partner 👋,
+
+You have a scheduled visit today!  
+
+👤 Customer: ${row.customer} 
+📞 Contact: ${row.contact}
+📍 Location: ${row.location}, ${row.city}
+
+Please make sure to follow up on time and provide the best service.
+
+Thank you,
+Team Reparv   
+
+
+`
+        );
+      }
+
+      // Mark follow-up as notified
+      db.query(
+        "UPDATE propertyfollowup SET notification_sent = 1 WHERE followupid = ?",
+        [row.followupid],
+        (err) => {
+          if (err) console.error("❌ Failed to mark notification_sent:", err);
+        }
+      );
+    }
   });
+};
 
-  console.log(
-    `Scheduled notification for slot "${slot}" at ${cronHour}:${cronMinute}`
-  );
-});
-// notifySlot("12 - 1AM");
+// Cron: run every minute, but notifications will only send once per follow-up
+cron.schedule("* * * * *", sendVisitReminders);
+
+cron.schedule("* * * * *", checkNewEnquiries);

@@ -2,7 +2,6 @@ import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
 import Login from "./pages/Login.jsx";
-import Overview from "./pages/Overview.jsx";
 import Enquirers from "./pages/Enquirers.jsx";
 import Customers from "./pages/Customers.jsx";
 import CalendarScheduler from "./pages/Calender.jsx";
@@ -17,6 +16,7 @@ import DownloadApk from "./pages/DownloadApk.jsx";
 import CheckEligibility from "./pages/CheckEligibility.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 
 const App = () => {
   return (
@@ -26,7 +26,7 @@ const App = () => {
         <Route path="" element={<Login />} />
         <Route path="/kyc/:userid" element={<KYC />} />
         <Route path="/" element={<Layout />}>
-          <Route path="/dashboard" element={<Overview />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/enquirers" element={<Enquirers />} />
           <Route path="/customers" element={<Customers />} />
           <Route path="/properties" element={<Properties />} />

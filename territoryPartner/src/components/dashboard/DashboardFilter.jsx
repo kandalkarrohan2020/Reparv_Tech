@@ -6,18 +6,18 @@ const DashboardFilter = ({ counts = {} }) => {
 
   const filterOptions = [
     {
-      name: "Booked Properties",
-      label: "Booked",
+      name: "Enquiries",
+      label: "Enquiries",
       bg: "bg-[#E3FFDF]",
       text: "text-green-600",
-      count: counts?.Booked || 0,
+      count: counts?.Enquiries || 0,
     },
     {
-      name: "Enquired Properties",
-      label: "Enquired",
+      name: "Deal Done",
+      label: "Deal Done",
       bg: "bg-blue-100",
       text: "text-blue-600",
-      count: counts?.Enquired || 0,
+      count: counts?.DealDone || 0,
     },
   ];
 

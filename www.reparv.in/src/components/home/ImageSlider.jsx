@@ -26,24 +26,12 @@ export default function ImageSlider() {
   const [sliderImages, setSliderImages] = useState([]);
   const [mobileImage, setMobileImage] = useState([]);
   const [cities, setCities] = useState([]);
-  // Convert cities to options
-  const cityOptions = cities?.map((city) => ({
-    value: city,
-    label: city,
-  }));
-  const customStyles = {
-    control: (base, state) => ({
-      ...base,
-      fontSize: "0.75rem", // text-xs
-      padding: 0,
-      cursor: "pointer",
-      borderColor: state.isFocused ? "#00C42B" : base.borderColor,
-      boxShadow: state.isFocused ? "0 0 0 1px #00C42B" : "none",
-      "&:hover": {
-        borderColor: "#00C42B",
-      },
-    }),
-  };
+  const handleFocus = () => {
+      // Store a flag to tell the properties page to focus its search bar
+      sessionStorage.setItem("focusPropertySearch", "true");
+      // Redirect to /properties
+      navigate("/properties");
+    };
 
   // *Fetch Data from API*
   const fetchAllCity = async () => {
@@ -102,6 +90,7 @@ export default function ImageSlider() {
             onChange={(e) => {
               setPropertySearch(e.target.value);
             }}
+            onFocus={handleFocus}
             placeholder="Search Property"
             className="w-full pl-7 md:pl-14 pr-4 py-[10px] text-xs md:text-base rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-[#00000066]"
           />

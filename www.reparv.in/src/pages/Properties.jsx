@@ -14,6 +14,7 @@ import { usePropertyFilter } from "../store/propertyFilter";
 import SEO from "../components/SEO";
 import PropertyCategories from "../components/PropertyCategories";
 import { useParams } from "react-router-dom";
+import PropertySearch from "../components/property/PropertySearch";
 // Lazy import
 const PropertyCard = React.lazy(() =>
   import("../components/property/PropertyCard")
@@ -162,6 +163,18 @@ export default function Properties() {
     selectedBHKType,
   ]);
 
+  const searchInputRef = useRef(null);
+
+  // Focus search bar if redirected from homepage
+  useEffect(() => {
+    const shouldFocus = sessionStorage.getItem("focusPropertySearch");
+    if (shouldFocus === "true" && searchInputRef.current) {
+      searchInputRef.current.focus();
+      sessionStorage.removeItem("focusPropertySearch"); // cleanup
+    }
+  }, []);
+
+
   return (
     <>
       <SEO
@@ -207,7 +220,7 @@ export default function Properties() {
               <IoFilter />
             </div>
           </div>
-          {/* Search Bar */}
+          {/* 
           <div className="w-full sm:w-1/2 sm:min-w-[350px] flex items-center justify-center relative">
             <span className="absolute inset-y-0 left-4 md:left-4 flex items-center text-gray-400">
               <IoSearchSharp className="w-4 md:w-5 h-4 md:h-5" />
@@ -219,7 +232,14 @@ export default function Properties() {
               placeholder="Search For Your Favourite Property"
               className="w-full pl-10 md:pl-11 pr-4 py-[10px] text-sm font-medium md:text-base rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#00C42B] placeholder:text-[#00000066]"
             />
-          </div>
+          </div> Search Bar */}
+
+          <PropertySearch
+            searchInputRef={searchInputRef}
+            properties={properties}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+          />
         </div>
         <div className=" relative w-full min-h-[77vh] flex gap-5 py-4 sm:p-4">
           {/* Properties Filter */}

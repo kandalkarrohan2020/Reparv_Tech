@@ -18,6 +18,8 @@ import shopIcon from "../../assets/home/shopIcon.svg";
 import { IoSearchSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../store/auth";
+import PropertySearchBar from "./HomeSearch";
+import HomeSearch from "./HomeSearch";
 
 const PropertyNavbar = () => {
   const navigate = useNavigate();
@@ -82,7 +84,7 @@ const PropertyNavbar = () => {
         ))}
       </div>
 
-      {/* Search Input */}
+      {/* Search Input 
       <div className="w-full max-w-5xl hidden sm:block">
         <div className="relative">
           <span className="absolute inset-y-0 left-4 md:left-6 flex items-center text-gray-400">
@@ -97,6 +99,8 @@ const PropertyNavbar = () => {
           />
         </div>
       </div>
+       */}
+       <HomeSearch propertySearch={propertySearch} setPropertySearch={setPropertySearch} />
     </div>
   );
 };

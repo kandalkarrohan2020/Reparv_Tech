@@ -1,6 +1,7 @@
 import axios from "axios";
 import db from "../../config/dbconnect.js";
 import moment from "moment";
+import { sanitize } from "../../utils/sanitize.js";
 
 // Fetch All Enquiries
 export const getAll = (req, res) => {
@@ -171,7 +172,9 @@ export const getPropertyList = (req, res) => {
       (err, propertyResults) => {
         if (err) {
           console.error("Error fetching properties:", err);
-          return res.status(500).json({ message: "Database error", error: err });
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
         }
 
         res.json(propertyResults);
@@ -190,7 +193,14 @@ export const getRemarkList = (req, res) => {
       console.error("Error fetching :", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    res.json(result);
+    const formatted = result.map((row) => ({
+      ...row,
+      visitdate: row.visitdate
+          ? moment(row.visitdate).format("DD MMM YYYY")
+          : null,
+    }));
+
+    res.json(formatted);
   });
 };
 
@@ -292,28 +302,33 @@ export const assignEnquiry = async (req, res) => {
 
   const salesInfo = `${salesperson} - ${salespersoncontact}`;
 
-  db.query("SELECT * FROM enquirers WHERE enquirersid = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
+  db.query(
+    "SELECT * FROM enquirers WHERE enquirersid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
 
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Enquiry not found" });
-    }
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Enquiry not found" });
+      }
 
-    db.query(
-      "UPDATE enquirers SET salespersonid = ?, assign = ?, updated_at = ? WHERE enquirersid = ?",
-      [salespersonid, salesInfo, currentDate, Id],
-      async (err, result) => {
-        if (err) {
-          console.error("Error assigning salesperson:", err);
-          return res.status(500).json({ message: "Database error", error: err });
-        }
+      db.query(
+        "UPDATE enquirers SET salespersonid = ?, assign = ?, updated_at = ? WHERE enquirersid = ?",
+        [salespersonid, salesInfo, currentDate, Id],
+        async (err, result) => {
+          if (err) {
+            console.error("Error assigning salesperson:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
 
-        // WhatsApp message logic
-        const apikey = "1c26ea744ef248f080ee1c5270081c0b";
-        const msg = `🌟 *REPARV* - New Enquiry Alert 🌟
+          // WhatsApp message logic
+          const apikey = "1c26ea744ef248f080ee1c5270081c0b";
+          const msg = `🌟 *REPARV* - New Enquiry Alert 🌟
 
         Hello ${salesperson},
 
@@ -327,31 +342,30 @@ export const assignEnquiry = async (req, res) => {
         Thank you,  
         Team REPARV`;
 
-        const encodedMsg = encodeURIComponent(msg);
-        const apiUrl = `http://wapi.kinextechnologies.in/wapp/api/send?apikey=${apikey}&mobile=${salespersoncontact}&msg=${encodedMsg}`;
+          const encodedMsg = encodeURIComponent(msg);
+          const apiUrl = `http://wapi.kinextechnologies.in/wapp/api/send?apikey=${apikey}&mobile=${salespersoncontact}&msg=${encodedMsg}`;
 
-        try {
-          const response = await axios.get(apiUrl);
-          console.log("WhatsApp API response:", response.data);
-        } catch (error) {
-          console.error("WhatsApp send error:", error.message);
-          // optional: log but do not block assignment
+          try {
+            const response = await axios.get(apiUrl);
+            console.log("WhatsApp API response:", response.data);
+          } catch (error) {
+            console.error("WhatsApp send error:", error.message);
+            // optional: log but do not block assignment
+          }
+
+          return res.status(200).json({
+            message: `Enquiry assigned successfully to ${salesperson}`,
+            assigned_to: {
+              id: salespersonid,
+              name: salesperson,
+              contact: salespersoncontact,
+            },
+          });
         }
-
-        return res.status(200).json({
-          message: `Enquiry assigned successfully to ${salesperson}`,
-          assigned_to: {
-            id: salespersonid,
-            name: salesperson,
-            contact: salespersoncontact,
-          },
-        });
-      }
-    );
-  });
+      );
+    }
+  );
 };
-
-
 
 export const updateEnquirerProperty = async (req, res) => {
   const enquiryId = parseInt(req.params.id);
@@ -545,14 +559,18 @@ export const token = (req, res) => {
 
           // Split commission
           const reparvCommission = (finalCommissionAmount * 40) / 100;
-          
+
           const grossSalesCommission = (finalCommissionAmount * 40) / 100;
-          const salesCommission = grossSalesCommission - (grossSalesCommission * 2) / 100;
+          const salesCommission =
+            grossSalesCommission - (grossSalesCommission * 2) / 100;
 
           const grossTerritoryCommission = (finalCommissionAmount * 20) / 100;
-          const territoryCommission = grossTerritoryCommission - (grossTerritoryCommission * 2) / 100;
+          const territoryCommission =
+            grossTerritoryCommission - (grossTerritoryCommission * 2) / 100;
 
-          const TDS = (grossSalesCommission * 2) / 100 + (grossTerritoryCommission * 2) / 100;
+          const TDS =
+            (grossSalesCommission * 2) / 100 +
+            (grossTerritoryCommission * 2) / 100;
 
           // Step 3: Insert into propertyfollowup
           const insertSQL = `
@@ -594,7 +612,7 @@ export const token = (req, res) => {
                   totalCommission: finalCommissionAmount,
                   salesCommission,
                   reparvCommission,
-                  territoryCommission
+                  territoryCommission,
                 },
               });
             }
@@ -605,10 +623,9 @@ export const token = (req, res) => {
   );
 };
 
-
 export const followUp = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { followUpRemark, enquiryStatus } = req.body;
+  const { followUpRemark, visitDate, enquiryStatus } = req.body;
 
   if (!followUpRemark || !enquiryStatus) {
     return res.status(400).json({ message: "Please add remark!" });
@@ -617,6 +634,18 @@ export const followUp = (req, res) => {
   const Id = parseInt(req.params.id);
   if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Enquiry ID" });
+  }
+
+  // Format dates to remove time portion
+  let formattedVisitDate = null;
+
+  if (visitDate && visitDate.trim() !== "") {
+    // Check if it's a valid date
+    if (moment(visitDate, ["YYYY-MM-DD", moment.ISO_8601], true).isValid()) {
+      formattedVisitDate = moment(visitDate).format("YYYY-MM-DD");
+    } else {
+      formattedVisitDate = null; // fallback instead of "Invalid date"
+    }
   }
 
   db.query(
@@ -633,12 +662,19 @@ export const followUp = (req, res) => {
       }
 
       const insertSQL = `
-      INSERT INTO propertyfollowup (enquirerid, remark, status, updated_at, created_at)
-      VALUES (?, ?, ?, ?, ?)`;
+      INSERT INTO propertyfollowup (enquirerid, remark, visitdate, status, updated_at, created_at)
+      VALUES (?, ?, ?, ?, ?, ?)`;
 
       db.query(
         insertSQL,
-        [Id, followUpRemark, enquiryStatus, currentdate, currentdate],
+        [
+          Id,
+          followUpRemark,
+          sanitize(formattedVisitDate),
+          enquiryStatus,
+          currentdate,
+          currentdate,
+        ],
         (err, insertResult) => {
           if (err) {
             console.error("Error inserting visit:", err);

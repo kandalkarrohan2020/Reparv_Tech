@@ -5,6 +5,7 @@ import {
   getProfile,
   editProfile,
   changePassword,
+  updateOneSignalId,
 } from "../../controllers/sales/profileController.js";
 
 const router = express.Router();
@@ -30,8 +31,8 @@ const upload = multer({
   },
 });
 
-
 router.get("/", getProfile);
-router.put("/edit",upload.single("image"), editProfile);
+router.put("/edit", upload.single("image"), editProfile);
 router.put("/changepassword", changePassword);
+router.put("/update-onesignal", updateOneSignalId);
 export default router;

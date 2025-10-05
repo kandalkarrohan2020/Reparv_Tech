@@ -183,7 +183,7 @@ const Enquirers = () => {
     try {
       const response = await fetch(URI + `/territory-partner/enquirers/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -424,7 +424,7 @@ const Enquirers = () => {
     }
 
     if (enquiryStatus === "Follow Up") {
-      if (!followUpRemark) {
+      if (!followUpRemark || !visitDate) {
         return alert("All Fields Are Required!");
       }
       try {
@@ -436,13 +436,14 @@ const Enquirers = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ followUpRemark, enquiryStatus }),
+            body: JSON.stringify({ followUpRemark, visitDate, enquiryStatus }),
           }
         );
         const data = await response.json();
         if (response.ok) {
           alert(`Success: ${data.message}`);
           setFollowUpRemark("");
+          setVisitDate("");
         } else {
           alert(`Error: ${data.message}`);
         }
@@ -1305,15 +1306,29 @@ const Enquirers = () => {
 
               <div
                 className={`${
-                  enquiryStatus === "Follow Up" || enquiryStatus === "Cancelled"
-                    ? "block"
-                    : "hidden"
+                  enquiryStatus === "Follow Up" ? "block" : "hidden"
                 } w-full `}
-              ></div>
+              >
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Visit Date
+                </label>
+                <input
+                  type="date"
+                  placeholder="Enter Visit Date"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={visitDate}
+                  onChange={(e) => {
+                    const selectedDate = e.target.value; // Get full date
+                    const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
+                    setVisitDate(selectedDate === "" ? null : formattedDate);
+                  }}
+                />
+              </div>
+
               <div
                 className={`${
                   enquiryStatus === "Follow Up" ? "block" : "hidden"
-                } w-full `}
+                } w-full col-span-2`}
               >
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
                   Enquiry Remark
@@ -1333,7 +1348,7 @@ const Enquirers = () => {
               <div
                 className={`${
                   enquiryStatus === "Cancelled" ? "block" : "hidden"
-                } w-full `}
+                } w-full col-span-2`}
               >
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
                   Enquiry Remark
@@ -1661,13 +1676,26 @@ const Enquirers = () => {
                           {" - "} {remark?.status}
                         </span>
                       </label>
-                      <input
-                        type="text"
-                        disabled
-                        className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        value={remark.remark}
-                        readOnly
-                      />
+                      <div className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px]">
+                        <span
+                          className={`${
+                            remark?.status === "New"
+                              ? " text-[#0BB501]"
+                              : remark?.status === "Visit Scheduled"
+                              ? " text-[#0068FF]"
+                              : remark?.status === "Token"
+                              ? " text-[#FFCA00]"
+                              : remark?.status === "Cancelled"
+                              ? " text-[#ff2323]"
+                              : remark?.status === "Follow Up"
+                              ? " text-[#5D00FF]"
+                              : "text-[#000000]"
+                          }`}
+                        >
+                          {remark?.visitdate}
+                        </span>{" "}
+                        {remark.remark}
+                      </div>
                     </div>
                   ))
                 ) : (

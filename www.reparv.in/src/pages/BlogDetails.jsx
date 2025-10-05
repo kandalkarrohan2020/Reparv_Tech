@@ -53,7 +53,7 @@ function BlogDetails() {
               URI + blog?.image ||
               "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
             }
-            alt=""
+            alt={blog?.tittle}
             className="w-full max-w-[1200px] mx-auto object-cover"
           />
         </div>

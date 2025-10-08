@@ -24,7 +24,7 @@ export const getAll = (req, res) => {
                INNER JOIN builders ON properties.builderid = builders.builderid 
                WHERE properties.guestUserId = ? 
                ORDER BY properties.propertyid DESC`;
-  db.query(sql, [req.user.id], (err, result) => {
+  db.query(sql, [req.guestUser?.id], (err, result) => {
     if (err) {
       console.error("Error fetching properties:", err);
       return res.status(500).json({ message: "Database error", error: err });
@@ -99,7 +99,7 @@ export const getImages = (req, res) => {
 export const addProperty = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const files = await convertImagesToWebp(req.files);
-  const partnerId = req.user.id;
+  const partnerId = req.guestUser?.id;
   if (!partnerId) {
     return res.status(401).json({ message: "Unauthorized Access" });
   }
@@ -383,7 +383,7 @@ export const addProperty = async (req, res) => {
 export const update = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const files = await convertImagesToWebp(req.files);
-  const partnerId = req.user.id;
+  const partnerId = req.guestUser?.id;
   if (!partnerId) {
     return res.status(400).json({ message: "Unauthorized Access" });
   }

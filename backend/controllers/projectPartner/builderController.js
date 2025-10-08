@@ -9,7 +9,7 @@ const saltRounds = 10;
 export const getAll = (req, res) => {
   const sql =
     "SELECT * FROM builders WHERE builders.builderadder = ? ORDER BY builderid DESC";
-  db.query(sql, [req.user.adharId], (err, result) => {
+  db.query(sql, [req.projectPartnerUser?.adharId], (err, result) => {
     if (err) {
       console.error("Error fetching:", err);
       return res.status(500).json({ message: "Database error", error: err });
@@ -28,7 +28,7 @@ export const getAll = (req, res) => {
 export const getAllActive = (req, res) => {
   const sql =
     "SELECT * FROM builders WHERE status = 'Active' AND builders.builderadder = ? ORDER BY company_name";
-  db.query(sql, [req.user.adharId], (err, result) => {
+  db.query(sql, [req.projectPartnerUser?.adharId], (err, result) => {
     if (err) {
       console.error("Error fetching:", err);
       return res.status(500).json({ message: "Database error", error: err });
@@ -56,7 +56,7 @@ export const getById = (req, res) => {
 
 // **Add New Builder**
 export const add = (req, res) => {
-  const adharId = req.user.adharId;
+  const adharId = req.projectPartnerUser?.adharId;
   if (!adharId) {
     return res
       .status(401)

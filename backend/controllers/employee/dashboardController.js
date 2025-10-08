@@ -6,7 +6,7 @@ export const getCount = (req, res) => {
    (SELECT COUNT(propertyid) FROM properties WHERE employeeid = ?) AS totalProperty,
    (SELECT COUNT(ticketid) FROM tickets WHERE tickets.employeeid = ?) AS totalTicket`;
 
-  db.query(query,[req.user.adharId, req.user.id, req.user.id,], (err, results) => {
+  db.query(query,[req.employeeUser?.adharId, req.employeeUser?.id, req.employeeUser?.id,], (err, results) => {
     if (err) {
       console.error("Error fetching dashboard stats:", err);
       return res.status(500).json({ error: "Database error" });

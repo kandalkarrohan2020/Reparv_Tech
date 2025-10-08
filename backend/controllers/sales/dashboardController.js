@@ -49,12 +49,12 @@ export const getCount = (req, res) => {
   `;
 
   const values = [
-    req.user.id, // totalDealAmount
-    req.user.id, // totalCustomer
-    req.user.id, // totalDealInSquareFeet
-    req.user.id, // selfEarning
-    req.user.id, // totalEnquiry
-    req.user.adharId, // totalTicket
+    req.salesUser?.id, // totalDealAmount
+    req.salesUser?.id, // totalCustomer
+    req.salesUser?.id, // totalDealInSquareFeet
+    req.salesUser?.id, // selfEarning
+    req.salesUser?.id, // totalEnquiry
+    req.salesUser?.adharId, // totalTicket
   ];
 
   db.query(query, values, (err, results) => {

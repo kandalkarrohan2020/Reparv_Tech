@@ -6,7 +6,7 @@ import { verifyRazorpayPayment } from "../paymentController.js";
 
 const saltRounds = 10;
 export const getAll = (req, res) => {
-  const partnerAdderId = req.user?.id;
+  const partnerAdderId = req.promoterUser?.id;
   if (!partnerAdderId) {
     return res.status(400).json({ message: "Invalid Id!" });
   }
@@ -134,7 +134,7 @@ export const getAll = (req, res) => {
 // **Add New Territory Partner **
 export const add = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const partnerAdderId = req.user?.id;
+  const partnerAdderId = req.promoterUser?.id;
   if (!partnerAdderId) {
     return res.status(400).json({ message: "Invalid Partner Adder ID" });
   }

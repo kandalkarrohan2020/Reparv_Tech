@@ -27,11 +27,12 @@ export const getCount = (req, res) => {
        WHERE tickets.ticketadder = ?) AS totalTicket
   `;
 
-  db.query(query, [req.user.id, req.user.id, req.user.id, req.user.adharId], (err, results) => {
+  db.query(query, [req.onboardingUser?.id, req.onboardingUser?.id, req.onboardingUser?.id, req.onboardingUser?.adharId], (err, results) => {
     if (err) {
       console.error("Error fetching dashboard stats:", err);
       return res.status(500).json({ error: "Database error" });
     }
+    //console.log(req.user);
 
     return res.json(results[0]);
   });
@@ -39,7 +40,7 @@ export const getCount = (req, res) => {
 
 // **Get Partner Properties with Enquiry/Booking Status**
 export const getProperties = (req, res) => {
-  const partnerId = req.user?.id;
+  const partnerId = req.onboardingUser?.id;
 
   if (!partnerId) {
     return res

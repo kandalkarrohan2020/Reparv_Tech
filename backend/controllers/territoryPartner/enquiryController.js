@@ -3,7 +3,7 @@ import moment from "moment";
 
 export const add = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const territoryId = req.user.id;
+  const territoryId = req.territoryUser?.id;
 
   if (!territoryId) {
     return res.status(400).json({ message: "Invalid Sales Id" });
@@ -99,7 +99,7 @@ export const add = async (req, res) => {
 // Add Normal Enquiry Without Property ID
 export const addEnquiry = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const territoryId = req.user.id;
+  const territoryId = req.territoryUser?.id;
   if (!territoryId) {
     return res.status(400).json({ message: "Invalid Sales Id" });
   }
@@ -169,7 +169,6 @@ export const addEnquiry = async (req, res) => {
       message,
       territoryInfo,
       "Direct",
-
       "Accepted",
       currentdate,
       currentdate,

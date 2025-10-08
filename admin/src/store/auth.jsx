@@ -15,11 +15,14 @@ export const AuthProvider = ({ children }) => {
   const delTokenInCookie = () => {
     setAccessToken();
     Cookies.remove("accessToken");
+    setAccessToken(null);
+    setUser(null);
+    localStorage.removeItem("adminUser");
   };
   //const URI = "http://localhost:3000";
   const URI = "https://api.reparv.in";
 
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("adminUser")));
   const [loading, setLoading] = useState(false);
   const [showEmployee, setShowEmployee] = useState(false);
   const [showEplDetailsForm, setShowEplDetailsForm] = useState(false);

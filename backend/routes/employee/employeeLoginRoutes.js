@@ -65,7 +65,7 @@ router.post("/login", async (req, res) => {
     };
 
     //  Set secure cookie
-    res.cookie("token", token, {
+    res.cookie("employeeToken", token, {
       httpOnly: true,
       secure: true,
       sameSite: "none",
@@ -96,7 +96,7 @@ router.get("/session-data", (req, res) => {
 
 //  Logout Route
 router.post("/logout", (req, res) => {
-  res.clearCookie("token", {
+  res.clearCookie("employeeToken", {
     httpOnly: true,
     secure: true,
     sameSite: "none",

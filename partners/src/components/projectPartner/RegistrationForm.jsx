@@ -5,7 +5,7 @@ import { handlePayment } from "../../utils/payment.js";
 
 const RegistrationForm = () => {
   const { URI, setSuccessScreen } = useAuth();
-  const registrationPrice = 14999;
+  const registrationPrice = 599;
   const [newPartner, setNewPartner] = useState({
     fullname: "",
     contact: "",

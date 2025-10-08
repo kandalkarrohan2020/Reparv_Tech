@@ -57,13 +57,13 @@ export const getCount = (req, res) => {
   db.query(
     query,
     [
-      req.user.id, // for projectpartnerid in totalDealAmount
-      req.user.id, // projectpartnerid for selfEarning
-      req.user.id, // for totalCustomer
-      req.user.id, // for totalDealInSquareFeet
-      req.user.adharId, // for totalBuilder
-      req.user.id, // for totalProperty
-      req.user.adharId, // for totalTicket
+      req.projectPartnerUser?.id, // for projectpartnerid in totalDealAmount
+      req.projectPartnerUser?.id, // projectpartnerid for selfEarning
+      req.projectPartnerUser?.id, // for totalCustomer
+      req.projectPartnerUser?.id, // for totalDealInSquareFeet
+      req.projectPartnerUser?.adharId, // for totalBuilder
+      req.projectPartnerUser?.id, // for totalProperty
+      req.projectPartnerUser?.adharId, // for totalTicket
     ],
     (err, results) => {
       if (err) {
@@ -78,7 +78,7 @@ export const getCount = (req, res) => {
 
 // **Get Partner Properties with Enquiry/Booking Status**
 export const getProperties = (req, res) => {
-  const partnerId = req.user?.id;
+  const partnerId = req.projectPartnerUser?.id;
 
   if (!partnerId) {
     return res

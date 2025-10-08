@@ -3,7 +3,7 @@ import moment from "moment";
 
 // **Fetch All **
 export const getAll = (req, res) => {
-  const userId = req.user.id;
+  const userId = req.builderUser?.id;
   if (!userId) {
     console.log("Invalid User Id: " + userId);
     return res.status(400).json({ message: "Invalid User Id" });

@@ -12,7 +12,7 @@ export const getAll = (req, res) => {
     WHERE enquirers.status != 'Token' AND enquirers.territorypartnerid = ? 
     ORDER BY enquirersid DESC
     `;
-  db.query(sql, [req.user.id], (err, results) => {
+  db.query(sql, [req.territoryUser?.id], (err, results) => {
     if (err) {
       console.error("Database Query Error:", err);
       return res
@@ -51,7 +51,7 @@ export const getById = (req, res) => {
 };
 
 export const acceptEnquiry = (req, res) => {
-  const partnerId = req.user?.id;
+  const partnerId = req.territoryUser?.id;
 
   if (!partnerId) {
     return res

@@ -5,7 +5,7 @@ import db from "../../config/dbconnect.js";
 
 const router = express.Router();
 
-// ✅ User Login Route (Supports Email or Username)
+// User Login Route (Supports Email or Username)
 router.post("/login", async (req, res) => {
   try {
     const { emailOrUsername, password } = req.body;
@@ -18,7 +18,7 @@ router.post("/login", async (req, res) => {
       return res.status(500).json({ message: "Server misconfiguration: JWT secret is missing." });
     }
 
-    // ✅ Query for both email and username
+    // Query for both email and username
     const user = await new Promise((resolve, reject) => {
       db.query(
         `SELECT * FROM projectpartner 
@@ -38,18 +38,18 @@ router.post("/login", async (req, res) => {
       );
     });
 
-    // ✅ Verify Password
+    // Verify Password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Wrong Password try again" });
     }
 
-    // ✅ Generate JWT Token
+    // Generate JWT Token
     const token = jwt.sign({ id: user.id, username: user.username, email: user.email, adharId: user.adharno }, process.env.JWT_SECRET, {
       expiresIn: "10d",
     });
 
-    // ✅ Ensure session middleware is active
+    // Ensure session middleware is active
     if (!req.session) {
       return res.status(500).json({ message: "Session middleware is not configured properly." });
     }
@@ -64,7 +64,7 @@ router.post("/login", async (req, res) => {
       role: "Project Partner",
     };
 
-    // ✅ Set Secure Cookie in Production
+    // Set Secure Cookie in Production
     const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -72,7 +72,7 @@ router.post("/login", async (req, res) => {
       maxAge: 10 * 24 * 60 * 60 * 1000,
     };
 
-    res.cookie("token", token, cookieOptions);
+    res.cookie("projectPartnerToken", token, cookieOptions);
 
     return res.json({
       message: "Login successful",
@@ -86,7 +86,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// ✅ Get Current User's Session Data
+// Get Current User's Session Data
 router.get("/session-data", (req, res) => {
   if (req.session && req.session.user) {
     res.json({ message: "Session Active", user: req.session.user });
@@ -95,9 +95,9 @@ router.get("/session-data", (req, res) => {
   }
 });
 
-// ✅ Logout Route
+// Logout Route
 router.post("/logout", (req, res) => {
-  res.clearCookie("token", { 
+  res.clearCookie("projectPartnerToken", { 
     httpOnly: true, 
     secure: process.env.NODE_ENV === "production", 
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",

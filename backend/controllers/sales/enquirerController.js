@@ -4,8 +4,8 @@ import { sanitize } from "../../utils/sanitize.js";
 
 // **Fetch All **
 export const getAll = (req, res) => {
-  console.log("userId: " + req.user.id);
-  const Id = req.user.id;
+  console.log("userId: " + req.salesUser?.id);
+  const Id = req.salesUser?.id;
   if (!Id) {
     console.log("Invalid User Id: " + Id);
     return res.status(400).json({ message: "Invalid User Id" });

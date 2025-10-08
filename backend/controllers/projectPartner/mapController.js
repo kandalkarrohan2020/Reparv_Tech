@@ -3,7 +3,7 @@ import moment from "moment";
 
 // ** Fetch All Unique City In The Listed Property **
 export const getAllCity = (req, res) => {
-  const ID = req.user.id;
+  const ID = req.projectPartnerUser?.id;
   if (!ID) {
     return res
       .status(400)
@@ -27,7 +27,7 @@ export const getAllCity = (req, res) => {
 
 // **Fetch All Properties City Wise **
 export const getCityWiseProperties = (req, res) => {
-  const ID = req.user.id;
+  const ID = req.projectPartnerUser?.id;
   if (!ID) {
     return res
       .status(400)

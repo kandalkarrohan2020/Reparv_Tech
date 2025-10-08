@@ -56,6 +56,7 @@ const Profile = () => {
       const data = await response.json(); // Ensure it's JSON
       setNewUser(data);
       setUser(data);
+      console.log(data);
     } catch (err) {
       console.error("Error fetching profile:", err);
     }

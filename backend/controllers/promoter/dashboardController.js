@@ -29,14 +29,14 @@ export const getCount = (req, res) => {
   db.query(
     query,
     [
-      req.user.city, // for totalCustomer
-      req.user.city, // for totalEnquiry
-      req.user.id, // for totalSalesPartner
-      req.user.id, // for totalTerritoryPartner
-      req.user.id, // for totalOnboardingPartner
-      req.user.id, // for totalProjectPartner
-      req.user.id, // for totalGuestUser
-      req.user.adharId, // for totalTicket
+      req.promoterUser?.city, // for totalCustomer
+      req.promoterUser?.city, // for totalEnquiry
+      req.promoterUser?.id, // for totalSalesPartner
+      req.promoterUser?.id, // for totalTerritoryPartner
+      req.promoterUser?.id, // for totalOnboardingPartner
+      req.promoterUser?.id, // for totalProjectPartner
+      req.promoterUser?.id, // for totalGuestUser
+      req.promoterUser?.adharId, // for totalTicket
     ],
     (err, results) => {
       if (err) {

@@ -212,7 +212,7 @@ export const status = (req, res) => {
   }
 
   const Id = parseInt(req.params.id);
-  console.log(Id);
+  //console.log(Id);
   if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Enquiry ID" });
   }

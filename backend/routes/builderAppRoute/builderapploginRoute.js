@@ -2,12 +2,17 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import db from "../../config/dbconnect.js";
+import {
+  sendOtp,
+  verifyOtp,
+  resetPassword,
+} from "../../controllers/builderApp/profileController.js";
 
 const router = express.Router();
 
 router.post("/login", async (req, res) => {
-  console.log('build');
-  
+  console.log("build");
+
   try {
     const { emailOrUsername, password } = req.body;
 
@@ -16,7 +21,9 @@ router.post("/login", async (req, res) => {
     }
 
     if (!process.env.JWT_SECRET) {
-      return res.status(500).json({ message: "Server misconfiguration: JWT secret is missing." });
+      return res
+        .status(500)
+        .json({ message: "Server misconfiguration: JWT secret is missing." });
     }
 
     const user = await new Promise((resolve, reject) => {
@@ -24,7 +31,7 @@ router.post("/login", async (req, res) => {
         `SELECT * FROM builders 
          WHERE (username = ? OR email = ?) 
          AND loginstatus = 'Active'`,
-        [emailOrUsername, emailOrUsername], 
+        [emailOrUsername, emailOrUsername],
         (err, results) => {
           if (err) {
             console.error("Database Error:", err);
@@ -45,13 +52,24 @@ router.post("/login", async (req, res) => {
     }
 
     //  Generate JWT Token
-    const token = jwt.sign({ id: user.builderid, username: user.username, email: user.email, adharId: user.uid }, process.env.JWT_SECRET, {
-      expiresIn: "10d",
-    });
+    const token = jwt.sign(
+      {
+        id: user.builderid,
+        username: user.username,
+        email: user.email,
+        adharId: user.uid,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "10d",
+      }
+    );
 
     // Ensure session middleware is active
     if (!req.session) {
-      return res.status(500).json({ message: "Session middleware is not configured properly." });
+      return res
+        .status(500)
+        .json({ message: "Session middleware is not configured properly." });
     }
 
     req.session.user = {
@@ -78,10 +96,11 @@ router.post("/login", async (req, res) => {
       token,
       user: req.session.user,
     });
-
   } catch (error) {
     console.error("Login Error:", error);
-    return res.status(500).json({ message: error.message || "Internal server error" });
+    return res
+      .status(500)
+      .json({ message: error.message || "Internal server error" });
   }
 });
 
@@ -96,9 +115,9 @@ router.get("/session-data", (req, res) => {
 
 //  Logout Route
 router.post("/logout", (req, res) => {
-  res.clearCookie("token", { 
-    httpOnly: true, 
-    secure: process.env.NODE_ENV === "production", 
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   });
 
@@ -115,4 +134,7 @@ router.post("/logout", (req, res) => {
   }
 });
 
+router.get("/send-otp/:id", sendOtp);
+router.post("/verify-otp", verifyOtp);
+router.post("/reset-password", resetPassword);
 export default router;

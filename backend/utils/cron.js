@@ -41,7 +41,7 @@ const tpApp = admin.initializeApp(
   "territoryPartnerApp"
 ); // give a name for clarity
 
-// 🔔 Salesperson Firebase app
+//  Salesperson Firebase app
 
 const spApp = admin.initializeApp(
   {
@@ -279,7 +279,7 @@ cron.schedule("* * * * *", () => {
       .hour(hour)
       .minute(0)
       .second(0)
-      .subtract(40, "minute");
+      .subtract(30, "minute");
     const notifyHour = notifyTime.hour();
     const notifyMinute = notifyTime.minute();
 
@@ -302,17 +302,19 @@ cron.schedule("* * * * *", () => {
 
 export const checkNewEnquiries = async () => {
   const query = `
-    SELECT e.*, t.onesignalId
+    SELECT e.*, t.onesignalid
     FROM enquirers e
     INNER JOIN territorypartner t
       ON e.territorypartnerid = t.id
     WHERE e.territorypartnerid IS NOT NULL
-      AND e.status = 'New'
+      AND e.salespersonid IS NOT NULL
+      AND e.territorystatus = 'New'
+      AND (e.tp_notified IS NULL OR e.tp_notified = 0)
   `;
 
   db.query(query, async (err, results) => {
     if (err) {
-      console.error("❌ Database query error:", err);
+      console.error(" Database query error:", err);
       return;
     }
 
@@ -321,10 +323,9 @@ export const checkNewEnquiries = async () => {
       return;
     }
 
-    // Use for...of to allow await
     for (const enquiry of results) {
       console.log(
-        `Sending notification to OneSignal ID: ${enquiry.onesignalid} for enquiry ID: ${enquiry.id}`
+        `Sending notification to OneSignal ID: ${enquiry.onesignalid} for enquiry ID: ${enquiry.enquirersid}`
       );
 
       await sendTPNotification(
@@ -345,6 +346,19 @@ Ensure timely follow-up and provide the best service.
 Thank you,
 Team Reparv`
       );
+
+      //  Mark as notified
+      const updateQuery = `UPDATE enquirers SET tp_notified = 1 WHERE enquirersid = ?`;
+      db.query(updateQuery, [enquiry.enquirersid], (err) => {
+        if (err) {
+          console.error(
+            ` Failed to update enquiry ${enquiry.enquirersid}:`,
+            err
+          );
+        } else {
+          console.log(` Enquiry ${enquiry.enquirersid} marked as notified.`);
+        }
+      });
     }
   });
 };

@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   const [isActive, setIsActive] = useState(false);
   const [action, setAction] = useState("Save Details");
   const [showUpdateImagesForm, setShowUpdateImagesForm] = useState(false);
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("onboardingUser")));
   const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
   const [showTicket, setShowTicket] = useState(false);
   const [showPropertyInfo, setShowPropertyInfo] = useState(false);

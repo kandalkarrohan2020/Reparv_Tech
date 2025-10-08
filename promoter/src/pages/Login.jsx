@@ -46,7 +46,7 @@ function Login() {
 
       if (response.data.token) {
         console.log("Login Successful", response.data);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("promoterUser", JSON.stringify(response.data.user));
         storeTokenInCookie(response.data.token);
         if (response.data.user.adharId != null) {
           navigate("/dashboard", { replace: true });

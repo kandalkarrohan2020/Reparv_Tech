@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login.jsx";
 import KYC from "./pages/KYC.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
@@ -16,15 +16,24 @@ import BrandAccessories from "./pages/BrandAccessories.jsx";
 import OnBoardingPartner from "./pages/OnBoardingPartner.jsx";
 import ProjectPartner from "./pages/ProjectPartner.jsx";
 import TerritoryPartner from "./pages/TerritoryPartner.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <>
       <ScrollToTop />
       <Routes>
         <Route path="" element={<Login />} />
         <Route path="/kyc/:userid" element={<KYC />} />
-        <Route path="/" element={<Layout />}>
+        {/* Protected Routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/dashboard" element={<Overview />} />
           <Route path="/enquirers" element={<Enquirers />} />
           <Route path="/customers" element={<Customers />} />
@@ -42,7 +51,7 @@ const App = () => {
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>
       </Routes>
-    </BrowserRouter>
+    </>
   );
 };
 

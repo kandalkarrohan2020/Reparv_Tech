@@ -2,7 +2,7 @@ import db from "../../config/dbconnect.js";
 import moment from "moment";
 
 export const getAll = (req, res) => {
-  const adharId = req.user.id;
+  const adharId = req.employeeUser?.id;
   if (!adharId) {
     return res
       .status(401)
@@ -180,7 +180,7 @@ export const getEmployees = (req, res) => {
 export const add = (req, res) => {
   const currentDate = moment().format("YYYY-MM-DD HH:mm:ss");
 
-  const adharId = req.user.adharId;
+  const adharId = req.employeeUser?.adharId;
   if (!adharId) {
     return res
       .status(401)

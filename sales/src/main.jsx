@@ -4,13 +4,16 @@ import "./index.css";
 import App from "./App.jsx";
 import { AuthProvider } from "./store/auth.jsx";
 import { PropertyFilterProvider } from "./store/propertyFilter.jsx";
+import { BrowserRouter } from "react-router-dom";
 
 createRoot(document.getElementById("root")).render(
-  <AuthProvider>
-    <PropertyFilterProvider>
-      <StrictMode>
-        <App />
-      </StrictMode>
-    </PropertyFilterProvider>
-  </AuthProvider>
+  <StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <PropertyFilterProvider>
+          <App />
+        </PropertyFilterProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  </StrictMode>
 );

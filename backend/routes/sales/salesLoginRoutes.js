@@ -70,7 +70,7 @@ router.post("/login", async (req, res) => {
       maxAge: 10 * 24 * 60 * 60 * 1000,
     };
 
-    res.cookie("token", token, cookieOptions);
+    res.cookie("salesToken", token, cookieOptions);
 
     return res.json({
       message: "Login successful",
@@ -95,7 +95,7 @@ router.get("/session-data", (req, res) => {
 
 //  Logout Route
 router.post("/logout", (req, res) => {
-  res.clearCookie("token", { 
+  res.clearCookie("salesToken", { 
     httpOnly: true, 
     secure: process.env.NODE_ENV === "production", 
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",

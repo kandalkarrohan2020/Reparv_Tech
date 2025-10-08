@@ -18,3 +18,5 @@ export const getAll = async (req, res) => {
     });
   }
 };
+
+//asign login to sales partner

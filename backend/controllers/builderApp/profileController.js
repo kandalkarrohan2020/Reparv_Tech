@@ -1,9 +1,21 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
-import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
+import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 import crypto from "crypto";
+
+dotenv.config();
+
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 const saltRounds = 10;
 
@@ -114,6 +126,7 @@ export const changePassword = async (req, res) => {
 //Reset Password
 export const sendOtp = async (req, res) => {
   const email = req.params.id;
+  console.log("ee", email);
 
   // Check if email exists in salespersons
   const query = "SELECT * FROM builders WHERE email = ?";
@@ -172,7 +185,7 @@ export const sendOtp = async (req, res) => {
       };
 
       await transporter.sendMail(mailOptions);
-      console.log(`Email sent successfully to ${email}`);
+      console.log(`builder Email sent successfully to ${email}`);
 
       // ✅ Respond with hash
       res.json({ hash: fullHash });

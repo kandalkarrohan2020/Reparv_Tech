@@ -1,12 +1,12 @@
 import db from "../../config/dbconnect.js";
 
 export const getCount = (req, res) => {
-  const userId = parseInt(req.user.id);
+  const userId = parseInt(req.builderUser?.id);
   if (!userId) {
     console.log("Invalid User Id: " + userId);
     return res.status(400).json({ message: "Invalid User Id" });
   }
-  const adharId = parseInt(req.user.adharId);
+  const adharId = parseInt(req.builderUser?.adharId);
   if (!adharId) {
     console.log("Invalid Aadhaar Id: " + adharId);
     return res.status(400).json({ message: "Invalid Aadhaar Id" });
@@ -32,7 +32,7 @@ export const getCount = (req, res) => {
 
 // **Get Partner Properties with Enquiry/Booking Status**
 export const getProperties = (req, res) => {
-  const partnerId = req.user?.id;
+  const partnerId = req.builderUser?.id;
 
   if (!partnerId) {
     return res

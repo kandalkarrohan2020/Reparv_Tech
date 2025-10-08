@@ -4,7 +4,7 @@ export const getCount = (req, res) => {
   const query =`SELECT
   (SELECT COUNT(propertyid) FROM properties WHERE guestUserId = ?) AS totalProperty`;
 
-  db.query(query,[req.user.id], (err, results) => {
+  db.query(query,[req.guestUser?.id], (err, results) => {
     if (err) {
       console.error("Error fetching dashboard stats:", err);
       return res.status(500).json({ error: "Database error" });
@@ -16,7 +16,7 @@ export const getCount = (req, res) => {
 
 // **Get Partner Properties with Enquiry/Booking Status**
 export const getProperties = (req, res) => {
-  const partnerId = req.user?.id;
+  const partnerId = req.guestUser?.id;
 
   if (!partnerId) {
     return res

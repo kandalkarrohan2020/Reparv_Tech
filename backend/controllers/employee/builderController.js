@@ -54,7 +54,7 @@ export const getById = (req, res) => {
 
 // **Add New Builder**
 export const add = (req, res) => {
-  const adharId = req.user.adharId;
+  const adharId = req.employeeUser?.adharId;
   if(!adharId){
     return res.status(401).json({ message: "Unauthorized! Please Login Again." });
   }

@@ -6,7 +6,7 @@ import sendEmail from "../../utils/nodeMailer.js";
 const saltRounds = 10;
 
 export const getProfile = (req, res) => {
-  const Id = req.user?.id;
+  const Id = req.territoryUser?.id;
   if (!Id) {
     return res.status(400).json({ message: "Unauthorized User" });
   }
@@ -26,7 +26,7 @@ export const getProfile = (req, res) => {
 };
 
 export const editProfile = (req, res) => {
-  const userId = req.user?.id;
+  const userId = req.territoryUser?.id;
   if (!userId) {
     return res.status(400).json({ message: "Invalid User ID" });
   }
@@ -84,7 +84,7 @@ export const editProfile = (req, res) => {
 };
 
 export const changePassword = async (req, res) => {
-  const userId = req.user?.id;
+  const userId = req.territoryUser?.id;
   const { currentPassword, newPassword } = req.body;
 
   if (!userId) {
@@ -160,7 +160,7 @@ export const changePassword = async (req, res) => {
 export const updateOneSignalId = async (req, res) => {
   const { onesignalId } = req.body;
   console.log(onesignalId, "dd999");
-  const id = req.user.id;
+  const id = req.territoryUser?.id;
   if (!onesignalId) {
     return res
       .status(400)

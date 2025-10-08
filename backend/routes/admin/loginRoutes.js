@@ -18,10 +18,12 @@ router.post("/login", async (req, res) => {
     const user = await new Promise((resolve, reject) => {
       db.query(
         "SELECT * FROM users WHERE email = ? OR username = ?",
-        [emailOrUsername, emailOrUsername], 
+        [emailOrUsername, emailOrUsername],
         (err, results) => {
-          if (err) reject({ status: 500, message: "Database error", error: err });
-          else if (results.length === 0) reject({ status: 401, message: "Invalid Email | Username" });
+          if (err)
+            reject({ status: 500, message: "Database error", error: err });
+          else if (results.length === 0)
+            reject({ status: 401, message: "Invalid Email | Username" });
           else resolve(results[0]);
         }
       );
@@ -34,13 +36,24 @@ router.post("/login", async (req, res) => {
         return res.status(401).json({ message: "Wrong Password try again!" });
       }
     } catch (error) {
-      return res.status(500).json({ message: "Password comparison error", error });
+      return res
+        .status(500)
+        .json({ message: "Password comparison error", error });
     }
 
     //  Generate JWT Token
-    const token = jwt.sign({ id: user.id, username: user.username, email: user.email, adharId: user.adharno }, process.env.JWT_SECRET, {
-      expiresIn: "10d",
-    });
+    const token = jwt.sign(
+      {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        adharId: user.adharno,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "10d",
+      }
+    );
 
     //  Store session data
     req.session.user = {
@@ -53,10 +66,13 @@ router.post("/login", async (req, res) => {
     };
 
     //  Set secure cookie for authentication
-    res.cookie("token", token, {
+    res.cookie("adminToken", token, {
       httpOnly: true,
       secure: true,
       sameSite: "None",
+      //domain: "admin.reparv.in",
+      domain: "localhost",
+      path: "/",
       maxAge: 10 * 24 * 60 * 60 * 1000,
     });
 
@@ -66,10 +82,11 @@ router.post("/login", async (req, res) => {
       token,
       user: req.session.user,
     });
-
   } catch (error) {
     console.error("Login Error:", error);
-    return res.status(error.status || 500).json({ message: error.message || "Internal server error" });
+    return res
+      .status(error.status || 500)
+      .json({ message: error.message || "Internal server error" });
   }
 });
 
@@ -88,10 +105,10 @@ router.post("/logout", (req, res) => {
     if (err) {
       return res.status(500).json({ message: "Logout failed" });
     }
-    res.clearCookie("token", { 
-      httpOnly: true, 
+    res.clearCookie("adminToken", {
+      httpOnly: true,
       secure: true,
-      sameSite: "None" 
+      sameSite: "None",
     });
     console.log("Logout Successfully");
     return res.json({ message: "Logout successful." });

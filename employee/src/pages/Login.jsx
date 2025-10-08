@@ -46,8 +46,8 @@ function Login() {
 
       if (response.data.token) {
         console.log("Login Successful", response.data);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-        storeTokenInCookie(response.data.token);
+        localStorage.setItem("employeeUser", JSON.stringify(response.data.user));
+        storeTokenInCookie(response.data.employeeToken);
         navigate("/dashboard", { replace: true });
         window.location.reload();
       } else {

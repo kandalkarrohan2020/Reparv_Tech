@@ -4,23 +4,29 @@ import Cookies from "js-cookie";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [accessToken, setAccessToken] = useState(Cookies.get("accessToken"));
-
-  let isLoggedIn = !!accessToken;
-
-  const storeTokenInCookie = (token) => {
-    Cookies.set("accessToken", token);
-    setAccessToken(Cookies.get("accessToken"));
-  };
-  const delTokenInCookie = () => {
-    setAccessToken();
-    Cookies.remove("accessToken");
-  };
   //const URI = "http://localhost:3000";
   const URI = "https://api.reparv.in";
 
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [accessToken, setAccessToken] = useState(Cookies.get("accessToken"));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("employeeUser")));
   const [loading, setLoading] = useState(false);
+  
+  // Check if user is logged in based on token
+  const isLoggedIn = !!accessToken;
+  
+  const storeTokenInCookie = (token) => {
+    Cookies.set("accessToken", token);
+    setAccessToken(token);
+  };
+
+  const delTokenInCookie = () => {
+    Cookies.remove("accessToken");
+    setAccessToken(null);
+    localStorage.removeItem("employeeUser");
+    setUser(null);
+  };
+
+  // UI states
   const [showEmployee, setShowEmployee] = useState(false);
   const [showEplDetailsForm, setShowEplDetailsForm] = useState(false);
   const [showBuilderForm, setShowBuilderForm] = useState(false);
@@ -44,16 +50,14 @@ export const AuthProvider = ({ children }) => {
   const [showAssignTaskForm, setShowAssignTaskForm] = useState(false);
   const [showUpdateImagesForm, setShowUpdateImagesForm] = useState(false);
   const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
-  const [showNewPlotAdditionalInfoForm, setShowNewPlotAdditionalInfoForm] =
-    useState(false);
+  const [showNewPlotAdditionalInfoForm, setShowNewPlotAdditionalInfoForm] = useState(false);
   const [showAssignSalesForm, setShowAssignSalesForm] = useState(false);
   const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
   const [showEnquiryForm, setShowEnquiryForm] = useState(false);
   const [showEnquiryUpdateForm, setShowEnquiryUpdateForm] = useState(false);
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [showPropertyInfo, setShowPropertyInfo] = useState(false);
-  const [showEnquirerPropertyForm, setShowEnquirerPropertyForm] =
-    useState(false);
+  const [showEnquirerPropertyForm, setShowEnquirerPropertyForm] = useState(false);
   const [showSliderForm, setShowSliderForm] = useState(false);
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [showPartnerForm, setShowPartnerForm] = useState(false);
@@ -81,8 +85,7 @@ export const AuthProvider = ({ children }) => {
   const [showOrder, setShowOrder] = useState(false);
   const [showStatusForm, setShowStatusForm] = useState(false);
   const [showVideoUploadForm, setShowVideoUploadForm] = useState(false);
-  const [showPropertyLocationForm, setShowPropertyLocationForm] =
-    useState(false);
+  const [showPropertyLocationForm, setShowPropertyLocationForm] = useState(false);
 
   return (
     <AuthContext.Provider
@@ -92,11 +95,13 @@ export const AuthProvider = ({ children }) => {
         setUser,
         loading,
         setLoading,
-        isLoggedIn,
-        storeTokenInCookie,
-        delTokenInCookie,
         accessToken,
         setAccessToken,
+        storeTokenInCookie,
+        delTokenInCookie,
+        isLoggedIn,
+
+        // all UI states
         showEmployee,
         setShowEmployee,
         showEplDetailsForm,
@@ -222,6 +227,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);

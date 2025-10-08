@@ -80,7 +80,7 @@ export const getById = (req, res) => {
 
 // **Add New Builder**
 export const add = (req, res) => {
-  const adharId = req.user.adharId;
+  const adharId = req.adminUser?.adharId;
   if (!adharId) {
     return res
       .status(401)

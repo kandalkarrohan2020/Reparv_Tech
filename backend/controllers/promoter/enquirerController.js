@@ -2,7 +2,7 @@ import db from "../../config/dbconnect.js";
 import moment from "moment";
 
 export const getAll = (req, res) => {
-  const promoterCity = req.user?.city;
+  const promoterCity = req.promoterUser?.city;
   if (!promoterCity) {
     return res.status(400).json({ message: "Please Log_in Again!" });
   }

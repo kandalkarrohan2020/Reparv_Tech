@@ -3,7 +3,7 @@ import moment from "moment";
 import bcrypt from "bcryptjs";
 
 export const getProfile = (req, res) => {
-  const Id = req.user?.id; 
+  const Id = req.promoterUser?.id; 
   if (!Id) {
     return res.status(400).json({ message: "Unauthorized User" });
   }
@@ -23,7 +23,7 @@ export const getProfile = (req, res) => {
 };
 
 export const editProfile = (req, res) => {
-  const userId = req.user?.id;
+  const userId = req.promoterUser?.id;
   if (!userId) {
     return res.status(400).json({ message: "Invalid User ID" });
   }
@@ -72,7 +72,7 @@ export const editProfile = (req, res) => {
 };
 
 export const changePassword = async (req, res) => {
-  const userId = req.user?.id;
+  const userId = req.promoterUser?.id;
   const { currentPassword, newPassword } = req.body;
 
   if (!userId) {

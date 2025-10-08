@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   //const URI = "http://localhost:3000";
   const URI = "https://api.reparv.in";
 
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("projectPartnerUser")));
   const [loading, setLoading] = useState(false);
   const [dashboardFilter, setDashboardFilter] = useState("Booked");
   const [showProfile, setShowProfile] = useState(false);

@@ -8,7 +8,6 @@ import FilterData from "../components/FilterData";
 import { IoMdClose } from "react-icons/io";
 import DataTable  from "react-data-table-component";
 
-
 const AuctionMembers = () => {
   const { showAuctionForm, setShowAuctionForm, action, URI } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");

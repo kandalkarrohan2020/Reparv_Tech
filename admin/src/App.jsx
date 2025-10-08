@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Enquirers from "./pages/Enquirers.jsx";
@@ -7,7 +7,6 @@ import Map from "./pages/Map.jsx";
 import Calender from "./pages/Calender.jsx";
 import Customers from "./pages/Customers.jsx";
 import Ticketing from "./pages/Ticketing.jsx";
-import RawMaterials from "./pages/RawMaterials.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
 import Login from "./pages/Login.jsx";
 import Employee from "./pages/Employee.jsx";
@@ -22,7 +21,6 @@ import AuctionMembers from "./pages/AuctionMembers.jsx";
 import Properties from "./pages/Properties.jsx";
 import Role from "./pages/Role.jsx";
 import Department from "./pages/Department.jsx";
-//import PropertyType from "./pages/PropertyType.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import Slider from "./pages/Slider.jsx";
 import Testimonial from "./pages/Testimonial.jsx";
@@ -33,14 +31,16 @@ import UsersLoanEligibility from "./pages/UsersLoanEligibility.jsx";
 import UpdateEMI from "./components/usersLoanEligibility/UpdateEMI.jsx";
 import Trends from "./pages/Trends.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
-
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <>
       <ScrollToTop />
       <Routes>
+        {/* Login Page */}
         <Route path="" element={<Login />} />
+
         <Route path="/" element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/enquirers" element={<Enquirers />} />
@@ -76,9 +76,11 @@ const App = () => {
           <Route path="/brand-accessories" element={<BrandAccessories />} />
           <Route path="/marketing-content" element={<MarketingContent />} />
         </Route>
-        <Route path="*" element={<ErrorPage />}></Route>
+
+        {/* 404 */}
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 };
 

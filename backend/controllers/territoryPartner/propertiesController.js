@@ -4,7 +4,7 @@ import moment from "moment";
 // **Fetch All**
 export const getAll = (req, res) => {
   const { propertyCategory } = req.query;
-  const city = req.user.city;
+  const city = req.territoryUser?.city;
   let sql = `SELECT * FROM properties WHERE status='Active' AND approve='Approved'`;
   const params = [];
 

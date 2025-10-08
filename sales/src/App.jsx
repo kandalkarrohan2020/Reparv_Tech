@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
 import Login from "./pages/Login.jsx";
 import Enquirers from "./pages/Enquirers.jsx";
@@ -19,16 +19,24 @@ import CheckEligibility from "./pages/CheckEligibility.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
-
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <>
       <ScrollToTop />
       <Routes>
         <Route path="" element={<Login />} />
         <Route path="/kyc/:userid" element={<KYC />} />
-        <Route path="/" element={<Layout />}>
+        {/* Protected Routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/enquirers" element={<Enquirers />} />
           <Route path="/customers" element={<Customers />} />
@@ -46,7 +54,7 @@ const App = () => {
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>
       </Routes>
-    </BrowserRouter>
+    </>
   );
 };
 

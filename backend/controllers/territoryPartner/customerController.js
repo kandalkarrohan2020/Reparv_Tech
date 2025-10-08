@@ -3,7 +3,7 @@ import moment from "moment";
 
 // **Fetch All **
 export const getAll = (req, res) => {
-  const userId = req.user.id;
+  const userId = req.territoryUser?.id;
   const sql = `
     SELECT 
       enquirers.*, 

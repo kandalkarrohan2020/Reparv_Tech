@@ -259,7 +259,7 @@ app.options(
 );
 app.use(cookieParser());
 
-const verifyToken = (req, res, next) => {
+export const verifyToken = (req, res, next) => {
   const publicRoutes = [
     "/admin/login",
     "/builder/login",
@@ -275,10 +275,13 @@ const verifyToken = (req, res, next) => {
     "/admin/states",
     "/admin/cities",
     "/admin/promoter/add",
+    "/admin/salespersons/status",
     "/admin/salespersons/add",
+    "/admin/salespersons/assignlogin",
     "/admin/partner/add",
     "/admin/projectpartner/add",
     "/admin/territorypartner/add",
+    "/admin/territorypartner/assignlogin",
     "/admin/marketing-content",
     "/admin/apk",
     "/api/payment/create-order",
@@ -295,9 +298,7 @@ const verifyToken = (req, res, next) => {
     "/frontend/testimonial",
     "/frontend/emi",
     "/salesapp/enquiry",
-    //i addedd
     "/api/booking",
-    //salesPerson APP Routes
     "/salesapp/api/login",
     "/sales/flat",
     "/salesapp/flats",
@@ -306,43 +307,59 @@ const verifyToken = (req, res, next) => {
     "/salesapp/post",
     "/salesapp/user",
     "/salesapp/client",
-    //Territory App
     "/territoryapp/user",
-
     "/territoryapp/post",
     "/territoryapp/post/get",
     "/customerapp/enquiry",
     "/customerapp/",
     "/customerapp/emiform",
-    //builder app
     "/builderapp/community",
     "/builderapp/user",
     "/builderapp/post",
     "/projectpartner/post",
-
-    // account cancellation request from partner
     "/api/partner/account/cancellation",
   ];
 
-  //  Allow public routes to pass through
+  // Skip verification for public routes
   if (publicRoutes.some((route) => req.path.startsWith(route))) {
     return next();
   }
 
-  const token = req.cookies?.token; // Ensure token exists
-  //console.log("Token received:", token); // Debugging line
+  // Map cookies to user keys
+  const cookieMap = {
+    adminToken: "adminUser",
+    builderToken: "builderUser",
+    employeeToken: "employeeUser",
+    promoterToken: "promoterUser",
+    salesToken: "salesUser",
+    onboardingToken: "onboardingUser",
+    projectPartnerToken: "projectPartnerUser",
+    territoryToken: "territoryUser",
+    guestToken: "guestUser",
+    token: "user",
+  };
 
-  if (!token) {
+  // Decode all valid tokens (don’t stop at first)
+  let atLeastOneValid = false;
+
+  for (const [cookieName, userKey] of Object.entries(cookieMap)) {
+    const token = req.cookies?.[cookieName];
+    if (!token) continue;
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req[userKey] = decoded; // Store individually
+      atLeastOneValid = true;
+    } catch (error) {
+      console.warn(`Invalid token for ${cookieName}:`, error.message);
+    }
+  }
+
+  if (!atLeastOneValid) {
     return res.status(401).json({ message: "Unauthorized. Please log in." });
   }
 
-  try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
-    return next(); //  Continue to protected route
-  } catch (error) {
-    console.error("JWT Verification Failed:", error); // Log error
-    return res.status(403).json({ message: "Invalid or expired token." });
-  }
+  next();
 };
 
 app.get("/", (req, res) => {

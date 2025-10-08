@@ -47,7 +47,7 @@ function Login() {
 
       if (response.data.token) {
         setSelectedCity(response.data.user.city);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("territoryUser", JSON.stringify(response.data.user));
         storeTokenInCookie(response.data.token);
         navigate("/dashboard", { replace: true });
         {/* if (response.data.user.adharId != null) {

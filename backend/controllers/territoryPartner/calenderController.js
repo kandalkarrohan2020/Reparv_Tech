@@ -14,7 +14,7 @@ export const getAll = (req, res) => {
                WHERE enquirers.territorypartnerid = ? 
                ORDER BY propertyfollowup.followupid DESC`;
 
-  db.query(sql, [req.user.id], (err, result) => {
+  db.query(sql, [req.territoryUser?.id], (err, result) => {
     if (err) {
       console.error("Error fetching :", err);
       return res.status(500).json({ message: "Database error", error: err });

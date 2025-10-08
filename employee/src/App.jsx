@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import { useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Enquirers from "./pages/Enquirers.jsx";
@@ -36,7 +36,7 @@ import UsersLoanEligibility from "./pages/UsersLoanEligibility.jsx";
 import UpdateEMI from "./components/usersLoanEligibility/UpdateEMI.jsx";
 import { useAuth } from "./store/auth.jsx";
 import { useEffect } from "react";
-
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => {
   const { URI, setLoading, user } = useAuth();
@@ -134,10 +134,11 @@ const App = () => {
   );
 
   return (
-    <BrowserRouter>
+    <>
       <ScrollToTop />
       <Routes>
         <Route path="" element={<Login />} />
+        {/* Protected Routes */}
         <Route path="/" element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route
@@ -151,7 +152,7 @@ const App = () => {
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>
       </Routes>
-    </BrowserRouter>
+    </>
   );
 };
 

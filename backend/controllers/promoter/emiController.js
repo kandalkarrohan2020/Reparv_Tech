@@ -2,7 +2,7 @@ import db from "../../config/dbconnect.js";
 import moment from "moment";
 
 export const getAll = (req, res) => {
-  const promoterCity = req.user?.city;
+  const promoterCity = req.promoterUser?.city;
   
   // Step 1: Validate user session
   if (!promoterCity) {

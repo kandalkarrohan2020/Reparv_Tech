@@ -508,54 +508,6 @@ export const del = (req, res) => {
 
 // Orders Controllers
 
-// Fetch All Orders on the Basis of Selected Partner
-export const getOrdersOld = (req, res) => {
-  const selectedPartner = req.params.role;
-
-  const roleToColumn = {
-    "Sales Partner": "salesPartnerId",
-    "Onboarding Partner": "onboardingPartnerId",
-    "Project Partner": "projectPartnerId",
-    "Territory Partner": "territoryPartnerId",
-    Promoter: "promoterId",
-  };
-
-  const column = roleToColumn[selectedPartner];
-
-  // Build base query
-  let sql = `
-    SELECT 
-      bao.*,
-      bao.status AS orderStatus,
-      ba.*,
-      ba.status AS productStatus
-    FROM brandAccessoriesOrders AS bao
-    LEFT JOIN brandAccessories AS ba ON bao.productId = ba.productId
-  `;
-
-  // Add WHERE clause if valid column found
-  if (column) {
-    sql += ` WHERE bao.${column} IS NOT NULL`;
-  }
-
-  sql += ` ORDER BY bao.created_at DESC`;
-
-  db.query(sql, (err, rows) => {
-    if (err) {
-      console.error("Error fetching orders:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-
-    const formatted = rows.map((row) => ({
-      ...row,
-      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
-      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
-    }));
-
-    res.json(formatted);
-  });
-};
-
 export const getOrders = (req, res) => {
   const selectedPartner = req.params.role;
 
@@ -663,11 +615,6 @@ export const getOrders = (req, res) => {
 
 // Fetch All Orders By Using Partner Aadhaar Id
 export const getAllOrdersByUserId = (req, res) => {
-  const userId = req.user?.id;
-  if (!userId) {
-    return res.status(400).json({ message: "Unauthorized. Please login!" });
-  }
-
   const role = req.params?.role;
 
   // Allow only specific role fields for safety
@@ -681,6 +628,20 @@ export const getAllOrdersByUserId = (req, res) => {
 
   if (!role || !allowedRoles.includes(role)) {
     return res.status(400).json({ message: "Invalid or missing role in URL" });
+  }
+
+  // Access Partner User Id by Using Role
+  let partnerRole;
+
+  if (role === "salesPartnerId") partnerRole = "salesUser";
+  else if (role === "territoryPartnerId") partnerRole = "territoryUser";
+  else if (role === "onboardingPartnerId") partnerRole = "onboardingUser";
+  else if (role === "projectPartnerId") partnerRole = "projectPartnerUser";
+  else if (role === "promoterId") partnerRole = "promoterUser";
+
+  const userId = req[partnerRole]?.id;
+  if (!userId) {
+    return res.status(400).json({ message: "Unauthorized. Please login!" });
   }
 
   const sql = `
@@ -783,11 +744,6 @@ export const getOrderById = (req, res) => {
 export const placeOrder = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
 
-  const userId = req.user?.id;
-  if (!userId) {
-    return res.status(400).json({ message: "Unauthorized. Please login!" });
-  }
-
   const productId = req.params.id;
   if (!productId) {
     return res.status(400).json({ message: "Invalid Product ID" });
@@ -812,18 +768,30 @@ export const placeOrder = (req, res) => {
   const billAmount = priceWithoutGST + (priceWithoutGST * gstPercentage) / 100;
 
   let ordererIdName;
+  let partnerRole;
   if (role === "Sales Person") {
     ordererIdName = "salesPartnerId";
+    partnerRole = "salesUser";
   } else if (role === "Onboarding Partner") {
     ordererIdName = "onboardingPartnerId";
+    partnerRole = "onboardingUser";
   } else if (role === "Project Partner") {
     ordererIdName = "projectPartnerId";
+    partnerRole = "projectPartnerUser";
   } else if (role === "Territory Partner") {
     ordererIdName = "territoryPartnerId";
+    partnerRole = "territoryUser";
   } else if (role === "Promoter") {
     ordererIdName = "promoterId";
+    partnerRole = "promoterUser";
   } else {
     return res.status(400).json({ message: "Invalid role" });
+  }
+
+  // Access User Id by using Role
+  const userId = req[partnerRole]?.id;
+  if (!userId) {
+    return res.status(400).json({ message: "Unauthorized. Please login!" });
   }
 
   const generateOrderId = () => {
@@ -1106,11 +1074,6 @@ export const deleteOrder = (req, res) => {
 
 // Get Cart Products by Using User Id
 export const getProductsFromCart = (req, res) => {
-  const userId = req.user?.id;
-  if (!userId) {
-    return res.status(400).json({ message: "Unauthorized. Please login!" });
-  }
-
   const role = req.params?.role;
 
   // Allow only specific column names to prevent SQL injection
@@ -1124,6 +1087,20 @@ export const getProductsFromCart = (req, res) => {
 
   if (!role || !allowedRoles.includes(role)) {
     return res.status(400).json({ message: "Invalid or missing role in URL" });
+  }
+
+  // Access Partner User Id From Role
+  let partnerRole;
+
+  if (role === "salesPartnerId") partnerRole = "salesUser";
+  else if (role === "territoryPartnerId") partnerRole = "territoryUser";
+  else if (role === "onboardingPartnerId") partnerRole = "onboardingUser";
+  else if (role === "projectPartnerId") partnerRole = "projectPartnerUser";
+  else if (role === "promoterId") partnerRole = "promoterUser";
+
+  const userId = req[partnerRole]?.id;
+  if (!userId) {
+    return res.status(400).json({ message: "Unauthorized. Please login!" });
   }
 
   const sql = `
@@ -1178,11 +1155,6 @@ export const getProductsFromCart = (req, res) => {
 export const addToCart = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
 
-  const userId = req.user?.id;
-  if (!userId) {
-    return res.status(400).json({ message: "Unauthorized. Please login!" });
-  }
-
   const productId = req.params.id;
   if (!productId) {
     return res.status(400).json({ message: "Invalid Product ID" });
@@ -1207,18 +1179,30 @@ export const addToCart = (req, res) => {
   const billAmount = priceWithoutGST + (priceWithoutGST * gstPercentage) / 100;
 
   let ordererIdName;
+  let partnerRole;
   if (role === "Sales Person") {
     ordererIdName = "salesPartnerId";
+    partnerRole = "salesUser";
   } else if (role === "Onboarding Partner") {
     ordererIdName = "onboardingPartnerId";
+    partnerRole = "onboardingUser";
   } else if (role === "Project Partner") {
     ordererIdName = "projectPartnerId";
+    partnerRole = "projectPartnerUser";
   } else if (role === "Territory Partner") {
     ordererIdName = "territoryPartnerId";
+    partnerRole = "territoryUser";
   } else if (role === "Promoter") {
     ordererIdName = "promoterId";
+    partnerRole = "promoterUser";
   } else {
     return res.status(400).json({ message: "Invalid role" });
+  }
+
+  // Access User Id by using Role
+  const userId = req[partnerRole]?.id;
+  if (!userId) {
+    return res.status(400).json({ message: "Unauthorized. Please login!" });
   }
 
   const checkStockQuery = `SELECT productQuantity FROM brandAccessories WHERE productId = ?`;
@@ -1271,11 +1255,6 @@ export const addToCart = (req, res) => {
 // Remove Order From Cart
 export const removeFromCart = (req, res) => {
   const cartId = parseInt(req.params.id);
-  const userId = req.user?.id;
-
-  if (!userId) {
-    return res.status(400).json({ message: "Unauthorized. Please login!" });
-  }
 
   if (isNaN(cartId)) {
     return res.status(400).json({ message: "Invalid Cart ID" });
@@ -1301,36 +1280,37 @@ export const removeFromCart = (req, res) => {
 /// Convert All Cart Products into Orders by using Role and User Id
 export const placeAllCartItemsIntoOrders = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const userId = req.user?.id;
+
   const { role } = req.body;
-
-  if (!userId) {
-    return res.status(400).json({ message: "Unauthorized. Please login!" });
-  }
-
   if (!role) {
     return res.status(400).json({ message: "Role is required" });
   }
 
   let ordererIdName;
-  switch (role) {
-    case "Sales Person":
-      ordererIdName = "salesPartnerId";
-      break;
-    case "Onboarding Partner":
-      ordererIdName = "onboardingPartnerId";
-      break;
-    case "Project Partner":
-      ordererIdName = "projectPartnerId";
-      break;
-    case "Territory Partner":
-      ordererIdName = "territoryPartnerId";
-      break;
-    case "Promoter":
-      ordererIdName = "promoterId";
-      break;
-    default:
-      return res.status(400).json({ message: "Invalid role" });
+  let partnerRole;
+  if (role === "Sales Person") {
+    ordererIdName = "salesPartnerId";
+    partnerRole = "salesUser";
+  } else if (role === "Onboarding Partner") {
+    ordererIdName = "onboardingPartnerId";
+    partnerRole = "onboardingUser";
+  } else if (role === "Project Partner") {
+    ordererIdName = "projectPartnerId";
+    partnerRole = "projectPartnerUser";
+  } else if (role === "Territory Partner") {
+    ordererIdName = "territoryPartnerId";
+    partnerRole = "territoryUser";
+  } else if (role === "Promoter") {
+    ordererIdName = "promoterId";
+    partnerRole = "promoterUser";
+  } else {
+    return res.status(400).json({ message: "Invalid role" });
+  }
+
+  // Access User Id by using Role
+  const userId = req[partnerRole]?.id;
+  if (!userId) {
+    return res.status(400).json({ message: "Unauthorized. Please login!" });
   }
 
   const generateOrderId = () => {

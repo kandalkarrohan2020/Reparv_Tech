@@ -20,6 +20,7 @@ const Builders = () => {
     setShowBuilder,
     showBuilder,
     URI,
+    user,
     loading,
     setLoading,
   } = useAuth();
@@ -47,7 +48,7 @@ const Builders = () => {
     try {
       const response = await fetch(URI + "/project-partner/builders", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -63,7 +64,10 @@ const Builders = () => {
 
   const add = async (e) => {
     e.preventDefault();
-
+    if (user?.adharId === null || user?.adharId === "") {
+      alert("Your KYC Not Completed! Please Complete Your KYC From Profile");
+      return
+    }
     const endpoint = newBuilder.builderid
       ? `edit/${newBuilder.builderid}`
       : "add";
@@ -335,7 +339,8 @@ const Builders = () => {
     },
     {
       name: "Action",
-      cell: (row) => <ActionDropdown row={row} />, width:"120px"
+      cell: (row) => <ActionDropdown row={row} />,
+      width: "120px",
     },
   ];
 
@@ -453,189 +458,188 @@ const Builders = () => {
                 className="w-6 h-6 cursor-pointer"
               />
             </div>
-            <form
-              onSubmit={add}
-              className="grid gap-4 grid-cols-1 lg:grid-cols-2"
-            >
-              <input
-                type="hidden"
-                value={newBuilder.builderid || ""}
-                onChange={(e) =>
-                  setNewBuilder({ ...newBuilder, builderid: e.target.value })
-                }
-              />
-              <div className="w-full ">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Company Name
-                </label>
+            <form onSubmit={add}>
+              <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
                 <input
-                  type="text"
-                  required
-                  placeholder="Enter Company Name"
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newBuilder.company_name}
+                  type="hidden"
+                  value={newBuilder.builderid || ""}
                   onChange={(e) =>
-                    setNewBuilder({
-                      ...newBuilder,
-                      company_name: e.target.value,
-                    })
+                    setNewBuilder({ ...newBuilder, builderid: e.target.value })
                   }
                 />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Contact Person
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Enter Contact"
-                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newBuilder.contact_person}
-                  onChange={(e) =>
-                    setNewBuilder({
-                      ...newBuilder,
-                      contact_person: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Contact Number
-                </label>
-                <input
-                  type="number"
-                  required
-                  placeholder="Enter Contact Number"
-                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newBuilder.contact}
-                  onChange={(e) => {
-                    const input = e.target.value;
-                    if (/^\d{0,10}$/.test(input)) {
-                      // Allows only up to 10 digits
-                      setNewBuilder({ ...newBuilder, contact: input });
+                <div className="w-full ">
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                    Company Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter Company Name"
+                    className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={newBuilder.company_name}
+                    onChange={(e) =>
+                      setNewBuilder({
+                        ...newBuilder,
+                        company_name: e.target.value,
+                      })
                     }
-                  }}
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="Enter Email"
-                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newBuilder.email}
-                  onChange={(e) =>
-                    setNewBuilder({ ...newBuilder, email: e.target.value })
-                  }
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Aadhaar Number
-                </label>
-                <input
-                  type="number"
-                  required
-                  placeholder="Enter Aadhaar No"
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newBuilder.uid}
-                  onChange={(e) => {
-                    const input = e.target.value;
-                    if (/^\d{0,12}$/.test(input)) {
-                      // Allows only up to 12 digits
-                      setNewBuilder({ ...newBuilder, uid: input });
+                  />
+                </div>
+                <div className="w-full">
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                    Contact Person
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter Contact"
+                    className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={newBuilder.contact_person}
+                    onChange={(e) =>
+                      setNewBuilder({
+                        ...newBuilder,
+                        contact_person: e.target.value,
+                      })
                     }
-                  }}
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Office Address
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Enter Office Address"
-                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newBuilder.office_address}
-                  onChange={(e) =>
-                    setNewBuilder({
-                      ...newBuilder,
-                      office_address: e.target.value,
-                    })
-                  }
-                />
-              </div>
+                  />
+                </div>
+                <div className="w-full">
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                    Contact Number
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    placeholder="Enter Contact Number"
+                    className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={newBuilder.contact}
+                    onChange={(e) => {
+                      const input = e.target.value;
+                      if (/^\d{0,10}$/.test(input)) {
+                        // Allows only up to 10 digits
+                        setNewBuilder({ ...newBuilder, contact: input });
+                      }
+                    }}
+                  />
+                </div>
+                <div className="w-full">
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="Enter Email"
+                    className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={newBuilder.email}
+                    onChange={(e) =>
+                      setNewBuilder({ ...newBuilder, email: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="w-full">
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                    Aadhaar Number
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    placeholder="Enter Aadhaar No"
+                    className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={newBuilder.uid}
+                    onChange={(e) => {
+                      const input = e.target.value;
+                      if (/^\d{0,12}$/.test(input)) {
+                        // Allows only up to 12 digits
+                        setNewBuilder({ ...newBuilder, uid: input });
+                      }
+                    }}
+                  />
+                </div>
+                <div className="w-full">
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                    Office Address
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter Office Address"
+                    className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={newBuilder.office_address}
+                    onChange={(e) =>
+                      setNewBuilder({
+                        ...newBuilder,
+                        office_address: e.target.value,
+                      })
+                    }
+                  />
+                </div>
 
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Registration No.
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Enter Registration No."
-                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newBuilder.registration_no}
-                  onChange={(e) =>
-                    setNewBuilder({
-                      ...newBuilder,
-                      registration_no: e.target.value,
-                    })
-                  }
-                />
-              </div>
+                <div className="w-full">
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                    Registration No.
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter Registration No."
+                    className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={newBuilder.registration_no}
+                    onChange={(e) =>
+                      setNewBuilder({
+                        ...newBuilder,
+                        registration_no: e.target.value,
+                      })
+                    }
+                  />
+                </div>
 
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Date Of Registration
-                </label>
-                <input
-                  type="date"
-                  required
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newBuilder.dor?.split("T")[0]}
-                  onChange={(e) => {
-                    const selectedDate = e.target.value; // Get full date
-                    const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
-                    setNewBuilder({ ...newBuilder, dor: formattedDate });
-                  }}
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Website
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Enter website"
-                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newBuilder.website}
-                  onChange={(e) =>
-                    setNewBuilder({ ...newBuilder, website: e.target.value })
-                  }
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Notes
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Enter notes"
-                  className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newBuilder.notes}
-                  onChange={(e) =>
-                    setNewBuilder({ ...newBuilder, notes: e.target.value })
-                  }
-                />
+                <div className="w-full">
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                    Date Of Registration
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={newBuilder.dor?.split("T")[0]}
+                    onChange={(e) => {
+                      const selectedDate = e.target.value; // Get full date
+                      const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
+                      setNewBuilder({ ...newBuilder, dor: formattedDate });
+                    }}
+                  />
+                </div>
+                <div className="w-full">
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                    Website
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter website"
+                    className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={newBuilder.website}
+                    onChange={(e) =>
+                      setNewBuilder({ ...newBuilder, website: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="w-full">
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                    Notes
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter notes"
+                    className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={newBuilder.notes}
+                    onChange={(e) =>
+                      setNewBuilder({ ...newBuilder, notes: e.target.value })
+                    }
+                  />
+                </div>
               </div>
               <div className="flex mt-8 md:mt-6 justify-end gap-6">
                 <button

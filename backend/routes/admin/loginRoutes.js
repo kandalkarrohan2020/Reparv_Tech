@@ -71,8 +71,8 @@ router.post("/login", async (req, res) => {
       secure: true,
       sameSite: "None",
       //domain: "admin.reparv.in",
-      domain: "localhost",
-      path: "/",
+      //domain: "localhost",
+      //path: "/",
       maxAge: 10 * 24 * 60 * 60 * 1000,
     });
 

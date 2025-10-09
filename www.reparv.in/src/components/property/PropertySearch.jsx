@@ -2,7 +2,12 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import { IoSearchSharp } from "react-icons/io5";
 import Fuse from "fuse.js";
 
-const PropertySearch = ({ searchInputRef, properties, searchTerm, setSearchTerm }) => {
+const PropertySearch = ({
+  searchInputRef,
+  properties,
+  searchTerm,
+  setSearchTerm,
+}) => {
   const [filteredResults, setFilteredResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const searchRef = useRef(null);
@@ -10,7 +15,15 @@ const PropertySearch = ({ searchInputRef, properties, searchTerm, setSearchTerm 
   // Fuzzy search setup
   const fuse = useMemo(() => {
     const options = {
-      keys: ["propertyName", "city", "location", "description"],
+      keys: [
+        "propertyName",
+        "propertyCategory",
+        "propertyType",
+        "city",
+        "location",
+        "description",
+        "tags"
+      ],
       threshold: 0.4, // controls fuzziness
       includeScore: true,
     };

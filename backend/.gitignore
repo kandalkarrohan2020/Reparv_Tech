@@ -119,6 +119,7 @@ dist
 
 # Firebase credentials
 config/*.json
+backend/config/*.json
 
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node,express

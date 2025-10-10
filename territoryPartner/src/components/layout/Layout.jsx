@@ -238,7 +238,7 @@ function Layout() {
                 icon: marketingIcon,
                 label: "Marketing Content",
               },
-              { to: "/download-apk", icon: reparvAppLogo, label: "Download" },
+              { to: "/download-apk", icon: reparvAppLogo, label: "Territory APK Download" },
             ].map(({ to, icon, label }) => (
               <NavLink
                 onClick={() => {

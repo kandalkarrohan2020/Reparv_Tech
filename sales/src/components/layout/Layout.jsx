@@ -9,6 +9,7 @@ import customersIcon from "../../assets/layout/customersIcon.svg";
 import overviewIcon from "../../assets/layout/overviewIcon.svg";
 import marketingIcon from "../../assets/layout/marketingIcon.svg";
 import ticketingIcon from "../../assets/layout/ticketingIcon.svg";
+import APKDownloadIcon from "../../assets/salesAPKLogo.jpeg";
 import { Outlet } from "react-router-dom";
 import { IoMenu } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
@@ -238,7 +239,7 @@ function Layout() {
                 icon: marketingIcon,
                 label: "Marketing Content",
               },
-              { to: "/download-apk", icon: reparvAppLogo, label: "Download" },
+              { to: "/download-apk", icon: APKDownloadIcon, label: "Sales APK Download" },
             ].map(({ to, icon, label }) => (
               <NavLink
                 onClick={() => {

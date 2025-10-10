@@ -19,7 +19,6 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/kyc/:userid" element={<KYC />} />
-        {/* Protected Routes */}
         <Route path="/" element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/map" element={<Map />} />

@@ -1,8 +1,14 @@
 import express from "express";
-import { getAll } from "../../controllers/admin/authoritiesController.js";
+import { getAll, getById, add, status, del } from "../../controllers/admin/authoritiesController.js";
 
 const router = express.Router();
 
 router.get("/", getAll);
+router.get("/:id", getById);
+router.post("/add", add);
+router.put("/edit/:id", add);
+router.put("/status/:id", status);
+router.delete("/delete/:id", del);
 
-export default router;
+export default  router;
+

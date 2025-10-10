@@ -14,7 +14,6 @@ import ScrollToTop from "./components/ScrollToTop.jsx";
 import KYC from "./pages/KYC.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => {
   return (

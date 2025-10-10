@@ -31,7 +31,7 @@ import UsersLoanEligibility from "./pages/UsersLoanEligibility.jsx";
 import UpdateEMI from "./components/usersLoanEligibility/UpdateEMI.jsx";
 import Trends from "./pages/Trends.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import PropertyAuthority from "./pages/PropertyAuthority.jsx";
 
 const App = () => {
   return (
@@ -59,6 +59,7 @@ const App = () => {
           <Route path="/employees" element={<Employee />} />
           <Route path="/role" element={<Role />} />
           <Route path="/department" element={<Department />} />
+          <Route path="/property-authorities" element={<PropertyAuthority />} />
           <Route path="/tickets" element={<Ticketing />} />
           <Route path="/slider" element={<Slider />} />
           <Route path="/testimonial" element={<Testimonial />} />

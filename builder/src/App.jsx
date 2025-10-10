@@ -8,32 +8,24 @@ import Properties from "./pages/Properties.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import Ticketing from "./pages/Ticketing.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => {
   return (
     <>
-        <ScrollToTop />
-        <Routes>
-          <Route path="" element={<Login />} />
-          <Route path="/login" element={<Login />} />
-          {/* Protected Routes */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Layout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/customers" element={<Customers />} />
-            <Route path="/properties" element={<Properties />} />
-            <Route path="/tickets" element={<Ticketing />} />
-          </Route>
-          <Route path="*" element={<ErrorPage />}></Route>
-        </Routes>
-      </>
+      <ScrollToTop />
+      <Routes>
+        <Route path="" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/" element={<Layout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/customers" element={<Customers />} />
+          <Route path="/properties" element={<Properties />} />
+          <Route path="/tickets" element={<Ticketing />} />
+        </Route>
+        <Route path="*" element={<ErrorPage />}></Route>
+      </Routes>
+    </>
   );
 };
 

@@ -35,8 +35,6 @@ import ApkUpload from "./pages/ApkUpload.jsx";
 import UsersLoanEligibility from "./pages/UsersLoanEligibility.jsx";
 import UpdateEMI from "./components/usersLoanEligibility/UpdateEMI.jsx";
 import { useAuth } from "./store/auth.jsx";
-import { useEffect } from "react";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => {
   const { URI, setLoading, user } = useAuth();
@@ -138,7 +136,6 @@ const App = () => {
       <ScrollToTop />
       <Routes>
         <Route path="" element={<Login />} />
-        {/* Protected Routes */}
         <Route path="/" element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route

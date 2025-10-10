@@ -17,7 +17,6 @@ import CheckEligibility from "./pages/CheckEligibility.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => {
   return (
@@ -26,15 +25,8 @@ const App = () => {
       <Routes>
         <Route path="" element={<Login />} />
         <Route path="/kyc/:userid" element={<KYC />} />
-        {/* Protected Routes */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
+
+        <Route path="/" element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/enquirers" element={<Enquirers />} />
           <Route path="/customers" element={<Customers />} />
@@ -44,11 +36,10 @@ const App = () => {
           <Route path="/brand-accessories" element={<BrandAccessories />} />
           <Route path="/marketing-content" element={<MarketingContent />} />
           <Route path="/download-apk" element={<DownloadApk />} />
-          
+
           <Route path="/property" element={<Property />} />
           <Route path="/property-info/:id" element={<PropertyDetails />} />
           <Route path="/check-eligibility" element={<CheckEligibility />} />
-          
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>
       </Routes>

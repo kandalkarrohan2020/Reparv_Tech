@@ -22,7 +22,9 @@ export const AuthProvider = ({ children }) => {
   //const URI = "http://localhost:3000";
   const URI = "https://api.reparv.in";
 
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("adminUser")));
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("adminUser"))
+  );
   const [loading, setLoading] = useState(false);
   const [showEmployee, setShowEmployee] = useState(false);
   const [showEplDetailsForm, setShowEplDetailsForm] = useState(false);
@@ -39,6 +41,7 @@ export const AuthProvider = ({ children }) => {
   const [showPropertyCommissionPopup, setShowPropertyCommissionPopup] =
     useState(false);
   const [showRoleForm, setShowRoleForm] = useState(false);
+
   const [showDepartmentForm, setShowDepartmentForm] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showTicketInfo, setShowTicketInfo] = useState(true);
@@ -92,6 +95,7 @@ export const AuthProvider = ({ children }) => {
   const [showVideoUploadForm, setShowVideoUploadForm] = useState(false);
   const [showPropertyLocationForm, setShowPropertyLocationForm] =
     useState(false);
+  const [showAuthorityForm, setShowAuthorityForm] = useState(false);
 
   return (
     <AuthContext.Provider
@@ -230,6 +234,8 @@ export const AuthProvider = ({ children }) => {
         setPropertyCommissionData,
         showPropertyCommissionPopup,
         setShowPropertyCommissionPopup,
+        showAuthorityForm,
+        setShowAuthorityForm,
       }}
     >
       {children}

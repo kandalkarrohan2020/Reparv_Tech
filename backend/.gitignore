@@ -118,7 +118,7 @@ dist
 .pnp.*
 
 # Firebase credentials
-.config/*.json
+config/*.json
 
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node,express

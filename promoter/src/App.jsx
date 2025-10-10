@@ -16,7 +16,6 @@ import BrandAccessories from "./pages/BrandAccessories.jsx";
 import OnBoardingPartner from "./pages/OnBoardingPartner.jsx";
 import ProjectPartner from "./pages/ProjectPartner.jsx";
 import TerritoryPartner from "./pages/TerritoryPartner.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => {
   return (
@@ -25,15 +24,8 @@ const App = () => {
       <Routes>
         <Route path="" element={<Login />} />
         <Route path="/kyc/:userid" element={<KYC />} />
-        {/* Protected Routes */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
+
+        <Route path="/" element={<Layout />}>
           <Route path="/dashboard" element={<Overview />} />
           <Route path="/enquirers" element={<Enquirers />} />
           <Route path="/customers" element={<Customers />} />

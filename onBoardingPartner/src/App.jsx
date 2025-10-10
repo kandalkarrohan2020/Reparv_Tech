@@ -11,7 +11,6 @@ import KYC from "./pages/KYC.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
 import Map from "./pages/Map.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => {
   return (
@@ -20,7 +19,6 @@ const App = () => {
       <Routes>
         <Route path="" element={<Login />} />
         <Route path="/kyc/:userid" element={<KYC />} />
-        {/* Protected Routes */}
         <Route path="/" element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/map" element={<Map />} />

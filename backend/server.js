@@ -166,6 +166,8 @@ import territorypostRoute from "./routes/territoryAppRoute/postRoutes.js";
 import territoryBooking from "./routes/territoryPartner/propertyBookingRoute.js";
 import territoryClientRoute from "./routes/territoryAppRoute/profileRoute.js";
 import territoryEnquiryRoute from "./routes/territoryAppRoute/enquiryRoute.js";
+import territorySubscription from "./routes/territoryAppRoute/subscription.js";
+import salesSubscription from "./routes/salesAppRoute/subscription.js";
 //Onboarding App
 import onboardingAppRoute from "./routes/onboardingAppRoute/userRoute.js";
 
@@ -302,6 +304,9 @@ export const verifyToken = (req, res, next) => {
     "/salesapp/api/login",
     "/sales/flat",
     "/salesapp/flats",
+    "/salesapp/subscription",
+    "/territoryapp/user",
+    "/territoryapp/subscription",
     "/upload",
     "/salesapp/tickets",
     "/salesapp/post",
@@ -531,12 +536,14 @@ app.use("/salesapp/post", postRoute);
 app.use("/salesapp/user", userController);
 app.use("/salesapp/client", clientRoute);
 app.use("/salesapp/enquiry", enquiryRoutesSaleApp);
+app.use("/salesapp/subscription", salesSubscription);
 
 //Territory App Route
 app.use("/territoryapp/user", territoryUserController);
 app.use("/territoryapp/post", territorypostRoute);
 app.use("/territoryapp/client", territoryClientRoute);
 app.use("/territoryapp/enquiry", territoryEnquiryRoute);
+app.use("/territoryapp/subscription", territorySubscription);
 //Book Enquiry Property
 app.use("/api/booking", bookPropertyRoute);
 //get territory Book Enquiry Property

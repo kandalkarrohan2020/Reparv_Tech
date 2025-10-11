@@ -35,6 +35,7 @@ import ApkUpload from "./pages/ApkUpload.jsx";
 import UsersLoanEligibility from "./pages/UsersLoanEligibility.jsx";
 import UpdateEMI from "./components/usersLoanEligibility/UpdateEMI.jsx";
 import { useAuth } from "./store/auth.jsx";
+import PropertyAuthority from "./pages/PropertyAuthority.jsx";
 
 const App = () => {
   const { URI, setLoading, user } = useAuth();
@@ -92,6 +93,10 @@ const App = () => {
     {
       name: "Departments",
       menu: <Route path="/department" element={<Department />} />,
+    },
+    {
+      name: "Authorities",
+      menu: <Route path="/property-authorities" element={<PropertyAuthority />} />,
     },
     {
       name: "Tickets",

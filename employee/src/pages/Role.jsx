@@ -266,6 +266,7 @@ const Role = () => {
             <IoMdClose
               onClick={() => {
                 setShowRoleForm(false);
+                setNewRole({ roleid: "", role: "" });
               }}
               className="w-6 h-6 cursor-pointer"
             />
@@ -297,8 +298,10 @@ const Role = () => {
             </div>
             <div className="flex mt-8 md:mt-6 justify-end gap-6">
               <button
+                type="button"
                 onClick={() => {
                   setShowRoleForm(false);
+                  setNewRole({ roleid: "", role: "" });
                 }}
                 className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
               >

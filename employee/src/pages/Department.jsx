@@ -276,6 +276,10 @@ const Department = () => {
             <IoMdClose
               onClick={() => {
                 setShowDepartmentForm(false);
+                setNewDepartment({
+                  departmentid: "",
+                  department: "",
+                });
               }}
               className="w-6 h-6 cursor-pointer"
             />

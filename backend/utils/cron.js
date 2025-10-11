@@ -7,50 +7,43 @@ import utc from "dayjs/plugin/utc.js";
 import timezone from "dayjs/plugin/timezone.js";
 import fs from "fs";
 import admin from "firebase-admin";
+import dotenv from "dotenv";
+dotenv.config();
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-// 🔔 Territory Partner Firebase app
+// Territory Partner Firebase app
 
-// utils/cron.js → backend/config/...
-const tpServiceAccount = JSON.parse(
-  fs.readFileSync(
-    new URL(
-      "../config/territorypush-firebase-adminsdk-fbsvc-7b5ddd57ed.json",
-      import.meta.url
-    ),
-    "utf8"
-  )
+const territoryPartnerServiceAccount = JSON.parse(
+  process.env.FIREBASE_SERVICE_ACCOUNT_TERRITORY
 );
-
-const spServiceAccount = JSON.parse(
-  fs.readFileSync(
-    new URL(
-      "../config/salespush-3c2e2-firebase-adminsdk-fbsvc-443437baa5.json",
-      import.meta.url
-    ),
-    "utf8"
-  )
-);
-
 const tpApp = admin.initializeApp(
   {
-    credential: admin.credential.cert(tpServiceAccount),
+    credential: admin.credential.cert({
+      ...territoryPartnerServiceAccount,
+      private_key: territoryPartnerServiceAccount.private_key.replace(
+        /\\n/g,
+        "\n"
+      ),
+    }),
   },
   "territoryPartnerApp"
-); // give a name for clarity
+);
 
-//  Salesperson Firebase app
-
+const salespersonServiceAccount = JSON.parse(
+  process.env.FIREBASE_SERVICE_ACCOUNT_SALES
+);
 const spApp = admin.initializeApp(
   {
-    credential: admin.credential.cert(spServiceAccount),
+    credential: admin.credential.cert({
+      ...salespersonServiceAccount,
+      private_key: salespersonServiceAccount.private_key.replace(/\\n/g, "\n"),
+    }),
   },
   "salespersonApp"
-); // must give a unique name
+);
 
-// Send notification to Territory Partner
 async function sendTPNotification(token, title, body) {
   if (!token) return; // safety check
   const message = {
@@ -62,9 +55,9 @@ async function sendTPNotification(token, title, body) {
 
   try {
     const response = await tpApp.messaging().send(message);
-    console.log("✅ Territory Partner notification sent:", response);
+    console.log(" Territory Partner notification sent:", response);
   } catch (err) {
-    console.error("❌ Error sending TP notification:", err);
+    console.error(" Error sending TP notification:", err);
   }
 }
 
@@ -80,9 +73,9 @@ async function sendSPNotification(token, title, body) {
 
   try {
     const response = await spApp.messaging().send(message);
-    console.log("✅ Salesperson notification sent:", response);
+    console.log(" Salesperson notification sent:", response);
   } catch (err) {
-    console.error("❌ Error sending SP notification:", err);
+    console.error(" Error sending SP notification:", err);
   }
 }
 
@@ -119,9 +112,9 @@ const cleanInactiveUntil = async () => {
         console.log(`Cleaned past dates for partner ${row.id}`);
       }
     }
-    console.log("✅ inactive_until cleanup done");
+    console.log(" inactive_until cleanup done");
   } catch (err) {
-    console.error("❌ Error running inactive_until cron job:", err);
+    console.error(" Error running inactive_until cron job:", err);
   }
 };
 
@@ -135,7 +128,7 @@ export const checkEnquiriesWithTime = () => {
 
   db.query(selectSql, (err, results) => {
     if (err) {
-      console.error("❌ Database Query Error:", err);
+      console.error(" Database Query Error:", err);
       return;
     }
     if (!results.length) {
@@ -152,7 +145,7 @@ export const checkEnquiriesWithTime = () => {
 
     db.query(updateSql, [idsToUpdate], (updateErr, updateResult) => {
       if (updateErr) {
-        console.error("❌ Error updating enquiries:", updateErr);
+        console.error(" Error updating enquiries:", updateErr);
         return;
       }
       console.log(`✅ Rejected ${updateResult.affectedRows} enquiries.`);
@@ -161,7 +154,6 @@ export const checkEnquiriesWithTime = () => {
 };
 
 cron.schedule("0 0 * * *", cleanInactiveUntil);
-
 // 🕐 Run every minute to reject old enquiries
 cron.schedule("* * * * *", checkEnquiriesWithTime);
 // 🕣 NEW: Run every day at 8:30 AM to alert territory partners for 9–10 slot
@@ -211,7 +203,7 @@ async function notifySlot(timeSlot) {
 
   db.query(sql, [today, timeSlot], async (err, results) => {
     if (err) {
-      console.error(`❌ Database Query Error in notifySlot(${timeSlot}):`, err);
+      console.error(` Database Query Error in notifySlot(${timeSlot}):`, err);
       return;
     }
 
@@ -339,7 +331,7 @@ You have been assigned a new enquiry!
 📞 Contact: ${enquiry.contact}
 📍 Location: ${enquiry.location}, ${enquiry.city}
 
-Please take action on this enquiry: Accept ✅ or Reject ❌. 
+Please take action on this enquiry: Accept ✅ or Reject . 
 
 Ensure timely follow-up and provide the best service.
 
@@ -383,7 +375,7 @@ export const sendVisitReminders = async () => {
 
   db.query(sql, [visitDate], async (err, results) => {
     if (err) {
-      console.error("❌ Database query error:", err);
+      console.error("Database query error:", err);
       return;
     }
 
@@ -440,7 +432,7 @@ Team Reparv
         "UPDATE propertyfollowup SET notification_sent = 1 WHERE followupid = ?",
         [row.followupid],
         (err) => {
-          if (err) console.error("❌ Failed to mark notification_sent:", err);
+          if (err) console.error(" Failed to mark notification_sent:", err);
         }
       );
     }
@@ -449,5 +441,89 @@ Team Reparv
 
 // Cron: run every minute, but notifications will only send once per follow-up
 cron.schedule("* * * * *", sendVisitReminders);
-
 cron.schedule("* * * * *", checkNewEnquiries);
+// Runs every day at midnight
+//Subscription Expiry Check & Reminder
+// Helper function to use callback-style db.query with async/await
+const queryAsync = (sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    db.query(sql, params, (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
+  });
+};
+
+cron.schedule("0 0 * * *", async () => {
+  try {
+    console.log("🕛 Running daily subscription status & reminder check...");
+
+    //  Expire old subscriptions
+    await queryAsync(`
+      UPDATE subscriptions 
+      SET status = 'expired' 
+      WHERE end_date < NOW() 
+      AND status = 'active'
+    `);
+
+    // 2️Find subscriptions expiring in exactly 7 days and not yet notified
+    const expiringSoon = await queryAsync(`
+      SELECT 
+        s.id, 
+        s.salespersonid, 
+        s.plan,
+        s.end_date, 
+        sp.onesignalid, 
+        sp.fullname
+      FROM subscriptions s
+      JOIN salespersons sp 
+      
+        ON s.salespersonid = sp.salespersonsid
+      WHERE DATE(s.end_date) = DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+        AND s.status = 'active'
+        AND s.notified_7days = 0
+    `);
+
+    console.log(
+      `📅 Found ${expiringSoon.length} subscriptions expiring in 7 days.`
+    );
+
+    // 3 Send notifications
+    for (const sub of expiringSoon) {
+      if (sub.onesignalid) {
+        await sendSPNotification(
+          sub.onesignalid,
+          "⚠️ Subscription Expiry Reminder",
+          `Hello ${sub.fullname}, 👋
+
+We wanted to remind you that your *Reparv Sales Partner subscription* will expire in **7 days**.
+
+🗓️ Expiry Date: ${new Date(sub.end_date).toLocaleDateString()}
+💼 Current Plan: ${sub.plan}
+
+Please renew your subscription before it expires to continue:
+- Receiving new leads and enquiries 📈
+- Accessing premium tools and analytics 📊
+- Maintaining your active Sales Partner status ✅
+
+Renew now to avoid any interruption in your services.
+
+Thank you,  
+Team Reparv`
+        );
+
+        // 4️⃣ Mark as notified
+        await queryAsync(
+          `UPDATE subscriptions SET notified_7days = 1 WHERE id = ?`,
+          [sub.id]
+        );
+
+        console.log(`Sent 7-day expiry reminder to ${sub.fullname}`);
+      }
+    }
+
+    console.log(" Expiry check and reminders completed successfully.");
+  } catch (error) {
+    console.error(" Error in subscription cron:", error);
+  }
+});

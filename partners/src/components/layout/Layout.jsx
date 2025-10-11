@@ -159,9 +159,7 @@ function Layout() {
         <div className="navlink hidden md:flex items-center justify-start gap-7 lg:gap-7 xl:gap-15 text-base xl:text-lg leading-[22px] tracking-[0.1em] font-bold text-[#110229]">
           <NavLink
             to="/sales-partner"
-            className={`${getNavLinkClass("/sales-partner")} ${getNavLinkClass(
-              "/"
-            )}`}
+            className={`${getNavLinkClass("/sales-partner")}`}
           >
             Sales Partner
           </NavLink>
@@ -208,13 +206,7 @@ function Layout() {
             <div className="leftBody flex flex-col gap-4 text-lg font-medium">
               <h3 className="text-xl font-bold">Company</h3>
               <p className="cursor-pointer">
-                <Link
-                  onClick={() => {
-                    window.open("https://www.reparv.in/", "_blank");
-                  }}
-                >
-                  Home
-                </Link>
+                <Link to="/home">Home</Link>
               </p>
               <p className="cursor-pointer">
                 <Link
@@ -366,11 +358,7 @@ function Layout() {
             >
               Contact Us
             </Link>
-            <Link
-              to={"/account-cancellation"}
-            >
-              Delete Account
-            </Link>
+            <Link to={"/account-cancellation"}>Delete Account</Link>
           </div>
         </div>
 

@@ -131,6 +131,7 @@ function Layout() {
     setShowVideoUploadForm,
     showPropertyLocationForm,
     setShowPropertyLocationForm,
+    showAuthorityForm, setShowAuthorityForm,
     isLoggedIn,
   } = useAuth();
 
@@ -189,6 +190,7 @@ function Layout() {
     { state: showStatusForm, setter: setShowStatusForm },
     { state: showVideoUploadForm, setter: setShowVideoUploadForm },
     { state: showPropertyLocationForm, setter: setShowPropertyLocationForm },
+    { state: showAuthorityForm, setter: setShowAuthorityForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -239,6 +241,7 @@ function Layout() {
     },
     { to: "/role", icon: employeeIcon, label: "Roles" },
     { to: "/department", icon: employeeIcon, label: "Departments" },
+    { to: "/property-authorities", icon: employeeIcon, label: "Authorities" },
     { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
     { to: "/apk-upload", icon: marketingIcon, label: "Apk Upload" },
     { to: "/blogs", icon: marketingIcon, label: "Blogs" },

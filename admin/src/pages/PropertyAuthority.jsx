@@ -3,10 +3,8 @@ import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
 import ActionSelect from "../components/ActionSelect";
-import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import AddButton from "../components/AddButton";
 import { IoMdClose } from "react-icons/io";
-import EmployeeFilter from "../components/employee/EmployeeFilter";
 import DataTable from "react-data-table-component";
 import Loader from "../components/Loader";
 
@@ -277,6 +275,11 @@ const PropertyAuthority = () => {
             <IoMdClose
               onClick={() => {
                 setShowAuthorityForm(false);
+                setNewAuthority({
+                  id: "",
+                  authorityName: "",
+                  authorityNACL: "",
+                });
               }}
               className="w-6 h-6 cursor-pointer"
             />
@@ -326,6 +329,11 @@ const PropertyAuthority = () => {
                type="button"
                 onClick={() => {
                   setShowRoleForm(false);
+                  setNewAuthority({
+                  id: "",
+                  authorityName: "",
+                  authorityNACL: "",
+                });
                 }}
                 className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
               >

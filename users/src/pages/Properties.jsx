@@ -345,17 +345,54 @@ const Properties = () => {
   const uploadVideo = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
+    if (!selectedImage && !videoUpload?.videoFile) {
+      alert("Please select a brochure image/PDF or a video to upload.");
+      return;
+    }
 
-    // Image or PDF
+    // === Validation ===
+    const allowedImageTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "application/pdf",
+    ];
+    const allowedVideoTypes = [
+      "video/mp4",
+      "video/mpeg",
+      "video/quicktime",
+      "video/x-msvideo",
+    ];
+    const maxFileSize = 300 * 1024 * 1024; 
+
+    // Validate brochure file
     if (selectedImage) {
-      formData.append("brochureFile", selectedImage);
+      if (!allowedImageTypes.includes(selectedImage.type)) {
+        alert("Only JPG, PNG, WEBP, or PDF files are allowed for brochure.");
+        return;
+      }
+      if (selectedImage.size > maxFileSize) {
+        alert("Brochure file size must be less than 300MB.");
+        return;
+      }
     }
 
-    // Video
+    // Validate video file
     if (videoUpload?.videoFile) {
-      formData.append("videoFile", videoUpload.videoFile);
+      if (!allowedVideoTypes.includes(videoUpload.videoFile.type)) {
+        alert("Only MP4, MPEG, MOV, or AVI videos are allowed.");
+        return;
+      }
+      if (videoUpload.videoFile.size > maxFileSize) {
+        alert("Video file size must be less than 300MB.");
+        return;
+      }
     }
+
+    const formData = new FormData();
+    if (selectedImage) formData.append("brochureFile", selectedImage);
+    if (videoUpload?.videoFile)
+      formData.append("videoFile", videoUpload.videoFile);
 
     try {
       setLoading(true);
@@ -376,12 +413,14 @@ const Properties = () => {
         alert(`Error: ${data.message}`);
       }
 
+      // Reset states
       setShowVideoUploadForm(false);
       setSelectedImage(null);
       setVideoUpload({ videoFile: null });
       await fetchData();
     } catch (error) {
       console.error("Error Uploading Brochure Or Video:", error);
+      alert("Something went wrong while uploading. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -807,7 +846,7 @@ const Properties = () => {
       <div
         className={` ${
           !showVideoUploadForm && "hidden"
-        } z-[61] overflow-scroll scrollbar-hide  w-full flex fixed bottom-0 md:bottom-auto `}
+        } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto`}
       >
         <div className="w-full overflow-scroll scrollbar-hide md:w-[450px] max-h-[80vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
@@ -821,15 +860,17 @@ const Properties = () => {
               className="w-6 h-6 cursor-pointer"
             />
           </div>
+
           <form onSubmit={uploadVideo}>
-            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-1">
+            <div className="w-full grid gap-4 place-items-center grid-cols-1">
               <input
                 type="hidden"
                 value={propertyKey || ""}
                 onChange={(e) => setPropertyKey(e.target.value)}
               />
 
-              <div className={`w-full`}>
+              {/* Brochure Upload */}
+              <div className="w-full">
                 {videoUpload?.brochureFile && (
                   <div className="relative mb-3">
                     <img
@@ -842,14 +883,42 @@ const Properties = () => {
                     />
                   </div>
                 )}
+
                 <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
-                  Brochure Image
+                  Brochure Image / PDF
                 </label>
                 <div className="w-full mt-2">
                   <input
                     type="file"
                     accept="image/*,application/pdf"
-                    onChange={singleImageChange}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const allowedTypes = [
+                          "image/jpeg",
+                          "image/png",
+                          "image/webp",
+                          "application/pdf",
+                        ];
+                        const maxSize = 300 * 1024 * 1024;
+
+                        if (!allowedTypes.includes(file.type)) {
+                          alert(
+                            "Only JPG, PNG, WEBP, or PDF files are allowed."
+                          );
+                          e.target.value = "";
+                          return;
+                        }
+
+                        if (file.size > maxSize) {
+                          alert("File size must be less than 300MB.");
+                          e.target.value = "";
+                          return;
+                        }
+
+                        setSelectedImage(file);
+                      }
+                    }}
                     className="hidden"
                     id="imageUpload"
                   />
@@ -858,7 +927,7 @@ const Properties = () => {
                     className="flex items-center justify-between border border-gray-300 leading-4 text-[#00000066] rounded cursor-pointer"
                   >
                     <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
-                      Upload Image
+                      Upload Image / PDF
                     </span>
                     <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
                       Browse
@@ -884,6 +953,8 @@ const Properties = () => {
                   </div>
                 )}
               </div>
+
+              {/* Video Upload */}
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#0000007b] font-medium">
                   Video
@@ -891,16 +962,32 @@ const Properties = () => {
                 <input
                   type="file"
                   accept="video/*"
-                  className="w-full mt-[8px] text-[16px] font-medium p-3 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600"
+                  className="w-full mt-[8px] text-[16px] font-medium p-3 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#076300]"
                   onChange={(e) => {
                     const file = e.target.files[0];
                     if (file) {
-                      const maxSize = 50 * 1024 * 1024; // 50MB limit
-                      if (file.size > maxSize) {
-                        alert("Video must be less than 50MB");
+                      const allowedTypes = [
+                        "video/mp4",
+                        "video/mpeg",
+                        "video/quicktime",
+                        "video/x-msvideo",
+                      ];
+                      const maxSize = 300 * 1024 * 1024;
+
+                      if (!allowedTypes.includes(file.type)) {
+                        alert(
+                          "Only MP4, MPEG, MOV, or AVI videos are allowed."
+                        );
                         e.target.value = "";
                         return;
                       }
+
+                      if (file.size > maxSize) {
+                        alert("Video must be less than 300MB.");
+                        e.target.value = "";
+                        return;
+                      }
+
                       setVideoUpload({
                         ...videoUpload,
                         videoFile: file,
@@ -910,15 +997,15 @@ const Properties = () => {
                 />
               </div>
             </div>
+
+            {/* Buttons */}
             <div className="flex mt-8 md:mt-6 justify-end gap-6">
               <button
                 type="button"
                 onClick={() => {
                   setShowVideoUploadForm(false);
-                  setSelectedImage(null);
-                  setVideoUpload({ videoFile: null });
                 }}
-                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+                className="px-4 py-2 leading-4 text-white bg-[#000000B2] rounded active:scale-[0.98]"
               >
                 Cancel
               </button>
@@ -928,7 +1015,7 @@ const Properties = () => {
               >
                 Upload
               </button>
-              <Loader></Loader>
+              <Loader />
             </div>
           </form>
         </div>

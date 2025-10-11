@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
-import reparvAppLogo from "../../assets/reparvIcon.png";
+import territoryAppLogo from "../../assets/territoryAPKLogo.png";
 import reparvMainLogo from "../../assets/layout/reparvMainLogo.svg";
 import overviewIcon from "../../assets/layout/overviewIcon.svg";
 import enquirersIcon from "../../assets/layout/enquirersIcon.svg";
@@ -238,7 +238,7 @@ function Layout() {
                 icon: marketingIcon,
                 label: "Marketing Content",
               },
-              { to: "/download-apk", icon: reparvAppLogo, label: "Territory APK Download" },
+              { to: "/download-apk", icon: territoryAppLogo, label: "Territory APK Download" },
             ].map(({ to, icon, label }) => (
               <NavLink
                 onClick={() => {

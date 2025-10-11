@@ -318,7 +318,7 @@ function Layout() {
               { to: "/role", icon: employeeIcon, label: "Roles" },
               { to: "/department", icon: employeeIcon, label: "Departments" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
-              { to: "/property-authorities", icon: customersIcon, label: "Authorities" },
+              { to: "/property-authorities", icon: employeeIcon, label: "Authorities" },
               { to: "/apk-upload", icon: marketingIcon, label: "Apk Upload" },
               { to: "/blogs", icon: marketingIcon, label: "Blogs" },
               { to: "/trends", icon: marketingIcon, label: "Trends" },

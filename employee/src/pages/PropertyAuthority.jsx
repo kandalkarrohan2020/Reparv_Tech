@@ -3,25 +3,28 @@ import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
 import ActionSelect from "../components/ActionSelect";
-import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import AddButton from "../components/AddButton";
 import { IoMdClose } from "react-icons/io";
-import EmployeeFilter from "../components/employee/EmployeeFilter";
 import DataTable from "react-data-table-component";
 import Loader from "../components/Loader";
 
-const Role = () => {
-  const { showRoleForm, setShowRoleForm, action, URI, setLoading } = useAuth();
+const PropertyAuthority = () => {
+  const { showAuthorityForm, setShowAuthorityForm, action, URI, setLoading } =
+    useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [newRole, setNewRole] = useState({ roleid: "", role: "" });
+  const [newAuthority, setNewAuthority] = useState({
+    id: "",
+    authorityName: "",
+    authorityNACL: "",
+  });
 
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/admin/roles", {
+      const response = await fetch(URI + "/admin/authorities", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -38,29 +41,29 @@ const Role = () => {
   const addOrUpdate = async (e) => {
     e.preventDefault();
 
-    const endpoint = newRole.roleid ? `edit/${newRole.roleid}` : "add";
+    const endpoint = newAuthority.id ? `edit/${newAuthority.id}` : "add";
     try {
       setLoading(true);
-      const response = await fetch(URI + `/admin/roles/${endpoint}`, {
-        method: action === "update" ? "PUT" : "POST",
+      const response = await fetch(URI + `/admin/authorities/${endpoint}`, {
+        method: newAuthority.id ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newRole),
+        body: JSON.stringify(newAuthority),
       });
 
       if (!response.ok) throw new Error("Failed to save role.");
 
-      if (newRole.roleid) {
-        alert(`Role updated successfully!`);
+      if (newAuthority.id) {
+        alert(`Authority Updated Successfully!`);
       } else if (response.status === 202) {
-        alert(`Role already Exit!!`);
+        alert(`Authority already Exit!!`);
       } else {
-        alert(`Role added successfully!`);
+        alert(`Authority added successfully!`);
       }
 
-      setNewRole({ role: "" });
+      setNewAuthority({ authorityName: "", authorityNACL: "" });
 
-      setShowRoleForm(false);
+      setShowAuthorityForm(false);
       fetchData();
     } catch (err) {
       console.error("Error saving :", err);
@@ -72,17 +75,17 @@ const Role = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/roles/${id}`, {
+      const response = await fetch(URI + `/admin/authorities/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch roles.");
+      if (!response.ok) throw new Error("Failed to fetch authorities.");
       const data = await response.json();
-      setNewRole(data);
-      setShowRoleForm(true);
+      setNewAuthority(data);
+      setShowAuthorityForm(true);
     } catch (err) {
       console.error("Error fetching :", err);
     }
@@ -90,16 +93,17 @@ const Role = () => {
 
   // Delete record
   const del = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this role?")) return;
+    if (!window.confirm("Are you sure you want to delete this authority?"))
+      return;
     try {
-      const response = await fetch(URI + `/admin/roles/delete/${id}`, {
+      const response = await fetch(URI + `/admin/authorities/delete/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
 
       const data = await response.json();
       if (response.ok) {
-        alert("Role deleted successfully!");
+        alert("Authority deleted successfully!");
 
         fetchData();
       } else {
@@ -112,11 +116,13 @@ const Role = () => {
 
   // change status record
   const status = async (id) => {
-    if (!window.confirm("Are you sure you want to change this role status?"))
+    if (
+      !window.confirm("Are you sure you want to change this Authority status?")
+    )
       return;
 
     try {
-      const response = await fetch(URI + `/admin/roles/status/${id}`, {
+      const response = await fetch(URI + `/admin/authorities/status/${id}`, {
         method: "PUT",
         credentials: "include",
       });
@@ -139,8 +145,8 @@ const Role = () => {
 
   const filteredData = datas.filter(
     (item) =>
-      item.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.status.toLowerCase().includes(searchTerm.toLowerCase())
+      item.authorityName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.authorityNACL.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const customStyles = {
@@ -194,49 +200,52 @@ const Role = () => {
       width: "70px",
     },
     {
-      name: "Name",
-      selector: (row) => row.role,
+      name: "Authority Name",
+      selector: (row) => row.authorityName,
       sortable: true,
-      width: "200px",
+      minWidth: "300px",
     },
     {
-      name: "",
+      name: "Short Form",
+      selector: (row) => row.authorityNACL,
+      sortable: true,
+      minWidth: "200px",
+    },
+    {
+      name: "Action",
       cell: (row) => (
         <ActionSelect
-          statusAction={() => status(row.roleid)}
-          editAction={() => edit(row.roleid)} // Dynamic edit route
-          deleteAction={() => del(row.roleid)} // Delete function
+          statusAction={() => status(row.id)}
+          editAction={() => edit(row.id)} // Dynamic edit route
+          deleteAction={() => del(row.id)} // Delete function
         />
       ),
       width: "120px",
     },
   ];
-  // const handleMethod = () => {
-  //   console.log("add");
-  // };
 
   return (
     <div
-      className={`role overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
+      className={`overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
     >
-      <div className="role-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
-        {/* <p className="block md:hidden text-lg font-semibold">Role</p> */}
+      <div className="w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
+        {/* <p className="block md:hidden text-lg font-semibold">Authority</p> */}
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
             <CiSearch />
             <input
               type="text"
-              placeholder="Search Role"
+              placeholder="Search Authority"
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
-            <AddButton label={"Add"} func={setShowRoleForm} />
+            <AddButton label={"Add"} func={setShowAuthorityForm} />
           </div>
         </div>
-        <h2 className="text-[16px] font-semibold">Role List</h2>
+        <h2 className="text-[16px] font-semibold">Authority List</h2>
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"
@@ -257,16 +266,20 @@ const Role = () => {
 
       <div
         className={`${
-          showRoleForm ? "flex" : "hidden"
+          showAuthorityForm ? "flex" : "hidden"
         } z-[61] roleForm overflow-scroll scrollbar-hide w-full fixed bottom-0 md:bottom-auto `}
       >
         <div className="w-full md:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Role</h2>
+            <h2 className="text-[16px] font-semibold">Authority</h2>
             <IoMdClose
               onClick={() => {
-                setShowRoleForm(false);
-                setNewRole({ roleid: "", role: "" });
+                setShowAuthorityForm(false);
+                setNewAuthority({
+                  id: "",
+                  authorityName: "",
+                  authorityNACL: "",
+                });
               }}
               className="w-6 h-6 cursor-pointer"
             />
@@ -275,23 +288,44 @@ const Role = () => {
             <div className="w-full grid gap-4 place-items-center grid-cols-1">
               <input
                 type="hidden"
-                value={newRole.roleid || ""}
+                value={newAuthority.id || ""}
                 onChange={(e) =>
-                  setNewRole({ ...newRole, roleid: e.target.value })
+                  setNewAuthority({ ...newAuthority, id: e.target.value })
                 }
               />
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Enter Role
+                  Authority Name
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Enter Role"
+                  placeholder="Enter Authority Name"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newRole.role}
+                  value={newAuthority.authorityName}
                   onChange={(e) =>
-                    setNewRole({ ...newRole, role: e.target.value })
+                    setNewAuthority({
+                      ...newAuthority,
+                      authorityName: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Short Form
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter Authority Short Form"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newAuthority.authorityNACL}
+                  onChange={(e) =>
+                    setNewAuthority({
+                      ...newAuthority,
+                      authorityNACL: e.target.value,
+                    })
                   }
                 />
               </div>
@@ -301,7 +335,11 @@ const Role = () => {
                 type="button"
                 onClick={() => {
                   setShowRoleForm(false);
-                  setNewRole({ roleid: "", role: "" });
+                  setNewAuthority({
+                    id: "",
+                    authorityName: "",
+                    authorityNACL: "",
+                  });
                 }}
                 className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
               >
@@ -322,4 +360,4 @@ const Role = () => {
   );
 };
 
-export default Role;
+export default PropertyAuthority;

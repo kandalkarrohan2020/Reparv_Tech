@@ -175,7 +175,7 @@ const brochureVideoStorage = multer.diskStorage({
 
 const brochureVideoUpload = multer({
   storage: brochureVideoStorage,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB for videos/images
+  limits: { fileSize: 300 * 1024 * 1024 }, // 300 MB for videos/images
   fileFilter: (req, file, cb) => {
     const allowedFileTypes = [
       "image/jpeg",

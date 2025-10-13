@@ -239,11 +239,11 @@ function HomePropertySection() {
                   <div
                     onClick={() => {
                       //window.open(URI + property?.videoFile, "_blank");
-                      setVideoURL(URI + property?.videoFile);
+                      setVideoURL(property?.videoLink);
                       setShowPlayVideo(true);
                     }}
                     className={`${
-                      property?.videoFile ? "block" : "hidden"
+                      property?.videoLink ? "block" : "hidden"
                     } relative overflow-hidden p-[5px] z-10 text-white bg-[#107c0b] rounded-lg cursor-pointer`}
                   >
                     <div className="overflow-hidden relative z-10 flex items-center justify-center animate-blink">

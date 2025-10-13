@@ -2,7 +2,7 @@ import { useAuth } from "../../store/auth";
 import { MdOutlineFileDownload } from "react-icons/md";
 import { MdOutlinePlayCircleOutline } from "react-icons/md";
 
-function BrochureAndVideo({ brochureFile, videoFile }) {
+function BrochureAndVideo({ brochureFile, videoLink }) {
   const { URI, setVideoURL, setShowPlayVideo } = useAuth();
 
   return (
@@ -10,11 +10,11 @@ function BrochureAndVideo({ brochureFile, videoFile }) {
       <div
         onClick={() => {
           //window.open(URI + property?.videoFile, "_blank");
-          setVideoURL(URI + videoFile);
+          setVideoURL(videoLink);
           setShowPlayVideo(true);
         }}
         className={`${
-          videoFile ? "block" : "hidden"
+          videoLink ? "block" : "hidden"
         } relative overflow-hidden p-[5px] z-10 text-white bg-[#107c0b] rounded-lg cursor-pointer`}
       >
         <div className="overflow-hidden relative z-10 flex items-center justify-center animate-blink">

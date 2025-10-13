@@ -10,7 +10,7 @@ function TypeWisePricing({
   propertyCategory,
   propertyType,
   brochureFile,
-  videoFile,
+  videoLink,
 }) {
   const { URI, setLoading, setShowSharePopup } = useAuth();
   const [isActive, setIsActive] = useState(propertyType?.[0] || "");
@@ -98,7 +98,7 @@ function TypeWisePricing({
           {propertyCategory}
         </h2>
         <div className="flex gap-3 mb-3">
-          <BrochureAndVideo brochureFile={brochureFile} videoFile={videoFile} />
+          <BrochureAndVideo brochureFile={brochureFile} videoLink={videoLink} />
           <div
             onClick={() => {
               setShowSharePopup(true);

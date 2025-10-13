@@ -113,7 +113,7 @@ function PropertyDetails() {
               propertyCategory={propertyInfo?.propertyCategory}
               propertyType={propertyInfo.propertyType}
               brochureFile={propertyInfo.brochureFile}
-              videoFile={propertyInfo.videoFile}
+              videoLink={propertyInfo.videoLink}
             />
 
             {/* Property Details */}

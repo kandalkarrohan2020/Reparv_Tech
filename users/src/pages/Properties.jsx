@@ -109,7 +109,7 @@ const Properties = () => {
   // for Uploade Brochure and Video
   const [videoUpload, setVideoUpload] = useState({
     brochureFile: "",
-    videoFile: "",
+    videoLink: "",
   });
 
   //Single Image Upload
@@ -334,7 +334,7 @@ const Properties = () => {
       setVideoUpload({
         ...videoUpload,
         brochureFile: data.brochureFile,
-        videoFile: data.videoFile,
+        videoLink: data.videoLink,
       });
       setShowVideoUploadForm(true);
     } catch (err) {
@@ -345,25 +345,21 @@ const Properties = () => {
   const uploadVideo = async (e) => {
     e.preventDefault();
 
-    if (!selectedImage && !videoUpload?.videoFile) {
-      alert("Please select a brochure image/PDF or a video to upload.");
+    // === Validation ===
+    if (!selectedImage && !videoUpload?.videoLink) {
+      alert(
+        "Please select a brochure image/PDF or enter a YouTube video link."
+      );
       return;
     }
 
-    // === Validation ===
     const allowedImageTypes = [
       "image/jpeg",
       "image/png",
       "image/webp",
       "application/pdf",
     ];
-    const allowedVideoTypes = [
-      "video/mp4",
-      "video/mpeg",
-      "video/quicktime",
-      "video/x-msvideo",
-    ];
-    const maxFileSize = 300 * 1024 * 1024; 
+    const maxFileSize = 300 * 1024 * 1024; // 300 MB
 
     // Validate brochure file
     if (selectedImage) {
@@ -377,22 +373,22 @@ const Properties = () => {
       }
     }
 
-    // Validate video file
-    if (videoUpload?.videoFile) {
-      if (!allowedVideoTypes.includes(videoUpload.videoFile.type)) {
-        alert("Only MP4, MPEG, MOV, or AVI videos are allowed.");
-        return;
-      }
-      if (videoUpload.videoFile.size > maxFileSize) {
-        alert("Video file size must be less than 300MB.");
+    // Validate YouTube link (optional but ensures correctness)
+    if (videoUpload?.videoLink) {
+      const isYouTubeURL =
+        videoUpload.videoLink.includes("youtube.com") ||
+        videoUpload.videoLink.includes("youtu.be");
+      if (!isYouTubeURL) {
+        alert("Please enter a valid YouTube video link.");
         return;
       }
     }
 
     const formData = new FormData();
+
     if (selectedImage) formData.append("brochureFile", selectedImage);
-    if (videoUpload?.videoFile)
-      formData.append("videoFile", videoUpload.videoFile);
+    if (videoUpload?.videoLink)
+      formData.append("videoLink", videoUpload.videoLink);
 
     try {
       setLoading(true);
@@ -407,6 +403,7 @@ const Properties = () => {
       );
 
       const data = await response.json();
+
       if (response.ok) {
         alert(`Success: ${data.message}`);
       } else {
@@ -416,10 +413,10 @@ const Properties = () => {
       // Reset states
       setShowVideoUploadForm(false);
       setSelectedImage(null);
-      setVideoUpload({ videoFile: null });
+      setVideoUpload({ videoLink: "" });
       await fetchData();
     } catch (error) {
-      console.error("Error Uploading Brochure Or Video:", error);
+      console.error("Error uploading brochure or video link:", error);
       alert("Something went wrong while uploading. Please try again.");
     } finally {
       setLoading(false);
@@ -855,7 +852,7 @@ const Properties = () => {
               onClick={() => {
                 setShowVideoUploadForm(false);
                 setSelectedImage(null);
-                setVideoUpload({ videoFile: null });
+                setVideoUpload({ videoLink: null });
               }}
               className="w-6 h-6 cursor-pointer"
             />
@@ -954,45 +951,22 @@ const Properties = () => {
                 )}
               </div>
 
-              {/* Video Upload */}
+              {/* YouTube Video Link */}
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#0000007b] font-medium">
-                  Video
+                  Video Link
                 </label>
                 <input
-                  type="file"
-                  accept="video/*"
+                  type="url"
+                  placeholder="Enter YouTube video URL"
                   className="w-full mt-[8px] text-[16px] font-medium p-3 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#076300]"
                   onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      const allowedTypes = [
-                        "video/mp4",
-                        "video/mpeg",
-                        "video/quicktime",
-                        "video/x-msvideo",
-                      ];
-                      const maxSize = 300 * 1024 * 1024;
+                    const url = e.target.value.trim();
 
-                      if (!allowedTypes.includes(file.type)) {
-                        alert(
-                          "Only MP4, MPEG, MOV, or AVI videos are allowed."
-                        );
-                        e.target.value = "";
-                        return;
-                      }
-
-                      if (file.size > maxSize) {
-                        alert("Video must be less than 300MB.");
-                        e.target.value = "";
-                        return;
-                      }
-
-                      setVideoUpload({
-                        ...videoUpload,
-                        videoFile: file,
-                      });
-                    }
+                    setVideoUpload({
+                      ...videoUpload,
+                      videoLink: url,
+                    });
                   }}
                 />
               </div>
@@ -1004,6 +978,8 @@ const Properties = () => {
                 type="button"
                 onClick={() => {
                   setShowVideoUploadForm(false);
+                  setSelectedImage(null);
+                  setVideoUpload({ videoLink: null });
                 }}
                 className="px-4 py-2 leading-4 text-white bg-[#000000B2] rounded active:scale-[0.98]"
               >

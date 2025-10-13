@@ -984,7 +984,7 @@ export const changePropertyLocation = (req, res) => {
   );
 };
 
-// * UPLOAD Brochure & Video *
+// * UPLOAD Brochure, Video & Video Link *
 export const uploadBrochureAndVideo = (req, res) => {
   const propertyId = req.params.id;
 
@@ -992,11 +992,14 @@ export const uploadBrochureAndVideo = (req, res) => {
     return res.status(400).json({ message: "Property Id is required" });
   }
 
-  const brochureFile = req.files?.brochureFile?.[0] || null; // image
+  const brochureFile = req.files?.brochureFile?.[0] || null; // brochure (image/pdf)
   const videoFile = req.files?.videoFile?.[0] || null; // video
+  const { videoLink } = req.body; // YouTube link
 
-  if (!brochureFile && !videoFile) {
-    return res.status(400).json({ message: "No brochure or video uploaded" });
+  if (!brochureFile && !videoFile && !videoLink) {
+    return res
+      .status(400)
+      .json({ message: "No brochure, video, or video link provided" });
   }
 
   const brochurePath = brochureFile
@@ -1004,9 +1007,9 @@ export const uploadBrochureAndVideo = (req, res) => {
     : null;
   const videoPath = videoFile ? `/uploads/videos/${videoFile.filename}` : null;
 
-  // 1 Get old files first
+  // Get old file paths
   db.query(
-    "SELECT brochureFile, videoFile FROM properties WHERE propertyid = ?",
+    "SELECT brochureFile, videoFile, videoLink FROM properties WHERE propertyid = ?",
     [propertyId],
     (err, result) => {
       if (err) {
@@ -1019,27 +1022,25 @@ export const uploadBrochureAndVideo = (req, res) => {
 
       const oldBrochure = result[0].brochureFile;
       const oldVideo = result[0].videoFile;
+      const oldVideoLink = result[0].videoLink;
 
-      // 2 Delete old files if new ones are provided
+      // Delete old files if new ones uploaded
       if (brochureFile && oldBrochure) {
         const oldPath = path.join(process.cwd(), oldBrochure);
-        if (fs.existsSync(oldPath)) {
-          fs.unlinkSync(oldPath);
-        }
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
       }
       if (videoFile && oldVideo) {
         const oldPath = path.join(process.cwd(), oldVideo);
-        if (fs.existsSync(oldPath)) {
-          fs.unlinkSync(oldPath);
-        }
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
       }
 
-      // 3 Update DB with new paths
+      // Update DB with new paths or link
       db.query(
-        "UPDATE properties SET brochureFile = ?, videoFile = ? WHERE propertyid = ?",
+        "UPDATE properties SET brochureFile = ?, videoFile = ?, videoLink = ? WHERE propertyid = ?",
         [
-          brochurePath || oldBrochure, // keep old if no new file
+          brochurePath || oldBrochure,
           videoPath || oldVideo,
+          videoLink || oldVideoLink,
           propertyId,
         ],
         (err) => {
@@ -1049,10 +1050,82 @@ export const uploadBrochureAndVideo = (req, res) => {
               .status(500)
               .json({ message: "Database error", error: err });
           }
+
           res.status(200).json({
-            message: "Brochure & Video uploaded successfully",
+            message: "Brochure, Video, or Link uploaded successfully",
             brochurePath: brochurePath || oldBrochure,
             videoPath: videoPath || oldVideo,
+            videoLink: videoLink || oldVideoLink,
+          });
+        }
+      );
+    }
+  );
+};
+
+// * UPLOAD Brochure & Video Link *
+export const uploadBrochureAndVideoLink = (req, res) => {
+  const propertyId = req.params.id;
+
+  if (!propertyId) {
+    return res.status(400).json({ message: "Property Id is required" });
+  }
+
+  const brochureFile = req.files?.brochureFile?.[0] || null; // brochure (image/pdf)
+  const { videoLink } = req.body; // YouTube or other video link
+
+  if (!brochureFile && !videoLink) {
+    return res
+      .status(400)
+      .json({ message: "No brochure or video link provided" });
+  }
+
+  const brochurePath = brochureFile
+    ? `/uploads/brochures/${brochureFile.filename}`
+    : null;
+
+  // Get old data
+  db.query(
+    "SELECT brochureFile, videoLink FROM properties WHERE propertyid = ?",
+    [propertyId],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+
+      const oldBrochure = result[0].brochureFile;
+      const oldVideoLink = result[0].videoLink;
+
+      // Delete old brochure if new one uploaded
+      if (brochureFile && oldBrochure) {
+        const oldPath = path.join(process.cwd(), oldBrochure);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+
+      // Update DB with new brochure & video link
+      db.query(
+        "UPDATE properties SET brochureFile = ?, videoLink = ? WHERE propertyid = ?",
+        [
+          brochurePath || oldBrochure,
+          videoLink || oldVideoLink,
+          propertyId,
+        ],
+        (err) => {
+          if (err) {
+            console.error("Error while saving brochure/video link:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+
+          res.status(200).json({
+            message: "Brochure & Video Link updated successfully",
+            brochurePath: brochurePath || oldBrochure,
+            videoLink: videoLink || oldVideoLink,
           });
         }
       );

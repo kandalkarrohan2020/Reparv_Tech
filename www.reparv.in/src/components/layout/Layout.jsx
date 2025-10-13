@@ -13,6 +13,7 @@ import PlayVideo from "../property/PlayVideo";
 import WingInfo from "../property/WingInfo";
 import PlotInfo from "../property/PlotInfo";
 import Share from "../property/Share";
+import PlayYoutubeVideo from "../property/PlayYoutubeVideo";
 
 // lazy load
 const CitySelector = lazy(() => import("../CitySelector"));
@@ -131,7 +132,7 @@ function Layout() {
 
       {showPlayVideo && (
         <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
-          <PlayVideo />
+          <PlayYoutubeVideo />
         </div>
       )}
 

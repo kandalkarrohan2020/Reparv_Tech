@@ -1,0 +1,89 @@
+# === Common System Files ===
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# === Logs ===
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.pid
+
+# === Environment Files ===
+.env
+.env.*
+*.env.local
+*.env.development
+*.env.production
+*.env.test
+
+# === Dependency Folders ===
+node_modules/
+**/node_modules/
+
+# === Build Outputs ===
+build/
+dist/
+.next/
+out/
+.cache/
+coverage/
+.nyc_output/
+
+# === Uploads / Temporary Files ===
+uploads/
+temp/
+tmp/
+
+# === Lock Files (optional to ignore) ===
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# === IDE / Editor ===
+.vscode/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# === Certificates / Keys / Sensitive Files ===
+*.pem
+*.key
+*.crt
+*.p12
+*.json
+firebase-service-account.json
+config/*.json
+config/*.key
+config/*.pem
+
+# === Database / SQLite ===
+*.sqlite
+*.db
+
+# === Project-Specific Folders ===
+backend/uploads/
+backend/logs/
+backend/temp/
+
+admin/build/
+admin/dist/
+sales/build/
+sales/dist/
+territoryPartner/build/
+territoryPartner/dist/
+projectPartner/build/
+projectPartner/dist/
+builder/build/
+builder/dist/
+guestUser/build/
+guestUser/dist/

@@ -127,7 +127,10 @@ function Layout() {
     setShowVideoUploadForm,
     showPropertyLocationForm,
     setShowPropertyLocationForm,
-    showAuthorityForm, setShowAuthorityForm,
+    showAuthorityForm,
+    setShowAuthorityForm,
+    showSubscriptionForm,
+    setShowSubscriptionForm,
     showEMI,
     setShowEMI,
     isLoggedIn,
@@ -189,6 +192,7 @@ function Layout() {
     { state: showVideoUploadForm, setter: setShowVideoUploadForm },
     { state: showPropertyLocationForm, setter: setShowPropertyLocationForm },
     { state: showAuthorityForm, setter: setShowAuthorityForm },
+    { state: showSubscriptionForm, setter: setShowSubscriptionForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -310,6 +314,7 @@ function Layout() {
               },
               { to: "/guest-users", icon: partnerIcon, label: "Guest Users" },
               //{ to: "/auctionmembers", icon: partnerIcon, label: "Auction Members" },
+              { to: "/subscription-pricing", icon: partnerIcon, label: "Subscription Pricing" },
               {
                 to: "/users-loan-eligibility",
                 icon: partnerIcon,
@@ -318,7 +323,11 @@ function Layout() {
               { to: "/role", icon: employeeIcon, label: "Roles" },
               { to: "/department", icon: employeeIcon, label: "Departments" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
-              { to: "/property-authorities", icon: employeeIcon, label: "Authorities" },
+              {
+                to: "/property-authorities",
+                icon: employeeIcon,
+                label: "Authorities",
+              },
               { to: "/apk-upload", icon: marketingIcon, label: "Apk Upload" },
               { to: "/blogs", icon: marketingIcon, label: "Blogs" },
               { to: "/trends", icon: marketingIcon, label: "Trends" },

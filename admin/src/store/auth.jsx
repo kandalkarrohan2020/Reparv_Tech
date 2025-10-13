@@ -96,6 +96,7 @@ export const AuthProvider = ({ children }) => {
   const [showPropertyLocationForm, setShowPropertyLocationForm] =
     useState(false);
   const [showAuthorityForm, setShowAuthorityForm] = useState(false);
+  const [showSubscriptionForm, setShowSubscriptionForm] = useState(false);
 
   return (
     <AuthContext.Provider
@@ -236,6 +237,8 @@ export const AuthProvider = ({ children }) => {
         setShowPropertyCommissionPopup,
         showAuthorityForm,
         setShowAuthorityForm,
+        showSubscriptionForm,
+        setShowSubscriptionForm,
       }}
     >
       {children}

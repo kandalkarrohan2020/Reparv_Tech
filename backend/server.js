@@ -26,6 +26,7 @@ import partnerRoutes from "./routes/admin/partnerRoutes.js";
 import projectPartnerRoutes from "./routes/admin/projectPartnerRoutes.js";
 import territoryPartnerRoutes from "./routes/admin/territoryPartnerRoutes.js";
 import guestUserRoutes from "./routes/admin/guestUserRoutes.js";
+import subscriptionPricingRoutes from "./routes/admin/subscriptionPricingRoutes.js";
 import propertytypeRoutes from "./routes/admin/propertytypeRoutes.js";
 import enquirerRoutes from "./routes/admin/enquirerRoutes.js";
 import addEnquiryRoutes from "./routes/admin/enquiryRoutes.js";
@@ -421,6 +422,7 @@ app.use("/admin/partner", partnerRoutes);
 app.use("/admin/projectpartner", projectPartnerRoutes);
 app.use("/admin/territorypartner", territoryPartnerRoutes);
 app.use("/admin/guestuser", guestUserRoutes);
+app.use("/admin/subscription/pricing", subscriptionPricingRoutes);
 app.use("/admin/propertytypes", propertytypeRoutes);
 app.use("/admin/enquirers", enquirerRoutes);
 // CSV File add Enquiries Route

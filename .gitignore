@@ -25,6 +25,10 @@ logs/
 *.env.production
 *.env.test
 
+# Firebase credentials
+config/*.json
+backend/config/*.json
+
 # === Dependency Folders ===
 node_modules/
 **/node_modules/

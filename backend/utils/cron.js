@@ -148,7 +148,7 @@ export const checkEnquiriesWithTime = () => {
         console.error(" Error updating enquiries:", updateErr);
         return;
       }
-      console.log(`✅ Rejected ${updateResult.affectedRows} enquiries.`);
+      console.log(` Rejected ${updateResult.affectedRows} enquiries.`);
     });
   });
 };

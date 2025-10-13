@@ -1064,73 +1064,81 @@ export const uploadBrochureAndVideo = (req, res) => {
 };
 
 // * UPLOAD Brochure & Video Link *
-export const uploadBrochureAndVideoLink = (req, res) => {
-  const propertyId = req.params.id;
+export const uploadBrochureAndVideoLink = async (req, res) => {
+  try {
+    const propertyId = req.params.id;
 
-  if (!propertyId) {
-    return res.status(400).json({ message: "Property Id is required" });
-  }
-
-  const brochureFile = req.files?.brochureFile?.[0] || null; // brochure (image/pdf)
-  const { videoLink } = req.body; // YouTube or other video link
-
-  if (!brochureFile && !videoLink) {
-    return res
-      .status(400)
-      .json({ message: "No brochure or video link provided" });
-  }
-
-  const brochurePath = brochureFile
-    ? `/uploads/brochures/${brochureFile.filename}`
-    : null;
-
-  // Get old data
-  db.query(
-    "SELECT brochureFile, videoLink FROM properties WHERE propertyid = ?",
-    [propertyId],
-    (err, result) => {
-      if (err) {
-        console.error("Database error:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-      if (result.length === 0) {
-        return res.status(404).json({ message: "Property not found" });
-      }
-
-      const oldBrochure = result[0].brochureFile;
-      const oldVideoLink = result[0].videoLink;
-
-      // Delete old brochure if new one uploaded
-      if (brochureFile && oldBrochure) {
-        const oldPath = path.join(process.cwd(), oldBrochure);
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-      }
-
-      // Update DB with new brochure & video link
-      db.query(
-        "UPDATE properties SET brochureFile = ?, videoLink = ? WHERE propertyid = ?",
-        [
-          brochurePath || oldBrochure,
-          videoLink || oldVideoLink,
-          propertyId,
-        ],
-        (err) => {
-          if (err) {
-            console.error("Error while saving brochure/video link:", err);
-            return res
-              .status(500)
-              .json({ message: "Database error", error: err });
-          }
-
-          res.status(200).json({
-            message: "Brochure & Video Link updated successfully",
-            brochurePath: brochurePath || oldBrochure,
-            videoLink: videoLink || oldVideoLink,
-          });
-        }
-      );
+    if (!propertyId) {
+      return res.status(400).json({ message: "Property Id is required" });
     }
-  );
+
+    const brochureFile = req.file || null; // brochure (image/pdf)
+    const { videoLink } = req.body; // YouTube or other video link
+
+    if (!brochureFile && !videoLink) {
+      return res
+        .status(400)
+        .json({ message: "No brochure or video link provided" });
+    }
+
+    const brochurePath = brochureFile
+      ? `/uploads/brochures/${brochureFile.filename}`
+      : null;
+
+    // Get old data
+    db.query(
+      "SELECT brochureFile, videoLink FROM properties WHERE propertyid = ?",
+      [propertyId],
+      async (err, result) => {
+        if (err) {
+          console.error("Database error:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+
+        if (result.length === 0) {
+          return res.status(404).json({ message: "Property not found" });
+        }
+
+        const oldBrochure = result[0].brochureFile;
+        const oldVideoLink = result[0].videoLink;
+
+        // Delete old brochure if new one uploaded
+        if (brochureFile && oldBrochure) {
+          try {
+            const oldPath = path.join(process.cwd(), oldBrochure);
+            await fs.unlink(oldPath);
+          } catch (error) {
+            console.warn("Failed to delete old brochure:", error.message);
+          }
+        }
+
+        // Update DB with new brochure & video link
+        db.query(
+          "UPDATE properties SET brochureFile = ?, videoLink = ? WHERE propertyid = ?",
+          [brochurePath || oldBrochure, videoLink || oldVideoLink, propertyId],
+          (err) => {
+            if (err) {
+              console.error("Error while saving brochure/video link:", err);
+              return res
+                .status(500)
+                .json({ message: "Database error", error: err });
+            }
+
+            res.status(200).json({
+              message: "Brochure & Video Link updated successfully",
+              brochurePath: brochurePath || oldBrochure,
+              videoLink: videoLink || oldVideoLink,
+            });
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 };
 
 //* ADD Seo Details */

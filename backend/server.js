@@ -341,7 +341,7 @@ export const verifyToken = (req, res, next) => {
     onboardingToken: "onboardingUser",
     projectPartnerToken: "projectPartnerUser",
     territoryToken: "territoryUser",
-    guestToken: "guestUser",
+    userToken: "guestUser",
     token: "user",
   };
 

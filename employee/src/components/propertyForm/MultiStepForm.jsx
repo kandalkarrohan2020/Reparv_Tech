@@ -95,7 +95,7 @@ const MultiStepForm = ({
         propertyid: "",
         builderid: "",
         projectBy: "",
-    possessionDate: "",
+        possessionDate: "",
         propertyCategory: "",
         propertyApprovedBy: "",
         propertyName: "",
@@ -163,7 +163,6 @@ const MultiStepForm = ({
       const requiredFieldsStep1 = [
         "builderid", // number
         "propertyCategory",
-        "propertyApprovedBy",
         "propertyName",
         "address",
         "state",

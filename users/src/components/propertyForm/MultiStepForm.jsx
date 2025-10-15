@@ -163,7 +163,6 @@ const MultiStepForm = ({
       const requiredFieldsStep1 = [
         "builderid", // number
         "propertyCategory",
-        "propertyApprovedBy",
         "propertyName",
         "address",
         "state",

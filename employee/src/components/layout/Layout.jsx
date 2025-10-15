@@ -132,6 +132,7 @@ function Layout() {
     showPropertyLocationForm,
     setShowPropertyLocationForm,
     showAuthorityForm, setShowAuthorityForm,
+    showSubscriptionForm, setShowSubscriptionForm,
     isLoggedIn,
   } = useAuth();
 
@@ -191,6 +192,7 @@ function Layout() {
     { state: showVideoUploadForm, setter: setShowVideoUploadForm },
     { state: showPropertyLocationForm, setter: setShowPropertyLocationForm },
     { state: showAuthorityForm, setter: setShowAuthorityForm },
+    { state: showSubscriptionForm, setter: setShowSubscriptionForm },
   ];
 
   const getNavLinkClass = (path) => {
@@ -234,6 +236,7 @@ function Layout() {
       label: "Territory Partners",
     },
     { to: "/guest-users", icon: partnerIcon, label: "Guest Users" },
+    { to: "/subscription-pricing", icon: partnerIcon, label: "Subscription Pricing" },
     {
       to: "/users-loan-eligibility",
       icon: partnerIcon,

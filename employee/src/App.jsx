@@ -36,6 +36,7 @@ import UsersLoanEligibility from "./pages/UsersLoanEligibility.jsx";
 import UpdateEMI from "./components/usersLoanEligibility/UpdateEMI.jsx";
 import { useAuth } from "./store/auth.jsx";
 import PropertyAuthority from "./pages/PropertyAuthority.jsx";
+import Subscription from "./pages/Subscription.jsx";
 
 const App = () => {
   const { URI, setLoading, user } = useAuth();
@@ -64,6 +65,10 @@ const App = () => {
     {
       name: "Guest Users",
       menu: <Route path="/guest-users" element={<GuestUser />} />,
+    },
+    {
+      name: "Subscription Pricing",
+      menu: <Route path="/subscription-pricing" element={<Subscription />} />,
     },
     {
       name: "Builders",

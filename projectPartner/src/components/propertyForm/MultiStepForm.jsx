@@ -67,11 +67,14 @@ const MultiStepForm = ({
 
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/project-partner/properties/${endpoint}`, {
-        method: newProperty.propertyid ? "PUT" : "POST",
-        credentials: "include",
-        body: formData,
-      });
+      const response = await fetch(
+        `${URI}/project-partner/properties/${endpoint}`,
+        {
+          method: newProperty.propertyid ? "PUT" : "POST",
+          credentials: "include",
+          body: formData,
+        }
+      );
 
       // If duplicate property name
       if (response.status === 409) {
@@ -95,7 +98,7 @@ const MultiStepForm = ({
         propertyid: "",
         builderid: "",
         projectBy: "",
-    possessionDate: "",
+        possessionDate: "",
         propertyCategory: "",
         propertyApprovedBy: "",
         propertyName: "",
@@ -163,7 +166,6 @@ const MultiStepForm = ({
       const requiredFieldsStep1 = [
         "builderid", // number
         "propertyCategory",
-        "propertyApprovedBy",
         "propertyName",
         "address",
         "state",
@@ -177,7 +179,7 @@ const MultiStepForm = ({
         "totalOfferPrice", // number
         "stampDuty", // number
         "other", // number
-        "tags"
+        "tags",
       ];
 
       const allFilled = requiredFieldsStep1.every((field) => {
@@ -264,7 +266,9 @@ const MultiStepForm = ({
           <IoMdClose
             onClick={() => {
               setShowPropertyForm(false);
-              setPropertyData(prev => Object.fromEntries(Object.keys(prev).map(k => [k, ""])));
+              setPropertyData((prev) =>
+                Object.fromEntries(Object.keys(prev).map((k) => [k, ""]))
+              );
             }}
             className="w-7 h-7 cursor-pointer"
           />

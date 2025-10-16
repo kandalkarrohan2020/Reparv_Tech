@@ -2,14 +2,12 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
-import ActionSelect from "../components/ActionSelect";
-import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import AddButton from "../components/AddButton";
 import { IoMdClose } from "react-icons/io";
-import EmployeeFilter from "../components/employee/EmployeeFilter";
 import DataTable from "react-data-table-component";
 import Loader from "../components/Loader";
 import FormatPrice from "../components/FormatPrice";
+import { FiMoreVertical } from "react-icons/fi";
 
 const Subscription = () => {
   const {
@@ -23,11 +21,11 @@ const Subscription = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [newSubscription, setNewSubscription] = useState({
     id: "",
-    role: "",
-    oneMonthPrice: "",
-    threeMonthPrice: "",
-    sixMonthPrice: "",
-    oneYearPrice: "",
+    partnerType: "",
+    planDuration: "",
+    planName: "",
+    totalPrice: "",
+    features: "",
   });
 
   // **Fetch Data from API**
@@ -77,11 +75,11 @@ const Subscription = () => {
 
       setNewSubscription({
         id: "",
-        role: "",
-        oneMonthPrice: "",
-        threeMonthPrice: "",
-        sixMonthPrice: "",
-        oneYearPrice: "",
+        partnerType: "",
+        planDuration: "",
+        planName: "",
+        totalPrice: "",
+        features: "",
       });
 
       setShowSubscriptionForm(false);
@@ -112,29 +110,33 @@ const Subscription = () => {
     }
   };
 
-  // Delete record
-  const del = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this Subscription?"))
+  // Highlight The Plan
+  const highlight = async (id) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to Highlight this Subscription Plan?"
+      )
+    )
       return;
+
     try {
       const response = await fetch(
-        URI + `/admin/subscription/pricing/delete/${id}`,
+        URI + `/admin/subscription/pricing/highlight/${id}`,
         {
-          method: "DELETE",
+          method: "PUT",
           credentials: "include",
         }
       );
-
       const data = await response.json();
+      //console.log(response);
       if (response.ok) {
-        alert("Subscription deleted successfully!");
-
-        fetchData();
+        alert(`Success: ${data.message}`);
       } else {
         alert(`Error: ${data.message}`);
       }
+      fetchData();
     } catch (error) {
-      console.error("Error deleting :", error);
+      console.error("Error Highlighting :", error);
     }
   };
 
@@ -168,13 +170,40 @@ const Subscription = () => {
     }
   };
 
+  // Delete record
+  const del = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this Subscription?"))
+      return;
+    try {
+      const response = await fetch(
+        URI + `/admin/subscription/pricing/delete/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Subscription deleted successfully!");
+
+        fetchData();
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error while changing status:", error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
 
   const filteredData = datas.filter(
     (item) =>
-      item.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.partnerType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.planName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -229,44 +258,90 @@ const Subscription = () => {
       width: "70px",
     },
     {
-      name: "Partner Role",
-      selector: (row) => row.role,
+      name: "Partner Type",
+      selector: (row) => row.partnerType,
       sortable: true,
       width: "180px",
     },
     {
-      name: "Monthly Pricing",
-      selector: (row) => <FormatPrice price={parseInt(row.oneMonthPrice)} />,
-      minWidth: "150px",
+      name: "Plan Name",
+      cell: (row) => (<span className={`${row.highlight === "True" && "text-[#0bb501]"}`}>{row.planName}</span>),
+      width: "150px",
     },
     {
-      name: "3 Month Pricing",
-      selector: (row) => <FormatPrice price={parseInt(row.threeMonthPrice)} />,
-      minWidth: "150px",
+      name: "Plan Duration",
+      selector: (row) => row.planDuration,
+      width: "150px",
     },
     {
-      name: "6 Month Pricing",
-      selector: (row) => <FormatPrice price={parseInt(row.sixMonthPrice)} />,
-      minWidth: "150px",
+      name: "Total Price",
+      selector: (row) => <FormatPrice price={parseInt(row.totalPrice)} />,
+      width: "150px",
     },
     {
-      name: "Yearly Pricing",
-      selector: (row) => <FormatPrice price={parseInt(row.oneYearPrice)} />,
-      minWidth: "150px",
+      name: "Plan Features",
+      cell: (row) => (<span>
+        {row.features}
+      </span>),
+      width: "350px",
     },
-
     {
       name: "Action",
       cell: (row) => (
-        <ActionSelect
-          statusAction={() => status(row.id)}
-          editAction={() => edit(row.id)} // Dynamic edit route
-          deleteAction={() => del(row.id)} // Delete function
-        />
+        <ActionDropdown row={row}/>
       ),
       width: "120px",
     },
   ];
+
+  const ActionDropdown = ({ row }) => {
+    const [selectedAction, setSelectedAction] = useState("");
+
+    const handleActionSelect = (action, id) => {
+      switch (action) {
+        case "update":
+          edit(id);
+          break;
+        case "status":
+          status(id);
+          break;
+        case "highlight":
+          highlight(id);
+          break;
+        case "delete":
+          del(id);
+          break;
+        
+        default:
+          console.log("Invalid action");
+      }
+    };
+
+    return (
+      <div className="relative inline-block w-[120px]">
+        <div className="flex items-center justify-between p-2 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <span className=" text-[12px]">{selectedAction || "Action"}</span>
+          <FiMoreVertical className="text-gray-500" />
+        </div>
+        <select
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          value={selectedAction}
+          onChange={(e) => {
+            const action = e.target.value;
+            handleActionSelect(action, row.id);
+          }}
+        >
+          <option value="" disabled>
+            Select Action
+          </option>
+          <option value="update">Update</option>
+          <option value="status">Status</option>
+          <option value="highlight">Highlight</option>
+          <option value="delete">Delete</option>
+        </select>
+      </div>
+    );
+  };
 
   return (
     <div
@@ -315,17 +390,17 @@ const Subscription = () => {
       >
         <div className="w-full md:w-[500px] lg:w-[750px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Subscription Pricing</h2>
+            <h2 className="text-[16px] font-semibold">Subscription Plan</h2>
             <IoMdClose
               onClick={() => {
                 setShowSubscriptionForm(false);
                 setNewSubscription({
                   id: "",
-                  role: "",
-                  oneMonthPrice: "",
-                  threeMonthPrice: "",
-                  sixMonthPrice: "",
-                  oneYearPrice: "",
+                  partnerType: "",
+                  planDuration: "",
+                  planName: "",
+                  totalPrice: "",
+                  features: "",
                 });
               }}
               className="w-6 h-6 cursor-pointer"
@@ -342,21 +417,21 @@ const Subscription = () => {
               />
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Partner Role
+                  Partner Type
                 </label>
                 <select
                   required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none "
-                  value={newSubscription.role}
+                  value={newSubscription.partnerType}
                   onChange={(e) =>
                     setNewSubscription({
                       ...newSubscription,
-                      role: e.target.value,
+                      partnerType: e.target.value,
                     })
                   }
                 >
                   <option value="" disabled>
-                    Select Partner Role
+                    Select Partner Type
                   </option>
                   <option value="Sales Partner">Sales Partner</option>
                   <option value="Project Partner">Project Partner</option>
@@ -366,76 +441,88 @@ const Subscription = () => {
               </div>
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Month Price
+                  Plan Duration
                 </label>
-                <input
-                  type="number"
-                  min={0}
+                <select
                   required
-                  placeholder="Enter One Month Pricing"
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newSubscription.oneMonthPrice}
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none "
+                  value={newSubscription.planDuration}
                   onChange={(e) =>
                     setNewSubscription({
                       ...newSubscription,
-                      oneMonthPrice: e.target.value,
+                      planDuration: e.target.value,
+                    })
+                  }
+                >
+                  <option value="" disabled>
+                    Select Months
+                  </option>
+                  <option value="1 Month">1 Month</option>
+                  <option value="2 Months">2 Months</option>
+                  <option value="3 Months">3 Months</option>
+                  <option value="4 Months">4 Months</option>
+                  <option value="5 Months">5 Months</option>
+                  <option value="6 Months">6 Months</option>
+                  <option value="7 Months">7 Months</option>
+                  <option value="8 Months">8 Months</option>
+                  <option value="9 Months">9 Months</option>
+                  <option value="10 Months">10 Months</option>
+                  <option value="11 Months">11 Months</option>
+                  <option value="12 Months">12 Months</option>
+                </select>
+              </div>
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Plan Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter Plan Name"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-black"
+                  value={newSubscription.planName}
+                  onChange={(e) =>
+                    setNewSubscription({
+                      ...newSubscription,
+                      planName: e.target.value,
                     })
                   }
                 />
               </div>
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Three Month Price
+                  Total Price
                 </label>
                 <input
                   type="number"
                   min={0}
                   required
-                  placeholder="Enter Three Month Pricing"
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newSubscription.threeMonthPrice}
+                  placeholder="Enter Total Price"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-black"
+                  value={newSubscription.totalPrice}
                   onChange={(e) =>
                     setNewSubscription({
                       ...newSubscription,
-                      threeMonthPrice: e.target.value,
+                      totalPrice: e.target.value,
                     })
                   }
                 />
               </div>
-              <div className="w-full">
+              <div className={`w-full col-span-2`}>
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Six Month Price
+                  Enter Comma(,) Seprated Features
                 </label>
-                <input
-                  type="number"
-                  min={0}
+                <textarea
+                  rows={2}
+                  cols={40}
+                  placeholder="Enter Features"
                   required
-                  placeholder="Enter Six Month Pricing"
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newSubscription.sixMonthPrice}
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-black"
+                  value={newSubscription.features}
                   onChange={(e) =>
                     setNewSubscription({
                       ...newSubscription,
-                      sixMonthPrice: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Year Price
-                </label>
-                <input
-                  type="number"
-                  min={0}
-                  required
-                  placeholder="Enter One Year Pricing"
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newSubscription.oneYearPrice}
-                  onChange={(e) =>
-                    setNewSubscription({
-                      ...newSubscription,
-                      oneYearPrice: e.target.value,
+                      features: e.target.value,
                     })
                   }
                 />

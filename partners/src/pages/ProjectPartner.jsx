@@ -1,9 +1,10 @@
-import React from "react";
+import { useState, useEffect} from "react";
 import { lazy, Suspense } from "react";
 import projectPartnerMobileBackImage from "../assets/joinOurTeam/projectPartner/projectPartnerMobileBack.svg";
 import projectPartnerBackImage from "../assets/joinOurTeam/projectPartner/projectPartnerBack.svg";
 import deskTopImage from "../assets/joinOurTeam/projectPartner/deskTop.svg";
 import { RiMapPinUserLine } from "react-icons/ri";
+import {useAuth } from "../store/auth";
 
 // Lazy load heavy components
 const VideoSection = lazy(() => import("../components/VideoSection"));
@@ -12,9 +13,35 @@ import MarketRealityGrid from "../components/projectPartner/MarketRealityGrid";
 import SolutionReparvGrid from "../components/projectPartner/SolutionReparvGrid";
 import BottomGrid from "../components/projectPartner/BottomGrid";
 import SEO from "../components/SEO";
-import RegistrationForm from "../components/projectPartner/RegistrationForm";
+import SubscriptionSection from "../components/projectPartner/SubscriptionSection";
 
 function ProjectPartner() {
+  const { URI } = useAuth();
+    const partnerType = "Project Partner"
+    const [plans, setPlans] = useState([]);
+    
+    // **Fetch Data from API**
+    const fetchData = async () => {
+      try {
+        const response = await fetch(URI + "/admin/subscription/pricing/plans/" + partnerType, {
+          method: "GET",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!response.ok) throw new Error("Failed to fetch Subscription Plans.");
+        const data = await response.json();
+        console.log(data);
+        setPlans(data);
+      } catch (err) {
+        console.error("Error fetching :", err);
+      }
+    };
+  
+    useEffect(() => {
+      fetchData();
+    }, []);
   return (
     <>
       <SEO
@@ -54,7 +81,7 @@ function ProjectPartner() {
                     Collaborate with us to build a transparent and profitable
                     real estate ecosystem.
                   </h2>
-                  <a href="#registrationForm">
+                  <a href="#subscriptionSection">
                     <button className="w-[300px] h-[50px] md:h-[60px] mt-3 xl:mt-5 text-base md:text-xl text-white bg-[#0BB501] cursor-pointer active:scale-95 rounded-lg font-semibold transition">
                       Register Now
                     </button>
@@ -135,12 +162,12 @@ function ProjectPartner() {
           </div>
         </div>
 
-        {/* Registration Form */}
+        {/* Subscription Plan */}
         <div
-          id="registrationForm"
+          id="subscriptionSection"
           className="flex items-center justify-center mx-auto pb-8 pt-10 sm:py-20 max-w-[1600px] "
         >
-          <RegistrationForm />
+          <SubscriptionSection plans={plans}/>
         </div>
       </div>
     </>

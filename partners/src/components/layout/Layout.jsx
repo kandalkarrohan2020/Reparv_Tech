@@ -85,13 +85,20 @@ function Layout() {
 
             <div className="w-full flex flex-col gap-3 px-10 font-semibold text-[#110229]">
               <NavLink
+                to="/"
+                onClick={() => {
+                  setShowSidebar(false);
+                }}
+                className={`${getNavLinkClass("/")} ${getNavLinkClass("/home")}}`}
+              >
+                Home
+              </NavLink>
+              <NavLink
                 to="/promoter"
                 onClick={() => {
                   setShowSidebar(false);
                 }}
-                className={`${getNavLinkClass("/promoter")} ${getNavLinkClass(
-                  "/promoter"
-                )}`}
+                className={`${getNavLinkClass("/promoter")}`}
               >
                 Promoter
               </NavLink>
@@ -102,7 +109,7 @@ function Layout() {
                 }}
                 className={`${getNavLinkClass(
                   "/sales-partner"
-                )} ${getNavLinkClass("/")}`}
+                )}`}
               >
                 Sales Partner
               </NavLink>
@@ -156,7 +163,16 @@ function Layout() {
           />
         </div>
 
-        <div className="navlink hidden md:flex items-center justify-start gap-7 lg:gap-7 xl:gap-15 text-base xl:text-lg leading-[22px] tracking-[0.1em] font-bold text-[#110229]">
+        <div className="navlink hidden md:flex items-center justify-start gap-7 lg:gap-8 xl:gap-10 text-base xl:text-lg leading-[22px] tracking-[0.1em] font-bold text-[#110229]">
+          <NavLink
+            to="/"
+            onClick={() => {
+              setShowSidebar(false);
+            }}
+            className={`${getNavLinkClass("/")} ${getNavLinkClass("/home")}`}
+          >
+            Home
+          </NavLink>
           <NavLink
             to="/sales-partner"
             className={`${getNavLinkClass("/sales-partner")}`}

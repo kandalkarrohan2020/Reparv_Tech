@@ -12,27 +12,27 @@ const SalesTestimonial = lazy(() =>
   import("../components/salesPartner/SalesTestimonial")
 );
 import SEO from "../components/SEO";
-import RegistrationForm from "../components/salesPartner/RegistrationForm";
+import SubscriptionSection from "../components/salesPartner/SubscriptionSection";
 
 function SalesPartner() {
   const { URI } = useAuth();
-  const [apks, setApks] = useState([]);
-  const salesApkUrl = apks?.find((apk) => apk.apkName === "Sales Partner")?.filePath || null;
-
+  const partnerType = "Sales Partner"
+  const [plans, setPlans] = useState([]);
+  
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/admin/apk", {
+      const response = await fetch(URI + "/admin/subscription/pricing/plans/" + partnerType, {
         method: "GET",
         credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch apps.");
+      if (!response.ok) throw new Error("Failed to fetch Subscription Plans.");
       const data = await response.json();
       console.log(data);
-      setApks(data);
+      setPlans(data);
     } catch (err) {
       console.error("Error fetching :", err);
     }
@@ -66,14 +66,14 @@ function SalesPartner() {
           />
           {/* Registration Button */}
           <div className="absolute hidden sm:flex items-center justify-center bottom-[20%] left-[14.5%]">
-            <a href="#registrationForm">
+            <a href="#subscriptionSection">
               <button className="w-[20vw] h-[4vw] text-white bg-[#0BB501] cursor-pointer active:scale-95 rounded-lg text-[1.6vw] font-semibold transition">
                 Register Now
               </button>
             </a>
           </div>
           <div className="w-full absolute bottom-[0px] sm:hidden flex items-center justify-center">
-            <a href="#registrationForm" className="w-full">
+            <a href="#subscriptionSection" className="w-full">
               <button className="w-full h-[40px] text-white text-base font-semibold bg-[#0BB501] cursor-pointer active:scale-95 transition">
                 Register Now
               </button>
@@ -95,16 +95,20 @@ function SalesPartner() {
         </div>
 
         <div className="w-full pt-4 pb-12 flex items-center justify-center">
-          <a
-            href={`${URI}/${salesApkUrl}`}
-            download="Sales.apk"
+          <div
+            onClick={() => {
+              window.open(
+                "https://play.google.com/store/apps/details?id=com.reparvnewsalesapp",
+                "_blank"
+              );
+            }}
             className="w-full sm:w-[350px] px-4 cursor-pointer"
           >
             <div className="w-full flex gap-2 items-center justify-center text-lg sm:text-xl font-semibold text-white bg-[#076300] px-12 py-3 rounded-lg active:scale-95 ">
               <span>Sales Partner Apk</span>{" "}
               <IoMdDownload className="w-6 h-6" />
             </div>
-          </a>
+          </div>
         </div>
 
         {/* Lazy Loaded Sales Testimonial */}
@@ -120,12 +124,12 @@ function SalesPartner() {
           </div>
         </Suspense>
 
-        {/* Registration Form */}
+        {/* Subscription Plan */}
         <div
-          id="registrationForm"
+          id="subscriptionSection"
           className="flex items-center justify-center mx-auto pb-8 pt-10 sm:py-20 max-w-[1600px] "
         >
-          <RegistrationForm />
+          <SubscriptionSection plans={plans}/>
         </div>
       </div>
     </>

@@ -3,9 +3,9 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../store/auth.jsx";
 import { handlePayment } from "../../utils/payment.js";
 
-const RegistrationForm = () => {
+const RegistrationForm = ({plan}) => {
   const { URI, setSuccessScreen } = useAuth();
-  const registrationPrice = 199;
+  const registrationPrice = plan?.totalPrice;
   const [newPartner, setNewPartner] = useState({
     fullname: "",
     contact: "",
@@ -148,16 +148,6 @@ const RegistrationForm = () => {
 
   return (
     <div className="flex flex-col items-center justify-center px-4 py-6">
-      <div className="text-center mb-6">
-        <h2 className="text:xl lg:text-3xl font-bold text-black mb-2">
-          Ready to Join Us?
-        </h2>
-        <p className="text-gray-600 text-sm">
-          Fill out the form below to register as a Territory Partner
-        </p>
-        <div className="w-20 h-1 bg-[#0BB501] mx-auto mt-3 rounded" />
-      </div>
-
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-4xl bg-white p-6 sm:p-10 border border-gray-200 rounded-lg shadow-sm"

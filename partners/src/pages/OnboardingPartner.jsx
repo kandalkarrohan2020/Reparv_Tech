@@ -1,8 +1,9 @@
-import React from "react";
+import {useState, useEffect} from "react";
 import { lazy, Suspense } from "react";
 import partnerMobileBackImage from "../assets/joinOurTeam/onboardingPartner/partnerMobileBack.svg";
 import partnerBackImage from "../assets/joinOurTeam/onboardingPartner/partnerBack.svg";
 import { RiMapPinUserLine } from "react-icons/ri";
+import { useAuth } from "../store/auth";
 
 // Lazy load heavy components
 const VideoSection = lazy(() => import("../components/VideoSection"));
@@ -11,9 +12,35 @@ import MarketRealityGrid from "../components/onboardingPartner/MarketRealityGrid
 import SolutionReparvGrid from "../components/onboardingPartner/SolutionReparvGrid";
 import BottomGrid from "../components/onboardingPartner/BottomGrid";
 import SEO from "../components/SEO";
-import RegistrationForm from "../components/onboardingPartner/RegistrationForm";
+import SubscriptionSection from "../components/onboardingPartner/SubscriptionSection";
 
 function OnboardingPartner() {
+  const { URI } = useAuth();
+    const partnerType = "Onboarding Partner"
+    const [plans, setPlans] = useState([]);
+    
+    // **Fetch Data from API**
+    const fetchData = async () => {
+      try {
+        const response = await fetch(URI + "/admin/subscription/pricing/plans/" + partnerType, {
+          method: "GET",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!response.ok) throw new Error("Failed to fetch Subscription Plans.");
+        const data = await response.json();
+        //console.log(data);
+        setPlans(data);
+      } catch (err) {
+        console.error("Error fetching :", err);
+      }
+    };
+  
+    useEffect(() => {
+      fetchData();
+    }, []);
   return (
     <>
       <SEO
@@ -56,7 +83,7 @@ function OnboardingPartner() {
                     Join Reparv as an Onboarding Partner, list properties, and
                     earn bonuses on every successful sale effortlessly.
                   </h2>
-                  <a href="#registrationForm">
+                  <a href="#subscriptionSection">
                     <button className="w-[300px] h-[50px] md:h-[60px] mt-3 xl:mt-5 text-base md:text-xl text-white bg-[#0BB501] cursor-pointer active:scale-95 rounded-lg font-semibold transition">
                       Register Now
                     </button>
@@ -142,12 +169,12 @@ function OnboardingPartner() {
           </div>
         </div>
 
-        {/* Registration Form */}
+        {/* Subscription Plan */}
         <div
-          id="registrationForm"
+          id="subscriptionSection"
           className="flex items-center justify-center mx-auto pb-8 pt-10 sm:py-20 max-w-[1600px] "
         >
-          <RegistrationForm />
+          <SubscriptionSection plans={plans}/>
         </div>
       </div>
     </>

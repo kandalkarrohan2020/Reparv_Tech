@@ -6,34 +6,36 @@ import territoryFigure from "../assets/joinOurTeam/territoryPartner/territoryFig
 import territoryMobileFigure from "../assets/joinOurTeam/territoryPartner/territoryMobileFig.png";
 import territoryMobileBackImage from "../assets/joinOurTeam/territoryPartner/territoryMobileBack.png";
 import territoryBackImage from "../assets/joinOurTeam/territoryPartner/territoryBack.png";
-import RegistrationForm from "../components/territoryPartner/RegistrationForm";
 import { IoMdDownload } from "react-icons/io";
 
 import WhoIsTerritoryPartner from "../components/territoryPartner/WhoIsTerritoryPartner";
 import VideoReviewSection from "../components/VideoReviewSection";
 import MarketRealitySlider from "../components/territoryPartner/MarketRealitySlider";
 import SEO from "../components/SEO";
+import SubscriptionSection from "../components/territoryPartner/SubscriptionSection";
 
 function TerritoryPertner() {
   const { URI } = useAuth();
-  const [apks, setApks] = useState([]);
-  const territoryApkUrl =
-    apks?.find((apk) => apk.apkName === "Territory Partner")?.filePath || null;
+  const partnerType = "Territory Partner";
+  const [plans, setPlans] = useState([]);
 
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/admin/apk", {
-        method: "GET",
-        credentials: "include", // Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch apps.");
+      const response = await fetch(
+        URI + "/admin/subscription/pricing/plans/" + partnerType,
+        {
+          method: "GET",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch Subscription Plans.");
       const data = await response.json();
       console.log(data);
-      setApks(data);
+      setPlans(data);
     } catch (err) {
       console.error("Error fetching :", err);
     }
@@ -67,14 +69,14 @@ function TerritoryPertner() {
             />
             {/* Registration Button */}
             <div className="absolute hidden sm:flex items-center justify-center bottom-[5%] left-[30%]">
-              <a href="#registrationForm">
+              <a href="#subscriptionSection">
                 <button className="w-[40vw] h-[4vw] text-white bg-[#0BB501] cursor-pointer active:scale-95 rounded-lg text-[1.6vw] font-semibold transition">
                   Register Now
                 </button>
               </a>
             </div>
             <div className="w-full absolute bottom-[0px] sm:hidden flex items-center justify-center">
-              <a href="#registrationForm" className="w-full">
+              <a href="#subscriptionSection" className="w-full">
                 <button className="w-full h-[40px] text-white text-base font-semibold bg-[#0BB501] cursor-pointer active:scale-95 transition">
                   Register Now
                 </button>
@@ -92,16 +94,20 @@ function TerritoryPertner() {
 
           {/* Download Application */}
           <div className="w-full pt-0 pb-10 sm:pb-4  flex items-center justify-center">
-            <a
-              href={`${URI}/${territoryApkUrl}`}
-              download="Territory.apk"
+            <div
+              onClick={() => {
+                window.open(
+                  "https://play.google.com/store/apps/details?id=com.newreparvterritory_app",
+                  "_blank"
+                );
+              }}
               className="w-full sm:w-[350px] cursor-pointer"
             >
               <div className="w-full flex gap-2 items-center justify-center text-base sm:text-xl font-semibold text-white bg-[#0BB501] px-12 py-2 sm:py-3 rounded-lg active:scale-95 ">
                 <span>Territory Partner Apk</span>{" "}
                 <IoMdDownload className="w-5 h-5 sm:w-6 sm:h-6 " />
               </div>
-            </a>
+            </div>
           </div>
 
           <div className="flex flex-col gap-2 sm:gap-4 items-center justify-center pb-10 sm:py-10">
@@ -134,12 +140,12 @@ function TerritoryPertner() {
           </div>
         </div>
 
-        {/* Registration Form */}
+        {/* Subscription Plan */}
         <div
-          id="registrationForm"
-          className="flex items-center justify-center mx-auto py-10 sm:py-20 max-w-[1600px] "
+          id="subscriptionSection"
+          className="flex items-center justify-center mx-auto pb-8 pt-10 sm:py-20 max-w-[1600px] "
         >
-          <RegistrationForm />
+          <SubscriptionSection plans={plans}/>
         </div>
       </div>
     </>

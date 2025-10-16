@@ -285,6 +285,7 @@ export const verifyToken = (req, res, next) => {
     "/admin/projectpartner/add",
     "/admin/territorypartner/add",
     "/admin/territorypartner/assignlogin",
+    "/admin/subscription/pricing",
     "/admin/marketing-content",
     "/admin/apk",
     "/api/payment/create-order",

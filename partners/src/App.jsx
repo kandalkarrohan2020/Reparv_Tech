@@ -6,7 +6,7 @@ import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
 
 //Join Our Team Pages
-import SalesPartner from "./pages/SalesPertner";
+import SalesPartner from "./pages/SalesPartner";
 import TerritoryPartner from "./pages/TerritoryPartner";
 import ProjectPartner from "./pages/ProjectPartner";
 import OnboardingPartner from "./pages/OnboardingPartner";

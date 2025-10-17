@@ -19,8 +19,8 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem("adminUser");
   };
-  //const URI = "http://localhost:3000";
-  const URI = "https://api.reparv.in";
+  const URI = "http://localhost:3000";
+  //const URI = "https://api.reparv.in";
 
   const [user, setUser] = useState(
     JSON.parse(localStorage.getItem("adminUser"))
@@ -96,7 +96,10 @@ export const AuthProvider = ({ children }) => {
   const [showPropertyLocationForm, setShowPropertyLocationForm] =
     useState(false);
   const [showAuthorityForm, setShowAuthorityForm] = useState(false);
+  const [showSubscriptionPlan, setShowSubscriptionPlan] = useState(false);
   const [showSubscriptionForm, setShowSubscriptionForm] = useState(false);
+  const [showDiscount, setShowDiscount] = useState(false);
+  const [showDiscountForm, setShowDiscountForm] = useState(false);
 
   return (
     <AuthContext.Provider
@@ -237,8 +240,14 @@ export const AuthProvider = ({ children }) => {
         setShowPropertyCommissionPopup,
         showAuthorityForm,
         setShowAuthorityForm,
+        showSubscriptionPlan,
+        setShowSubscriptionPlan,
         showSubscriptionForm,
         setShowSubscriptionForm,
+        showDiscount,
+        setShowDiscount,
+        showDiscountForm,
+        setShowDiscountForm
       }}
     >
       {children}

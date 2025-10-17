@@ -9,41 +9,63 @@ import Loader from "../components/Loader";
 import FormatPrice from "../components/FormatPrice";
 import { FiMoreVertical } from "react-icons/fi";
 
-const Subscription = () => {
+const SubscriptionDiscount = () => {
   const {
-    showSubscriptionPlan,
-    setShowSubscriptionPlan,
-    showSubscriptionForm,
-    setShowSubscriptionForm,
-    action,
+    showDiscount,
+    setShowDiscount,
+    showDiscountForm,
+    setShowDiscountForm,
     URI,
     setLoading,
   } = useAuth();
+
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [subscriptionPlan, setSubscriptionPlan] = useState({});
-  const [newSubscription, setNewSubscription] = useState({
-    id: "",
+  const [discount, setDiscount] = useState({});
+  const [plans, setPlans] = useState([]);
+  const [newDiscount, setNewDiscount] = useState({
     partnerType: "",
-    planDuration: "",
-    planName: "",
-    totalPrice: "",
-    features: "",
+    planId: "",
+    discount: "",
+    startDate: "",
+    endDate: "",
   });
 
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/admin/subscription/pricing", {
+      const response = await fetch(URI + "/admin/subscription/discount", {
         method: "GET",
         credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch Subscriptions.");
+      if (!response.ok) throw new Error("Failed to fetch discounts.");
       const data = await response.json();
       setDatas(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // **Fetch Data from API**
+  const fetchPlans = async () => {
+    try {
+      const response = await fetch(
+        URI + "/admin/subscription/pricing/plans/" + newDiscount?.partnerType,
+        {
+          method: "GET",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch plans.");
+      const data = await response.json();
+      setPlans(data);
+      console.log(data);
     } catch (err) {
       console.error("Error fetching :", err);
     }
@@ -53,39 +75,38 @@ const Subscription = () => {
   const addOrUpdate = async (e) => {
     e.preventDefault();
 
-    const endpoint = newSubscription.id ? `edit/${newSubscription.id}` : "add";
+    const endpoint = newDiscount.id ? `edit/${newDiscount.id}` : "add";
     try {
       setLoading(true);
       const response = await fetch(
-        URI + `/admin/subscription/pricing/${endpoint}`,
+        URI + `/admin/subscription/discount/${endpoint}`,
         {
-          method: newSubscription.id ? "PUT" : "POST",
+          method: newDiscount.id ? "PUT" : "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newSubscription),
+          body: JSON.stringify(newDiscount),
         }
       );
 
-      if (!response.ok) throw new Error("Failed to save Subscription.");
+      if (!response.ok) throw new Error("Failed to save Discount.");
 
-      if (newSubscription.id) {
-        alert(`Subscription updated successfully!`);
+      if (newDiscount.id) {
+        alert(`Discount updated successfully!`);
       } else if (response.status === 202) {
-        alert(`Subscription already Exit!!`);
+        alert(`Discount already Exit!!`);
       } else {
-        alert(`Subscription added successfully!`);
+        alert(`Discount added successfully!`);
       }
 
-      setNewSubscription({
-        id: "",
+      setNewDiscount({
         partnerType: "",
-        planDuration: "",
-        planName: "",
-        totalPrice: "",
-        features: "",
+        planId: "",
+        discount: "",
+        startDate: "",
+        endDate: "",
       });
 
-      setShowSubscriptionForm(false);
+      setShowDiscountForm(false);
       fetchData();
     } catch (err) {
       console.error("Error saving :", err);
@@ -97,83 +118,51 @@ const Subscription = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/subscription/pricing/${id}`, {
+      const response = await fetch(URI + `/admin/subscription/discount/${id}`, {
         method: "GET",
         credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch Subscriptions.");
+      if (!response.ok) throw new Error("Failed to fetch Discounts.");
       const data = await response.json();
-      setNewSubscription(data);
-      setShowSubscriptionForm(true);
+      setNewDiscount(data);
+      setShowDiscountForm(true);
     } catch (err) {
       console.error("Error fetching :", err);
     }
   };
 
-  //fetch data on form
+  // show Discount plan
   const view = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/subscription/pricing/${id}`, {
+      const response = await fetch(URI + `/admin/subscription/discount/${id}`, {
         method: "GET",
         credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch Subscriptions.");
+      if (!response.ok) throw new Error("Failed to fetch Discounts.");
       const data = await response.json();
-      setSubscriptionPlan(data);
-      setShowSubscriptionPlan(true);
+      setDiscount(data);
+      setShowDiscount(true);
     } catch (err) {
       console.error("Error fetching :", err);
-    }
-  };
-
-  // Highlight The Plan
-  const highlight = async (id) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to Highlight this Subscription Plan?"
-      )
-    )
-      return;
-
-    try {
-      const response = await fetch(
-        URI + `/admin/subscription/pricing/highlight/${id}`,
-        {
-          method: "PUT",
-          credentials: "include",
-        }
-      );
-      const data = await response.json();
-      //console.log(response);
-      if (response.ok) {
-        alert(`Success: ${data.message}`);
-      } else {
-        alert(`Error: ${data.message}`);
-      }
-      fetchData();
-    } catch (error) {
-      console.error("Error Highlighting :", error);
     }
   };
 
   // change status record
   const status = async (id) => {
     if (
-      !window.confirm(
-        "Are you sure you want to change this Subscription status?"
-      )
+      !window.confirm("Are you sure you want to change this Discount status?")
     )
       return;
 
     try {
       const response = await fetch(
-        URI + `/admin/subscription/pricing/status/${id}`,
+        URI + `/admin/subscription/discount/status/${id}`,
         {
           method: "PUT",
           credentials: "include",
@@ -194,11 +183,11 @@ const Subscription = () => {
 
   // Delete record
   const del = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this Subscription?"))
+    if (!window.confirm("Are you sure you want to delete this Discount?"))
       return;
     try {
       const response = await fetch(
-        URI + `/admin/subscription/pricing/delete/${id}`,
+        URI + `/admin/subscription/discount/delete/${id}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -207,7 +196,7 @@ const Subscription = () => {
 
       const data = await response.json();
       if (response.ok) {
-        alert("Subscription deleted successfully!");
+        alert("Discount deleted successfully!");
 
         fetchData();
       } else {
@@ -219,14 +208,18 @@ const Subscription = () => {
   };
 
   useEffect(() => {
+    fetchPlans();
+  }, [newDiscount.partnerType]);
+
+  useEffect(() => {
     fetchData();
   }, []);
 
   const filteredData = datas.filter(
     (item) =>
-      item.partnerType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.planName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.status.toLowerCase().includes(searchTerm.toLowerCase())
+      item.partnerType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.planDuration?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.status?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const customStyles = {
@@ -280,34 +273,40 @@ const Subscription = () => {
       width: "70px",
     },
     {
+      name: "Redeem Code",
+      cell: (row) => (
+        <span
+          className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md cursor-pointer ${
+            row.status === "Active"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : "bg-[#FFEAEA] text-[#ff2323]"
+          }`}
+        >
+          {row.redeemCode}
+        </span>
+      ),
+      minWidth: "150px",
+    },
+    {
       name: "Partner Type",
       selector: (row) => row.partnerType,
       sortable: true,
       minWidth: "150px",
     },
     {
-      name: "Plan Name",
-      cell: (row) => (
-        <span className={`${row.highlight === "True" && "text-[#0bb501]"}`}>
-          {row.planName}
-        </span>
-      ),
+      name: "Discount",
+      selector: (row) => row.discount,
       minWidth: "150px",
     },
     {
-      name: "Plan Duration",
-      selector: (row) => row.planDuration,
+      name: "Start Date",
+      selector: (row) => row.startDate,
       minWidth: "150px",
     },
     {
-      name: "Total Price",
-      selector: (row) => <FormatPrice price={parseInt(row.totalPrice)} />,
+      name: "End Date",
+      selector: (row) => row.endDate,
       minWidth: "150px",
-    },
-    {
-      name: "Plan Features",
-      cell: (row) => <span>{row.features}</span>,
-      minWidth: "350px",
     },
     {
       name: "Action",
@@ -329,9 +328,6 @@ const Subscription = () => {
           break;
         case "status":
           status(id);
-          break;
-        case "highlight":
-          highlight(id);
           break;
         case "delete":
           del(id);
@@ -361,8 +357,7 @@ const Subscription = () => {
           </option>
           <option value="view">View</option>
           <option value="status">Status</option>
-           <option value="update">Update</option>
-          <option value="highlight">Highlight</option>
+          <option value="update">Update</option>
           <option value="delete">Delete</option>
         </select>
       </div>
@@ -371,26 +366,26 @@ const Subscription = () => {
 
   return (
     <div
-      className={`Subscription overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
+      className={`Discount overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
     >
-      <div className="Subscription-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
-        {/* <p className="block md:hidden text-lg font-semibold">Subscription</p> */}
+      <div className="Discount-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
+        {/* <p className="block md:hidden text-lg font-semibold">Discount</p> */}
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
             <CiSearch />
             <input
               type="text"
-              placeholder="Search Subscription"
+              placeholder="Search Discount"
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
-            <AddButton label={"Add"} func={setShowSubscriptionForm} />
+            <AddButton label={"Add"} func={setShowDiscountForm} />
           </div>
         </div>
-        <h2 className="text-[16px] font-semibold">Subscription Pricing List</h2>
+        <h2 className="text-[16px] font-semibold">Discount List</h2>
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"
@@ -411,22 +406,21 @@ const Subscription = () => {
 
       <div
         className={`${
-          showSubscriptionForm ? "flex" : "hidden"
-        } z-[61] SubscriptionForm overflow-scroll scrollbar-hide w-full fixed bottom-0 md:bottom-auto `}
+          showDiscountForm ? "flex" : "hidden"
+        } z-[61] DiscountForm overflow-scroll scrollbar-hide w-full fixed bottom-0 md:bottom-auto `}
       >
         <div className="w-full md:w-[500px] lg:w-[750px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Subscription Plan</h2>
+            <h2 className="text-[16px] font-semibold">Discount Plan</h2>
             <IoMdClose
               onClick={() => {
-                setShowSubscriptionForm(false);
-                setNewSubscription({
-                  id: "",
+                setShowDiscountForm(false);
+                setNewDiscount({
                   partnerType: "",
-                  planDuration: "",
-                  planName: "",
-                  totalPrice: "",
-                  features: "",
+                  planId: "",
+                  discount: "",
+                  startDate: "",
+                  endDate: "",
                 });
               }}
               className="w-6 h-6 cursor-pointer"
@@ -436,9 +430,9 @@ const Subscription = () => {
             <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
               <input
                 type="hidden"
-                value={newSubscription.id || ""}
+                value={newDiscount.id || ""}
                 onChange={(e) =>
-                  setNewSubscription({ ...newSubscription, id: e.target.value })
+                  setNewDiscount({ ...newDiscount, id: e.target.value })
                 }
               />
               <div className="w-full">
@@ -448,10 +442,10 @@ const Subscription = () => {
                 <select
                   required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none "
-                  value={newSubscription.partnerType}
+                  value={newDiscount.partnerType}
                   onChange={(e) =>
-                    setNewSubscription({
-                      ...newSubscription,
+                    setNewDiscount({
+                      ...newDiscount,
                       partnerType: e.target.value,
                     })
                   }
@@ -465,92 +459,95 @@ const Subscription = () => {
                   <option value="Onboarding Partner">Onboarding Partner</option>
                 </select>
               </div>
+
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Plan Duration
+                  Plan
                 </label>
                 <select
                   required
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none "
-                  value={newSubscription.planDuration}
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                  value={newDiscount.planId}
                   onChange={(e) =>
-                    setNewSubscription({
-                      ...newSubscription,
-                      planDuration: e.target.value,
+                    setNewDiscount({
+                      ...newDiscount,
+                      planId: e.target.value,
                     })
                   }
                 >
                   <option value="" disabled>
-                    Select Months
+                    Select Plan
                   </option>
-                  <option value="1 Month">1 Month</option>
-                  <option value="2 Months">2 Months</option>
-                  <option value="3 Months">3 Months</option>
-                  <option value="4 Months">4 Months</option>
-                  <option value="5 Months">5 Months</option>
-                  <option value="6 Months">6 Months</option>
-                  <option value="7 Months">7 Months</option>
-                  <option value="8 Months">8 Months</option>
-                  <option value="9 Months">9 Months</option>
-                  <option value="10 Months">10 Months</option>
-                  <option value="11 Months">11 Months</option>
-                  <option value="12 Months">12 Months</option>
+                  {plans &&
+                    Object.values(plans).map((plan, index) => (
+                      <option key={index} value={plan.id}>
+                        {plan.planName} | {plan.planDuration}
+                      </option>
+                    ))}
                 </select>
               </div>
+
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Plan Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Enter Plan Name"
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-black"
-                  value={newSubscription.planName}
-                  onChange={(e) =>
-                    setNewSubscription({
-                      ...newSubscription,
-                      planName: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Total Price
+                  Discount in Rupees
                 </label>
                 <input
                   type="number"
                   min={0}
                   required
-                  placeholder="Enter Total Price"
+                  placeholder="Enter Discount in Rupees"
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-black"
-                  value={newSubscription.totalPrice}
+                  value={newDiscount.discount}
                   onChange={(e) =>
-                    setNewSubscription({
-                      ...newSubscription,
-                      totalPrice: e.target.value,
+                    setNewDiscount({
+                      ...newDiscount,
+                      discount: e.target.value,
                     })
                   }
                 />
               </div>
-              <div className={`w-full col-span-2`}>
+
+              {/* Start Date */}
+              <div className="w-full ">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Enter Comma(,) Seprated Features
+                  Start Date{" "}
+                  {newDiscount.startDate ? "| " + newDiscount.startDate : ""}
                 </label>
-                <textarea
-                  rows={2}
-                  cols={40}
-                  placeholder="Enter Features"
+                <input
+                  type="date"
                   required
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-black"
-                  value={newSubscription.features}
-                  onChange={(e) =>
-                    setNewSubscription({
-                      ...newSubscription,
-                      features: e.target.value,
-                    })
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={
+                    newDiscount.startDate
                   }
+                  onChange={(e) => {
+                    const selectedDate = e.target.value;
+                    setNewDiscount({
+                      ...newDiscount,
+                      startDate: selectedDate === "" ? null : selectedDate,
+                    });
+                  }}
+                />
+              </div>
+
+              {/* End Date */}
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  End Date{" "}
+                  {newDiscount.endDate ? "| " + newDiscount.endDate : ""}
+                </label>
+                <input
+                  type="date"
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newDiscount.endDate}
+                  onChange={(e) => {
+                    const selectedDate = e.target.value;
+                    setNewDiscount({
+                      ...newDiscount,
+                      endDate: selectedDate === "" ? null : selectedDate,
+                    });
+                  }}
                 />
               </div>
             </div>
@@ -558,14 +555,13 @@ const Subscription = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setShowSubscriptionForm(false);
-                  setNewSubscription({
-                    id: "",
-                    role: "",
-                    oneMonthPrice: "",
-                    threeMonthPrice: "",
-                    sixMonthPrice: "",
-                    oneYearPrice: "",
+                  setShowDiscountForm(false);
+                  setNewDiscount({
+                    partnerType: "",
+                    planId: "",
+                    discount: "",
+                    startDate: "",
+                    endDate: "",
                   });
                 }}
                 className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
@@ -584,18 +580,18 @@ const Subscription = () => {
         </div>
       </div>
 
-      {/* Show Subscription Plan Details */}
+      {/* Show Discount Plan Details */}
       <div
         className={`${
-          showSubscriptionPlan ? "flex" : "hidden"
+          showDiscount ? "flex" : "hidden"
         } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
       >
         <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] max-h-[70vh] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Discount Plan Details</h2>
+            <h2 className="text-[16px] font-semibold">Discount Details</h2>
             <IoMdClose
               onClick={() => {
-                setShowSubscriptionPlan(false);
+                setShowDiscount(false);
               }}
               className="w-6 h-6 cursor-pointer"
             />
@@ -610,7 +606,19 @@ const Subscription = () => {
                 type="text"
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={subscriptionPlan.status}
+                value={discount.status}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Redeem Code
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={discount.redeemCode}
                 readOnly
               />
             </div>
@@ -622,59 +630,45 @@ const Subscription = () => {
                 type="text"
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={subscriptionPlan.partnerType}
-                readOnly
-              />
-            </div>
-            <div className={`w-full`}>
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Plan Name
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={subscriptionPlan.planName}
-                readOnly
-              />
-            </div>
-            <div
-              className={`${
-                subscriptionPlan.planDuration ? "block" : "hidden"
-              } w-full`}
-            >
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Duration
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={subscriptionPlan.planDuration}
+                value={discount.partnerType}
                 readOnly
               />
             </div>
             <div className="w-full ">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Total Price
+                Discount
               </label>
               <input
                 type="text"
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={subscriptionPlan.totalPrice}
+                value={discount.discount}
                 readOnly
               />
             </div>
-            <div className="col-span-1 sm:col-span-2">
+            <div className="w-full ">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Features
+                Start Date
               </label>
-              <ul className="mt-3 space-y-2 text-gray-700 list-disc pl-5">
-                {subscriptionPlan.features?.split(",").map((feature, index) => (
-                  <li key={index}>{feature.trim()}</li>
-                ))}
-              </ul>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={discount.startDate}
+                readOnly
+              />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                End Date
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={discount.endDate}
+                readOnly
+              />
             </div>
           </form>
         </div>
@@ -683,4 +677,4 @@ const Subscription = () => {
   );
 };
 
-export default Subscription;
+export default SubscriptionDiscount;

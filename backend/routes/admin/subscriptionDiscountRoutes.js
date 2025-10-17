@@ -1,23 +1,20 @@
 import express from "express";
 import {
   getAll,
-  getAllPlans,
   getById,
-  add,
+  addDiscount,
+  updateDiscount,
   status,
   del,
-  highlight,
-} from "../../controllers/admin/subscriptionPricingController.js";
+} from "../../controllers/admin/subscriptionDiscountController.js";
 
 const router = express.Router();
 
 router.get("/", getAll);
-router.get("/plans/:partnerType", getAllPlans);
 router.get("/:id", getById);
-router.post("/add", add);
-router.put("/edit/:id", add);
+router.post("/add", addDiscount);
+router.put("/edit/:id", updateDiscount);
 router.put("/status/:id", status);
-router.put("/highlight/:id", highlight);
 router.delete("/delete/:id", del);
 
 export default router;

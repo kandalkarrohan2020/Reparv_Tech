@@ -33,6 +33,8 @@ import UpdateEMI from "./components/usersLoanEligibility/UpdateEMI.jsx";
 import Trends from "./pages/Trends.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
 import PropertyAuthority from "./pages/PropertyAuthority.jsx";
+import SubscriptionDiscount from "./pages/SubscriptionDiscount.jsx";
+
 
 const App = () => {
   return (
@@ -57,6 +59,7 @@ const App = () => {
           <Route path="/projectpartner" element={<ProjectPartner />} />
           <Route path="/territorypartner" element={<TerritoryPartner />} />
           <Route path="/subscription-pricing" element={<Subscription />} />
+          <Route path="/subscription-discount" element={<SubscriptionDiscount />} />
           <Route path="/employees" element={<Employee />} />
           <Route path="/role" element={<Role />} />
           <Route path="/department" element={<Department />} />

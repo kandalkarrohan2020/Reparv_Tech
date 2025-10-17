@@ -27,6 +27,7 @@ import projectPartnerRoutes from "./routes/admin/projectPartnerRoutes.js";
 import territoryPartnerRoutes from "./routes/admin/territoryPartnerRoutes.js";
 import guestUserRoutes from "./routes/admin/guestUserRoutes.js";
 import subscriptionPricingRoutes from "./routes/admin/subscriptionPricingRoutes.js";
+import subscriptionDiscountRoutes from "./routes/admin/subscriptionDiscountRoutes.js";
 import propertytypeRoutes from "./routes/admin/propertytypeRoutes.js";
 import enquirerRoutes from "./routes/admin/enquirerRoutes.js";
 import addEnquiryRoutes from "./routes/admin/enquiryRoutes.js";
@@ -171,10 +172,12 @@ import territorySubscription from "./routes/territoryAppRoute/subscription.js";
 import salesSubscription from "./routes/salesAppRoute/subscription.js";
 //Onboarding App
 import onboardingAppRoute from "./routes/onboardingAppRoute/userRoute.js";
-
+import onboardingPartnerPostRoute from "./routes/onboardingAppRoute/postRoutes.js";
+import onboardingSubscription from "./routes/onboardingAppRoute/subscription.js";
 //ProjectPartner App
 import projectPartnerAppRoute from "./routes/projectPartnerAppRoute/userRoute.js";
 import projectPartnerPostRoute from "./routes/projectPartnerAppRoute/postRoutes.js";
+import projectSubscription from "./routes/projectPartnerAppRoute/subscription.js";
 //Customer App
 import customerEmi from "./routes/customerAppRoute/EmiRoute.js";
 import customerSignUp from "./routes/customerAppRoute/userRoute.js";
@@ -282,7 +285,9 @@ export const verifyToken = (req, res, next) => {
     "/admin/salespersons/add",
     "/admin/salespersons/assignlogin",
     "/admin/partner/add",
+    "/admin/partner/assignlogin",
     "/admin/projectpartner/add",
+    "/admin/projectpartner/assignlogin",
     "/admin/territorypartner/add",
     "/admin/territorypartner/assignlogin",
     "/admin/subscription/pricing",
@@ -307,6 +312,7 @@ export const verifyToken = (req, res, next) => {
     "/sales/flat",
     "/salesapp/flats",
     "/salesapp/subscription",
+    "/salesapp/subscription/validate",
     "/territoryapp/user",
     "/territoryapp/subscription",
     "/upload",
@@ -323,7 +329,10 @@ export const verifyToken = (req, res, next) => {
     "/builderapp/community",
     "/builderapp/user",
     "/builderapp/post",
+    "/onboardingapp/post",
     "/projectpartner/post",
+    "/projectpartner/subscription",
+    "/onboardingapp/subscription",
     "/api/partner/account/cancellation",
   ];
 
@@ -424,6 +433,7 @@ app.use("/admin/projectpartner", projectPartnerRoutes);
 app.use("/admin/territorypartner", territoryPartnerRoutes);
 app.use("/admin/guestuser", guestUserRoutes);
 app.use("/admin/subscription/pricing", subscriptionPricingRoutes);
+app.use("/admin/subscription/discount", subscriptionDiscountRoutes);
 app.use("/admin/propertytypes", propertytypeRoutes);
 app.use("/admin/enquirers", enquirerRoutes);
 // CSV File add Enquiries Route
@@ -554,11 +564,12 @@ app.use("/api/booking/territory", territoryBooking);
 
 //onboarding Partner
 app.use("/onboardingapp/user", onboardingAppRoute);
-
+app.use("/onboardingapp/post", onboardingPartnerPostRoute);
+app.use("/onboardingapp/subscription", onboardingSubscription);
 //ProjectPartner App
 app.use("/projectpartnerRoute/user", projectPartnerAppRoute);
 app.use("/projectpartner/post", projectPartnerPostRoute);
-
+app.use("/projectpartner/subscription", projectSubscription);
 //Customer app
 app.use("/customerapp", customerEmi);
 app.use("/customerapp/user", customerSignUp);

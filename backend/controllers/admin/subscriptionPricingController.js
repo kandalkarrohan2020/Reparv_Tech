@@ -16,7 +16,8 @@ export const getAll = (req, res) => {
 // **Fetch All **
 export const getAllPlans = (req, res) => {
   const partnerType = req.params.partnerType;
-  const sql = "SELECT * FROM subscriptionPricing WHERE status = 'Active' AND partnerType = ? ORDER BY planDuration";
+  const sql =
+    "SELECT * FROM subscriptionPricing WHERE status = 'Active' AND partnerType = ? ORDER BY planDuration";
   db.query(sql, [partnerType], (err, result) => {
     if (err) {
       console.error("Error fetching :", err);
@@ -48,18 +49,12 @@ export const getById = (req, res) => {
 // Add Or Update
 export const add = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const {
-    id,
-    partnerType,
-    planDuration,
-    planName,
-    totalPrice,
-    features,
-  } = req.body;
+  const { id, partnerType, planDuration, planName, totalPrice, features } =
+    req.body;
 
   //console.log("Received data:", req.body);
 
-  if (!partnerType || !planDuration || !planName || !totalPrice || !features ) {
+  if (!partnerType || !planDuration || !planName || !totalPrice || !features) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -74,21 +69,37 @@ export const add = (req, res) => {
             .status(500)
             .json({ message: "Database error", error: err });
         if (result.length === 0)
-          return res.status(404).json({ message: "Subscription Plan not found" });
+          return res
+            .status(404)
+            .json({ message: "Subscription Plan not found" });
 
         const updateSQL = `UPDATE subscriptionPricing SET partnerType=?, planDuration=?, planName=?, totalPrice=?, features=?, updated_at=? WHERE id=?`;
 
-        db.query(updateSQL, [partnerType, planDuration, planName, totalPrice, features, currentdate, id], (err) => {
-          if (err) {
-            console.error("Error updating:", err);
+        db.query(
+          updateSQL,
+          [
+            partnerType,
+            planDuration,
+            planName,
+            totalPrice,
+            features,
+            currentdate,
+            id,
+          ],
+          (err) => {
+            if (err) {
+              console.error("Error updating:", err);
+              return res
+                .status(500)
+                .json({ message: "Database error", error: err });
+            }
             return res
-              .status(500)
-              .json({ message: "Database error", error: err });
+              .status(200)
+              .json({
+                message: "Subscription Pricing Plan updated successfully",
+              });
           }
-          return res
-            .status(200)
-            .json({ message: "Subscription Pricing Plan updated successfully" });
-        });
+        );
       }
     );
   } else {
@@ -111,20 +122,30 @@ export const add = (req, res) => {
         // **Add new subscription price**
         const insertSQL = `INSERT INTO subscriptionPricing (partnerType, planDuration, planName, totalPrice, features, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
-        db.query(insertSQL, [partnerType, planDuration, planName, totalPrice, features, currentdate, currentdate], (err, result) => {
-          if (err) {
-            console.error("Error inserting:", err);
-            return res
-              .status(500)
-              .json({ message: "Database error", error: err });
-          }
-          return res
-            .status(201)
-            .json({
+        db.query(
+          insertSQL,
+          [
+            partnerType,
+            planDuration,
+            planName,
+            totalPrice,
+            features,
+            currentdate,
+            currentdate,
+          ],
+          (err, result) => {
+            if (err) {
+              console.error("Error inserting:", err);
+              return res
+                .status(500)
+                .json({ message: "Database error", error: err });
+            }
+            return res.status(201).json({
               message: "Subscription Plan added successfully",
               Id: result.insertId,
             });
-        });
+          }
+        );
       }
     );
   }
@@ -152,21 +173,17 @@ export const del = (req, res) => {
           .json({ message: "Subscription Pricing not found" });
       }
 
-      db.query(
-        "DELETE FROM subscriptionPricing WHERE id = ?",
-        [Id],
-        (err) => {
-          if (err) {
-            console.error("Error deleting :", err);
-            return res
-              .status(500)
-              .json({ message: "Database error", error: err });
-          }
-          res
-            .status(200)
-            .json({ message: "Subscription Pricing deleted successfully" });
+      db.query("DELETE FROM subscriptionPricing WHERE id = ?", [Id], (err) => {
+        if (err) {
+          console.error("Error deleting :", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
         }
-      );
+        res
+          .status(200)
+          .json({ message: "Subscription Pricing deleted successfully" });
+      });
     }
   );
 };
@@ -205,17 +222,14 @@ export const highlight = (req, res) => {
               .status(500)
               .json({ message: "Database error", error: err });
           }
-          res
-            .status(200)
-            .json({
-              message: "Subscription Plan highlight successfully",
-            });
+          res.status(200).json({
+            message: "Subscription Plan highlight successfully",
+          });
         }
       );
     }
   );
 };
-
 
 //**Change status */
 export const status = (req, res) => {
@@ -251,11 +265,9 @@ export const status = (req, res) => {
               .status(500)
               .json({ message: "Database error", error: err });
           }
-          res
-            .status(200)
-            .json({
-              message: "Subscription Pricing status change successfully",
-            });
+          res.status(200).json({
+            message: "Subscription Pricing status change successfully",
+          });
         }
       );
     }

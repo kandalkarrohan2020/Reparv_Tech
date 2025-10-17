@@ -7,7 +7,7 @@ import {
   getUserSubscription,
   markRedeemUsed,
   validateRedeemCode,
-} from "../../controllers/territoryApp/subscriptionController.js";
+} from "../../controllers/onboardingPartnerApp/subscriptionController.js";
 
 const router = express.Router();
 

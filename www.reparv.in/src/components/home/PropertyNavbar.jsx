@@ -18,12 +18,14 @@ import shopIcon from "../../assets/home/shopIcon.svg";
 import { IoSearchSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../store/auth";
+import { usePropertyFilter } from "../../store/propertyFilter";
 import PropertySearchBar from "./HomeSearch";
 import HomeSearch from "./HomeSearch";
 
 const PropertyNavbar = () => {
   const navigate = useNavigate();
   const { propertyType, setPropertyType, propertySearch, setPropertySearch } = useAuth();
+  const {setSelectedType} = usePropertyFilter();
   const [ showMore, setShowMore ] = useState(false);
   
   useEffect(() => {
@@ -66,6 +68,7 @@ const PropertyNavbar = () => {
             onClick={() => {
               if (property.label !== "Show More" && property.label !== "Show Less"){
                 setPropertyType(property.type);
+                setSelectedType(property.type);
                 navigate("/properties");
               } else {
                 setShowMore(!showMore);

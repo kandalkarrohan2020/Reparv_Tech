@@ -290,7 +290,16 @@ const SubscriptionDiscount = () => {
     {
       name: "Partner Type",
       selector: (row) => row.partnerType,
-      sortable: true,
+      minWidth: "150px",
+    },
+    {
+      name: "Subscription Plan",
+      selector: (row) => row.planName +" | "+ row.planDuration,
+      minWidth: "200px",
+    },
+    {
+      name: "Total Price",
+      selector: (row) => <FormatPrice price={parseInt(row.totalPrice)} />,
       minWidth: "150px",
     },
     {

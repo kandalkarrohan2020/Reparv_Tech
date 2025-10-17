@@ -15,7 +15,7 @@ import TypeWisePricing from "../components/property/TypeWisePricing";
 const PropertyImageGallery = lazy(() =>
   import("../components/property/PropertyImageGallery")
 );
-const OtherProperties = lazy(() => import("../components/OtherProperties"));
+const SimilarProperties = lazy(() => import("../components/property/SimilarProperties"));
 
 function PropertyDetails() {
   const { setOtherPropertiesInView, isScrolling } = useOutletContext();
@@ -162,7 +162,7 @@ function PropertyDetails() {
           </button>
         </div>
 
-        {/* Lazy load Other Properties */}
+        {/* Lazy load for Similar Properties */}
         <div
           ref={videoRef}
           className="w-full flex flex-col px-5 pt-10 sm:pt-13 sm:p-5"
@@ -177,9 +177,10 @@ function PropertyDetails() {
               </div>
             }
           >
-            <OtherProperties
+            <SimilarProperties
               propertyCity={propertyInfo.city}
               propertyCategory={propertyInfo.propertyCategory}
+              propertyPrice={propertyInfo.totalOfferPrice}
               propertyId={id}
               key={propertyInfo.seoSlug}
             />

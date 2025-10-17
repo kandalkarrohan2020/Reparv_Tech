@@ -16,11 +16,26 @@ export const getAll = (req, res) => {
 // **Fetch All **
 export const getAllPlans = (req, res) => {
   const partnerType = req.params.partnerType;
-  const sql =
-    "SELECT * FROM subscriptionPricing WHERE status = 'Active' AND partnerType = ? ORDER BY planDuration";
+
+  const sql = `
+    SELECT 
+      sp.*, 
+      rc.redeemCode, 
+      rc.discount, 
+      rc.startDate, 
+      rc.endDate
+    FROM subscriptionPricing AS sp
+    LEFT JOIN redeem_codes AS rc 
+      ON sp.id = rc.planId 
+      AND rc.status = 'Active'
+    WHERE sp.status = 'Active' 
+      AND sp.partnerType = ?
+    ORDER BY sp.planDuration;
+  `;
+
   db.query(sql, [partnerType], (err, result) => {
     if (err) {
-      console.error("Error fetching :", err);
+      console.error("Error fetching plans:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
     res.json(result);
@@ -93,11 +108,9 @@ export const add = (req, res) => {
                 .status(500)
                 .json({ message: "Database error", error: err });
             }
-            return res
-              .status(200)
-              .json({
-                message: "Subscription Pricing Plan updated successfully",
-              });
+            return res.status(200).json({
+              message: "Subscription Pricing Plan updated successfully",
+            });
           }
         );
       }

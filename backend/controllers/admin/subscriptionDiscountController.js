@@ -3,7 +3,17 @@ import moment from "moment";
 
 // **Fetch All **
 export const getAll = (req, res) => {
-  const sql = "SELECT * FROM redeem_codes ORDER BY id DESC";
+  const sql = `
+    SELECT 
+      rc.*,
+      sp.planName,
+      sp.planDuration,
+      sp.totalPrice
+    FROM redeem_codes AS rc
+    LEFT JOIN subscriptionPricing AS sp
+      ON rc.planId = sp.id
+    ORDER BY rc.id DESC;
+  `;
 
   db.query(sql, (err, result) => {
     if (err) {
@@ -11,10 +21,12 @@ export const getAll = (req, res) => {
       return res.status(500).json({ message: "Database error", error: err });
     }
 
-    // Format dates
+    // Format start and end dates
     const formattedResult = result.map((row) => ({
       ...row,
-      startDate: row.startDate ? moment(row.startDate).format("DD MMM YYYY") : null,
+      startDate: row.startDate
+        ? moment(row.startDate).format("DD MMM YYYY")
+        : null,
       endDate: row.endDate ? moment(row.endDate).format("DD MMM YYYY") : null,
     }));
 
@@ -24,25 +36,41 @@ export const getAll = (req, res) => {
 
 // **Fetch Single by ID**
 export const getById = (req, res) => {
-  const Id = parseInt(req.params.id);
-  const sql = "SELECT * FROM redeem_codes WHERE id = ?";
+  const Id = parseInt(req.params.id, 10);
+
+  const sql = `
+    SELECT 
+      rc.*, 
+      sp.planName,
+      sp.planDuration,
+      sp.totalPrice
+    FROM redeem_codes AS rc
+    LEFT JOIN subscriptionPricing AS sp
+      ON rc.planId = sp.id
+    WHERE rc.id = ?;
+  `;
 
   db.query(sql, [Id], (err, result) => {
     if (err) {
-      console.error("Error fetching :", err);
+      console.error("Error fetching discount:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    if (result.length === 0) {
-      return res.status(404).json({ message: "discount not found" });
-    }
-    // Format dates
-    const formattedResult = result.map((row) => ({
-      ...row,
-      startDate: row.startDate ? moment(row.startDate).format("DD MMM YYYY") : null,
-      endDate: row.endDate ? moment(row.endDate).format("DD MMM YYYY") : null,
-    }));
 
-    res.status(200).json(formattedResult[0]);
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Discount not found" });
+    }
+
+    // Format dates (DD MMM YYYY)
+    const row = result[0];
+    const formattedResult = {
+      ...row,
+      startDate: row.startDate
+        ? moment(row.startDate).format("DD MMM YYYY")
+        : null,
+      endDate: row.endDate ? moment(row.endDate).format("DD MMM YYYY") : null,
+    };
+
+    res.status(200).json(formattedResult);
   });
 };
 
@@ -61,13 +89,7 @@ export const addDiscount = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const { partnerType, planId, discount, startDate, endDate } = req.body;
 
-  if (
-    !partnerType ||
-    !planId ||
-    !discount ||
-    !startDate ||
-    !endDate
-  ) {
+  if (!partnerType || !planId || !discount || !startDate || !endDate) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -109,18 +131,12 @@ export const addDiscount = (req, res) => {
 export const updateDiscount = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const Id = parseInt(req.params.id, 10);
-  if(!Id){
+  if (!Id) {
     return res.status(400).json({ message: "Invalid Id" });
   }
   const { partnerType, planId, discount, startDate, endDate } = req.body;
 
-  if (
-    !partnerType ||
-    !planId ||
-    !discount ||
-    !startDate ||
-    !endDate
-  ) {
+  if (!partnerType || !planId || !discount || !startDate || !endDate) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -136,15 +152,7 @@ export const updateDiscount = (req, res) => {
 
     db.query(
       updateSQL,
-      [
-        partnerType,
-        planId,
-        discount,
-        startDate,
-        endDate,
-        currentdate,
-        Id,
-      ],
+      [partnerType, planId, discount, startDate, endDate, currentdate, Id],
       (err) => {
         if (err)
           return res
@@ -165,33 +173,23 @@ export const del = (req, res) => {
     return res.status(400).json({ message: "Invalid ID" });
   }
 
-  db.query(
-    "SELECT * FROM redeem_codes WHERE id = ?",
-    [Id],
-    (err, result) => {
+  db.query("SELECT * FROM redeem_codes WHERE id = ?", [Id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ message: "discount not found" });
+    }
+
+    db.query("DELETE FROM redeem_codes WHERE id = ?", [Id], (err) => {
       if (err) {
-        console.error("Database error:", err);
+        console.error("Error deleting :", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
-      if (result.length === 0) {
-        return res
-          .status(404)
-          .json({ message: "discount not found" });
-      }
-
-      db.query("DELETE FROM redeem_codes WHERE id = ?", [Id], (err) => {
-        if (err) {
-          console.error("Error deleting :", err);
-          return res
-            .status(500)
-            .json({ message: "Database error", error: err });
-        }
-        res
-          .status(200)
-          .json({ message: "Discount deleted successfully" });
-      });
-    }
-  );
+      res.status(200).json({ message: "Discount deleted successfully" });
+    });
+  });
 };
 
 //**Change status */
@@ -202,37 +200,33 @@ export const status = (req, res) => {
     return res.status(400).json({ message: "Invalid ID" });
   }
 
-  db.query(
-    "SELECT * FROM redeem_codes WHERE id = ?",
-    [Id],
-    (err, result) => {
-      if (err) {
-        console.error("Database error:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-
-      let status = "";
-      if (result[0].status === "Active") {
-        status = "Inactive";
-      } else {
-        status = "Active";
-      }
-      console.log(status);
-      db.query(
-        "UPDATE redeem_codes SET status = ? WHERE id = ?",
-        [status, Id],
-        (err, result) => {
-          if (err) {
-            console.error("Error deleting :", err);
-            return res
-              .status(500)
-              .json({ message: "Database error", error: err });
-          }
-          res.status(200).json({
-            message: "Discount status change successfully",
-          });
-        }
-      );
+  db.query("SELECT * FROM redeem_codes WHERE id = ?", [Id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database error", error: err });
     }
-  );
+
+    let status = "";
+    if (result[0].status === "Active") {
+      status = "Inactive";
+    } else {
+      status = "Active";
+    }
+    console.log(status);
+    db.query(
+      "UPDATE redeem_codes SET status = ? WHERE id = ?",
+      [status, Id],
+      (err, result) => {
+        if (err) {
+          console.error("Error deleting :", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+        res.status(200).json({
+          message: "Discount status change successfully",
+        });
+      }
+    );
+  });
 };

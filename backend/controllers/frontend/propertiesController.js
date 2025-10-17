@@ -1,8 +1,9 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 
+// get all for Similar Properties
 export const getAll = (req, res) => {
-  const { city, propertyCategory, propertyType } = req.query;
+  const { city, propertyCategory, propertyType, minBudget, maxBudget } = req.query;
 
   let sql = `
     SELECT * 
@@ -34,6 +35,12 @@ export const getAll = (req, res) => {
     params.push(city.trim());
   }
 
+  // Filter by budget if provided
+  if (minBudget && maxBudget) {
+    sql += ` AND p.totalOfferPrice BETWEEN ? AND ?`;
+    params.push(parseInt(minBudget), parseInt(maxBudget));
+  }
+
   sql += ` ORDER BY p.propertyid DESC`;
 
   db.query(sql, params, (err, result) => {
@@ -63,6 +70,7 @@ export const getAll = (req, res) => {
     res.json(formatted);
   });
 };
+
 
 // Get All Properties By Slug
 export const getAllBySlug = (req, res) => {

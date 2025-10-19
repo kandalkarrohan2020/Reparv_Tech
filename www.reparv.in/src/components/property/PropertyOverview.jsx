@@ -113,6 +113,12 @@ const PropertyOverview = ({ propertyInfo }) => {
       show: !propertyInfo.tags ? "flex col-span-2 lg:col-span-3" : "hidden",
     },
     {
+      icon: FaHome,
+      label: "Location",
+      value: propertyInfo.location,
+      show: "flex",
+    },
+    {
       icon: FaRegClipboard,
       label: "RERA Registered",
       value: propertyInfo.reraRegistered,

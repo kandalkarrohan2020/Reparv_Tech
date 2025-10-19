@@ -31,6 +31,37 @@ const Subscription = () => {
     features: "",
   });
 
+  const [selectedImages, setSelectedImages] = useState({
+    first: null,
+    second: null,
+    third: null,
+  });
+
+  const handleImageChange = (event, key) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+    if (!allowedTypes.includes(file.type)) {
+      alert("Only PNG, JPG and JPEG formats are allowed!");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 1 * 1024 * 1024) {
+      alert("File size must be less than 1MB!");
+      event.target.value = "";
+      return;
+    }
+
+    // Set the image dynamically
+    setSelectedImages((prev) => ({ ...prev, [key]: file }));
+  };
+
+  const removeImage = (key) => {
+    setSelectedImages((prev) => ({ ...prev, [key]: null }));
+  };
+
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
@@ -49,33 +80,68 @@ const Subscription = () => {
     }
   };
 
-  //Add or update record
+  // Add or Update Subscription Record with Images
   const addOrUpdate = async (e) => {
     e.preventDefault();
 
+    // Validation
+    if (
+      !newSubscription.partnerType ||
+      !newSubscription.planDuration ||
+      !newSubscription.planName ||
+      !newSubscription.totalPrice ||
+      !newSubscription.features
+    ) {
+      alert("Please fill all required fields!");
+      return;
+    }
+
     const endpoint = newSubscription.id ? `edit/${newSubscription.id}` : "add";
+    const method = newSubscription.id ? "PUT" : "POST";
+
     try {
       setLoading(true);
+
+      // Create FormData
+      const formData = new FormData();
+      formData.append("partnerType", newSubscription.partnerType);
+      formData.append("planDuration", newSubscription.planDuration);
+      formData.append("planName", newSubscription.planName);
+      formData.append("totalPrice", newSubscription.totalPrice);
+      formData.append("features", newSubscription.features);
+
+      // Append images if selected
+      if (selectedImages.first)
+        formData.append("firstImage", selectedImages.first);
+      if (selectedImages.second)
+        formData.append("secondImage", selectedImages.second);
+      if (selectedImages.third)
+        formData.append("thirdImage", selectedImages.third);
+
       const response = await fetch(
-        URI + `/admin/subscription/pricing/${endpoint}`,
+        `${URI}/admin/subscription/pricing/${endpoint}`,
         {
-          method: newSubscription.id ? "PUT" : "POST",
+          method,
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newSubscription),
+          body: formData, // FormData automatically sets multipart/form-data
         }
       );
 
-      if (!response.ok) throw new Error("Failed to save Subscription.");
+      const data = await response.json();
 
-      if (newSubscription.id) {
-        alert(`Subscription updated successfully!`);
-      } else if (response.status === 202) {
-        alert(`Subscription already Exit!!`);
-      } else {
-        alert(`Subscription added successfully!`);
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to save subscription.");
       }
 
+      if (newSubscription.id) {
+        alert("Subscription updated successfully!");
+      } else if (response.status === 202) {
+        alert("Subscription already exists!");
+      } else {
+        alert("Subscription added successfully!");
+      }
+
+      // Reset form
       setNewSubscription({
         id: "",
         partnerType: "",
@@ -85,10 +151,12 @@ const Subscription = () => {
         features: "",
       });
 
+      setSelectedImages({ first: null, second: null, third: null });
       setShowSubscriptionForm(false);
-      fetchData();
+      fetchData(); // Refresh the list
     } catch (err) {
-      console.error("Error saving :", err);
+      console.error("Error saving subscription:", err);
+      alert(err.message || "Something went wrong while saving.");
     } finally {
       setLoading(false);
     }
@@ -361,7 +429,7 @@ const Subscription = () => {
           </option>
           <option value="view">View</option>
           <option value="status">Status</option>
-           <option value="update">Update</option>
+          <option value="update">Update</option>
           <option value="highlight">Highlight</option>
           <option value="delete">Delete</option>
         </select>
@@ -414,12 +482,13 @@ const Subscription = () => {
           showSubscriptionForm ? "flex" : "hidden"
         } z-[61] SubscriptionForm overflow-scroll scrollbar-hide w-full fixed bottom-0 md:bottom-auto `}
       >
-        <div className="w-full md:w-[500px] lg:w-[750px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+        <div className="w-full md:w-[500px] lg:w-[750px] max-h-[75vh] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">Subscription Plan</h2>
             <IoMdClose
               onClick={() => {
                 setShowSubscriptionForm(false);
+                setSelectedImages({ first: null, second: null, third: null });
                 setNewSubscription({
                   id: "",
                   partnerType: "",
@@ -433,7 +502,7 @@ const Subscription = () => {
             />
           </div>
           <form onSubmit={addOrUpdate}>
-            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
+            <div className="w-full grid place-items-center gap-4 grid-cols-1 lg:grid-cols-2">
               <input
                 type="hidden"
                 value={newSubscription.id || ""}
@@ -443,7 +512,7 @@ const Subscription = () => {
               />
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Partner Type
+                  Partner Type <span className="text-red-600">*</span>
                 </label>
                 <select
                   required
@@ -467,7 +536,7 @@ const Subscription = () => {
               </div>
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Plan Duration
+                  Plan Duration <span className="text-red-600">*</span>
                 </label>
                 <select
                   required
@@ -499,7 +568,7 @@ const Subscription = () => {
               </div>
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Plan Name
+                  Plan Name <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -517,7 +586,7 @@ const Subscription = () => {
               </div>
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Total Price
+                  Total Price <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="number"
@@ -536,7 +605,8 @@ const Subscription = () => {
               </div>
               <div className={`w-full col-span-2`}>
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Enter Comma(,) Seprated Features
+                  Enter Comma(,) Seprated Features{" "}
+                  <span className="text-red-600">*</span>
                 </label>
                 <textarea
                   rows={2}
@@ -553,12 +623,180 @@ const Subscription = () => {
                   }
                 />
               </div>
+              {/* First Banner Image */}
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
+                  First Banner Image
+                </label>
+
+                {/* Existing image from DB */}
+                {newSubscription?.firstImage && (
+                  <div className="relative mt-2 w-full max-w-[100px]">
+                    <img
+                      src={URI + newSubscription?.firstImage}
+                      alt="Uploaded preview"
+                      className="w-[100px] object-cover rounded-lg border border-gray-300"
+                    />
+                  </div>
+                )}
+
+                {/* Upload input */}
+                <div className="w-full mt-2">
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg"
+                    onChange={(e) => handleImageChange(e, "first")}
+                    className="hidden"
+                    id="firstImageUpload"
+                  />
+                  <label
+                    htmlFor="firstImageUpload"
+                    className="flex items-center justify-between border border-gray-300 rounded cursor-pointer"
+                  >
+                    <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
+                      Upload Image
+                    </span>
+                    <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                      Browse
+                    </div>
+                  </label>
+                </div>
+
+                {/* Preview of selected image */}
+                {selectedImages.first && (
+                  <div className="relative mt-2 w-full max-w-[100px]">
+                    <img
+                      src={URL.createObjectURL(selectedImages.first)}
+                      alt="Uploaded preview"
+                      className="w-[100px] object-cover rounded-lg border border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage("first")}
+                      className="absolute top-1 right-1 bg-red-600 text-white text-xs px-2 py-1 rounded-full shadow"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Second Banner Image */}
+              <div className="w-full mt-4">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
+                  Second Banner Image
+                </label>
+
+                {newSubscription?.secondImage && (
+                  <div className="relative mt-2 w-full max-w-[100px]">
+                    <img
+                      src={URI + newSubscription?.secondImage}
+                      alt="Uploaded preview"
+                      className="w-[100px] object-cover rounded-lg border border-gray-300"
+                    />
+                  </div>
+                )}
+
+                <div className="w-full mt-2">
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg"
+                    onChange={(e) => handleImageChange(e, "second")}
+                    className="hidden"
+                    id="secondImageUpload"
+                  />
+                  <label
+                    htmlFor="secondImageUpload"
+                    className="flex items-center justify-between border border-gray-300 rounded cursor-pointer"
+                  >
+                    <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
+                      Upload Image
+                    </span>
+                    <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                      Browse
+                    </div>
+                  </label>
+                </div>
+
+                {selectedImages.second && (
+                  <div className="relative mt-2 w-full max-w-[100px]">
+                    <img
+                      src={URL.createObjectURL(selectedImages.second)}
+                      alt="Uploaded preview"
+                      className="w-[100px] object-cover rounded-lg border border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage("second")}
+                      className="absolute top-1 right-1 bg-red-600 text-white text-xs px-2 py-1 rounded-full shadow"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Third Banner Image */}
+              <div className="w-full mt-4">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
+                  Third Banner Image
+                </label>
+
+                {newSubscription?.thirdImage && (
+                  <div className="relative mt-2 w-full max-w-[100px]">
+                    <img
+                      src={URI + newSubscription?.thirdImage}
+                      alt="Uploaded preview"
+                      className="w-[100px] object-cover rounded-lg border border-gray-300"
+                    />
+                  </div>
+                )}
+
+                <div className="w-full mt-2">
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg"
+                    onChange={(e) => handleImageChange(e, "third")}
+                    className="hidden"
+                    id="thirdImageUpload"
+                  />
+                  <label
+                    htmlFor="thirdImageUpload"
+                    className="flex items-center justify-between border border-gray-300 rounded cursor-pointer"
+                  >
+                    <span className="m-3 p-2 text-[16px] font-medium text-[#00000066]">
+                      Upload Image
+                    </span>
+                    <div className="btn flex items-center justify-center w-[107px] p-5 rounded-[3px] rounded-tl-none rounded-bl-none bg-[#000000B2] text-white">
+                      Browse
+                    </div>
+                  </label>
+                </div>
+
+                {selectedImages.third && (
+                  <div className="relative mt-2 w-full max-w-[100px]">
+                    <img
+                      src={URL.createObjectURL(selectedImages.third)}
+                      alt="Uploaded preview"
+                      className="w-[100px] object-cover rounded-lg border border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage("third")}
+                      className="absolute top-1 right-1 bg-red-600 text-white text-xs px-2 py-1 rounded-full shadow"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="flex mt-8 md:mt-6 justify-end gap-6">
               <button
                 type="button"
                 onClick={() => {
                   setShowSubscriptionForm(false);
+                  setSelectedImages({ first: null, second: null, third: null });
                   setNewSubscription({
                     id: "",
                     role: "",
@@ -665,6 +903,40 @@ const Subscription = () => {
                 value={subscriptionPlan.totalPrice}
                 readOnly
               />
+            </div>
+            <div className="w-full ">
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Banner Images
+              </label>
+              <div className="w-full flex gap-2 mt-2">
+                <img
+                onClick={()=>{
+                  window.open(URI + subscriptionPlan.firstImage,"_blank")
+                }}
+                src={URI + subscriptionPlan.firstImage}
+                className={`${
+                  subscriptionPlan?.firstImage ? "block" : "hidden" 
+                } max-w-[100px] h-[60px] cursor-pointer rounded-lg`}
+              />
+              <img
+              onClick={()=>{
+                  window.open(URI + subscriptionPlan.secondImage,"_blank")
+                }}
+                src={URI + subscriptionPlan.secondImage}
+                className={`${
+                  subscriptionPlan?.secondImage ? "block" : "hidden" 
+                } max-w-[100px] h-[60px] cursor-pointer rounded-lg`}
+              />
+              <img
+              onClick={()=>{
+                  window.open(URI + subscriptionPlan.thirdImage,"_blank")
+                }}
+                src={URI + subscriptionPlan.thirdImage}
+                className={`${
+                  subscriptionPlan?.thirdImage ? "block" : "hidden" 
+                } max-w-[100px] h-[60px] cursor-pointer rounded-lg`}
+              />
+              </div>
             </div>
             <div className="col-span-1 sm:col-span-2">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">

@@ -6,12 +6,14 @@ import {
   updateDiscount,
   status,
   del,
-} from "../../controllers/admin/subscriptionDiscountController.js";
+  checkRedeemCode,
+} from "../../controllers/admin/SubscriptionDiscountController.js";
 
 const router = express.Router();
 
 router.get("/", getAll);
 router.get("/:id", getById);
+router.post("/check/redeem-code", checkRedeemCode);
 router.post("/add", addDiscount);
 router.put("/edit/:id", updateDiscount);
 router.put("/status/:id", status);

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../store/auth";
 import { handlePayment } from "../../utils/payment.js";
 
-const RegistrationForm = ({plan}) => {
+const RegistrationForm = ({ plan }) => {
   const { URI, setSuccessScreen } = useAuth();
   const registrationPrice = plan?.totalPrice;
   const [newPartner, setNewPartner] = useState({
@@ -277,17 +277,32 @@ const RegistrationForm = ({plan}) => {
           </select>
         </div>
 
-        <div className="w-full mb-5">
-          <input
-            type="text"
-            minLength={10}
-            placeholder="Referral Code (optional)"
-            value={newPartner.refrence}
-            onChange={(e) =>
-              setNewPartner({ ...newPartner, refrence: e.target.value })
-            }
-            className="w-full  bg-white text-sm sm:text-base font-medium px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600"
-          />
+        <div className="w-full flex flex-col lg:flex-row gap-2 sm:gap-4 items-center justify-between mb-2 sm:mb-4">
+          <div className="w-full lg:w-[300px]">
+            <input
+              type="text"
+              minLength={10}
+              placeholder="Referral Code (optional)"
+              value={newPartner.refrence}
+              onChange={(e) =>
+                setNewPartner({ ...newPartner, refrence: e.target.value })
+              }
+              className="w-full  bg-white text-sm sm:text-base font-medium px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600"
+            />
+          </div>
+
+          <div className="w-full lg:w-[300px]">
+            <input
+              type="text"
+              minLength={8}
+              placeholder="Redeem Code (optional)"
+              value={newPartner.redeemCode}
+              onChange={(e) =>
+                setNewPartner({ ...newPartner, redeemCode: e.target.value })
+              }
+              className="w-full  bg-white text-sm sm:text-base font-medium px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600"
+            />
+          </div>
         </div>
 
         <div className="flex justify-center">

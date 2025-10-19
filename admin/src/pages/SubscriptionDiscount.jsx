@@ -26,10 +26,38 @@ const SubscriptionDiscount = () => {
   const [newDiscount, setNewDiscount] = useState({
     partnerType: "",
     planId: "",
+    redeemCode: "",
     discount: "",
     startDate: "",
     endDate: "",
   });
+
+  // For Redeem Code Checking
+  const [isSame, setIsSame] = useState(true);
+  const [message, setMessage] = useState("");
+
+  const checkRedeemCode = async () => {
+    try {
+      const res = await fetch(
+        `${URI}/admin/subscription/discount/check/redeem-code`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newDiscount),
+        }
+      );
+
+      const data = await res.json();
+      setIsSame(data.unique);
+      setMessage(data.message);
+    } catch (error) {
+      console.error("Error:", error);
+      setMessage("Something went wrong");
+    }
+  };
 
   // **Fetch Data from API**
   const fetchData = async () => {
@@ -101,6 +129,7 @@ const SubscriptionDiscount = () => {
       setNewDiscount({
         partnerType: "",
         planId: "",
+        redeemCode: "",
         discount: "",
         startDate: "",
         endDate: "",
@@ -212,6 +241,15 @@ const SubscriptionDiscount = () => {
   }, [newDiscount.partnerType]);
 
   useEffect(() => {
+    if (
+      !newDiscount.id &&
+      newDiscount.partnerType
+    ) {
+      checkRedeemCode();
+    }
+  }, [newDiscount.redeemCode, newDiscount.partnerType]);
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -294,7 +332,7 @@ const SubscriptionDiscount = () => {
     },
     {
       name: "Subscription Plan",
-      selector: (row) => row.planName +" | "+ row.planDuration,
+      selector: (row) => row.planName + " | " + row.planDuration,
       minWidth: "200px",
     },
     {
@@ -304,7 +342,7 @@ const SubscriptionDiscount = () => {
     },
     {
       name: "Discount",
-      selector: (row) => row.discount,
+      selector: (row) => <FormatPrice price={parseInt(row.discount)} />,
       minWidth: "150px",
     },
     {
@@ -418,7 +456,7 @@ const SubscriptionDiscount = () => {
           showDiscountForm ? "flex" : "hidden"
         } z-[61] DiscountForm overflow-scroll scrollbar-hide w-full fixed bottom-0 md:bottom-auto `}
       >
-        <div className="w-full md:w-[500px] lg:w-[750px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+        <div className="w-full md:w-[500px] lg:w-[750px] max-h-[75vh] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">Discount Plan</h2>
             <IoMdClose
@@ -427,6 +465,7 @@ const SubscriptionDiscount = () => {
                 setNewDiscount({
                   partnerType: "",
                   planId: "",
+                  redeemCode: "",
                   discount: "",
                   startDate: "",
                   endDate: "",
@@ -436,7 +475,7 @@ const SubscriptionDiscount = () => {
             />
           </div>
           <form onSubmit={addOrUpdate}>
-            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2 ">
               <input
                 type="hidden"
                 value={newDiscount.id || ""}
@@ -445,8 +484,14 @@ const SubscriptionDiscount = () => {
                 }
               />
               <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Partner Type
+                <label
+                  className={`${
+                    newDiscount.partnerType
+                      ? "text-green-600"
+                      : "text-[#00000066]"
+                  } block text-sm leading-4 font-medium`}
+                >
+                  Partner Type <span className="text-red-600">*</span>
                 </label>
                 <select
                   required
@@ -470,8 +515,12 @@ const SubscriptionDiscount = () => {
               </div>
 
               <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Plan
+                <label
+                  className={`${
+                    newDiscount.planId ? "text-green-600" : "text-[#00000066]"
+                  } block text-sm leading-4 font-medium`}
+                >
+                  Plan <span className="text-red-600">*</span>
                 </label>
                 <select
                   required
@@ -496,9 +545,46 @@ const SubscriptionDiscount = () => {
                 </select>
               </div>
 
+              <div className="w-full ">
+                <label
+                  className={`${
+                    isSame === true && newDiscount.partnerType
+                      ? "text-green-600"
+                      : isSame === false
+                      ? "text-red-600"
+                      : "text-[#00000066]"
+                  } ${
+                    newDiscount.id && newDiscount.redeemCode && newDiscount.partnerType
+                      ? "text-green-600"
+                      : "text-[#00000066]"
+                  } block text-sm leading-4 font-medium`}
+                >
+                  {message || "Redeem Code"}{" "}
+                  <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  minLength={6}
+                  required
+                  placeholder="Enter Redeem Code"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
+                  value={newDiscount.redeemCode}
+                  onChange={(e) =>
+                    setNewDiscount({
+                      ...newDiscount,
+                      redeemCode: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
               <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Discount in Rupees
+                <label
+                  className={`${
+                    newDiscount.discount ? "text-green-600" : "text-[#00000066]"
+                  } block text-sm leading-4 font-medium`}
+                >
+                  Discount in Rupees <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="number"
@@ -518,17 +604,22 @@ const SubscriptionDiscount = () => {
 
               {/* Start Date */}
               <div className="w-full ">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                <label
+                  className={`${
+                    newDiscount.startDate
+                      ? "text-green-600"
+                      : "text-[#00000066]"
+                  } block text-sm leading-4 font-medium`}
+                >
                   Start Date{" "}
-                  {newDiscount.startDate ? "| " + newDiscount.startDate : ""}
+                  {newDiscount.startDate ? "| " + newDiscount.startDate : ""}{" "}
+                  <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="date"
                   required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={
-                    newDiscount.startDate
-                  }
+                  value={newDiscount.startDate}
                   onChange={(e) => {
                     const selectedDate = e.target.value;
                     setNewDiscount({
@@ -541,9 +632,14 @@ const SubscriptionDiscount = () => {
 
               {/* End Date */}
               <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                <label
+                  className={`${
+                    newDiscount.endDate ? "text-green-600" : "text-[#00000066]"
+                  } block text-sm leading-4 font-medium`}
+                >
                   End Date{" "}
-                  {newDiscount.endDate ? "| " + newDiscount.endDate : ""}
+                  {newDiscount.endDate ? "| " + newDiscount.endDate : ""}{" "}
+                  <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="date"
@@ -568,6 +664,7 @@ const SubscriptionDiscount = () => {
                   setNewDiscount({
                     partnerType: "",
                     planId: "",
+                    redeemCode: "",
                     discount: "",
                     startDate: "",
                     endDate: "",
@@ -640,6 +737,30 @@ const SubscriptionDiscount = () => {
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={discount.partnerType}
+                readOnly
+              />
+            </div>
+            <div className={`w-full`}>
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Subscription Plan
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={discount.partnerPlan + " | " + discount.planDuration}
+                readOnly
+              />
+            </div>
+            <div className={`w-full`}>
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Total Price
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={discount.totalPrice}
                 readOnly
               />
             </div>

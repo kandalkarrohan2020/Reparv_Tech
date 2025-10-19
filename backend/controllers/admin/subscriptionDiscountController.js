@@ -74,58 +74,130 @@ export const getById = (req, res) => {
   });
 };
 
-// Helper to generate 8-char case-sensitive alphanumeric redeem code
-const generateRedeemCode = () => {
-  const letters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let code = "";
-  for (let i = 0; i < 8; i++) {
-    code += letters[Math.floor(Math.random() * letters.length)];
+export const checkRedeemCode = (req, res) => {
+  try {
+    let { partnerType, redeemCode } = req.body;
+
+    if (
+      !partnerType ||
+      partnerType.trim() === "" ||
+      !redeemCode ||
+      redeemCode.trim() === ""
+    ) {
+      return res.status(400).json({
+        success: false,
+        unique: null,
+        message: "Redeem Code",
+      });
+    }
+
+    redeemCode = redeemCode.trim();
+
+    // Case-sensitive check using BINARY in MySQL
+    const sql =
+      "SELECT id FROM redeem_codes WHERE partnerType = ? AND BINARY redeemCode = ? LIMIT 1";
+
+    db.query(sql, [partnerType, redeemCode], (err, rows) => {
+      if (err) {
+        console.error("Error checking redeem code:", err);
+        return res.status(500).json({
+          success: false,
+          unique: null,
+          message: "Server error while checking redeem code",
+        });
+      }
+
+      if (rows.length > 0) {
+        return res.status(200).json({
+          success: true,
+          unique: false,
+          message: "Redeem Code already exists",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        unique: true,
+        message: "Redeem Code is available",
+      });
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return res.status(500).json({
+      success: false,
+      unique: null,
+      message: "Unexpected server error",
+    });
   }
-  return code;
 };
 
 export const addDiscount = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { partnerType, planId, discount, startDate, endDate } = req.body;
+  const { partnerType, planId, redeemCode, discount, startDate, endDate } =
+    req.body;
 
-  if (!partnerType || !planId || !discount || !startDate || !endDate) {
+  if (
+    !partnerType ||
+    !planId ||
+    !redeemCode ||
+    !discount ||
+    !startDate ||
+    !endDate
+  ) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const redeemCode = generateRedeemCode();
+  // Step 1: Check if redeemCode already exists for this partnerType
+  const checkSQL = `SELECT id FROM redeem_codes WHERE partnerType = ? AND redeemCode = ? LIMIT 1`;
 
-  const insertSQL = `INSERT INTO redeem_codes ( redeemCode, partnerType, planId, discount, startDate, endDate, updated_at, created_at)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+  db.query(checkSQL, [partnerType, redeemCode], (err, rows) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Database error while checking", error: err });
+    }
 
-  db.query(
-    insertSQL,
-    [
-      redeemCode,
-      partnerType,
-      planId,
-      discount,
-      startDate,
-      endDate,
-      currentdate,
-      currentdate,
-    ],
-    (err, result) => {
-      if (err) {
-        if (err.code === "ER_DUP_ENTRY") {
-          // Retry if duplicate redeemCode
-          return addDiscount(req, res);
-        }
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-
-      res.status(201).json({
-        message: "Discount added successfully",
+    // If exists, return conflict/validation message
+    if (rows.length > 0) {
+      return res.status(400).json({
+        message: "Redeem code already exists",
         redeemCode,
-        discountId: result.insertId,
+        unique: false,
       });
     }
-  );
+
+    // Step 2: Insert only if unique
+    const insertSQL = `INSERT INTO redeem_codes (redeemCode, partnerType, planId, discount, startDate, endDate, updated_at, created_at)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    db.query(
+      insertSQL,
+      [
+        redeemCode,
+        partnerType,
+        planId,
+        discount,
+        startDate,
+        endDate,
+        currentdate,
+        currentdate,
+      ],
+      (err, result) => {
+        if (err) {
+          return res
+            .status(500)
+            .json({ message: "Database error during insert", error: err });
+        }
+
+        res.status(201).json({
+          message: "Discount added successfully",
+          redeemCode,
+          discountId: result.insertId,
+          unique: true,
+        });
+      }
+    );
+  });
 };
 
 export const updateDiscount = (req, res) => {

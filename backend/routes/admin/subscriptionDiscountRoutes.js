@@ -7,7 +7,7 @@ import {
   status,
   del,
   checkRedeemCode,
-} from "../../controllers/admin/SubscriptionDiscountController.js";
+} from "../../controllers/admin/subscriptionDiscountController.js";
 
 const router = express.Router();
 

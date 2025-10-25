@@ -143,6 +143,8 @@ export const validateRedeemCode = (req, res) => {
     [code, planid, "Sales Partner"],
     (err, codes) => {
       if (err) {
+        console.log(err,'ddd');
+        
         return res.status(500).json({
           success: false,
           message: "Server error",
@@ -163,6 +165,8 @@ export const validateRedeemCode = (req, res) => {
         [code, user_id],
         (err2, usedRows) => {
           if (err2) {
+             console.log(err2,'ddd');
+       
             return res.status(500).json({
               success: false,
               message: "Server error",
@@ -170,6 +174,7 @@ export const validateRedeemCode = (req, res) => {
           }
 
           if (usedRows.length > 0) {
+            
             return res.json({
               success: false,
               message: "You have already used this code",

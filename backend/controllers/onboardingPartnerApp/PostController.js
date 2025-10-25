@@ -10,6 +10,7 @@ SELECT
   p.postContent,
   p.image,
   p.likes,
+  p.projectpartnerid,
   p.created_at,
   u.fullname,
   u.city,
@@ -44,6 +45,7 @@ export const getAllByUser = (req, res) => {
     p.postContent,
     p.image,
     p.likes,
+    p.projectpartnerid,
     p.created_at,
     u.fullname,
     u.city,
@@ -73,7 +75,7 @@ export const add = (req, res) => {
   const currentDate = moment().format("YYYY-MM-DD HH:mm:ss");
   console.log("add");
 
-  const { userId, postContent, like } = req.body;
+  const { userId, postContent, like,projectpartnerid } = req.body;
   const imageFile = req.file?.filename;
   console.log(userId);
 
@@ -92,13 +94,13 @@ export const add = (req, res) => {
   const finalImagePath = imageFile ? `/uploads/${imageFile}` : null;
 
   const sql = `
-    INSERT INTO onboardingPartnerPosts (userId, image, postContent, likes, created_at)
+    INSERT INTO onboardingPartnerPosts (userId, image, postContent, likes,projectpartnerid, created_at)
     VALUES (?, ?, ?, ?, ?)
   `;
 
   db.query(
     sql,
-    [userId, finalImagePath, postContent, like || 0, currentDate],
+    [userId, finalImagePath, postContent, like || 0,projectpartnerid || null, currentDate],
     (err, result) => {
       if (err) {
         if (err.code === "ER_DUP_ENTRY") {

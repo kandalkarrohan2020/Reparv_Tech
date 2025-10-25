@@ -18,7 +18,8 @@ export const createOrder = (req, res) => {
     receipt: `receipt_${Date.now()}`,
     payment_capture: 1,
   };
-
+  console.log('ddd');
+  
   razorpay.orders.create(options, (err, order) => {
     if (err) {
       console.error("Razorpay order creation error:", err);
@@ -77,6 +78,8 @@ export const verifyPayment = (req, res) => {
     });
   }
 
+  console.log(database);
+  console.log(amount);
   const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
   hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
   const generatedSignature = hmac.digest("hex");

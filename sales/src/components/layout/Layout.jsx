@@ -18,6 +18,7 @@ import { useAuth } from "../../store/auth";
 import LogoutButton from "../LogoutButton";
 import { FaUserCircle } from "react-icons/fa";
 import SuccessScreen from "../property/SuccessScreen";
+import PaymentSuccessScreen from "../SuccessScreen";
 import { useParams } from "react-router-dom";
 import { RxCross2 } from "react-icons/rx";
 import SiteVisitPopup from "../property/SiteVisitPopup";
@@ -27,8 +28,11 @@ import BenefitsPopup from "../property/BenefitsPopup";
 import KYC from "../userVerification/KYC";
 import Agreement from "../Agreement";
 import PlayVideo from "../property/PlayVideo";
+import { IoDiamondOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 function Layout() {
+  const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -39,8 +43,9 @@ function Layout() {
     user,
     showProfile,
     setShowProfile,
-    showKYC,
-    setShowKYC,
+    successScreen,
+    showSubscription,
+    setShowSubscription,
     showPropertyForm,
     setShowPropertyForm,
     showUploadImagesForm,
@@ -108,6 +113,7 @@ function Layout() {
     { state: showOrder, setter: setShowOrder },
     { state: showOrderForm, setter: setShowOrderForm },
     { state: showProductForm, setter: setShowProductForm },
+    { state: showSubscription, setter: setShowSubscription },
   ];
 
   const getNavLinkClass = (path) => {
@@ -152,6 +158,7 @@ function Layout() {
       <div className="md:hidden flex items-center justify-between px-5 py-3 bg-white shadow-sm">
         <img src={reparvMainLogo} alt="Reparv Logo" className="h-10" />
         <div className="ButtonContainer flex gap-4 items-center justify-center">
+          <IoDiamondOutline className="w-7 h-7 text-[#076300]" />
           <FaUserCircle
             onClick={() => {
               setShowProfile("true");
@@ -192,7 +199,14 @@ function Layout() {
             />{" "}
             <p>{heading}</p>
           </div>
-          <div className="right-heading w-[135px] h-[40px] flex items-center justify-between mr-8">
+          <div className="right-heading w-[170px] h-[40px] flex items-center justify-between mr-8">
+            <IoDiamondOutline
+              onClick={() => {
+                getHeading("Subscription");
+                navigate("/subscription");
+              }}
+              className="w-7 h-7 text-[#FF4646] cursor-pointer"
+            />
             <FaUserCircle
               onClick={() => {
                 setShowProfile("true");
@@ -239,7 +253,16 @@ function Layout() {
                 icon: marketingIcon,
                 label: "Marketing Content",
               },
-              { to: "/download-apk", icon: APKDownloadIcon, label: "Sales APK Download" },
+              {
+                to: "/subscription",
+                icon: enquirersIcon,
+                label: "Subscription",
+              },
+              {
+                to: "/download-apk",
+                icon: APKDownloadIcon,
+                label: "Sales APK Download",
+              },
             ].map(({ to, icon, label }) => (
               <NavLink
                 onClick={() => {
@@ -335,9 +358,7 @@ function Layout() {
       )}
 
       {showPlayVideo && (
-        <div
-          className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center"
-        >
+        <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
           <PlayVideo />
         </div>
       )}
@@ -349,6 +370,8 @@ function Layout() {
           </div>
         </div>
       )}
+      {/* Show Success Screen */}
+      {successScreen?.show && <PaymentSuccessScreen />}
     </div>
   );
 }

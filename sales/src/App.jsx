@@ -19,6 +19,7 @@ import CheckEligibility from "./pages/CheckEligibility.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import Subscription from "./pages/Subscription.jsx";
 
 const App = () => {
   return (
@@ -28,6 +29,7 @@ const App = () => {
         <Route path="" element={<Login />} />
         <Route path="/kyc/:userid" element={<KYC />} />
         <Route path="/" element={<Layout />}>
+         
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/enquirers" element={<Enquirers />} />
           <Route path="/customers" element={<Customers />} />
@@ -36,6 +38,7 @@ const App = () => {
           <Route path="/tickets" element={<Ticketing />} />
           <Route path="/brand-accessories" element={<BrandAccessories />} />
           <Route path="/marketing-content" element={<MarketingContent />} />
+          <Route path="/subscription" element={<Subscription />} />
           <Route path="/download-apk" element={<DownloadApk />} />
 
           <Route path="/property" element={<Property />} />

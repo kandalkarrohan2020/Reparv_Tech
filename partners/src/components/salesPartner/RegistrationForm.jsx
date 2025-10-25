@@ -12,12 +12,14 @@ const RegistrationForm = ({ plan }) => {
     email: "",
     state: "",
     city: "",
+    projectpartnerid: "",
     intrest: "",
     refrence: "",
   });
 
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
+  const [projectPartners, setProjectPartners] = useState([]);
 
   // **Fetch States from API**
   const fetchStates = async () => {
@@ -51,6 +53,27 @@ const RegistrationForm = ({ plan }) => {
       const data = await response.json();
       console.log(data);
       setCities(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // **Fetch Project Partners by City **
+  const fetchProjectPartners = async () => {
+    try {
+      const response = await fetch(
+        URI + "/admin/projectpartner/get/in/" + newPartner?.city,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch Project Partners.");
+      const data = await response.json();
+      setProjectPartners(data);
     } catch (err) {
       console.error("Error fetching :", err);
     }
@@ -116,6 +139,7 @@ const RegistrationForm = ({ plan }) => {
             email: "",
             state: "",
             city: "",
+            projectpartnerid: "",
             intrest: "",
             refrence: "",
           });
@@ -143,6 +167,12 @@ const RegistrationForm = ({ plan }) => {
       fetchCities();
     }
   }, [newPartner.state]);
+
+  useEffect(() => {
+    if (newPartner.city != "") {
+      fetchProjectPartners();
+    }
+  }, [newPartner.city]);
 
   return (
     <div className="flex flex-col items-center justify-center px-4 ">
@@ -277,8 +307,26 @@ const RegistrationForm = ({ plan }) => {
           </select>
         </div>
 
+        <div className="w-full mb-2 sm:mb-4">
+          <select
+            required
+            value={newPartner.projectpartnerid}
+            onChange={(e) =>
+              setNewPartner({ ...newPartner, projectpartnerid: e.target.value })
+            }
+            className="w-full bg-white appearance-none text-sm sm:text-base font-medium px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600"
+          >
+            <option value="">Select Project Partner (optional)</option>
+            {projectPartners.map((partner, index) => (
+              <option key={index} value={partner.id}>
+                {partner.fullname}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="w-full flex flex-col lg:flex-row gap-2 sm:gap-4 items-center justify-between mb-2 sm:mb-4">
-          <div className="w-full lg:w-[300px]">
+          <div className="w-full">
             <input
               type="text"
               minLength={10}
@@ -286,19 +334,6 @@ const RegistrationForm = ({ plan }) => {
               value={newPartner.refrence}
               onChange={(e) =>
                 setNewPartner({ ...newPartner, refrence: e.target.value })
-              }
-              className="w-full  bg-white text-sm sm:text-base font-medium px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600"
-            />
-          </div>
-
-          <div className="w-full lg:w-[300px]">
-            <input
-              type="text"
-              minLength={8}
-              placeholder="Redeem Code (optional)"
-              value={newPartner.redeemCode}
-              onChange={(e) =>
-                setNewPartner({ ...newPartner, redeemCode: e.target.value })
               }
               className="w-full  bg-white text-sm sm:text-base font-medium px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600"
             />

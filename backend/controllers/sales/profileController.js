@@ -11,7 +11,15 @@ export const getProfile = (req, res) => {
     return res.status(400).json({ message: "Unauthorized User" });
   }
 
-  const sql = `SELECT * FROM salespersons WHERE salespersonsid = ?`;
+  const sql = `
+    SELECT 
+      sp.*, 
+      pp.fullname AS projectpartnerfullname,
+      pp.contact AS projectpartnercontact,
+      pp.city AS projectpartnercity
+    FROM salespersons sp
+    LEFT JOIN projectpartner pp ON sp.projectpartnerid = pp.id
+    WHERE sp.salespersonsid = ?`;
 
   db.query(sql, [Id], (err, result) => {
     if (err) {
@@ -192,6 +200,38 @@ export const updateOneSignalId = async (req, res) => {
     });
   } catch (error) {
     console.error("Server error:", error);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
+export const updateProjectPartner = async (req, res) => {
+  try {
+    const userId = req.salesUser?.id;
+    const { projectpartnerid } = req.body;
+
+    if (!projectpartnerid) {
+      res
+        .status(500)
+        .json({ success: false, message: "Project Partner Required !" });
+    }
+    db.query(
+      "UPDATE salespersons SET projectpartnerid = ? WHERE salespersonsid = ?",
+      [projectpartnerid, userId],
+      (updateErr) => {
+        if (updateErr) {
+          console.error("Error updating Project Partner:", updateErr);
+          return res.status(500).json({
+            message: "Database error during update",
+            error: updateErr,
+          });
+        }
+
+        res
+          .status(200)
+          .json({ message: "Project Partner Updated Successfully " });
+      }
+    );
+  } catch (error) {
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };

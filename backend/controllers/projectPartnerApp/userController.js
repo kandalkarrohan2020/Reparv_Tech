@@ -156,3 +156,29 @@ export const verifyOtp = (req, res) => {
 
   return res.status(400).json({ message: "Invalid OTP" });
 };
+
+//GET Project partner based on city
+export const getProjectPartner = async (req, res) => {
+  try {
+    const city = req.params.city;
+    if (!city) {
+      return res.status(500).json({
+        message: "City Required !",
+      });
+    }
+    const sql =
+      "SELECT id,fullname,city,contact FROM projectpartner Where city = ?";
+    db.query(sql, [city], (err, result) => {
+      if (err) {
+        console.error("Error fetching:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      res.json(result);
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};

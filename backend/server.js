@@ -57,6 +57,11 @@ import frontendEmiRoutes from "./routes/frontend/emiRoutes.js";
 // Payment Route
 import paymentRoutes from "./routes/paymentRoutes.js";
 
+// Subscription Payment Route
+import subscriptionPaymentRoutes from "./routes/subscriptionPaymentRoutes.js";
+// Redeem Route / Discount Routes
+import redeemRoutes from "./routes/redeemRoutes.js";
+
 // Account Cancellation Route
 import accountCancellation from "./routes/accountCancellationRoutes.js";
 
@@ -178,6 +183,8 @@ import onboardingSubscription from "./routes/onboardingAppRoute/subscription.js"
 import projectPartnerAppRoute from "./routes/projectPartnerAppRoute/userRoute.js";
 import projectPartnerPostRoute from "./routes/projectPartnerAppRoute/postRoutes.js";
 import projectSubscription from "./routes/projectPartnerAppRoute/subscription.js";
+import projectEnquiriesRoute from "./routes/projectPartnerAppRoute/enquiryRoute.js";
+import projectpartnerSalesAndTerritoryRoute from "./routes/projectPartnerAppRoute/partnerRoute.js";
 //Customer App
 import customerEmi from "./routes/customerAppRoute/EmiRoute.js";
 import customerSignUp from "./routes/customerAppRoute/userRoute.js";
@@ -337,6 +344,8 @@ export const verifyToken = (req, res, next) => {
     "/projectpartner/subscription",
     "/onboardingapp/subscription",
     "/api/partner/account/cancellation",
+    "/projectpartnerRoute/user/:city",
+    "/projectpartnerRoute/user",
   ];
 
   // Skip verification for public routes
@@ -407,8 +416,13 @@ app.use("/frontend/blog", frontendBlogRoutes);
 app.use("/frontend/slider", sliderImagesRoutes);
 app.use("/frontend/testimonial", testimonialFeedbackRoutes);
 app.use("/frontend/emi", frontendEmiRoutes);
+
 // Payment Call
 app.use("/api/payment", paymentRoutes);
+
+// Subscription Payment Call
+app.use("/api/subscription/payment", subscriptionPaymentRoutes);
+app.use("/api/redeem", redeemRoutes);
 
 // Account Cancellation Request
 app.use("/api/partner/account", accountCancellation);
@@ -573,6 +587,8 @@ app.use("/onboardingapp/subscription", onboardingSubscription);
 app.use("/projectpartnerRoute/user", projectPartnerAppRoute);
 app.use("/projectpartner/post", projectPartnerPostRoute);
 app.use("/projectpartner/subscription", projectSubscription);
+app.use("/projectpartner/enquiries", projectEnquiriesRoute);
+app.use("/projectpartner/partner", projectpartnerSalesAndTerritoryRoute);
 //Customer app
 app.use("/customerapp", customerEmi);
 app.use("/customerapp/user", customerSignUp);

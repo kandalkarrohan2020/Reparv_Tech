@@ -16,20 +16,28 @@ export const AuthProvider = ({ children }) => {
     setAccessToken();
     Cookies.remove("accessToken");
   };
-  //const URI = "http://localhost:3000";
-  const URI = "https://api.reparv.in";
+  const URI = "http://localhost:3000";
+  //const URI = "https://api.reparv.in";
 
   const [loading, setLoading] = useState(false);
+  const [successScreen, setSuccessScreen] = useState({
+    show: false,
+    label: "Thank You For Registering!",
+    description: "Our Representative will call you shortly",
+  });
   const [showPropertyForm, setShowPropertyForm] = useState(false);
   const [dashboardFilter, setDashboardFilter] = useState("Enquiries");
   const [showProfile, setShowProfile] = useState(false);
   const [showKYC, setShowKYC] = useState(true);
+  const [showSubscription, setShowSubscription] = useState(false);
   const [showTicketInfo, setShowTicketInfo] = useState(false);
   const [showTicketForm, setShowTicketForm] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [action, setAction] = useState("Save Details");
   const [showUploadImagesForm, setShowUploadImagesForm] = useState(false);
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("salesUser")));
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("salesUser"))
+  );
   const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
   const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
   const [showAssignTerritory, setShowAssignTerritory] = useState(false);
@@ -69,15 +77,20 @@ export const AuthProvider = ({ children }) => {
         loading,
         setLoading,
         isLoggedIn,
+        successScreen,
+        setSuccessScreen,
         storeTokenInCookie,
         delTokenInCookie,
         accessToken,
         setAccessToken,
-        dashboardFilter, setDashboardFilter,
+        dashboardFilter,
+        setDashboardFilter,
         showProfile,
         setShowProfile,
         showKYC,
         setShowKYC,
+        showSubscription,
+        setShowSubscription,
         showTicketInfo,
         setShowTicketInfo,
         showTicketForm,

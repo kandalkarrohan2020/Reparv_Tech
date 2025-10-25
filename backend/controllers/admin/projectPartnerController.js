@@ -229,6 +229,23 @@ export const getAllActive = (req, res) => {
   });
 };
 
+// **Fetch All**
+export const getAllByCity = (req, res) => {
+  const city = req.params.city;
+  if (!city) {
+    return res.status(400).json({ message: "Invalid City" });
+  }
+  const sql =
+    "SELECT * FROM projectpartner WHERE status = 'Active' AND city = ? ORDER BY id DESC";
+  db.query(sql, [city], (err, result) => {
+    if (err) {
+      console.error("Error fetching:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    res.json(result);
+  });
+};
+
 // **Fetch Single by ID**
 export const getById = (req, res) => {
   const Id = parseInt(req.params.id);
@@ -453,20 +470,25 @@ export const edit = (req, res) => {
 
   // Map to URLs
   const adharImageUrls = adharImageFiles.map((f) => `/uploads/${f.filename}`);
-  const panImageUrls   = panImageFiles.map((f) => `/uploads/${f.filename}`);
-  const reraImageUrls  = reraImageFiles.map((f) => `/uploads/${f.filename}`);
+  const panImageUrls = panImageFiles.map((f) => `/uploads/${f.filename}`);
+  const reraImageUrls = reraImageFiles.map((f) => `/uploads/${f.filename}`);
 
   // Convert to JSON for DB
-  const adharImagesJson = adharImageUrls.length > 0 ? JSON.stringify(adharImageUrls) : null;
-  const panImagesJson   = panImageUrls.length > 0 ? JSON.stringify(panImageUrls) : null;
-  const reraImagesJson  = reraImageUrls.length > 0 ? JSON.stringify(reraImageUrls) : null;
+  const adharImagesJson =
+    adharImageUrls.length > 0 ? JSON.stringify(adharImageUrls) : null;
+  const panImagesJson =
+    panImageUrls.length > 0 ? JSON.stringify(panImageUrls) : null;
+  const reraImagesJson =
+    reraImageUrls.length > 0 ? JSON.stringify(reraImageUrls) : null;
 
   // Fetch old images first
   const selectSql = `SELECT adharimage, panimage, reraimage FROM projectpartner WHERE id = ?`;
   db.query(selectSql, [partnerid], (selectErr, rows) => {
     if (selectErr) {
       console.error("Error fetching old images:", selectErr);
-      return res.status(500).json({ message: "Error fetching old images", error: selectErr });
+      return res
+        .status(500)
+        .json({ message: "Error fetching old images", error: selectErr });
     }
 
     const oldData = rows[0] || {};
@@ -486,8 +508,8 @@ export const edit = (req, res) => {
 
     // Delete old images only if new ones are uploaded
     if (adharImagesJson) deleteOldFiles(oldData?.adharimage);
-    if (panImagesJson)   deleteOldFiles(oldData?.panimage);
-    if (reraImagesJson)  deleteOldFiles(oldData?.reraimage);
+    if (panImagesJson) deleteOldFiles(oldData?.panimage);
+    if (reraImagesJson) deleteOldFiles(oldData?.reraimage);
 
     // Build Update Query
     let updateSql = `
@@ -540,7 +562,9 @@ export const edit = (req, res) => {
     db.query(updateSql, updateValues, (updateErr) => {
       if (updateErr) {
         console.error("Error updating project Partner:", updateErr);
-        return res.status(500).json({ message: "Database error during update", error: updateErr });
+        return res
+          .status(500)
+          .json({ message: "Database error during update", error: updateErr });
       }
 
       res.status(200).json({ message: "Project Partner updated successfully" });

@@ -6,6 +6,7 @@ import {
   editProfile,
   changePassword,
   updateOneSignalId,
+  updateProjectPartner,
 } from "../../controllers/sales/profileController.js";
 
 const router = express.Router();
@@ -35,4 +36,5 @@ router.get("/", getProfile);
 router.put("/edit", upload.single("image"), editProfile);
 router.put("/changepassword", changePassword);
 router.put("/update-onesignal", updateOneSignalId);
+router.put("/update-projectpartner", updateProjectPartner);
 export default router;

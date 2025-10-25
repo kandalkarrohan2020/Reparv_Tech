@@ -141,6 +141,7 @@ export const add = (req, res) => {
     address,
     state,
     city,
+    projectpartnerid,
     pincode,
     experience,
     rerano,
@@ -228,14 +229,15 @@ export const add = (req, res) => {
       // Insert new salespersons
       const insertSql = `
         INSERT INTO salespersons 
-        (fullname, contact, email, intrest, refrence, referral, address, state, city, pincode, experience, rerano, adharno, panno, 
+        (projectpartnerid, fullname, contact, email, intrest, refrence, referral, address, state, city, pincode, experience, rerano, adharno, panno, 
          bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, reraimage, updated_at, created_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
       `;
 
       db.query(
         insertSql,
-        [
+        [ 
+          projectpartnerid || null,
           fullname,
           contact,
           email,

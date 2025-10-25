@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../store/auth.jsx";
 import { handlePayment } from "../../utils/payment.js";
 
-const RegistrationForm = ({plan}) => {
+const RegistrationForm = ({ plan }) => {
   const { URI, setSuccessScreen } = useAuth();
   const registrationPrice = plan?.totalPrice;
   const [newPartner, setNewPartner] = useState({
@@ -12,12 +12,14 @@ const RegistrationForm = ({plan}) => {
     email: "",
     state: "",
     city: "",
+    projectpartnerid: "",
     intrest: "",
     refrence: "",
   });
 
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
+  const [projectPartners, setProjectPartners] = useState([]);
 
   // **Fetch States from API**
   const fetchStates = async () => {
@@ -51,6 +53,27 @@ const RegistrationForm = ({plan}) => {
       const data = await response.json();
       console.log(data);
       setCities(data);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // **Fetch Project Partners by City **
+  const fetchProjectPartners = async () => {
+    try {
+      const response = await fetch(
+        URI + "/admin/projectpartner/get/in/" + newPartner?.city,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch Project Partners.");
+      const data = await response.json();
+      setProjectPartners(data);
     } catch (err) {
       console.error("Error fetching :", err);
     }
@@ -118,6 +141,7 @@ const RegistrationForm = ({plan}) => {
             email: "",
             state: "",
             city: "",
+            projectpartnerid: "",
             intrest: "",
             refrence: "",
           });
@@ -145,6 +169,12 @@ const RegistrationForm = ({plan}) => {
       fetchCities();
     }
   }, [newPartner.state]);
+
+  useEffect(() => {
+    if (newPartner.city != "") {
+      fetchProjectPartners();
+    }
+  }, [newPartner.city]);
 
   return (
     <div className="flex flex-col items-center justify-center px-4 py-6">
@@ -276,6 +306,24 @@ const RegistrationForm = ({plan}) => {
             <option value="Helping People Make Life-Changing Decisions">
               Helping People Make Life-Changing Decisions
             </option>
+          </select>
+        </div>
+
+        <div className="w-full mb-2 sm:mb-4">
+          <select
+            required
+            value={newPartner.projectpartnerid}
+            onChange={(e) =>
+              setNewPartner({ ...newPartner, projectpartnerid: e.target.value })
+            }
+            className="w-full bg-white appearance-none text-sm sm:text-base font-medium px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600"
+          >
+            <option value="">Select Project Partner (optional)</option>
+            {projectPartners.map((partner, index) => (
+              <option key={index} value={partner.id}>
+                {partner.fullname}
+              </option>
+            ))}
           </select>
         </div>
 

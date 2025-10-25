@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getAll,
+  getProjectPartner,
   resetPassword,
   sendOtp,
   verifyOtp,
@@ -9,6 +10,7 @@ import {
 const router = express.Router();
 
 router.get("/", getAll);
+router.get("/:city", getProjectPartner);
 router.put("/changepassword", resetPassword);
 router.get("/send-otp/:id", sendOtp);
 router.post("/verify-otp", verifyOtp);

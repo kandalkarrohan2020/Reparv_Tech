@@ -13,6 +13,7 @@ import {
   updatePaymentId,
   addFollowUp,
   fetchFollowUpList,
+  getAllByCity,
 } from "../../controllers/admin/projectPartnerController.js";
 
 const router = express.Router();
@@ -39,6 +40,7 @@ const upload = multer({
 });
 
 router.get("/active", getAllActive);
+router.get("/get/in/:city", getAllByCity);
 router.get("/get/:id", getById);
 router.get("/:partnerlister", getAll);
 

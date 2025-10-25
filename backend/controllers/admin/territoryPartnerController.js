@@ -140,6 +140,7 @@ export const add = (req, res) => {
     address,
     state,
     city,
+    projectpartnerid,
     pincode,
     experience,
     adharno,
@@ -224,14 +225,15 @@ export const add = (req, res) => {
       // Insert new territory partner
       const insertSql = `
         INSERT INTO territorypartner 
-        (fullname, contact, email, intrest, refrence, referral, address, state, city, pincode, experience, adharno, panno, rerano, 
+        (projectpartnerid, fullname, contact, email, intrest, refrence, referral, address, state, city, pincode, experience, adharno, panno, rerano, 
          bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, reraimage, updated_at, created_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
       `;
 
       db.query(
         insertSql,
         [
+          projectpartnerid || null,
           fullname,
           contact,
           email,
@@ -338,9 +340,13 @@ export const edit = (req, res) => {
   const panImageFile = req.files?.["panImage"]?.[0];
   const reraImageFile = req.files?.["reraImage"]?.[0];
 
-  const adharImageUrl = adharImageFile ? `/uploads/${adharImageFile.filename}` : null;
+  const adharImageUrl = adharImageFile
+    ? `/uploads/${adharImageFile.filename}`
+    : null;
   const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
-  const reraImageUrl = reraImageFile ? `/uploads/${reraImageFile.filename}` : null;
+  const reraImageUrl = reraImageFile
+    ? `/uploads/${reraImageFile.filename}`
+    : null;
 
   // STEP 1: Fetch old images
   db.query(
@@ -349,7 +355,9 @@ export const edit = (req, res) => {
     (selectErr, results) => {
       if (selectErr) {
         console.error("Error fetching old images:", selectErr);
-        return res.status(500).json({ message: "Database error while fetching old images" });
+        return res
+          .status(500)
+          .json({ message: "Database error while fetching old images" });
       }
 
       if (results.length === 0) {
@@ -430,7 +438,9 @@ export const edit = (req, res) => {
           });
         }
 
-        res.status(200).json({ message: "Territory Partner updated successfully" });
+        res
+          .status(200)
+          .json({ message: "Territory Partner updated successfully" });
       });
     }
   );

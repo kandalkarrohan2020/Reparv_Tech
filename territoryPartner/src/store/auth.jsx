@@ -21,6 +21,12 @@ export const AuthProvider = ({ children }) => {
   const URI = "https://api.reparv.in";
 
   const [loading, setLoading] = useState(false);
+  const [successScreen, setSuccessScreen] = useState({
+    show: false,
+    label: "Thank You For Registering!",
+    description: "Our Representative will call you shortly",
+  });
+  const [showSubscription, setShowSubscription] = useState(false);
   const [showPropertyForm, setShowPropertyForm] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [dashboardFilter, setDashboardFilter] = useState("Enquiries");
@@ -29,7 +35,9 @@ export const AuthProvider = ({ children }) => {
   const [isActive, setIsActive] = useState(false);
   const [action, setAction] = useState("Save Details");
   const [showUploadImagesForm, setShowUploadImagesForm] = useState(false);
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("territoryUser")));
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("territoryUser"))
+  );
   const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
   const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
   const [showEnquiryForm, setShowEnquiryForm] = useState(false);
@@ -68,13 +76,18 @@ export const AuthProvider = ({ children }) => {
         loading,
         setLoading,
         isLoggedIn,
+        successScreen,
+        setSuccessScreen,
+        showSubscription,
+        setShowSubscription,
         storeTokenInCookie,
         delTokenInCookie,
         accessToken,
         setAccessToken,
         showProfile,
         setShowProfile,
-        dashboardFilter, setDashboardFilter,
+        dashboardFilter,
+        setDashboardFilter,
         showTicketInfo,
         setShowTicketInfo,
         showTicketForm,

@@ -24,6 +24,16 @@ export const createSubscription = async (req, res) => {
   try {
     const { user_id, plan, payment_id, amount } = req.body;
     console.log("Request Body:", req.body);
+ // Fetch payment details
+    const payment = await razorpay.payments.fetch(payment_id);
+
+    // Capture payment only if not auto-captured
+    if (!payment.captured) {
+      const captureResponse = await razorpay.payments.capture(payment_id, Math.round(amount * 100), "INR");
+      if (captureResponse.status !== "captured") {
+        return res.status(400).json({ success: false, message: "Payment not captured" });
+      }
+    }
 
     const months = PLAN_MONTHS[plan];
     if (!months) return res.status(400).json({ message: "Invalid plan" });

@@ -95,7 +95,7 @@ export const add = (req, res) => {
 
   const sql = `
     INSERT INTO projectpartnerposts (userId, image, postContent, likes,projectpartnerid, created_at)
-    VALUES (?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?,?)
   `;
 
   db.query(

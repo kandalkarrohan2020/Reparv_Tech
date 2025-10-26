@@ -19,12 +19,16 @@ import { FaUserCircle } from "react-icons/fa";
 import Agreement from "../Agreement";
 import PlayVideo from "../property/PlayVideo";
 import SuccessScreen from "../property/SuccessScreen";
+import PaymentSuccessScreen from "../SuccessScreen";
 import SiteVisitPopup from "../property/SiteVisitPopup";
 import PriceSummery from "../property/PriceSummery";
 import FilterSidebar from "../FilterSidebar";
 import BenefitsPopup from "../property/BenefitsPopup";
+import { IoDiamondOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 function Layout() {
+  const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isShortBar, setIsShortbar] = useState(false);
@@ -35,6 +39,9 @@ function Layout() {
     user,
     showProfile,
     setShowProfile,
+    successScreen,
+    showSubscription,
+    setShowSubscription,
     showTicket,
     setShowTicket,
     showTicketForm,
@@ -90,6 +97,7 @@ function Layout() {
     { state: showOrder, setter: setShowOrder },
     { state: showOrderForm, setter: setShowOrderForm },
     { state: showProductForm, setter: setShowProductForm },
+    { state: showSubscription, setter: setShowSubscription },
   ];
 
   const getNavLinkClass = (path) => {
@@ -191,7 +199,14 @@ function Layout() {
             />{" "}
             <p>{heading}</p>
           </div>
-          <div className="right-heading w-[135px] h-[40px] flex items-center justify-between mr-8">
+          <div className="right-heading w-[170px] h-[40px] flex items-center justify-between mr-8">
+            <IoDiamondOutline
+              onClick={() => {
+                getHeading("Subscription");
+                navigate("/subscription");
+              }}
+              className="w-7 h-7 text-[#FF4646] cursor-pointer"
+            />
             <FaUserCircle
               onClick={() => {
                 setShowProfile("true");
@@ -238,7 +253,16 @@ function Layout() {
                 icon: marketingIcon,
                 label: "Marketing Content",
               },
-              { to: "/download-apk", icon: territoryAppLogo, label: "Territory APK Download" },
+              {
+                to: "/subscription",
+                icon: enquirersIcon,
+                label: "Subscription",
+              },
+              {
+                to: "/download-apk",
+                icon: territoryAppLogo,
+                label: "Territory APK Download",
+              },
             ].map(({ to, icon, label }) => (
               <NavLink
                 onClick={() => {
@@ -334,9 +358,7 @@ function Layout() {
       )}
 
       {showPlayVideo && (
-        <div
-          className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center"
-        >
+        <div className="Container w-full h-screen bg-[#898989b6] fixed z-50 flex md:items-center md:justify-center">
           <PlayVideo />
         </div>
       )}
@@ -348,6 +370,9 @@ function Layout() {
           </div>
         </div>
       )}
+
+      {/* Show Success Screen */}
+      {successScreen?.show && <PaymentSuccessScreen />}
     </div>
   );
 }

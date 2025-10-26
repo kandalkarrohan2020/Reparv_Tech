@@ -78,8 +78,6 @@ export const verifyPayment = (req, res) => {
     });
   }
 
-  console.log(database);
-  console.log(amount);
   const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
   hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
   const generatedSignature = hmac.digest("hex");

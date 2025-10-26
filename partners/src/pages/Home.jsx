@@ -1,5 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import SEO from "../components/SEO.jsx";
+
 import {
   FaHandshake,
   FaMapMarkedAlt,
@@ -43,6 +45,11 @@ export default function Home() {
   ];
 
   return (
+    <>
+      <SEO
+        title="Become a Trusted Real Estate Partner with Reparv | Verified Listings & High Commission Opportunities"
+        description="Start your real estate journey with the Reparv Partner Program. Work with verified properties, earn structured commissions, and join as a Sales, Onboarding, Territory, or Project Partner. Apply now and boost your income."
+      />
     <div className="min-h-screen bg-gradient-to-b from-green-50 via-white to-green-50 py-12 px-6">
       <div className="max-w-5xl mx-auto text-center mb-15">
         <h1 className="text-2xl md:text-4xl font-extrabold text-[#076506] mb-6">
@@ -83,5 +90,6 @@ export default function Home() {
       </div>
 
     </div>
+    </>
   );
 }

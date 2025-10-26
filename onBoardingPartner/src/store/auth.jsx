@@ -21,6 +21,13 @@ export const AuthProvider = ({ children }) => {
   const URI = "https://api.reparv.in";
 
   const [loading, setLoading] = useState(false);
+  const [successScreen, setSuccessScreen] = useState({
+    show: false,
+    label: "Thank You For Registering!",
+    description: "Our Representative will call you shortly",
+  });
+  const [showSubscription, setShowSubscription] = useState(false);
+  
   const [showPropertyForm, setShowPropertyForm] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [dashboardFilter, setDashboardFilter] = useState("Booked");
@@ -49,6 +56,10 @@ export const AuthProvider = ({ children }) => {
         loading,
         setLoading,
         isLoggedIn,
+        successScreen,
+        setSuccessScreen,
+        showSubscription,
+        setShowSubscription,
         storeTokenInCookie,
         delTokenInCookie,
         accessToken,

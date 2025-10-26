@@ -32,7 +32,7 @@ export const getAllPlans = (req, res) => {
       AND rc.status = 'Active'
     WHERE sp.status = 'Active' 
       AND sp.partnerType = ?
-    ORDER BY sp.planDuration;
+    ORDER BY sp.totalPrice;
   `;
 
   db.query(sql, [partnerType], (err, result) => {

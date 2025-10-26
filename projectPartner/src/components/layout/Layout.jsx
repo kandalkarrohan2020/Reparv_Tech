@@ -19,8 +19,12 @@ import { useAuth } from "../../store/auth";
 import LogoutButton from "../LogoutButton";
 import { FaUserCircle } from "react-icons/fa";
 import Agreement from "../Agreement";
+import SuccessScreen from "../SuccessScreen";
+import { IoDiamondOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 function Layout() {
+  const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isShortBar, setIsShortbar] = useState(false);
@@ -30,6 +34,9 @@ function Layout() {
     user,
     showProfile,
     setShowProfile,
+    successScreen,
+    showSubscription,
+    setShowSubscription,
     giveAccess,
     setGiveAccess,
     showBuilder,
@@ -94,6 +101,7 @@ function Layout() {
     { state: showProductForm, setter: setShowProductForm },
     { state: showVideoUploadForm, setter: setShowVideoUploadForm },
     { state: showPropertyLocationForm, setter: setShowPropertyLocationForm },
+    { state: showSubscription, setter: setShowSubscription },
   ];
 
   const getNavLinkClass = (path) => {
@@ -180,7 +188,14 @@ function Layout() {
             />{" "}
             <p>{heading}</p>
           </div>
-          <div className="right-heading w-[135px] h-[40px] flex items-center justify-between mr-8">
+          <div className="right-heading w-[170px] h-[40px] flex items-center justify-between mr-8">
+            <IoDiamondOutline
+              onClick={() => {
+                getHeading("Subscription");
+                navigate("/subscription");
+              }}
+              className="w-7 h-7 text-[#FF4646] cursor-pointer"
+            />
             <FaUserCircle
               onClick={() => {
                 setShowProfile("true");
@@ -227,6 +242,11 @@ function Layout() {
                 to: "/marketing-content",
                 icon: marketingIcon,
                 label: "Marketing Content",
+              },
+              {
+                to: "/subscription",
+                icon: enquirersIcon,
+                label: "Subscription",
               },
             ].map(({ to, icon, label }) => (
               <NavLink
@@ -285,6 +305,9 @@ function Layout() {
         agreementData={agreementData}
         setAgreementData={setAgreementData}
       />
+
+      {/* Show Success Screen */}
+      {successScreen?.show && <PaymentSuccessScreen />}
     </div>
   );
 }

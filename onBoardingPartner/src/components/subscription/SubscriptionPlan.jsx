@@ -54,12 +54,12 @@ const SubscriptionPlan = ({ plan }) => {
         plan?.planDuration,
         coupon,
         isUsedCoupon,
-        "salespersonid",
+        "onboardingpartnerid",
         amount,
         user?.email,
         user?.id,
-        "salespersons",
-        "salespersonsid",
+        "onboardingpartner",
+        "partnerid",
         setSuccessScreen
       );
     } catch (paymentError) {
@@ -78,7 +78,7 @@ const SubscriptionPlan = ({ plan }) => {
         body: JSON.stringify({
           coupon,
           planId: plan.id,
-          partnerType: "Sales Partner",
+          partnerType: "Onboarding Partner",
           user_id: user_id,
         }),
       });

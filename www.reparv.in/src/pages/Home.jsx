@@ -15,8 +15,8 @@ function Home() {
   return (
     <>
       <SEO
-        title="Reparv – Buy, Sell, or Rent Property in Maharashtra"
-        description="Reparv is your trusted real estate platform in Vidarbha – Flats, Plots, Rentals, Legal Support & Loan Help."
+        title="Reparv - India's Fast-Growing Real Estate Ecosystem | Property & Partner Programs"
+        description="Buy, sell, or rent property with seamless legal and loan assistance. Become a Sales, Territory, Project, or Onboarding Partner and grow your real estate career with low investment, high margins, and nationwide scalability powered by Reparv."
       />
 
       <div className="full">

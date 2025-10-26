@@ -21,6 +21,13 @@ export const AuthProvider = ({ children }) => {
 
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("projectPartnerUser")));
   const [loading, setLoading] = useState(false);
+  const [successScreen, setSuccessScreen] = useState({
+    show: false,
+    label: "Thank You For Registering!",
+    description: "Our Representative will call you shortly",
+  });
+  const [showSubscription, setShowSubscription] = useState(false);
+  
   const [dashboardFilter, setDashboardFilter] = useState("Booked");
   const [showProfile, setShowProfile] = useState(false);
   const [showBuilderForm, setShowBuilderForm] = useState(false);
@@ -58,6 +65,10 @@ export const AuthProvider = ({ children }) => {
         loading,
         setLoading,
         isLoggedIn,
+        successScreen,
+        setSuccessScreen,
+        showSubscription,
+        setShowSubscription,
         storeTokenInCookie,
         delTokenInCookie,
         accessToken,

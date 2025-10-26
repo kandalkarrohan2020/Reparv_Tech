@@ -192,3 +192,34 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ success: false, message: "Something went wrong." });
   }
 };
+
+
+//Send Partner chnage request 
+export const sendRequest = async (req, res) => {
+  try {
+    const { salespersonid, territoryid, projectpartnerid, requestreason } = req.body;
+    
+
+    const sql = `
+      INSERT INTO partner_change_requests (salespersonid, projectpartnerid, requestreason)
+      VALUES (?, ?, ?)
+    `;
+
+    db.query(sql, [salespersonid, projectpartnerid, requestreason], (err, result) => {
+      if (err) {
+        console.error('Error sending partner change request:', err);
+        return res.status(500).json({ success: false, message: 'Database error' });
+      }
+
+      console.log('Partner change request sent successfully, ID:', result.insertId);
+      res.status(200).json({
+        success: true,
+        message: 'Partner change request submitted successfully',
+        requestId: result.insertId,
+      });
+    });
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return res.status(500).json({ success: false, message: 'Something went wrong!' });
+  }
+};

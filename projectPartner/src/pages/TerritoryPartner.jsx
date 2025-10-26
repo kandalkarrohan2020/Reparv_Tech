@@ -38,9 +38,7 @@ const TerritoryPartner = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [partnerId, setPartnerId] = useState(null);
   const [partner, setPartner] = useState({});
-  const [selectedPartnerLister, setSelectedPartnerLister] = useState(
-    "Select Partner Lister"
-  );
+  
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [states, setStates] = useState([]);
@@ -104,7 +102,7 @@ const TerritoryPartner = () => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        `${URI}/admin/territorypartner/${selectedPartnerLister}`,
+        `${URI}/project-partner/territory`,
         {
           method: "GET",
           credentials: "include", // Ensures cookies are sent
@@ -133,7 +131,7 @@ const TerritoryPartner = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${URI}/admin/territorypartner/${endpoint}`,
+        `${URI}/project-partner/territory/${endpoint}`,
         {
           method: newPartner.id ? "PUT" : "POST",
           credentials: "include",
@@ -414,7 +412,7 @@ const TerritoryPartner = () => {
   useEffect(() => {
     fetchData();
     fetchStates();
-  }, [selectedPartnerLister]);
+  }, []);
 
   useEffect(() => {
     if (newPartner.state != "") {
@@ -736,28 +734,7 @@ const TerritoryPartner = () => {
       className={`sales Persons overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
     >
       <div className="sales-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
-        <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
-          <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
-            <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
-              <span>{selectedPartnerLister || "Select Partner Lister"}</span>
-              <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
-            </div>
-            <select
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              value={selectedPartnerLister}
-              onChange={(e) => {
-                const action = e.target.value;
-                setSelectedPartnerLister(action);
-              }}
-            >
-              <option value="Select Partner Lister">
-                Select Partner Lister
-              </option>
-              <option value="Reparv">Reparv</option>
-              <option value="Promoter">Promoter</option>
-              <option value="Project Partner">Project Partner</option>
-            </select>
-          </div>
+        <div className="w-full flex items-center justify-end gap-1 sm:gap-3">
           <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
             <DownloadCSV
               data={filteredData}

@@ -15,6 +15,9 @@ import KYC from "./pages/KYC.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
 import Subscription from "./pages/Subscription.jsx";
+import SalesPerson from "./pages/SalesPerson.jsx";
+import TerritoryPartner from "./pages/TerritoryPartner.jsx";
+import Enquirers from "./pages/Enquirers.jsx";
 
 const App = () => {
   return (
@@ -27,9 +30,12 @@ const App = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/builders" element={<Builders />} />
           <Route path="/properties" element={<Properties />} />
+          <Route path="/enquirers" element={<Enquirers />} />
           <Route path="/map" element={<Map />} />
           <Route path="/calender" element={<Calender />} />
           <Route path="/customers" element={<Customers />} />
+          <Route path="/salespersons" element={<SalesPerson />} />
+          <Route path="/territorypartner" element={<TerritoryPartner />} />
           <Route path="/tickets" element={<Ticketing />} />
           <Route path="/brand-accessories" element={<BrandAccessories />} />
           <Route path="/marketing-content" element={<MarketingContent />} />

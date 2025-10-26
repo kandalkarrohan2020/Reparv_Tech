@@ -3,6 +3,7 @@ import { addClient } from "../../controllers/salesApp/ClientController.js";
 import {
   resetPassword,
   sendOtp,
+  sendRequest,
   verifyOtp,
 } from "../../controllers/salesApp/ProfileController.js";
 
@@ -12,5 +13,6 @@ router.post("/add", addClient);
 router.get("/send-otp/:id", sendOtp);
 router.post("/verify-otp", verifyOtp);
 router.post("/reset-password", resetPassword);
+router.post("/partnerchange/request",sendRequest)
 
 export default router;

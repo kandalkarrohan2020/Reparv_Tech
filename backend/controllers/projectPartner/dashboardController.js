@@ -27,6 +27,13 @@ export const getCount = (req, res) => {
       ) AS totalCustomer,
 
       (
+        SELECT COUNT(e.enquirersid)
+        FROM enquirers e
+        JOIN properties p ON e.propertyid = p.propertyid
+        WHERE e.status != 'Token' AND p.projectpartnerid = ?
+      ) AS totalEnquirer,
+
+      (
         SELECT IFNULL(SUM(p.carpetArea), 0)
         FROM enquirers e
         JOIN properties p ON e.propertyid = p.propertyid
@@ -46,6 +53,18 @@ export const getCount = (req, res) => {
       ) AS totalProperty,
 
       (
+        SELECT COUNT(salespersonsid) 
+        FROM salespersons
+        WHERE projectpartnerid = ?
+      ) AS totalSalesPartner,
+
+      (
+        SELECT COUNT(id) 
+        FROM territorypartner 
+        WHERE projectpartnerid = ?
+      ) AS totalTerritoryPartner,
+
+      (
         SELECT COUNT(ticketid) 
         FROM tickets 
         INNER JOIN projectpartner 
@@ -60,9 +79,12 @@ export const getCount = (req, res) => {
       req.projectPartnerUser?.id, // for projectpartnerid in totalDealAmount
       req.projectPartnerUser?.id, // projectpartnerid for selfEarning
       req.projectPartnerUser?.id, // for totalCustomer
+      req.projectPartnerUser?.id, // for totalEnquirer
       req.projectPartnerUser?.id, // for totalDealInSquareFeet
       req.projectPartnerUser?.adharId, // for totalBuilder
       req.projectPartnerUser?.id, // for totalProperty
+      req.projectPartnerUser?.id, // for totalSalesPartner
+      req.projectPartnerUser?.id, // for totalTerritoryPartner
       req.projectPartnerUser?.adharId, // for totalTicket
     ],
     (err, results) => {

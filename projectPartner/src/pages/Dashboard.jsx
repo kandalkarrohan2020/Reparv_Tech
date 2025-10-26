@@ -300,6 +300,30 @@ function Dashboard() {
             to: "/customers",
           },
           {
+            label: "Enquirers",
+            value: overviewCountData?.totalEnquirer || "00",
+            icon: (
+              <IoArrowRedo className="text-[#29bc1e] hover:text-[#0bb501] sm:w-6 sm:h-6" />
+            ),
+            to: "/enquirers",
+          },
+          {
+            label: "Sales Partners",
+            value: overviewCountData?.totalSalesPartner || "00",
+            icon: (
+              <IoArrowRedo className="text-[#29bc1e] hover:text-[#0bb501] sm:w-6 sm:h-6" />
+            ),
+            to: "/salespersons",
+          },
+          {
+            label: "Territory Partners",
+            value: overviewCountData?.totalTerritoryPartner || "00",
+            icon: (
+              <IoArrowRedo className="text-[#29bc1e] hover:text-[#0bb501] sm:w-6 sm:h-6" />
+            ),
+            to: "/territorypartner",
+          },
+          {
             label: "Total Tickets",
             value: overviewCountData?.totalTicket || "00",
             icon: (

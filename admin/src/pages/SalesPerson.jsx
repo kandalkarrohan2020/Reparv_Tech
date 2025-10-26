@@ -755,6 +755,7 @@ const SalesPerson = () => {
               </option>
               <option value="Reparv">Reparv</option>
               <option value="Promoter">Promoter</option>
+              <option value="Project Partner">Project Partner</option>
             </select>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">

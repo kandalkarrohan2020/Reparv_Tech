@@ -19,7 +19,9 @@ export const AuthProvider = ({ children }) => {
   //const URI = "http://localhost:3000";
   const URI = "https://api.reparv.in";
 
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("projectPartnerUser")));
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("projectPartnerUser"))
+  );
   const [loading, setLoading] = useState(false);
   const [successScreen, setSuccessScreen] = useState({
     show: false,
@@ -27,7 +29,7 @@ export const AuthProvider = ({ children }) => {
     description: "Our Representative will call you shortly",
   });
   const [showSubscription, setShowSubscription] = useState(false);
-  
+
   const [dashboardFilter, setDashboardFilter] = useState("Booked");
   const [showProfile, setShowProfile] = useState(false);
   const [showBuilderForm, setShowBuilderForm] = useState(false);
@@ -44,10 +46,20 @@ export const AuthProvider = ({ children }) => {
   const [showTicket, setShowTicket] = useState(false);
   const [showCustomer, setShowCustomer] = useState(false);
   const [showCustomerPaymentForm, setShowCustomerPaymentForm] = useState(false);
+  const [showPaymentIdForm, setShowPaymentIdForm] = useState(false);
+  const [showFollowUpList, setShowFollowUpList] = useState(false);
   const [action, setAction] = useState("Save Details");
   const [isActive, setIsActive] = useState("Builders");
   const [giveAccess, setGiveAccess] = useState(false);
   const [filterStatus, setFilterStatus] = useState("New");
+  const [enquiryFilter, setEnquiryFilter] = useState("New");
+  const [showAssignSalesForm, setShowAssignSalesForm] = useState(false);
+  const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
+  const [showEnquiryForm, setShowEnquiryForm] = useState(false);
+  const [showEnquiryUpdateForm, setShowEnquiryUpdateForm] = useState(false);
+  const [showEnquiry, setShowEnquiry] = useState(false);
+  const [showEnquirerPropertyForm, setShowEnquirerPropertyForm] =
+    useState(false);
   const [showProductForm, setShowProductForm] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const [showOrder, setShowOrder] = useState(false);
@@ -55,6 +67,11 @@ export const AuthProvider = ({ children }) => {
   const [showVideoUploadForm, setShowVideoUploadForm] = useState(false);
   const [showPropertyLocationForm, setShowPropertyLocationForm] =
     useState(false);
+  const [showSalesForm, setShowSalesForm] = useState(false);
+  const [showSalesPerson, setShowSalesPerson] = useState(false);
+  const [showPartner, setShowPartner] = useState(false);
+  const [showPartnerForm, setShowPartnerForm] = useState(false);
+  const [partnerPaymentStatus, setPartnerPaymentStatus] = useState("Unpaid");
 
   return (
     <AuthContext.Provider
@@ -109,6 +126,23 @@ export const AuthProvider = ({ children }) => {
         setGiveAccess,
         filterStatus,
         setFilterStatus,
+        enquiryFilter,
+        setEnquiryFilter,
+        showAssignSalesForm,
+        setShowAssignSalesForm,
+        showEnquiryStatusForm,
+        setShowEnquiryStatusForm,
+        showEnquiryForm,
+        setShowEnquiryForm,
+        showEnquiryUpdateForm,
+        setShowEnquiryUpdateForm,
+        showEnquiry,
+        setShowEnquiry,
+        showEnquirerPropertyForm,
+        setShowEnquirerPropertyForm,
+        showPaymentIdForm,
+        setShowPaymentIdForm,
+        showFollowUpList, setShowFollowUpList,
         showCart,
         setShowCart,
         showOrder,
@@ -121,7 +155,18 @@ export const AuthProvider = ({ children }) => {
         setShowVideoUploadForm,
         showPropertyLocationForm,
         setShowPropertyLocationForm,
-        dashboardFilter, setDashboardFilter,
+        dashboardFilter,
+        setDashboardFilter,
+        showSalesForm,
+        setShowSalesForm,
+        showSalesPerson,
+        setShowSalesPerson,
+        partnerPaymentStatus,
+        setPartnerPaymentStatus,
+        showPartner,
+        setShowPartner,
+        showPartnerForm,
+        setShowPartnerForm,
       }}
     >
       {children}

@@ -4,9 +4,9 @@ import moment from "moment";
 // Add Normal Enquiry Without Property ID
 export const addEnquiry = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const territoryId = req.user.id;
+  const territoryId =req.params.id;
   if (!territoryId) {
-    return res.status(400).json({ message: "Invalid Sales Id" });
+    return res.status(400).json({ message: "Invalid Terrritory Id" });
   }
 
   const {
@@ -23,6 +23,104 @@ export const addEnquiry = async (req, res) => {
     territoryName,
     territoryContact,
   } = req.body;
+
+  console.log(req.body);
+  
+
+  // Validate required fields
+  if (
+    !customer ||
+    !contact ||
+    !minbudget ||
+    !maxbudget ||
+    !category ||
+    !state ||
+    !city ||
+    !location ||
+    !message ||
+    !territoryName ||
+    !territoryContact
+  ) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  let territoryInfo = territoryName + " - " + territoryContact;
+
+  const insertSQL = `INSERT INTO enquirers (
+    territorypartnerid,
+    propertyid,
+    customer,
+    contact,
+    minbudget,
+    maxbudget,
+    category,
+    state,
+    city,
+    location,
+    message,
+    assign,
+    source,
+    territorystatus,
+    updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?)`;
+
+  db.query(
+    insertSQL,
+    [
+      territoryId,
+      propertyid ?? null,
+      customer,
+      contact,
+      minbudget,
+      maxbudget,
+      category,
+      state,
+      city,
+      location,
+      message,
+      territoryInfo,
+      "Direct",
+
+      "Accepted",
+      currentdate,
+      currentdate,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+      res.status(201).json({
+        message: "Enquiry added successfully",
+        Id: result.insertId,
+      });
+    }
+  );
+};
+
+export const oldaddEnquiry = async (req, res) => {
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const territoryId =req.territoryUser?.id;
+  if (!territoryId) {
+    return res.status(400).json({ message: "Invalid Terrritory Id" });
+  }
+
+  const {
+    propertyid,
+    customer,
+    contact,
+    minbudget,
+    maxbudget,
+    category,
+    state,
+    city,
+    location,
+    message,
+    territoryName,
+    territoryContact,
+  } = req.body;
+
+  console.log(req.body);
+  
 
   // Validate required fields
   if (

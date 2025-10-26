@@ -5,29 +5,28 @@ import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../store/auth";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import AddButton from "../components/AddButton";
-import FilterData from "../components/FilterData";
+import PartnerFilter from "../components/PartnerFilter";
 import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import Loader from "../components/Loader";
-import PartnerFilter from "../components/PartnerFilter";
 import { RxCross2 } from "react-icons/rx";
 import { MdDone } from "react-icons/md";
 import DownloadCSV from "../components/DownloadCSV";
 
-const TerritoryPartner = () => {
+const SalesPerson = () => {
   const {
-    showPartnerForm,
-    setShowPartnerForm,
+    showSalesForm,
+    setShowSalesForm,
     URI,
-    setLoading,
     giveAccess,
     setGiveAccess,
     showPaymentIdForm,
     setShowPaymentIdForm,
-    showPartner,
-    setShowPartner,
+    setLoading,
+    showSalesPerson,
+    setShowSalesPerson,
     showFollowUpList,
     setShowFollowUpList,
     partnerPaymentStatus,
@@ -36,16 +35,13 @@ const TerritoryPartner = () => {
 
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [partnerId, setPartnerId] = useState(null);
+  const [salesPersonId, setSalesPersonId] = useState(null);
   const [partner, setPartner] = useState({});
-  const [selectedPartnerLister, setSelectedPartnerLister] = useState(
-    "Select Partner Lister"
-  );
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-  const [newPartner, setNewPartner] = useState({
+  const [newSalesPerson, setNewSalesPerson] = useState({
     fullname: "",
     contact: "",
     email: "",
@@ -84,13 +80,16 @@ const TerritoryPartner = () => {
   // **Fetch States from API**
   const fetchCities = async () => {
     try {
-      const response = await fetch(`${URI}/admin/cities/${newPartner?.state}`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${URI}/admin/cities/${newSalesPerson?.state}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch cities.");
       const data = await response.json();
       console.log(data);
@@ -104,7 +103,7 @@ const TerritoryPartner = () => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        `${URI}/admin/territorypartner/${selectedPartnerLister}`,
+        `${URI}/project-partner/sales`,
         {
           method: "GET",
           credentials: "include", // Ensures cookies are sent
@@ -114,48 +113,47 @@ const TerritoryPartner = () => {
         }
       );
 
-      if (!response.ok) throw new Error("Failed to fetch Territory Partners.");
+      if (!response.ok) throw new Error("Failed to fetch salespersons.");
 
       const result = await response.json();
-      //console.log("Fetched Territory Partner Data:", result);
 
+      // Set the table data
       setDatas(result);
     } catch (err) {
-      console.error("Error fetching territory partners:", err);
+      console.error("Error fetching salespersons:", err);
     }
   };
 
   const add = async (e) => {
     e.preventDefault();
 
-    const endpoint = newPartner.id ? `edit/${newPartner.id}` : "add";
+    const endpoint = newSalesPerson.salespersonsid
+      ? `edit/${newSalesPerson.salespersonsid}`
+      : "add";
 
     try {
       setLoading(true);
-      const response = await fetch(
-        `${URI}/admin/territorypartner/${endpoint}`,
-        {
-          method: newPartner.id ? "PUT" : "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newPartner),
-        }
-      );
+      const response = await fetch(`${URI}/project-partner/sales/${endpoint}`, {
+        method: newSalesPerson.salespersonsid ? "PUT" : "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newSalesPerson),
+      });
 
       if (response.status === 409) {
-        alert("partner all ready exists!");
+        alert("Sales Person already exists!");
       } else if (!response.ok) {
-        throw new Error(`Failed to save partner. Status: ${response.status}`);
+        throw new Error(`Failed to save property. Status: ${response.status}`);
       } else {
         alert(
-          newPartner.id
-            ? "Partner updated successfully!"
-            : "Partner added successfully!"
+          newSalesPerson.salespersonsid
+            ? "Sales Person updated successfully!"
+            : "Sales Person added successfully!"
         );
 
-        setNewPartner({
+        setNewSalesPerson({
           fullname: "",
           contact: "",
           email: "",
@@ -164,11 +162,11 @@ const TerritoryPartner = () => {
           intrest: "",
         });
 
-        setShowPartnerForm(false);
+        setShowSalesForm(false);
         await fetchData();
       }
     } catch (err) {
-      console.error("Error saving Partner:", err);
+      console.error("Error saving Sales Person:", err);
     } finally {
       setLoading(false);
     }
@@ -177,38 +175,37 @@ const TerritoryPartner = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/territorypartner/get/${id}`, {
+      const response = await fetch(`${URI}/admin/salespersons/get/${id}`, {
         method: "GET",
-        credentials: "include", // Ensures cookies are sent
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch Partner.");
+      if (!response.ok) throw new Error("Failed to fetch Sales Persons.");
       const data = await response.json();
-      console.log(data);
-      setNewPartner(data);
-      setShowPartnerForm(true);
+      setNewSalesPerson(data);
+      setShowSalesForm(true);
     } catch (err) {
       console.error("Error fetching:", err);
     }
   };
 
   //fetch data on form
-  const viewPartner = async (id) => {
+  const viewSalesPerson = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/territorypartner/get/${id}`, {
+      const response = await fetch(`${URI}/admin/salespersons/get/${id}`, {
         method: "GET",
-        credentials: "include", // Ensures cookies are sent
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch Partner.");
+      if (!response.ok) throw new Error("Failed to fetch Sales Persons.");
       const data = await response.json();
       console.log(data);
       setPartner(data);
-      setShowPartner(true);
+      setShowSalesPerson(true);
     } catch (err) {
       console.error("Error fetching:", err);
     }
@@ -216,31 +213,27 @@ const TerritoryPartner = () => {
 
   //Delete record
   const del = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this Partner?"))
+    if (!window.confirm("Are you sure you want to delete this Sales Person?"))
       return;
 
     try {
-      setLoading(true);
-      const response = await fetch(
-        URI + `/admin/territorypartner/delete/${id}`,
-        {
-          method: "DELETE",
-          credentials: "include", //  Ensures cookies are sent
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(URI + `/admin/salespersons/delete/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       const data = await response.json();
       if (response.ok) {
-        alert("Partner deleted successfully!");
+        alert("Sales Person deleted successfully!");
         fetchData();
       } else {
         alert(`Error: ${data.message}`);
       }
     } catch (error) {
-      console.error("Error deleting Partner:", error);
+      console.error("Error deleting Sales Person:", error);
     } finally {
       setLoading(false);
     }
@@ -248,20 +241,21 @@ const TerritoryPartner = () => {
 
   // change status record
   const status = async (id) => {
-    if (!window.confirm("Are you sure you want to change this Partner status?"))
+    if (
+      !window.confirm(
+        "Are you sure you want to change this Sales person status?"
+      )
+    )
       return;
 
     try {
-      const response = await fetch(
-        URI + `/admin/territorypartner/status/${id}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(URI + `/admin/salespersons/status/${id}`, {
+        method: "PUT",
+        credentials: "include", //  Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       console.log(response);
       if (response.ok) {
@@ -278,11 +272,11 @@ const TerritoryPartner = () => {
   // Update Payment ID
   const updatePaymentId = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
-      setLoading(true);
       const response = await fetch(
-        URI + `/admin/territorypartner/update/paymentid/${partnerId}`,
+        `${URI}/admin/salespersons/update/paymentid/${salesPersonId}`,
         {
           method: "PUT",
           headers: {
@@ -292,19 +286,20 @@ const TerritoryPartner = () => {
           body: JSON.stringify(payment),
         }
       );
-      const data = await response.json();
-      console.log(response);
-      if (response.ok) {
-        alert(`Success: ${data.message}`);
-      } else {
-        alert(`Error: ${data.message}`);
-      }
-      setPartnerId(null);
 
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
+      alert(`Success: ${data.message}`);
+      setSalesPersonId(null);
       setShowPaymentIdForm(false);
       fetchData();
     } catch (error) {
-      console.error("Error deleting :", error);
+      console.error("Error updating payment ID:", error);
+      alert(`Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -314,7 +309,7 @@ const TerritoryPartner = () => {
   const fetchFollowUpList = async (id) => {
     try {
       const response = await fetch(
-        URI + `/admin/territorypartner/followup/list/${id}`,
+        URI + `/admin/salespersons/followup/list/${id}`,
         {
           method: "GET",
           credentials: "include", // Ensures cookies are sent
@@ -339,7 +334,7 @@ const TerritoryPartner = () => {
       setLoading(true);
 
       const response = await fetch(
-        `${URI}/admin/territorypartner/followup/add/${partnerId}`,
+        `${URI}/admin/salespersons/followup/add/${salesPersonId}`,
         {
           method: "POST",
           headers: {
@@ -356,7 +351,7 @@ const TerritoryPartner = () => {
         alert(`Success: ${data.message}`);
         setPartnerPaymentStatus("Follow Up");
         await fetchData();
-        fetchFollowUpList(partnerId);
+        fetchFollowUpList(salesPersonId);
       } else {
         alert(`Error: ${data.message}`);
       }
@@ -375,21 +370,23 @@ const TerritoryPartner = () => {
   const assignLogin = async (e) => {
     e.preventDefault();
     if (
-      !window.confirm("Are you sure you want to assign login to this Partner?")
+      !window.confirm(
+        "Are you sure you want to assign login to this Sales Person?"
+      )
     )
       return;
 
     try {
       setLoading(true);
       const response = await fetch(
-        URI + `/admin/territorypartner/assignlogin/${partnerId}`,
+        URI + `/admin/salespersons/assignlogin/${salesPersonId}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include",
-          body: JSON.stringify({ username, password }),
+          credentials: "include", //  Ensures cookies are sent
+          body: JSON.stringify({ salesPersonId, username, password }),
         }
       );
       const data = await response.json();
@@ -399,7 +396,7 @@ const TerritoryPartner = () => {
       } else {
         alert(`Error: ${data.message}`);
       }
-      setPartnerId(null);
+      setSalesPersonId(null);
       setUsername("");
       setPassword("");
       setGiveAccess(false);
@@ -414,13 +411,13 @@ const TerritoryPartner = () => {
   useEffect(() => {
     fetchData();
     fetchStates();
-  }, [selectedPartnerLister]);
+  }, []);
 
   useEffect(() => {
-    if (newPartner.state != "") {
+    if (newSalesPerson.state != "") {
       fetchCities();
     }
-  }, [newPartner.state]);
+  }, [newSalesPerson.state]);
 
   const getPartnerCounts = (data) => {
     return data.reduce(
@@ -585,8 +582,8 @@ const TerritoryPartner = () => {
         return (
           <span
             onClick={() => {
-              setPartnerId(row.id);
-              fetchFollowUpList(row.id);
+              setSalesPersonId(row.salespersonsid);
+              fetchFollowUpList(row.salespersonsid);
               setShowFollowUpList(true);
             }}
             className={`px-2 py-1 rounded-md cursor-pointer ${styleClass}`}
@@ -610,7 +607,7 @@ const TerritoryPartner = () => {
                   : "bg-[#FBE9E9] text-[#FF0000]"
               }`}
               onClick={() => {
-                setPartnerId(row.id);
+                setSalesPersonId(row.salespersonid);
                 setGiveAccess(true);
               }}
             >
@@ -673,7 +670,7 @@ const TerritoryPartner = () => {
     const handleActionSelect = (action, id) => {
       switch (action) {
         case "view":
-          viewPartner(id);
+          viewSalesPerson(id);
           break;
         case "status":
           status(id);
@@ -682,11 +679,11 @@ const TerritoryPartner = () => {
           edit(id);
           break;
         case "payment":
-          setPartnerId(id);
+          setSalesPersonId(id);
           setShowPaymentIdForm(true);
           break;
         case "followup":
-          setPartnerId(id);
+          setSalesPersonId(id);
           fetchFollowUpList(id);
           setShowFollowUpList(true);
           break;
@@ -694,7 +691,7 @@ const TerritoryPartner = () => {
           del(id);
           break;
         case "assignlogin":
-          setPartnerId(id);
+          setSalesPersonId(id);
           setGiveAccess(true);
           break;
         default:
@@ -713,7 +710,7 @@ const TerritoryPartner = () => {
           value={selectedAction}
           onChange={(e) => {
             const action = e.target.value;
-            handleActionSelect(action, row.id);
+            handleActionSelect(action, row.salespersonsid);
           }}
         >
           <option value="" disabled>
@@ -736,34 +733,10 @@ const TerritoryPartner = () => {
       className={`sales Persons overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
     >
       <div className="sales-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
-        <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
-          <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
-            <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
-              <span>{selectedPartnerLister || "Select Partner Lister"}</span>
-              <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
-            </div>
-            <select
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              value={selectedPartnerLister}
-              onChange={(e) => {
-                const action = e.target.value;
-                setSelectedPartnerLister(action);
-              }}
-            >
-              <option value="Select Partner Lister">
-                Select Partner Lister
-              </option>
-              <option value="Reparv">Reparv</option>
-              <option value="Promoter">Promoter</option>
-              <option value="Project Partner">Project Partner</option>
-            </select>
-          </div>
+        <div className="w-full flex items-center justify-end gap-1 sm:gap-3">
           <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
-            <DownloadCSV
-              data={filteredData}
-              filename={"TerritoryPartner.csv"}
-            />
-            <AddButton label={"Add"} func={setShowPartnerForm} />
+            <DownloadCSV data={filteredData} filename={"SalesPartner.csv"} />
+            <AddButton label={"Add"} func={setShowSalesForm} />
           </div>
         </div>
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
@@ -771,7 +744,7 @@ const TerritoryPartner = () => {
             <CiSearch />
             <input
               type="text"
-              placeholder="Search Partner"
+              placeholder="Search Sales Person"
               className="search-input w-[250px] h-[36px] text-sm text-black bg-transparent border-none outline-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -786,7 +759,7 @@ const TerritoryPartner = () => {
             </div>
           </div>
         </div>
-        <h2 className="text-[16px] font-semibold">Territory Partner List</h2>
+        <h2 className="text-[16px] font-semibold">Sales Person List</h2>
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"
@@ -807,26 +780,29 @@ const TerritoryPartner = () => {
 
       <div
         className={`${
-          showPartnerForm ? "flex" : "hidden"
+          showSalesForm ? "flex" : "hidden"
         } z-[61] sales-form overflow-scroll scrollbar-hide w-[400px] md:w-[700px] max-h-[70vh] fixed`}
       >
         <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-10 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Territory Partner</h2>
+            <h2 className="text-[16px] font-semibold">Sales Person</h2>
             <IoMdClose
               onClick={() => {
-                setShowPartnerForm(false);
+                setShowSalesForm(false);
               }}
               className="w-6 h-6 cursor-pointer"
             />
           </div>
-          <form onSubmit={add} className="grid gap-6 md:gap-4 grid-cols-1">
+          <form onSubmit={add}>
             <div className="grid gap-6 md:gap-4 grid-cols-1">
               <input
                 type="hidden"
-                value={newPartner.id || ""}
+                value={newSalesPerson.salespersonsid || ""}
                 onChange={(e) => {
-                  setNewPartner({ ...newPartner, id: e.target.value });
+                  setNewSalesPerson({
+                    ...newSalesPerson,
+                    salespersonsid: e.target.value,
+                  });
                 }}
               />
               <div className="w-full ">
@@ -837,10 +813,10 @@ const TerritoryPartner = () => {
                   type="text"
                   required
                   placeholder="Enter Full Name"
-                  value={newPartner.fullname}
+                  value={newSalesPerson.fullname}
                   onChange={(e) => {
-                    setNewPartner({
-                      ...newPartner,
+                    setNewSalesPerson({
+                      ...newSalesPerson,
                       fullname: e.target.value,
                     });
                   }}
@@ -855,15 +831,12 @@ const TerritoryPartner = () => {
                   type="text"
                   required
                   placeholder="Enter Contact Number"
-                  value={newPartner.contact}
+                  value={newSalesPerson.contact}
                   onChange={(e) => {
                     const input = e.target.value;
                     if (/^\d{0,10}$/.test(input)) {
                       // Allows only up to 10 digits
-                      setNewPartner({
-                        ...newPartner,
-                        contact: e.target.value,
-                      });
+                      setNewSalesPerson({ ...newSalesPerson, contact: input });
                     }
                   }}
                   className="w-full mt-2 text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -877,10 +850,10 @@ const TerritoryPartner = () => {
                   type="email"
                   required
                   placeholder="Enter Email"
-                  value={newPartner.email}
+                  value={newSalesPerson.email}
                   onChange={(e) => {
-                    setNewPartner({
-                      ...newPartner,
+                    setNewSalesPerson({
+                      ...newSalesPerson,
                       email: e.target.value,
                     });
                   }}
@@ -896,9 +869,12 @@ const TerritoryPartner = () => {
                   required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
                   style={{ backgroundImage: "none" }}
-                  value={newPartner.state}
+                  value={newSalesPerson.state}
                   onChange={(e) =>
-                    setNewPartner({ ...newPartner, state: e.target.value })
+                    setNewSalesPerson({
+                      ...newSalesPerson,
+                      state: e.target.value,
+                    })
                   }
                 >
                   <option value="">Select Your State</option>
@@ -919,10 +895,10 @@ const TerritoryPartner = () => {
                   required
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
                   style={{ backgroundImage: "none" }}
-                  value={newPartner.city}
+                  value={newSalesPerson.city}
                   onChange={(e) =>
-                    setNewPartner({
-                      ...newPartner,
+                    setNewSalesPerson({
+                      ...newSalesPerson,
                       city: e.target.value,
                     })
                   }
@@ -942,10 +918,10 @@ const TerritoryPartner = () => {
                 </label>
                 <select
                   required
-                  value={newPartner.intrest}
+                  value={newSalesPerson.intrest}
                   onChange={(e) =>
-                    setNewPartner({
-                      ...newPartner,
+                    setNewSalesPerson({
+                      ...newSalesPerson,
                       intrest: e.target.value,
                     })
                   }
@@ -985,7 +961,7 @@ const TerritoryPartner = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setShowPartnerForm(false);
+                  setShowSalesForm(false);
                 }}
                 className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
               >
@@ -1023,9 +999,9 @@ const TerritoryPartner = () => {
             <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
               <input
                 type="hidden"
-                value={partnerId || ""}
+                value={salesPersonId || ""}
                 onChange={(e) => {
-                  setPartnerId(e.target.value);
+                  setSalesPersonId(e.target.value);
                 }}
               />
               <div className="w-full">
@@ -1238,7 +1214,7 @@ const TerritoryPartner = () => {
           !giveAccess && "hidden"
         }  z-[61] overflow-scroll scrollbar-hide flex fixed`}
       >
-        <div className="w-[330px] h-[380px] sm:w-[600px] sm:h-[400px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[300px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-[330px] h-[380px] sm:w-[600px] sm:h-[400px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] lg:h-[300px] bg-white py-8 pb-10 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">Give Access</h2>
             <IoMdClose
@@ -1252,9 +1228,9 @@ const TerritoryPartner = () => {
             <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
               <input
                 type="hidden"
-                value={partnerId || ""}
+                value={salesPersonId || ""}
                 onChange={(e) => {
-                  setPartnerId(e.target.value);
+                  setSalesPersonId(e.target.value);
                 }}
               />
               <div className="w-full">
@@ -1301,20 +1277,18 @@ const TerritoryPartner = () => {
         </div>
       </div>
 
-      {/* Show Territory Partner details */}
+      {/* Show Sales Person details */}
       <div
         className={`${
-          showPartner ? "flex" : "hidden"
+          showSalesPerson ? "flex" : "hidden"
         } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
       >
         <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">
-              Territory Partner Details
-            </h2>
+            <h2 className="text-[16px] font-semibold">Sales Person Details</h2>
             <IoMdClose
               onClick={() => {
-                setShowPartner(false);
+                setShowSalesPerson(false);
               }}
               className="w-6 h-6 cursor-pointer"
             />
@@ -1671,4 +1645,4 @@ const TerritoryPartner = () => {
   );
 };
 
-export default TerritoryPartner;
+export default SalesPerson;

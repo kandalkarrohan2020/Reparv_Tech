@@ -1,0 +1,391 @@
+import db from "../../config/dbconnect.js";
+import moment from "moment";
+import fs from "fs";
+import path from "path";
+
+export const getAll = (req, res) => {
+  const userId = req.projectPartnerUser.id;
+  if (!userId) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized Access, Please Login Again!" });
+  }
+  const sql = `
+      SELECT salespersons.*, pf.followUp, pf.created_at AS followUpDate
+      FROM salespersons
+      LEFT JOIN (
+        SELECT p1.*
+        FROM partnerFollowup p1
+        INNER JOIN (
+          SELECT partnerId, MAX(created_at) AS latest
+          FROM partnerFollowup
+          WHERE role = 'Sales Person'
+          GROUP BY partnerId
+        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        WHERE p1.role = 'Sales Person'
+      ) pf ON salespersons.salespersonsid = pf.partnerId
+      WHERE salespersons.projectpartnerid = ?
+      ORDER BY salespersons.created_at DESC;
+    `;
+
+  db.query(sql, [userId], (err, result) => {
+    if (err) {
+      console.error("Error fetching partners:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+      followUp: row.followUp || null,
+      followUpDate: row.followUpDate
+        ? moment(row.followUpDate).format("DD MMM YYYY | hh:mm A")
+        : null,
+    }));
+
+    res.json(formatted);
+  });
+};
+
+// **Fetch All Active**
+export const getAllActive = (req, res) => {
+  const userId = req.projectPartnerUser.id;
+  if (!userId) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized Access, Please Login Again!" });
+  }
+  const sql =
+    "SELECT * FROM salespersons WHERE status = 'Active' AND salespersons.projectpartnerid = ? ORDER BY salespersonsid DESC";
+  db.query(sql, [userId], (err, result) => {
+    if (err) {
+      console.error("Error fetching:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+    res.json(result);
+  });
+};
+
+// **Add New Sales Person **
+export const add = (req, res) => {
+  const userId = req.projectPartnerUser.id;
+  if (!userId) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized Access, Please Login Again!" });
+  }
+
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const {
+    fullname,
+    contact,
+    email,
+    intrest,
+    refrence,
+    address,
+    state,
+    city,
+    pincode,
+    experience,
+    rerano,
+    adharno,
+    panno,
+    bankname,
+    accountholdername,
+    accountnumber,
+    ifsc,
+  } = req.body;
+
+  // Validate required fields
+  if (!fullname || !contact || !email || !intrest) {
+    return res.status(400).json({
+      message: "FullName, Contact and Email Required!",
+    });
+  }
+
+  // Function to generate referral code
+  const createReferralCode = () => {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*";
+    let code = "";
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return "REF-" + code; // Total 10 characters
+  };
+
+  // Check if referral is unique
+  const generateUniqueReferralCode = (callback) => {
+    const code = createReferralCode();
+    db.query(
+      "SELECT referral FROM salespersons WHERE referral = ?",
+      [code],
+      (err, results) => {
+        if (err) return callback(err, null);
+        if (results.length > 0) return generateUniqueReferralCode(callback);
+        return callback(null, code);
+      }
+    );
+  };
+
+  // Handle uploaded files safely
+  const adharImageFile = req.files?.["adharImage"]?.[0];
+  const panImageFile = req.files?.["panImage"]?.[0];
+  const reraImageFile = req.files?.["reraImage"]?.[0];
+
+  const adharImageUrl = adharImageFile
+    ? `/uploads/${adharImageFile.filename}`
+    : null;
+  const panImageUrl = panImageFile ? `/uploads/${panImageFile.filename}` : null;
+  const reraImageUrl = reraImageFile
+    ? `/uploads/${reraImageFile.filename}`
+    : null;
+
+  // Check for duplicates
+  const checkSql = `SELECT * FROM salespersons WHERE contact = ? OR email = ?`;
+
+  db.query(checkSql, [contact, email], (checkErr, checkResult) => {
+    if (checkErr) {
+      console.error("Error checking existing salespersons:", checkErr);
+      return res.status(500).json({
+        message: "Database error during validation",
+        error: checkErr,
+      });
+    }
+
+    if (checkResult.length > 0) {
+      return res.status(409).json({
+        message: "Sales person already exists with this Contact or Email Id.",
+      });
+    }
+
+    // Generate unique referral code
+    generateUniqueReferralCode((referralErr, referralCode) => {
+      if (referralErr) {
+        console.error("Referral code generation failed:", referralErr);
+        return res.status(500).json({
+          message: "Error generating referral code",
+          error: referralErr,
+        });
+      }
+
+      // Insert new salespersons
+      const insertSql = `
+        INSERT INTO salespersons 
+        (projectpartnerid, fullname, contact, email, intrest, refrence, referral, address, state, city, pincode, experience, rerano, adharno, panno, 
+         bankname, accountholdername, accountnumber, ifsc, adharimage, panimage, reraimage, updated_at, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+      `;
+
+      db.query(
+        insertSql,
+        [
+          userId,
+          fullname,
+          contact,
+          email,
+          intrest,
+          refrence,
+          referralCode,
+          address,
+          state,
+          city,
+          pincode,
+          experience,
+          rerano,
+          adharno,
+          panno,
+          bankname,
+          accountholdername,
+          accountnumber,
+          ifsc,
+          adharImageUrl,
+          panImageUrl,
+          reraImageUrl,
+          currentdate,
+          currentdate,
+        ],
+        (insertErr, insertResult) => {
+          if (insertErr) {
+            console.error("Error inserting Sales Person:", insertErr);
+            return res.status(500).json({
+              message: "Database error",
+              error: insertErr,
+            });
+          }
+
+          // Insert default follow-up entry
+          const followupSql = `
+            INSERT INTO partnerFollowup 
+            (partnerId, role, followUp, followUpText, created_at, updated_at) 
+            VALUES (?, ?, ?, ?, ?, ?)
+          `;
+
+          db.query(
+            followupSql,
+            [
+              insertResult.insertId,
+              "Sales Person",
+              "New",
+              "Newly Added Sales Person",
+              currentdate,
+              currentdate,
+            ],
+            (followupErr) => {
+              if (followupErr) {
+                console.error("Error adding follow-up:", followupErr);
+                return res.status(500).json({
+                  message: "Follow-up insert failed",
+                  error: followupErr,
+                });
+              }
+
+              return res.status(201).json({
+                message: "Sales Person added successfully",
+                Id: insertResult.insertId,
+              });
+            }
+          );
+        }
+      );
+    });
+  });
+};
+
+export const edit = (req, res) => {
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const {
+    fullname,
+    contact,
+    email,
+    intrest,
+    address,
+    state,
+    city,
+    pincode,
+    experience,
+    rerano,
+    adharno,
+    panno,
+    bankname,
+    accountholdername,
+    accountnumber,
+    ifsc,
+  } = req.body;
+
+  const salespersonsid = parseInt(req.params.id);
+  if (isNaN(salespersonsid)) {
+    return res.status(400).json({ message: "Invalid Partner ID" });
+  }
+
+  if (!fullname || !contact || !email) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  // Handle new uploaded files
+  const adharImageFiles = req.files?.["adharImage"] || [];
+  const panImageFiles = req.files?.["panImage"] || [];
+  const reraImageFiles = req.files?.["reraImage"] || [];
+
+  const adharImageUrls = adharImageFiles.map(
+    (file) => `/uploads/${file.filename}`
+  );
+  const panImageUrls = panImageFiles.map((file) => `/uploads/${file.filename}`);
+  const reraImageUrls = reraImageFiles.map(
+    (file) => `/uploads/${file.filename}`
+  );
+
+  // STEP 1: Get old images
+  db.query(
+    "SELECT adharimage, panimage, reraimage FROM salespersons WHERE salespersonsid = ?",
+    [salespersonsid],
+    (selectErr, results) => {
+      if (selectErr) {
+        console.error("Error fetching old images:", selectErr);
+        return res
+          .status(500)
+          .json({ message: "Database error while fetching old images" });
+      }
+
+      const oldData = results[0];
+
+      // Utility: delete old images
+      const deleteOldFiles = (oldImagesJson) => {
+        try {
+          const oldImages = JSON.parse(oldImagesJson || "[]");
+          oldImages.forEach((url) => {
+            const filePath = path.join(process.cwd(), "public", url);
+            if (fs.existsSync(filePath)) {
+              fs.unlinkSync(filePath);
+            }
+          });
+        } catch (err) {
+          console.error("Error deleting old files:", err);
+        }
+      };
+
+      // Prepare SQL
+      let updateSql = `UPDATE salespersons 
+        SET fullname = ?, contact = ?, email = ?, intrest = ?, address = ?, state = ?, city = ?, 
+        pincode = ?, experience = ?, rerano = ?, adharno = ?, panno = ?, bankname = ?, 
+        accountholdername = ?, accountnumber = ?, ifsc = ?, updated_at = ?`;
+      const updateValues = [
+        fullname,
+        contact,
+        email,
+        intrest,
+        address,
+        state,
+        city,
+        pincode,
+        experience,
+        rerano,
+        adharno,
+        panno,
+        bankname,
+        accountholdername,
+        accountnumber,
+        ifsc,
+        currentdate,
+      ];
+
+      // Aadhaar
+      if (adharImageUrls.length > 0) {
+        updateSql += `, adharimage = ?`;
+        updateValues.push(JSON.stringify(adharImageUrls));
+        deleteOldFiles(oldData?.adharimage);
+      }
+
+      // PAN
+      if (panImageUrls.length > 0) {
+        updateSql += `, panimage = ?`;
+        updateValues.push(JSON.stringify(panImageUrls));
+        deleteOldFiles(oldData?.panimage);
+      }
+
+      // RERA
+      if (reraImageUrls.length > 0) {
+        updateSql += `, reraimage = ?`;
+        updateValues.push(JSON.stringify(reraImageUrls));
+        deleteOldFiles(oldData?.reraimage);
+      }
+
+      updateSql += ` WHERE salespersonsid = ?`;
+      updateValues.push(salespersonsid);
+
+      // STEP 2: Update DB
+      db.query(updateSql, updateValues, (updateErr) => {
+        if (updateErr) {
+          console.error("Error updating salespersons:", updateErr);
+          return res.status(500).json({
+            message: "Database error during update",
+            error: updateErr,
+          });
+        }
+
+        res.status(200).json({ message: "Sales person updated successfully" });
+      });
+    }
+  );
+};

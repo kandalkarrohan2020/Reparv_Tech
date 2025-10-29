@@ -32,7 +32,7 @@ export const getAll = (req, res) => {
            FROM enquirers 
            LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
            LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
-           WHERE enquirers.source = "Direct" AND enquirers.status != 'Token' AND properties.projectpartnerid = ?
+           WHERE enquirers.source = "Direct" AND enquirers.status != 'Token' AND enquirers.projectpartnerid = ?
            ORDER BY enquirers.enquirersid DESC`;
   } else if (enquirySource === "CSV") {
     sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
@@ -50,11 +50,11 @@ export const getAll = (req, res) => {
            FROM enquirers 
            LEFT JOIN properties ON enquirers.propertyid = properties.propertyid  
            LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
-           WHERE enquirers.status != 'Token' AND properties.projectpartnerid = ?
+           WHERE enquirers.status != 'Token' AND properties.projectpartnerid = ? OR enquirers.projectpartnerid = ?
            ORDER BY enquirers.enquirersid DESC`;
   }
 
-  db.query(sql, [userId], (err, result) => {
+  db.query(sql, [userId, userId], (err, result) => {
     if (err) {
       console.error("Error fetching Enquirers:", err);
       return res.status(500).json({ message: "Database error", error: err });

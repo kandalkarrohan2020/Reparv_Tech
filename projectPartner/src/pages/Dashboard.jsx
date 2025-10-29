@@ -282,15 +282,6 @@ function Dashboard() {
             ),
             to: "/properties",
           },
-
-          {
-            label: "Builders",
-            value: overviewCountData?.totalBuilder || "00",
-            icon: (
-              <IoArrowRedo className="text-[#29bc1e] hover:text-[#0bb501] sm:w-6 sm:h-6" />
-            ),
-            to: "/builders",
-          },
           {
             label: "Customers",
             value: overviewCountData?.totalCustomer || "00",
@@ -307,6 +298,23 @@ function Dashboard() {
             ),
             to: "/enquirers",
           },
+          {
+            label: "Builders",
+            value: overviewCountData?.totalBuilder || "00",
+            icon: (
+              <IoArrowRedo className="text-[#29bc1e] hover:text-[#0bb501] sm:w-6 sm:h-6" />
+            ),
+            to: "/builders",
+          },
+          {
+            label: "Employees",
+            value: overviewCountData?.totalEmployee || "00",
+            icon: (
+              <IoArrowRedo className="text-[#29bc1e] hover:text-[#0bb501] sm:w-6 sm:h-6" />
+            ),
+            to: "/employees",
+          },
+          
           {
             label: "Sales Partners",
             value: overviewCountData?.totalSalesPartner || "00",

@@ -39,6 +39,14 @@ function Layout() {
     setShowSubscription,
     giveAccess,
     setGiveAccess,
+    showRoleForm,
+    setShowRoleForm,
+    showDepartmentForm,
+    setShowDepartmentForm,
+    showEmployee,
+    setShowEmployee,
+    showEplDetailsForm,
+    setShowEplDetailsForm,
     showBuilder,
     setShowBuilder,
     showBuilderForm,
@@ -104,6 +112,10 @@ function Layout() {
 
   const overlays = [
     { state: giveAccess, setter: setGiveAccess },
+    { state: showRoleForm, setter: setShowRoleForm },
+    { state: showDepartmentForm, setter: setShowDepartmentForm },
+    { state: showEmployee, setter: setShowEmployee },
+    { state: showEplDetailsForm, setter: setShowEplDetailsForm },
     { state: showBuilder, setter: setShowBuilder },
     { state: showBuilderForm, setter: setShowBuilderForm },
     { state: showPropertyForm, setter: setShowPropertyForm },
@@ -264,12 +276,13 @@ function Layout() {
             {/* Navigation Links */}
             {[
               { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
+              { to: "/customers", icon: customersIcon, label: "Customers" },
               { to: "/enquirers", icon: enquirersIcon, label: "Enquirers" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/map", icon: mapIcon, label: "Map" },
               { to: "/calender", icon: calenderIcon, label: "Calendar" },
               { to: "/builders", icon: partnerIcon, label: "Builders" },
-              { to: "/customers", icon: customersIcon, label: "Customers" },
+              { to: "/employees", icon: employeeIcon, label: "Employees" },
               {
                 to: "/salespersons",
                 icon: partnerIcon,
@@ -281,6 +294,8 @@ function Layout() {
                 label: "Territory Partners",
               },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
+              { to: "/role", icon: employeeIcon, label: "Roles" },
+              { to: "/department", icon: employeeIcon, label: "Departments" },
 
               {
                 to: "/brand-accessories",

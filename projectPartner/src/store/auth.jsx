@@ -32,6 +32,10 @@ export const AuthProvider = ({ children }) => {
 
   const [dashboardFilter, setDashboardFilter] = useState("Booked");
   const [showProfile, setShowProfile] = useState(false);
+  const [showRoleForm, setShowRoleForm] = useState(false);
+  const [showDepartmentForm, setShowDepartmentForm] = useState(false);
+  const [showEmployee, setShowEmployee] = useState(false);
+  const [showEplDetailsForm, setShowEplDetailsForm] = useState(false);
   const [showBuilderForm, setShowBuilderForm] = useState(false);
   const [showBuilder, setShowBuilder] = useState(false);
   const [showPropertyForm, setShowPropertyForm] = useState(false);
@@ -94,6 +98,14 @@ export const AuthProvider = ({ children }) => {
         setAction,
         showProfile,
         setShowProfile,
+        showRoleForm,
+        setShowRoleForm,
+        showDepartmentForm,
+        setShowDepartmentForm,
+        showEmployee,
+        setShowEmployee,
+        showEplDetailsForm,
+        setShowEplDetailsForm,
         showBuilder,
         setShowBuilder,
         showBuilderForm,

@@ -30,7 +30,7 @@ export const getCount = (req, res) => {
         SELECT COUNT(e.enquirersid)
         FROM enquirers e
         JOIN properties p ON e.propertyid = p.propertyid
-        WHERE e.status != 'Token' AND p.projectpartnerid = ?
+        WHERE e.status != 'Token' AND p.projectpartnerid = ? OR e.projectpartnerid = ?
       ) AS totalEnquirer,
 
       (
@@ -45,6 +45,12 @@ export const getCount = (req, res) => {
         FROM builders  
         WHERE builderadder = ?
       ) AS totalBuilder,
+
+      (
+        SELECT COUNT(id) 
+        FROM employees 
+        WHERE projectpartnerid = ?
+      ) AS totalEmployee,
 
       (
         SELECT COUNT(propertyid) 
@@ -80,8 +86,10 @@ export const getCount = (req, res) => {
       req.projectPartnerUser?.id, // projectpartnerid for selfEarning
       req.projectPartnerUser?.id, // for totalCustomer
       req.projectPartnerUser?.id, // for totalEnquirer
+      req.projectPartnerUser?.id, // for totalEnquirer
       req.projectPartnerUser?.id, // for totalDealInSquareFeet
       req.projectPartnerUser?.adharId, // for totalBuilder
+      req.projectPartnerUser?.id, // for totalEmployee
       req.projectPartnerUser?.id, // for totalProperty
       req.projectPartnerUser?.id, // for totalSalesPartner
       req.projectPartnerUser?.id, // for totalTerritoryPartner

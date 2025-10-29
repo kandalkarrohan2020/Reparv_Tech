@@ -182,13 +182,16 @@ const Enquirers = () => {
   // **Fetch Data from API**
   const fetchEnquiryRemarkList = async (id) => {
     try {
-      const response = await fetch(URI + "/project-partner/enquirers/remark/list/" + id, {
-        method: "GET",
-        credentials: "include", // Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + "/project-partner/enquirers/remark/list/" + id,
+        {
+          method: "GET",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch enquirers.");
       const list = await response.json();
       setRemarkList(list);
@@ -256,13 +259,16 @@ const Enquirers = () => {
   //Fetch Sales Persons List
   const fetchSalesPersonList = async () => {
     try {
-      const response = await fetch(URI + "/project-partner/salespersons/active", {
-        method: "GET",
-        credentials: "include", //  Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + "/project-partner/salespersons/active",
+        {
+          method: "GET",
+          credentials: "include", //  Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch Sales Persons.");
       const data = await response.json();
       setSalesPersonList(data);
@@ -507,7 +513,7 @@ const Enquirers = () => {
     }
   };
 
-  const updateEnquiry = async (e) => {
+  const addEnquiry = async (e) => {
     e.preventDefault();
 
     const endpoint = newEnquiry.enquirersid
@@ -515,7 +521,7 @@ const Enquirers = () => {
       : "add/enquiry";
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/sales/enquiry/${endpoint}`, {
+      const response = await fetch(`${URI}/project-partner/enquiry/${endpoint}`, {
         method: newEnquiry.enquirersid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -547,7 +553,7 @@ const Enquirers = () => {
         message: "",
       });
 
-      setShowEnquiryUpdateForm(false);
+      setShowEnquiryForm(false);
 
       await fetchData();
     } catch (err) {
@@ -570,7 +576,7 @@ const Enquirers = () => {
       if (!response.ok) throw new Error("Failed to fetch ticket.");
       const data = await response.json();
       setNewEnquiry(data);
-      setShowEnquiryUpdateForm(true);
+      setShowEnquiryForm(true);
     } catch (err) {
       console.error("Error fetching :", err);
     }
@@ -609,13 +615,16 @@ const Enquirers = () => {
       return;
     try {
       setLoading(true);
-      const response = await fetch(URI + `/project-partner/enquirers/delete/${id}`, {
-        method: "DELETE",
-        credentials: "include", // Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + `/project-partner/enquirers/delete/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const data = await response.json();
       if (response.ok) {
@@ -1079,7 +1088,8 @@ const Enquirers = () => {
           />
         </div>
       </div>
-
+      
+      {/* 
       <div
         className={`${
           showEnquiryForm ? "flex" : "hidden"
@@ -1136,11 +1146,12 @@ const Enquirers = () => {
           </form>
         </div>
       </div>
-
-      {/* Update Enquiry Form */}
+      */}
+      
+      {/* Add New Enquiry Form */}
       <div
         className={` ${
-          !showEnquiryUpdateForm && "hidden"
+          !showEnquiryForm && "hidden"
         }  z-[61] overflow-scroll scrollbar-hide h-[75vh] flex fixed`}
       >
         <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-10 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
@@ -1148,7 +1159,7 @@ const Enquirers = () => {
             <h2 className="text-[16px] font-semibold">Enquiry Details</h2>
             <IoMdClose
               onClick={() => {
-                setShowEnquiryUpdateForm(false);
+                setShowEnquiryForm(false);
                 setNewEnquiry({
                   customer: "",
                   contact: "",
@@ -1164,7 +1175,7 @@ const Enquirers = () => {
               className="w-6 h-6 cursor-pointer"
             />
           </div>
-          <form onSubmit={updateEnquiry}>
+          <form onSubmit={addEnquiry}>
             <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
               <input
                 type="hidden"
@@ -1377,7 +1388,7 @@ const Enquirers = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setShowEnquiryUpdateForm(false);
+                  setShowEnquiryForm(false);
                 }}
                 className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
               >
@@ -1401,7 +1412,7 @@ const Enquirers = () => {
           !showAssignSalesForm && "hidden"
         } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto`}
       >
-        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] h-[70vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] max-h-[70vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">
               Assign Enquiry to Sales Person
@@ -1423,70 +1434,6 @@ const Enquirers = () => {
                 }}
               />
 
-              {/* State */}
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-[10px]">
-                  Select State
-                </label>
-                <Select
-                  className="text-[16px] font-medium"
-                  options={
-                    states?.map((state) => ({
-                      value: state.state,
-                      label: state.state,
-                    })) || []
-                  }
-                  placeholder="Select Your State"
-                  value={
-                    states
-                      ?.map((state) => ({
-                        value: state.state,
-                        label: state.state,
-                      }))
-                      .find((opt) => opt.value === salesPersonAssign.state) ||
-                    null
-                  }
-                  onChange={(selected) =>
-                    setSalesPersonAssign({
-                      ...salesPersonAssign,
-                      state: selected?.value || "",
-                    })
-                  }
-                />
-              </div>
-
-              {/* City */}
-              <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-[10px]">
-                  Select City
-                </label>
-                <Select
-                  className="text-[16px] font-medium"
-                  options={
-                    cities?.map((city) => ({
-                      value: city.city,
-                      label: city.city,
-                    })) || []
-                  }
-                  placeholder="Select Your City"
-                  value={
-                    cities
-                      ?.map((city) => ({
-                        value: city.city,
-                        label: city.city,
-                      }))
-                      .find((opt) => opt.value === salesPersonAssign.city) ||
-                    null
-                  }
-                  onChange={(selected) =>
-                    setSalesPersonAssign({
-                      ...salesPersonAssign,
-                      city: selected?.value || "",
-                    })
-                  }
-                />
-              </div>
-
               {/* Sales Person */}
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium mb-[10px]">
@@ -1498,14 +1445,7 @@ const Enquirers = () => {
                   className="text-[16px] font-medium"
                   options={
                     salesPersonList
-                      ?.filter(
-                        (sp) =>
-                          sp.status === "Active" &&
-                          (!salesPersonAssign.state ||
-                            sp.state === salesPersonAssign.state) &&
-                          (!salesPersonAssign.city ||
-                            sp.city === salesPersonAssign.city)
-                      )
+                      ?.filter((sp) => sp.status === "Active")
                       .map((sp) => ({
                         value: {
                           salespersonid: sp.salespersonsid,

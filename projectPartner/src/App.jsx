@@ -18,6 +18,9 @@ import Subscription from "./pages/Subscription.jsx";
 import SalesPerson from "./pages/SalesPerson.jsx";
 import TerritoryPartner from "./pages/TerritoryPartner.jsx";
 import Enquirers from "./pages/Enquirers.jsx";
+import Employee from "./pages/Employee.jsx";
+import Role from "./pages/Role.jsx";
+import Department from "./pages/Department.jsx";
 
 const App = () => {
   return (
@@ -37,6 +40,9 @@ const App = () => {
           <Route path="/salespersons" element={<SalesPerson />} />
           <Route path="/territorypartner" element={<TerritoryPartner />} />
           <Route path="/tickets" element={<Ticketing />} />
+          <Route path="/employees" element={<Employee />} />
+          <Route path="/role" element={<Role />} />
+          <Route path="/department" element={<Department />} />
           <Route path="/brand-accessories" element={<BrandAccessories />} />
           <Route path="/marketing-content" element={<MarketingContent />} />
           <Route path="/subscription" element={<Subscription />} />

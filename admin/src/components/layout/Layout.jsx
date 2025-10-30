@@ -137,6 +137,8 @@ function Layout() {
     setShowDiscount,
     showDiscountForm,
     setShowDiscountForm,
+    showAssignProjectPartnerForm,
+    setShowAssignProjectPartnerForm,
     showEMI,
     setShowEMI,
     isLoggedIn,
@@ -202,6 +204,10 @@ function Layout() {
     { state: showSubscriptionForm, setter: setShowSubscriptionForm },
     { state: showDiscount, setter: setShowDiscount },
     { state: showDiscountForm, setter: setShowDiscountForm },
+    {
+      state: showAssignProjectPartnerForm,
+      setter: setShowAssignProjectPartnerForm,
+    },
   ];
 
   const getNavLinkClass = (path) => {
@@ -322,8 +328,16 @@ function Layout() {
                 label: "Territory Partners",
               },
               { to: "/guest-users", icon: partnerIcon, label: "Guest Users" },
-              { to: "/subscription-pricing", icon: partnerIcon, label: "Subscription Pricing" },
-              { to: "/subscription-discount", icon: partnerIcon, label: "Subscription Discount" },
+              {
+                to: "/subscription-pricing",
+                icon: partnerIcon,
+                label: "Subscription Pricing",
+              },
+              {
+                to: "/subscription-discount",
+                icon: partnerIcon,
+                label: "Subscription Discount",
+              },
               {
                 to: "/users-loan-eligibility",
                 icon: partnerIcon,

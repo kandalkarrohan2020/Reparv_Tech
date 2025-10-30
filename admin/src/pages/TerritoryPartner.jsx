@@ -32,6 +32,8 @@ const TerritoryPartner = () => {
     setShowFollowUpList,
     partnerPaymentStatus,
     setPartnerPaymentStatus,
+    showAssignProjectPartnerForm,
+    setShowAssignProjectPartnerForm,
   } = useAuth();
 
   const [datas, setDatas] = useState([]);
@@ -62,6 +64,9 @@ const TerritoryPartner = () => {
   const [followUp, setFollowUp] = useState("");
   const [followUpText, setFollowUpText] = useState("");
   const [followUpList, setFollowUpList] = useState([]);
+
+  const [projectPartnerList, setProjectPartnerList] = useState([]);
+  const [projectPartnerId, setProjectPartnerId] = useState("");
 
   // **Fetch States from API**
   const fetchStates = async () => {
@@ -122,6 +127,29 @@ const TerritoryPartner = () => {
       setDatas(result);
     } catch (err) {
       console.error("Error fetching territory partners:", err);
+    }
+  };
+
+  // **Fetch Data from API for Update Property in the Enquiry**
+  const fetchProjectPartnerList = async (id) => {
+    try {
+      const response = await fetch(
+        URI + "/admin/territorypartner/projectpartner/list/" + id,
+        {
+          method: "GET",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok)
+        throw new Error("Failed to fetch project partner list.");
+      const list = await response.json();
+      setProjectPartnerList(list);
+      setShowAssignProjectPartnerForm(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
     }
   };
 
@@ -406,6 +434,42 @@ const TerritoryPartner = () => {
       fetchData();
     } catch (error) {
       console.error("Error deleting :", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Assign Project Partner
+  const assignProjectPartner = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        `${URI}/admin/territorypartner/assign/projectpartner/${partnerId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ projectPartnerId }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
+      alert(`Success: ${data.message}`);
+      setPartnerId(null);
+      setShowAssignProjectPartnerForm(false);
+      fetchData();
+    } catch (error) {
+      console.error("Error updating project partner:", error);
+      alert(`Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -697,6 +761,10 @@ const TerritoryPartner = () => {
           setPartnerId(id);
           setGiveAccess(true);
           break;
+        case "assignprojectpartner":
+          setPartnerId(id);
+          fetchProjectPartnerList(id);
+          break;
         default:
           console.log("Invalid action");
       }
@@ -725,6 +793,7 @@ const TerritoryPartner = () => {
           <option value="payment">Payment</option>
           <option value="followup">Follow Up</option>
           <option value="assignlogin">Assign Login</option>
+          <option value="assignprojectpartner">Assign Project Partner</option>
           <option value="delete">Delete</option>
         </select>
       </div>
@@ -1294,6 +1363,71 @@ const TerritoryPartner = () => {
                 className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
               >
                 Give Access
+              </button>
+              <Loader></Loader>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* Assign Project Partner Form */}
+      <div
+        className={` ${
+          !showAssignProjectPartnerForm && "hidden"
+        }  z-[61] overflow-scroll scrollbar-hide flex fixed`}
+      >
+        <div className="w-[330px] h-[380px] sm:w-[600px] sm:h-[400px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[600px] lg:h-[300px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">Project Partner</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowAssignProjectPartnerForm(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={assignProjectPartner}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1">
+              <input
+                type="hidden"
+                value={partnerId || ""}
+                onChange={(e) => {
+                  setPartnerId(e.target.value);
+                }}
+              />
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  {projectPartnerList.length > 0
+                    ? "Select Project Partner"
+                    : "Project Partner Not Found"}
+                </label>
+
+                <select
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={projectPartnerId}
+                  onChange={(e) => {
+                    const selectedValue =
+                      e.target.value === "" ? null : e.target.value;
+                    setProjectPartnerId(selectedValue);
+                  }}
+                >
+                  <option value="">Select Project Partner</option>
+                  {projectPartnerList?.length > 0 &&
+                    projectPartnerList?.map((partner, index) => (
+                      <option key={index} value={partner.id}>
+                        {partner.fullname} | {partner.contact}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+            <div className="flex h-10 mt-8 md:mt-6 justify-center sm:justify-end gap-6">
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Assign Project Partner
               </button>
               <Loader></Loader>
             </div>

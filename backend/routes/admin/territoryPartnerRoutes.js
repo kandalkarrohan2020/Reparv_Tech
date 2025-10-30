@@ -13,6 +13,8 @@ import {
   updatePaymentId,
   fetchFollowUpList,
   addFollowUp,
+  getProjectPartnerList,
+  assignProjectPartner,
 } from "../../controllers/admin/territoryPartnerController.js";
 
 const router = express.Router();
@@ -41,6 +43,7 @@ const upload = multer({
 router.get("/active", getAllActive);
 router.get("/get/:id", getById);
 router.get("/:partnerlister", getAll);
+router.get("/projectpartner/list/:id", getProjectPartnerList);
 
 router.post(
   "/add",
@@ -65,6 +68,7 @@ router.put("/update/paymentid/:id", updatePaymentId);
 router.get("/followup/list/:id", fetchFollowUpList);
 router.post("/followup/add/:id", addFollowUp);
 router.put("/assignlogin/:id", assignLogin);
+router.put("/assign/projectpartner/:id", assignProjectPartner);
 router.delete("/delete/:id", del);
 
 export default router;

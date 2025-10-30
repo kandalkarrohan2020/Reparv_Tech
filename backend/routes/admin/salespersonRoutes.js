@@ -13,6 +13,8 @@ import {
   updatePaymentId,
   fetchFollowUpList,
   addFollowUp,
+  getProjectPartnerList,
+  assignProjectPartner,
 } from "../../controllers/admin/salespersonController.js";
 
 const router = express.Router();
@@ -41,6 +43,7 @@ const upload = multer({
 router.get("/active", getAllActive); // specific path first
 router.get("/get/:id", getById); // more specific dynamic route
 router.get("/:partnerlister", getAll);
+router.get("/projectpartner/list/:id", getProjectPartnerList);
 router.post(
   "/add",
   upload.fields([
@@ -64,6 +67,7 @@ router.put("/update/paymentid/:id", updatePaymentId);
 router.get("/followup/list/:id", fetchFollowUpList);
 router.post("/followup/add/:id", addFollowUp);
 router.put("/assignlogin/:id", assignLogin);
+router.put("/assign/projectpartner/:id", assignProjectPartner);
 router.delete("/delete/:id", del);
 
 export default router;

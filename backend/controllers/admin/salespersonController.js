@@ -261,7 +261,7 @@ export const add = (req, res) => {
 
       db.query(
         insertSql,
-        [ 
+        [
           projectpartnerid || null,
           fullname,
           contact,
@@ -836,6 +836,96 @@ export const assignLogin = async (req, res) => {
     );
   } catch (error) {
     console.error("Error assigning login:", error);
+    res.status(500).json({ message: "Internal server error", error });
+  }
+};
+
+// Fetch Project Partner List
+export const getProjectPartnerList = (req, res) => {
+  const Id = req.params.id;
+
+  // Step 1: Get details
+  const sql = "SELECT * FROM salespersons WHERE salespersonsid = ?";
+  db.query(sql, [Id], (err, results) => {
+    if (err) {
+      console.error("Error fetching Partner:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "Partner not found" });
+    }
+
+    const partner = results[0];
+
+    const { city } = partner;
+
+    // Step 2: Get matching project partner
+    const projectPartnerSql = `
+      SELECT * FROM projectpartner
+      WHERE city = ?
+      ORDER BY created_at DESC
+    `;
+
+    db.query(projectPartnerSql, [city], (err, projectPartnerResults) => {
+      if (err) {
+        console.error("Error fetching project Partner:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      res.json(projectPartnerResults);
+    });
+  });
+};
+
+export const assignProjectPartner = async (req, res) => {
+  try {
+    const Id = parseInt(req.params.id);
+    if (isNaN(Id)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
+
+    const { projectPartnerId } = req.body;
+    if (isNaN(projectPartnerId)) {
+      return res.status(400).json({ message: "Invalid Project Partner ID" });
+    }
+    // fetch sales partner details
+    db.query(
+      "SELECT * FROM salespersons WHERE salespersonsid = ?",
+      [Id],
+      (err, result) => {
+        if (err) {
+          console.error("Database error:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+
+        if (result.length === 0) {
+          return res.status(404).json({ message: "Sales Person not found" });
+        }
+
+        // Update salespersons details
+        db.query(
+          "UPDATE salespersons SET projectpartnerid = ? WHERE salespersonsid = ?",
+          [projectPartnerId, Id],
+          (updateErr, updateResult) => {
+            if (updateErr) {
+              console.error("Error updating salespersons:", updateErr);
+              return res
+                .status(500)
+                .json({ message: "Database error", error: updateErr });
+            }
+
+            res
+              .status(200)
+              .json({ message: "Project Partner assigned successfully" });
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error("Error assigning project partner:", error);
     res.status(500).json({ message: "Internal server error", error });
   }
 };

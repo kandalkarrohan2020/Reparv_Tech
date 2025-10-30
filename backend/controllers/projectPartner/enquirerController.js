@@ -92,6 +92,69 @@ export const getById = (req, res) => {
   });
 };
 
+export const getProperties = (req, res) => {
+  const userId = req.projectPartnerUser?.id;
+  if (!userId) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized Access, Please Login Again!" });
+  }
+
+  // Step 1: Get enquiry details from body
+  const { minbudget, maxbudget, state, city, category } = req.body;
+
+  // Basic validation
+  if (!state || !city || !category) {
+    return res.status(400).json({
+      success: false,
+      message: "State, City, and Category are required.",
+    });
+  }
+
+  // Parse budgets safely
+  const minBudgetValue = parseFloat(minbudget) || 0;
+  const maxBudgetValue = parseFloat(maxbudget) || Number.MAX_SAFE_INTEGER;
+
+  // Step 2: Get matching properties
+  const propertySql = `
+    SELECT * FROM properties
+    WHERE CAST(totalOfferPrice AS DECIMAL(15,2)) BETWEEN ? AND ?
+      AND propertyCategory = ?
+      AND state = ?
+      AND city = ?
+      AND projectpartnerid = ?
+    ORDER BY created_at DESC
+  `;
+
+  db.query(
+    propertySql,
+    [minBudgetValue, maxBudgetValue, category, state, city, userId],
+    (err, propertyResults) => {
+      if (err) {
+        console.error("Error fetching properties:", err);
+        return res.status(500).json({
+          success: false,
+          message: "Database error while fetching properties.",
+          error: err,
+        });
+      }
+
+      if (!propertyResults || propertyResults.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Properties not found based on your requirement.",
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "Properties fetched successfully.",
+        data: propertyResults,
+      });
+    }
+  );
+};
+
 export const getPropertyList = (req, res) => {
   const userId = req.projectPartnerUser.id;
   if(!userId){

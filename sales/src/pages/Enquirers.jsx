@@ -43,6 +43,7 @@ const Enquirers = () => {
   const [propertyId, setPropertyId] = useState("");
   const [enquiry, setEnquiry] = useState({});
   const [newEnquiry, setNewEnquiry] = useState({
+    propertyid: null,
     customer: "",
     contact: "",
     minbudget: "",
@@ -57,6 +58,8 @@ const Enquirers = () => {
   });
   const [enquiryStatus, setEnquiryStatus] = useState("");
   const [territoryPartnerList, setTerritoryPartnerList] = useState([]);
+  const [error, setError] = useState("");
+  const [properties, setProperties] = useState([]);
   const [propertyList, setPropertyList] = useState([]);
   //const [propertyCity, setPropertyCity] = useState("");
   const [territoryPartnerToAssign, setTerritoryPartnerToAssign] = useState({
@@ -157,7 +160,50 @@ const Enquirers = () => {
     }
   };
 
-  // **Fetch Data from API**
+  // ** Fetch Properties for Add Enquiry **
+  const fetchProperties = async () => {
+    try {
+      setError(""); // clear previous error
+      const response = await fetch(URI + "/admin/enquirers/properties", {
+        method: "POST",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          minbudget: newEnquiry.minbudget,
+          maxbudget: newEnquiry.maxbudget,
+          state: newEnquiry.state,
+          city: newEnquiry.city,
+          category: newEnquiry.category,
+        }),
+      });
+
+      // Check if API failed
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message || "Failed to fetch properties.");
+      }
+
+      const list = await response.json();
+
+      if (list.data.length === 0) {
+        setError("Properties not found based on your requirement.");
+        setProperties([]);
+      } else {
+        setProperties(list.data);
+        //console.log(list);
+      }
+    } catch (err) {
+      console.error("Error fetching properties:", err);
+      setError(
+        err.message || "Something went wrong while fetching properties."
+      );
+      setProperties([]);
+    }
+  };
+
+  // **Fetch Data from API for Update Property in the Enquiry**
   const fetchPropertyList = async (id) => {
     try {
       const response = await fetch(
@@ -245,6 +291,7 @@ const Enquirers = () => {
 
       // Clear form only after successful fetch
       setNewEnquiry({
+        propertyid: null,
         customer: "",
         contact: "",
         minbudget: "",
@@ -589,6 +636,24 @@ const Enquirers = () => {
     }
   }, [newEnquiry.state]);
 
+  useEffect(() => {
+    if (
+      newEnquiry.minbudget != "" &&
+      newEnquiry.maxbudget != "" &&
+      newEnquiry.category != "" &&
+      newEnquiry.state != "" &&
+      newEnquiry.city != ""
+    ) {
+      fetchProperties();
+    }
+  }, [
+    newEnquiry.minbudget,
+    newEnquiry.maxbudget,
+    newEnquiry.category,
+    newEnquiry.state,
+    newEnquiry.city,
+  ]);
+
   const [range, setRange] = useState([
     {
       startDate: null,
@@ -890,6 +955,7 @@ const Enquirers = () => {
               onClick={() => {
                 setShowEnquiryForm(false);
                 setNewEnquiry({
+                  propertyid: null,
                   customer: "",
                   contact: "",
                   minbudget: "",
@@ -1092,6 +1158,34 @@ const Enquirers = () => {
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              <div className="w-full col-span-2">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  {error === "" ? "Select Property" : error}
+                </label>
+
+                <select
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={newEnquiry.propertyid}
+                  onChange={(e) => {
+                    const selectedValue =
+                      e.target.value === "" ? null : e.target.value;
+                    setNewEnquiry({
+                      ...newEnquiry,
+                      propertyid: selectedValue,
+                    });
+                  }}
+                >
+                  <option value="">Select Property</option>
+                  {properties.length > 0 &&
+                    properties?.map((property, index) => (
+                      <option key={index} value={property.propertyid}>
+                        {property.propertyName} | {property.builtUpArea} sqft |{" "}
+                        <FormatPrice price={property.totalOfferPrice} />
+                      </option>
+                    ))}
+                </select>
+              </div>
             </div>
             <div className="flex flex-col gap-3  mt-[10px] text-sm text-[#00000066] font-medium ">
               <label htmlFor="message" className="ml-1">
@@ -1118,6 +1212,18 @@ const Enquirers = () => {
                 type="button"
                 onClick={() => {
                   setShowEnquiryForm(false);
+                  setNewEnquiry({
+                    propertyid: null,
+                    customer: "",
+                    contact: "",
+                    minbudget: "",
+                    maxbudget: "",
+                    category: "",
+                    state: "",
+                    city: "",
+                    location: "",
+                    message: "",
+                  });
                 }}
                 className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
               >

@@ -96,7 +96,7 @@ export const add = async (req, res) => {
   });
 };
 
-// Add Normal Enquiry Without Property ID
+// Add Normal Enquiry With optional Property ID
 export const addEnquiry = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const territoryId = req.territoryUser?.id;
@@ -105,6 +105,7 @@ export const addEnquiry = async (req, res) => {
   }
 
   const {
+    propertyid,
     customer,
     contact,
     minbudget,
@@ -147,12 +148,13 @@ export const addEnquiry = async (req, res) => {
     state,
     city,
     location,
+    propertyid,
     message,
     assign,
     source,
    
     territorystatus,
-    updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(
     insertSQL,
@@ -166,6 +168,7 @@ export const addEnquiry = async (req, res) => {
       state,
       city,
       location,
+      propertyid,
       message,
       territoryInfo,
       "Direct",
@@ -186,7 +189,7 @@ export const addEnquiry = async (req, res) => {
   );
 };
 
-// Update Normal Enquiry Without Property ID
+// Update Normal Enquiry With Optional Property ID
 export const updateEnquiry = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const enquiryId = req.params.id;
@@ -196,6 +199,7 @@ export const updateEnquiry = async (req, res) => {
   }
 
   const {
+    propertyid,
     customer,
     contact,
     minbudget,
@@ -231,6 +235,7 @@ export const updateEnquiry = async (req, res) => {
     state = ?,
     city = ?,
     location = ?,
+    propertyid = ?,
     message = ?,
     updated_at = ?
     WHERE enquirersid = ?`;
@@ -258,6 +263,7 @@ export const updateEnquiry = async (req, res) => {
           state,
           city,
           location,
+          propertyid,
           message,
           currentdate,
           enquiryId,

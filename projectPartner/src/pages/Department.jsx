@@ -71,6 +71,7 @@ const Department = () => {
       fetchData();
     } catch (err) {
       console.error("Error saving :", err);
+      alert("Error: "+err);
     } finally {
       setLoading(false);
     }

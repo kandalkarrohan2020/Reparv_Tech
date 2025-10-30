@@ -1,78 +1,13 @@
 import axios from "axios";
 import db from "../../config/dbconnect.js";
 import moment from "moment";
-// export const getAll = (req, res) => {
-//   try {
-//     // const { partnerId } = req.params;
-//     const partnerId = req.projectPartnerUser?.id;
-//     if (!partnerId) {
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "Project Partner ID is required" });
-//     }
 
-//     const sql = `
-//       SELECT
-//           enquirers.*,
-//           properties.frontView,
-//           properties.seoSlug,
-//           properties.commissionAmount,
-//           territorypartner.fullname AS territoryName,
-//           territorypartner.contact AS territoryContact
-//       FROM enquirers
-//       LEFT JOIN properties
-//           ON enquirers.propertyid = properties.propertyid
-//       LEFT JOIN territorypartner
-//           ON territorypartner.id = enquirers.territorypartnerid
-//       WHERE
-//           properties.status = 'active'
-//           AND properties.approve = 'Approved'
-//           AND enquirers.source = 'Onsite'
-//           AND enquirers.status != 'Token'
-//           AND properties.projectpartnerid = ?
-//       ORDER BY
-//           enquirers.enquirersid DESC
-//     `;
-
-//     db.query(sql, [partnerId], (err, results) => {
-//       if (err) {
-//         console.error("Database error:", err);
-//         return res.status(500).json({
-//           success: false,
-//           message: "Database query failed",
-//           error: err,
-//         });
-//       }
-
-//       if (results.length === 0) {
-//         return res.status(200).json({
-//           success: true,
-//           message: "No enquiries found for this partner",
-//           data: [],
-//         });
-//       }
-
-//       res.status(200).json({
-//         success: true,
-//         message: "Enquiries fetched successfully",
-//         totalEnquiries: results.length,
-//         data: results,
-//       });
-//     });
-//   } catch (error) {
-//     console.error("Server error:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Internal server error",
-//       error: error.message,
-//     });
-//   }
-// };
 
 export const getAll = (req, res) => {
   try {
+    
     const enquirySource = req.params.source;
-    const partnerId = req.projectPartnerUser?.id; // Project Partner Logic
+    const partnerId = req.projectPartnerUser?.id || req.params?.id; // Project Partner Logic
 
     let sql;
     let params = [];
@@ -283,6 +218,178 @@ export const assignEnquiryToTerritoryPartner = async (req, res) => {
           res.status(200).json({
             message: "Enquiry assigned successfully to Territory Partner",
           });
+        }
+      );
+    }
+  );
+};
+
+
+export const addEnquiry = async (req, res) => {
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const projectpartnerid = req.body.projectpartnerid;
+  if (!projectpartnerid) {
+    return res.status(400).json({ message: "Invalid Project PArtner Id" });
+  }
+
+  const {
+    propertyid, // optional now
+    customer,
+    contact,
+    minbudget,
+    maxbudget,
+    category,
+    state,
+    city,
+    location,
+    message,
+  } = req.body;
+
+  // Validate required fields (exclude propertyid)
+  if (
+    !customer ||
+    !contact ||
+    !minbudget ||
+    !maxbudget ||
+    !category ||
+    !state ||
+    !city ||
+    !location ||
+    !message
+   
+  ) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  
+  const insertSQL = `INSERT INTO enquirers (
+  projectpartnerid,
+    propertyid,
+    customer,
+    contact,
+    minbudget,
+    maxbudget,
+    category,
+    state,
+    city,
+    location,
+    message,
+    
+    source,
+    updated_at, created_at
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  db.query(
+    insertSQL,
+    [
+      projectpartnerid,
+      propertyid,
+      customer,
+      contact,
+      minbudget,
+      maxbudget,
+      category,
+      state,
+      city,
+      location,
+      message,
+      
+      "Direct",
+      currentdate,
+      currentdate,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+      res.status(201).json({
+        message: "Enquiry added successfully",
+        Id: result.insertId,
+      });
+    }
+  );
+};
+
+export const getAllCreatedEnquiry = (req, res) => {
+  const projectpartnerid = req.params.id;
+if (!projectpartnerid) {
+    return res
+      .status(400)
+      .json({ message: "Partner ID is required" });
+  }
+
+   const sql = `
+    SELECT enquirers.*, 
+           properties.frontView, 
+           properties.seoSlug, 
+           properties.commissionAmount,
+           territorypartner.fullname AS territoryName,
+           territorypartner.contact AS territoryContact
+    FROM enquirers
+    LEFT JOIN properties 
+      ON enquirers.propertyid = properties.propertyid
+    LEFT JOIN territorypartner 
+      ON territorypartner.id = enquirers.territorypartnerid
+    WHERE enquirers.projectpartnerid = ?
+    ORDER BY enquirers.enquirersid DESC`;
+
+
+  db.query(sql, [projectpartnerid], (err, results) => {
+    if (err) {
+      console.error("Database Query Error:", err);
+      return res
+        .status(500)
+        .json({ message: "Database query error", error: err });
+    }
+
+    const formatted = results.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json( {data: formatted});
+  });
+};
+
+//**Change status */
+export const status = (req, res) => {
+  const Id = parseInt(req.params.id);
+ 
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid enquirers  ID" });
+  }
+
+  db.query(
+    "SELECT * FROM enquirers WHERE enquirersid= ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      let status = "";
+      if (result[0].digitalbroker === "Active") {
+        status = "Inactive";
+      } else {
+        status = "Active";
+      }
+      console.log(status);
+      db.query(
+        "UPDATE enquirers SET digitalbroker = ? WHERE  enquirersid= ? ",
+        [status,Id],
+        (err, result) => {
+          if (err) {
+            console.error("Error deleting :", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+          res
+            .status(200)
+            .json({ message:status==='Active'? "Enquiry Assign successfully":"Change Assign Status  successfully" });
         }
       );
     }

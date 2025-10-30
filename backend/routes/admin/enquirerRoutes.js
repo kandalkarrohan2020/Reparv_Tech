@@ -12,6 +12,7 @@ import {
   followUp,
   token,
   getRemarkList,
+  getProperties,
   getPropertyList,
   updateEnquirerProperty,
 } from "../../controllers/admin/enquirerController.js";
@@ -43,6 +44,7 @@ const upload = multer({
 router.get("/get/:source", getAll);
 router.get("/:id", getById);
 router.get("/remark/list/:id", getRemarkList);
+router.post("/properties", getProperties);
 router.get("/property/list/:id", getPropertyList);
 router.put("/status/:id", status);
 router.put("/assign/:id", assignEnquiry);

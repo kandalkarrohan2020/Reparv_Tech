@@ -195,7 +195,7 @@ import projectSubscription from "./routes/projectPartnerAppRoute/subscription.js
 import projectEnquiriesRoute from "./routes/projectPartnerAppRoute/enquiryRoute.js";
 import projectpartnerSalesAndTerritoryRoute from "./routes/projectPartnerAppRoute/partnerRoute.js";
 import projectPartnerEmployee from "./routes/projectPartnerAppRoute/employeeRoute.js";
-
+import projectPartnerTickets from './routes/projectPartnerAppRoute/ticketRouter.js'
 //Customer App
 import customerEmi from "./routes/customerAppRoute/EmiRoute.js";
 import customerSignUp from "./routes/customerAppRoute/userRoute.js";
@@ -360,6 +360,11 @@ export const verifyToken = (req, res, next) => {
     "/territoryapp/enquiry/add/",
     "/projectpartner/employee/",
     "/salesapp/schedule-notes",
+       "/projectpartner/enquiries/add",
+     "/projectpartner/enquiries/enquiry/",
+    "/projectpartner/enquiries/get" ,
+   "/projectpartner/enquiries/enquiry/status/",
+   "/projectpartner/ticket"
   ];
 
   // Skip verification for public routes
@@ -614,6 +619,7 @@ app.use("/projectpartner/subscription", projectSubscription);
 app.use("/projectpartner/enquiries", projectEnquiriesRoute);
 app.use("/projectpartner/partner", projectpartnerSalesAndTerritoryRoute);
 app.use("/projectpartner/employee", projectPartnerEmployee);
+app.use("/projectpartner/ticket",projectPartnerTickets)
 //Customer app
 app.use("/customerapp", customerEmi);
 app.use("/customerapp/user", customerSignUp);

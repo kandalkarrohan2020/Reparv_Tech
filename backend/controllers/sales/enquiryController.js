@@ -104,6 +104,7 @@ export const addEnquiry = async (req, res) => {
   }
 
   const {
+    propertyid,
     customer,
     contact,
     minbudget,
@@ -146,11 +147,12 @@ export const addEnquiry = async (req, res) => {
     state,
     city,
     location,
+    propertyid,
     message,
     assign,
     source,
    
-    updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(
     insertSQL,
@@ -164,6 +166,7 @@ export const addEnquiry = async (req, res) => {
       state,
       city,
       location,
+      propertyid,
       message,
       salesInfo,
       "Direct",
@@ -193,6 +196,7 @@ export const updateEnquiry = async (req, res) => {
   }
 
   const {
+    propertyid,
     customer,
     contact,
     minbudget,
@@ -228,6 +232,7 @@ export const updateEnquiry = async (req, res) => {
     state = ?,
     city = ?,
     location = ?,
+    propertyid = ?,
     message = ?,
     updated_at = ?
     WHERE enquirersid = ?`;
@@ -255,6 +260,7 @@ export const updateEnquiry = async (req, res) => {
           state,
           city,
           location,
+          propertyid,
           message,
           currentdate,
           enquiryId,

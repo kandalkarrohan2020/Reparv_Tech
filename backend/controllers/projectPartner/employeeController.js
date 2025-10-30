@@ -13,7 +13,14 @@ export const getAll = (req, res) => {
       .json({ message: "Unauthorized Access, Please Login Again!" });
   }
   const sql =
-    "SELECT employees.*,departments.department,roles.role FROM employees INNER JOIN departments ON employees.departmentid=departments.departmentid INNER JOIN roles ON employees.roleid=roles.roleid WHERE employees.projectpartnerid = ? ORDER BY employees.id DESC";
+    `SELECT employees.*,
+            departments.department,
+            roles.role 
+            FROM employees 
+            INNER JOIN departments ON employees.departmentid=departments.departmentid 
+            INNER JOIN roles ON employees.roleid=roles.roleid 
+            WHERE employees.projectpartnerid = ? 
+            ORDER BY employees.id DESC`;
   db.query(sql, [userId], (err, result) => {
     if (err) {
       console.error("Error fetching :", err);

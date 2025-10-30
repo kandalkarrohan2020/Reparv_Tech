@@ -51,7 +51,7 @@ export const addDepartment = (req, res) => {
     return res.status(400).json({ message: "Department name is required" });
   }
 
-  db.query("SELECT * FROM departments WHERE department = ?", [department], (err, result) => {
+  db.query("SELECT * FROM departments WHERE department = ? AND projectpartnerid = ? ", [department, userId], (err, result) => {
     if (err) return res.status(500).json({ message: "Database error", error: err });
 
     if (result.length === 0) {

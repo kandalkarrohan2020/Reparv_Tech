@@ -88,50 +88,59 @@ export const getById = (req, res) => {
   });
 };
 
-export const getPropertyListOld = (req, res) => {
-  const enquiryId = req.params.id;
+export const getProperties = (req, res) => {
+  // Step 1: Get enquiry details from body
+  const { minbudget, maxbudget, state, city, category } = req.body;
 
-  // Step 1: Get Enquiry details
-  const enquirySql = "SELECT * FROM enquirers WHERE enquirersid = ?";
-  db.query(enquirySql, [enquiryId], (err, enquiryResults) => {
-    if (err) {
-      console.error("Error fetching enquiry:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
+  // Basic validation
+  if (!state || !city || !category) {
+    return res.status(400).json({
+      success: false,
+      message: "State, City, and Category are required.",
+    });
+  }
 
-    if (enquiryResults.length === 0) {
-      return res.status(404).json({ message: "Enquiry not found" });
-    }
+  // Parse budgets safely
+  const minBudgetValue = parseFloat(minbudget) || 0;
+  const maxBudgetValue = parseFloat(maxbudget) || Number.MAX_SAFE_INTEGER;
 
-    const enquiry = enquiryResults[0];
+  // Step 2: Get matching properties
+  const propertySql = `
+    SELECT * FROM properties
+    WHERE CAST(totalOfferPrice AS DECIMAL(15,2)) BETWEEN ? AND ?
+      AND propertyCategory = ?
+      AND state = ?
+      AND city = ?
+    ORDER BY created_at DESC
+  `;
 
-    const { minbudget, maxbudget, category, state, city } = enquiry;
-
-    // Step 2: Get matching properties using filters from enquiry
-    const propertySql = `
-      SELECT * FROM properties
-      WHERE totalOfferPrice BETWEEN ? AND ?
-        AND propertyCategory = ?
-        AND state = ?
-        AND city = ?
-      ORDER BY created_at DESC
-    `;
-
-    db.query(
-      propertySql,
-      [minbudget, maxbudget, category, state, city],
-      (err, propertyResults) => {
-        if (err) {
-          console.error("Error fetching properties:", err);
-          return res
-            .status(500)
-            .json({ message: "Database error", error: err });
-        }
-
-        res.json(propertyResults);
+  db.query(
+    propertySql,
+    [minBudgetValue, maxBudgetValue, category, state, city],
+    (err, propertyResults) => {
+      if (err) {
+        console.error("Error fetching properties:", err);
+        return res.status(500).json({
+          success: false,
+          message: "Database error while fetching properties.",
+          error: err,
+        });
       }
-    );
-  });
+
+      if (!propertyResults || propertyResults.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Properties not found based on your requirement.",
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "Properties fetched successfully.",
+        data: propertyResults,
+      });
+    }
+  );
 };
 
 export const getPropertyList = (req, res) => {

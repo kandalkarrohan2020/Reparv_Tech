@@ -64,6 +64,7 @@ const Role = () => {
       fetchData();
     } catch (err) {
       console.error("Error saving :", err);
+      alert("Error: "+err);
     } finally {
       setLoading(false);
     }

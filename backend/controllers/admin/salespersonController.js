@@ -38,8 +38,13 @@ export const getAll = (req, res) => {
     `;
   } else if (partnerLister === "Project Partner") {
     sql = `
-      SELECT salespersons.*, pf.followUp, pf.created_at AS followUpDate
-      FROM salespersons
+      SELECT 
+        s.*, 
+        pf.followUp, 
+        pf.created_at AS followUpDate, 
+        pp.fullname AS projectPartnerName, 
+        pp.contact AS projectPartnerContact
+      FROM salespersons s
       LEFT JOIN (
         SELECT p1.*
         FROM partnerFollowup p1
@@ -48,12 +53,16 @@ export const getAll = (req, res) => {
           FROM partnerFollowup
           WHERE role = 'Sales Person'
           GROUP BY partnerId
-        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+        ) p2 
+        ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
         WHERE p1.role = 'Sales Person'
-      ) pf ON salespersons.salespersonsid = pf.partnerId
-      WHERE salespersons.projectpartnerid IS NOT NULL 
-        AND salespersons.projectpartnerid != ''
-      ORDER BY salespersons.created_at DESC;
+      ) pf 
+      ON s.salespersonsid = pf.partnerId
+      LEFT JOIN projectpartner pp 
+      ON s.projectpartnerid = pp.id
+      WHERE s.projectpartnerid IS NOT NULL 
+        AND s.projectpartnerid != ''
+      ORDER BY s.created_at DESC;
     `;
   } else if (partnerLister === "Reparv") {
     sql = `

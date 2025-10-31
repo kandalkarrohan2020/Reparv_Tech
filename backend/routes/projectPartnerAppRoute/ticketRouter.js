@@ -3,7 +3,7 @@ import {getAll, getAdmins, getDepartments, getEmployees, getById, changeStatus, 
 
 const router = express.Router();
 
-router.get("/get/:generator", getAll);
+router.get("/get/:generator/:id", getAll);
 router.get("/admins", getAdmins);
 router.get("/departments", getDepartments);
 router.get("/employees/:id", getEmployees);

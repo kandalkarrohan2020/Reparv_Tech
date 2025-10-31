@@ -102,6 +102,60 @@ export const getAll = (req, res) => {
   }
 };
 
+export const getPartnersEnquiry = (req, res) => {
+  
+
+  const Id = req.params.id;
+  if (!Id) {
+    console.log("Invalid User Id:", Id);
+    return res.status(400).json({ message: "Invalid User Id" });
+  }
+  const source=req.params.source;
+
+ const sql = `
+  SELECT 
+    enquirers.*, 
+    properties.frontView, 
+    properties.seoSlug, 
+    properties.commissionAmount,
+    territorypartner.fullname AS territoryName,
+    territorypartner.contact AS territoryContact,
+    salespersons.projectpartnerid AS salespersonProjectPartnerId,
+    territorypartner.projectpartnerid AS territoryProjectPartnerId
+  FROM enquirers 
+  LEFT JOIN properties 
+    ON enquirers.propertyid = properties.propertyid
+  LEFT JOIN territorypartner 
+    ON territorypartner.id = enquirers.territorypartnerid 
+  LEFT JOIN salespersons
+    ON salespersons.salespersonsid = enquirers.salespersonid 
+  WHERE 
+   enquirers.source = ? AND 
+     (
+      salespersons.projectpartnerid = ? 
+      OR territorypartner.projectpartnerid = ?
+    )
+  ORDER BY enquirers.enquirersid DESC
+`;
+
+  db.query(sql, [source,Id,Id], (err, results) => {
+    if (err) {
+      console.error("Database Query Error:", err);
+      return res.status(500).json({
+        message: "Database query error",
+        error: err,
+      });
+    }
+
+    const formatted = results.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json(formatted);
+  });
+};
 export const assignEnquiry = async (req, res) => {
   const { salespersonid, salesperson, salespersoncontact } = req.body;
   const Id = parseInt(req.params.id);

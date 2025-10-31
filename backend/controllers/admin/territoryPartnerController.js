@@ -36,24 +36,33 @@ export const getAll = (req, res) => {
       ORDER BY territorypartner.created_at DESC;
     `;
   } else if (partnerLister === "Project Partner") {
-    sql = `
-      SELECT territorypartner.*, pf.followUp, pf.created_at AS followUpDate
-      FROM territorypartner
-      LEFT JOIN (
-        SELECT p1.*
-        FROM partnerFollowup p1
-        INNER JOIN (
-          SELECT partnerId, MAX(created_at) AS latest
-          FROM partnerFollowup
-          WHERE role = 'Territory Partner'
-          GROUP BY partnerId
-        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-        WHERE p1.role = 'Territory Partner'
-      ) pf ON territorypartner.id = pf.partnerId
-      WHERE territorypartner.projectpartnerid IS NOT NULL 
-        AND territorypartner.projectpartnerid != ''
-      ORDER BY territorypartner.created_at DESC;
-    `;
+     sql = `
+       SELECT 
+         tp.*, 
+         pf.followUp, 
+         pf.created_at AS followUpDate,
+         pp.fullname AS projectPartnerName,
+         pp.contact AS projectPartnerContact
+       FROM territorypartner tp
+       LEFT JOIN (
+         SELECT p1.*
+         FROM partnerFollowup p1
+         INNER JOIN (
+           SELECT partnerId, MAX(created_at) AS latest
+           FROM partnerFollowup
+           WHERE role = 'Territory Partner'
+           GROUP BY partnerId
+         ) p2 
+         ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
+         WHERE p1.role = 'Territory Partner'
+       ) pf 
+       ON tp.id = pf.partnerId
+       LEFT JOIN projectpartner pp 
+       ON tp.projectpartnerid = pp.id
+       WHERE tp.projectpartnerid IS NOT NULL 
+         AND tp.projectpartnerid != ''
+       ORDER BY tp.created_at DESC;
+     `;
   } else if (partnerLister === "Reparv") {
     sql = `
       SELECT territorypartner.*, pf.followUp, pf.created_at AS followUpDate

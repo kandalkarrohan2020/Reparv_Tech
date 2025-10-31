@@ -663,6 +663,17 @@ const TerritoryPartner = () => {
     },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
+      name: "Project Partner",
+      cell: (row) => (
+        <div className="w-full flex flex-col gap-[2px]">
+          <p>{row.projectPartnerName}</p>
+          <p>{row.projectPartnerContact}</p>
+        </div>
+      ),
+      omit: false,
+      minWidth: "200px",
+    },
+    {
       name: "Full Name",
       cell: (row) => (
         <div className={`flex gap-1 items-center justify-center`}>
@@ -730,6 +741,15 @@ const TerritoryPartner = () => {
       width: "120px",
     },
   ];
+
+  const hasProjectPartner = datas.some((row) => !!row.projectPartnerName);
+
+  const finalColumns = columns.map((col) => {
+    if (col.name === "Project Partner")
+      return { ...col, omit: !hasProjectPartner };
+    return col;
+  });
+
 
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
@@ -860,7 +880,7 @@ const TerritoryPartner = () => {
           <DataTable
             className="scrollbar-hide"
             customStyles={customStyles}
-            columns={columns}
+            columns={finalColumns}
             data={filteredData}
             pagination
             paginationPerPage={15}

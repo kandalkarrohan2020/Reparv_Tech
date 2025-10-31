@@ -2,43 +2,64 @@ import db from "../../config/dbconnect.js";
 import moment from "moment";
 
 export const getAll = (req, res) => {
-//   const adharId = req.adminUser?.email;
-//   if (!adharId) {
-//     return res
-//       .status(401)
-//       .json({ message: "Unauthorized! Please login again" });
-//   }
-
   const ticketGenerator = req.params.generator;
+  const projectpartnerid = req.params.id;
+
   if (!ticketGenerator) {
     return res.status(401).json({ message: "Select Generator Not Selected" });
   }
 
-  let sql;
- if (ticketGenerator === "Sales Person") {
-    sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
-           employees.name AS employee_name, employees.uid , 
-           salespersons.fullname AS ticketadder_name, salespersons.contact AS ticketadder_contact
-           FROM tickets 
-           INNER JOIN salespersons ON salespersons.adharno = tickets.ticketadder
-           LEFT JOIN users ON tickets.adminid = users.id 
-           LEFT JOIN departments ON tickets.departmentid = departments.departmentid
-           LEFT JOIN employees ON tickets.employeeid = employees.id
-           ORDER BY created_at DESC`;
-  } else(ticketGenerator === "Territory Partner") 
-  {
-    sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
-           employees.name AS employee_name, employees.uid ,  
-           territorypartner.fullname AS ticketadder_name, territorypartner.contact AS ticketadder_contact
-           FROM tickets 
-           INNER JOIN territorypartner ON territorypartner.adharno = tickets.ticketadder
-           LEFT JOIN users ON tickets.adminid = users.id 
-           LEFT JOIN departments ON tickets.departmentid = departments.departmentid
-           LEFT JOIN employees ON tickets.employeeid = employees.id
-           ORDER BY created_at DESC`;
-  } 
+  console.log(ticketGenerator, '', projectpartnerid);
 
-  db.query(sql, (err, result) => {
+  let sql;
+  let params = [projectpartnerid];
+
+  if (ticketGenerator === "Sales Partner") {
+    sql = `
+      SELECT 
+        tickets.*, 
+        departments.department,
+        employees.name AS employee_name, 
+        employees.uid,
+        salespersons.fullname AS ticketadder_name, 
+        salespersons.contact AS ticketadder_contact
+      FROM tickets 
+      INNER JOIN salespersons 
+        ON salespersons.adharno = tickets.ticketadder
+      LEFT JOIN departments 
+        ON tickets.departmentid = departments.departmentid
+      LEFT JOIN employees 
+        ON tickets.employeeid = employees.id
+      WHERE salespersons.projectpartnerid = ?
+      ORDER BY tickets.created_at DESC
+    `;
+  } else if (ticketGenerator === "Territory Partner") {
+    sql = `
+      SELECT 
+        tickets.*, 
+        users.name AS admin_name, 
+        departments.department,
+        employees.name AS employee_name, 
+        employees.uid,
+        territorypartner.fullname AS ticketadder_name, 
+        territorypartner.contact AS ticketadder_contact
+      FROM tickets 
+      INNER JOIN territorypartner 
+        ON territorypartner.adharno = tickets.ticketadder
+      LEFT JOIN users 
+        ON tickets.adminid = users.id 
+      LEFT JOIN departments 
+        ON tickets.departmentid = departments.departmentid
+      LEFT JOIN employees 
+        ON tickets.employeeid = employees.id
+      WHERE territorypartner.projectpartnerid = ?
+      ORDER BY tickets.created_at DESC
+    `;
+  } else {
+    return res.status(400).json({ message: "Invalid Generator Type" });
+  }
+
+  db.query(sql, params, (err, result) => {
     if (err) {
       console.error("Error fetching tickets:", err);
       return res.status(500).json({ message: "Database error", error: err });
@@ -53,6 +74,7 @@ export const getAll = (req, res) => {
     res.json(formatted);
   });
 };
+
 
 // **Fetch Single by ID**
 export const getById = (req, res) => {

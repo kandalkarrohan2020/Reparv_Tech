@@ -364,7 +364,8 @@ export const verifyToken = (req, res, next) => {
      "/projectpartner/enquiries/enquiry/",
     "/projectpartner/enquiries/get" ,
    "/projectpartner/enquiries/enquiry/status/",
-   "/projectpartner/ticket"
+   "/projectpartner/ticket",
+   "/projectpartner/enquiries/get/partnersenquiry"
   ];
 
   // Skip verification for public routes
@@ -620,6 +621,7 @@ app.use("/projectpartner/enquiries", projectEnquiriesRoute);
 app.use("/projectpartner/partner", projectpartnerSalesAndTerritoryRoute);
 app.use("/projectpartner/employee", projectPartnerEmployee);
 app.use("/projectpartner/ticket",projectPartnerTickets)
+
 //Customer app
 app.use("/customerapp", customerEmi);
 app.use("/customerapp/user", customerSignUp);

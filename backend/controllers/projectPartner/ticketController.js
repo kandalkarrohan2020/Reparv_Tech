@@ -15,7 +15,7 @@ export const getAll = (req, res) => {
   }
 
   let sql;
-  let queryParam = null;
+  let params = [];
 
   // Case 1: Self — tickets created by this Project Partner
   if (ticketGenerator === "Self") {
@@ -36,7 +36,7 @@ export const getAll = (req, res) => {
       WHERE tickets.ticketadder = ?
       ORDER BY tickets.created_at DESC
     `;
-    queryParam = adharId;
+    params = [adharId];
 
   // Case 2: Sales Person — tickets linked to this Project Partner
   } else if (ticketGenerator === "Sales Person") {
@@ -59,7 +59,7 @@ export const getAll = (req, res) => {
       WHERE tickets.projectpartnerid = ?
       ORDER BY tickets.created_at DESC
     `;
-    queryParam = Id;
+    params = [Id];
 
   // Case 3: Territory Partner — tickets under this Project Partner
   } else if (ticketGenerator === "Territory Partner") {
@@ -82,9 +82,9 @@ export const getAll = (req, res) => {
       WHERE tickets.projectpartnerid = ?
       ORDER BY tickets.created_at DESC
     `;
-    queryParam = Id;
+    params = [Id];
 
-  // Default: all tickets related to this Project Partner
+  // Default: All tickets related to this Project Partner or created by them
   } else {
     sql = `
       SELECT 
@@ -100,14 +100,14 @@ export const getAll = (req, res) => {
       LEFT JOIN departments ON tickets.departmentid = departments.departmentid
       LEFT JOIN employees ON tickets.employeeid = employees.id
       LEFT JOIN projectpartner ON tickets.projectpartnerid = projectpartner.id
-      WHERE tickets.projectpartnerid = ? OR tickets.ticketAdder = ?
+      WHERE tickets.projectpartnerid = ? OR tickets.ticketadder = ?
       ORDER BY tickets.created_at DESC
     `;
-    queryParam = Id;
+    params = [Id, adharId];
   }
 
-  // Query Execution
-  db.query(sql, [queryParam, adharId], (err, result) => {
+  // Execute Query
+  db.query(sql, params, (err, result) => {
     if (err) {
       console.error("Error fetching tickets:", err);
       return res.status(500).json({ message: "Database error", error: err });

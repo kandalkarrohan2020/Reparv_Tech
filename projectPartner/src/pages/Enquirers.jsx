@@ -309,7 +309,7 @@ const Enquirers = () => {
   const fetchSalesPersonList = async () => {
     try {
       const response = await fetch(
-        URI + "/project-partner/salespersons/active",
+        URI + "/project-partner/sales/active",
         {
           method: "GET",
           credentials: "include", //  Ensures cookies are sent
@@ -321,6 +321,7 @@ const Enquirers = () => {
       if (!response.ok) throw new Error("Failed to fetch Sales Persons.");
       const data = await response.json();
       setSalesPersonList(data);
+      console.log(data);
     } catch (err) {
       console.error("Error fetching :", err);
     }
@@ -713,7 +714,7 @@ const Enquirers = () => {
     fetchData();
     fetchStates();
     fetchSalesPersonList();
-  }, []);
+  }, [showAssignSalesForm]);
 
   useEffect(() => {
     if (newEnquiry.state != "" || salesPersonAssign.state != "") {

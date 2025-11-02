@@ -10,8 +10,7 @@ import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import Loader from "../components/Loader";
-import { RiArrowDropDownLine } from "react-icons/ri";
-import DownloadCSV from "../components/DownloadCSV";
+import TicketingInfo from "../components/ticketing/TicketingInfo";
 
 const Ticketing = () => {
   const {
@@ -21,8 +20,6 @@ const Ticketing = () => {
     setShowTicket,
     action,
     setLoading,
-    showResponseForm,
-    setShowResponseForm,
     URI,
   } = useAuth();
 
@@ -40,22 +37,12 @@ const Ticketing = () => {
     details: "",
   });
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedGenerator, setSelectedGenerator] = useState(
-    "Select Ticket Generator"
-  );
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [ticketResponse, setTicketResponse] = useState("");
-  const [ticketId, setTicketId] = useState("");
 
   useEffect(() => {
     fetchData();
     fetchAdminData();
     fetchDepartmentData();
   }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [selectedGenerator]);
 
   useEffect(() => {
     if (newTicket.adminid !== "") {
@@ -70,6 +57,7 @@ const Ticketing = () => {
   useEffect(() => {
     if (newTicket.departmentid) {
       fetchEmployeeData(newTicket.departmentid);
+      console.log(newTicket.departmentid);
     }
   }, [newTicket.departmentid]);
 
@@ -77,20 +65,18 @@ const Ticketing = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `${URI}/project-partner/tickets/get/${selectedGenerator}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(URI + "/project-partner/tickets", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) throw new Error("Failed to fetch tickets.");
 
       const data = await response.json();
+      console.log(data);
       setData(data);
     } catch (err) {
       console.error("Error fetching:", err);
@@ -120,13 +106,16 @@ const Ticketing = () => {
   //Fetch department data
   const fetchDepartmentData = async () => {
     try {
-      const response = await fetch(URI + "/project-partner/tickets/departments", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + "/project-partner/tickets/departments",
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch departments.");
       const data = await response.json();
       setDepartmentData(data);
@@ -138,13 +127,16 @@ const Ticketing = () => {
   //Fetch department data
   const fetchEmployeeData = async (id) => {
     try {
-      const response = await fetch(URI + "/project-partner/tickets/employees/" + id, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + "/project-partner/tickets/employees/" + id,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch departments.");
       const data = await response.json();
       setEmployeeData(data);
@@ -159,12 +151,15 @@ const Ticketing = () => {
     const endpoint = newTicket.ticketid ? `edit/${newTicket.ticketid}` : "add";
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/project-partner/tickets/${endpoint}`, {
-        method: newTicket.ticketid ? "PUT" : "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newTicket),
-      });
+      const response = await fetch(
+        `${URI}/project-partner/tickets/${endpoint}`,
+        {
+          method: newTicket.ticketid ? "PUT" : "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newTicket),
+        }
+      );
 
       if (response.status === 409) {
         alert("Ticket already exists!");
@@ -197,40 +192,12 @@ const Ticketing = () => {
     }
   };
 
-  const changeStatus = async (id, label) => {
-    try {
-      const response = await fetch(`${URI}/project-partner/tickets/status/change/${id}`, {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: label }),
-      });
-
-      if (!response.ok) throw new Error("Failed to Update Status.");
-
-      const data = await response.json(); // Fetch response data
-
-      if (data.updated && data.status === label) {
-        // Check if update happened
-        alert("Status Changed Successfully to " + label);
-      } else {
-        console.log("No status change detected.");
-      }
-    } catch (err) {
-      console.error("Error updating status:", err);
-    } finally {
-      fetchData();
-    }
-  };
-
   //fetch data on form
   const edit = async (id) => {
     try {
       const response = await fetch(`${URI}/project-partner/tickets/${id}`, {
         method: "GET",
-        credentials: "include", // Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -238,7 +205,6 @@ const Ticketing = () => {
       if (!response.ok) throw new Error("Failed to fetch ticket.");
       const data = await response.json();
       setNewTicketData(data);
-      setTicketResponse(data.response ? data.response : "");
       setShowTicketForm(true);
     } catch (err) {
       console.error("Error fetching :", err);
@@ -264,55 +230,31 @@ const Ticketing = () => {
     }
   };
 
-  //fetch data on form
-  const fetchResponse = async (id) => {
-    try {
-      const response = await fetch(`${URI}/project-partner/tickets/${id}`, {
-        method: "GET",
-        credentials: "include", //  Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch ticket.");
-      const data = await response.json();
-      setNewTicketData(data);
-      setTicketResponse(data.response ? data.response : "");
-      setSelectedStatus(data.status);
-    } catch (err) {
-      console.error("Error fetching :", err);
-    }
-  };
+  // Re-Open Ticket
+  const reOpen = async (id) => {
+    if (!window.confirm("Are You Sure to Re-Open This Ticket?")) return;
 
-  // Add Response
-
-  const addResponse = async (e) => {
-    e.preventDefault();
     try {
-      setLoading(true);
       const response = await fetch(
-        `${URI}/project-partner/tickets/response/add/${ticketId}`,
+        URI + `/project-partner/tickets/re-open/ticket/${id}`,
         {
           method: "PUT",
-          credentials: "include",
+          credentials: "include", // Ensures cookies are sent
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ ticketResponse, selectedStatus }),
         }
       );
-
-      if (!response.ok) throw new Error("Failed to update ticket response.");
-      await fetchData();
-      setSelectedStatus("");
-      setTicketResponse("");
-      alert("Response added successfully");
-      setShowResponseForm(false);
-    } catch (err) {
-      console.error("Error updating ticket response:", err);
-      alert("Failed to add response");
-    } finally {
-      setLoading(false);
+      const data = await response.json();
+      //console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      fetchData();
+    } catch (error) {
+      console.error("Error Re-Opening Ticket :", error);
     }
   };
 
@@ -321,10 +263,13 @@ const Ticketing = () => {
     if (!window.confirm("Are you sure you want to delete this ticket?")) return;
 
     try {
-      const response = await fetch(URI + `/project-partner/tickets/delete/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const response = await fetch(
+        URI + `/project-partner/tickets/delete/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
       if (response.ok) {
@@ -415,13 +360,13 @@ const Ticketing = () => {
       name: "SN",
       cell: (row, index) => (
         <span
-          className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md ${
+          className={`px-2 py-1 rounded-md ${
             row.status === "Resolved"
               ? "bg-[#EAFBF1] text-[#0BB501]"
               : row.status === "Open"
               ? "bg-[#E9F2FF] text-[#0068FF]"
               : row.status === "In Progress"
-              ? "bg-[#fff8e3] text-[#ffbc21]"
+              ? "bg-[#FFF8DD] text-[#FFCA00]"
               : row.status === "Pending"
               ? "bg-[#FFEAEA] text-[#ff2323]"
               : "text-[#000000]"
@@ -446,7 +391,7 @@ const Ticketing = () => {
               : row.status === "Open"
               ? "bg-[#E9F2FF] text-[#0068FF]"
               : row.status === "In Progress"
-              ? "bg-[#fff8e3] text-[#ffbc21]"
+              ? "bg-[#FFF8DD] text-[#FFCA00]"
               : row.status === "Pending"
               ? "bg-[#FFEAEA] text-[#ff2323]"
               : "text-[#000000]"
@@ -458,36 +403,14 @@ const Ticketing = () => {
       sortable: false,
       width: "120px",
     },
-    {
-      name: "Status",
-      cell: (row) => <StatusDropdown row={row} />,
-      width: "130px",
-    },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
 
     { name: "Issue", selector: (row) => row.issue, width: "160px" },
-    {
-      name: "Ticket Generator",
-      cell: (row) => (
-        <div className="w-full flex flex-col gap-[2px]">
-          <p>{row.ticketadder_role}</p>
-          <p>{row.ticketadder_name}</p>
-          <p>{row.ticketadder_contact}</p>
-        </div>
-      ),
-      omit: false,
-      width: "200px",
-    },
     {
       name: "Description",
       selector: (row) => row.details,
       minWidth: "300px",
       maxWidth: "350px",
-    },
-    {
-      name: "Ticket Response",
-      selector: (row) => row.response || "--NON--",
-      width: "180px",
     },
     {
       name: "Admin",
@@ -503,12 +426,28 @@ const Ticketing = () => {
     {
       name: "Employee",
       selector: (row) => row.employee_name || "--NON--",
-      minWidth: "150px",
+      width: "180px",
     },
     {
-      name: "Project Partner",
-      selector: (row) => row.project_partner || "--NON--",
-      minWidth: "150px",
+      name: "Status",
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 rounded-md ${
+            row.status === "Resolved"
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : row.status === "Open"
+              ? "bg-[#E9F2FF] text-[#0068FF]"
+              : row.status === "In Progress"
+              ? "bg-[#FFF8DD] text-[#FFCA00]"
+              : row.status === "Pending"
+              ? "bg-[#FFEAEA] text-[#ff2323]"
+              : "text-[#000000]"
+          }`}
+        >
+          {row.status}
+        </span>
+      ),
+      width: "130px",
     },
     {
       name: "Action",
@@ -518,11 +457,8 @@ const Ticketing = () => {
   ];
 
   const hasAdmin = data.some((row) => !!row.admin_name);
-  const hasTicketGenerator = data.some((row) => !!row.ticketadder_name);
 
   const finalColumns = baseColumns.map((col) => {
-    if (col.name === "Ticket Generator")
-      return { ...col, omit: !hasTicketGenerator };
     if (col.name === "Admin") return { ...col, omit: !hasAdmin };
     return col;
   });
@@ -538,10 +474,8 @@ const Ticketing = () => {
         case "update":
           edit(id);
           break;
-        case "addResponse":
-          setTicketId(id);
-          fetchResponse(id);
-          setShowResponseForm(true);
+        case "reopen":
+          reOpen(id);
           break;
         case "delete":
           del(id);
@@ -570,67 +504,8 @@ const Ticketing = () => {
           </option>
           <option value="view">View</option>
           <option value="update">Update</option>
-          <option value="addResponse">Add Response</option>
+          <option value="reopen">Re-Open</option>
           <option value="delete">Delete</option>
-        </select>
-      </div>
-    );
-  };
-
-  const StatusDropdown = ({ row }) => {
-    const [selectedAction, setSelectedAction] = useState("");
-
-    const handleActionSelect = (action, id) => {
-      switch (action) {
-        case "Open":
-          changeStatus(id, "Open");
-          break;
-        case "Resolved":
-          changeStatus(id, "Resolved");
-          break;
-        case "Pending":
-          changeStatus(id, "Pending");
-          break;
-        case "In Progress":
-          changeStatus(id, "In Progress");
-          break;
-        default:
-          console.log("Invalid action");
-      }
-    };
-
-    return (
-      <div className="relative inline-block ">
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.status === "Resolved"
-              ? "bg-[#EAFBF1] text-[#0BB501]"
-              : row.status === "Open"
-              ? "bg-[#E9F2FF] text-[#0068FF]"
-              : row.status === "In Progress"
-              ? "bg-[#fff8e3] text-[#ffbc21]"
-              : row.status === "Pending"
-              ? "bg-[#FFEAEA] text-[#ff2323]"
-              : "text-[#000000]"
-          }`}
-        >
-          {row.status}
-        </span>
-        <select
-          className={`absolute inset-0 w-full h-full opacity-0 cursor-pointer`}
-          value={selectedAction}
-          onChange={(e) => {
-            const action = e.target.value;
-            handleActionSelect(action, row.ticketid);
-          }}
-        >
-          <option value="" disabled>
-            Change Status
-          </option>
-          <option value="Open">Open</option>
-          <option value="Resolved">Resolved</option>
-          <option value="Pending">Pending</option>
-          <option value="In Progress">In Progress</option>
         </select>
       </div>
     );
@@ -639,31 +514,9 @@ const Ticketing = () => {
   return (
     <div className="ticketing overflow-scroll w-full h-screen flex flex-col items-start justify-start">
       <div className="ticket-table w-full h-[80vh] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
-        {/* <p className="block md:hidden text-lg font-semibold">Tickets</p> */}
-        <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
-          <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
-            <div className="flex gap-1 sm:gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
-              <span>{selectedGenerator || "Select Ticket Generator"}</span>
-              <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
-            </div>
-            <select
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              value={selectedGenerator}
-              onChange={(e) => {
-                const action = e.target.value;
-                setSelectedGenerator(action);
-              }}
-            >
-              <option value="Select Ticket Generator">
-                Select Ticket Generator
-              </option>
-              <option value="Self">Self</option>
-              <option value="Sales Person">Sales Person</option>
-              <option value="Territory Partner">Territory Partner</option>
-            </select>
-          </div>
+        <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
+          <p className="block md:hidden text-lg font-semibold">Tickets</p>
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
-            <DownloadCSV data={filteredData} filename={"Ticket.csv"} />
             <AddButton label={"Add"} func={setShowTicketForm} />
           </div>
         </div>
@@ -689,7 +542,6 @@ const Ticketing = () => {
               </div>
             </div>
             <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
-              <DownloadCSV data={filteredData} filename={"Ticket.csv"} />
               <AddButton label={"Add"} func={setShowTicketForm} />
             </div>
           </div>
@@ -719,9 +571,9 @@ const Ticketing = () => {
       <div
         className={`${
           showTicketForm ? "flex" : "hidden"
-        } z-[61] ticketForm overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
+        } z-[61] ticketForm overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
       >
-        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] max-h-[85vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">Ticket Details</h2>
             <IoMdClose
@@ -732,7 +584,10 @@ const Ticketing = () => {
             />
           </div>
           <form onSubmit={addTicket} className="w-full">
-            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
+            <div
+              onSubmit={addTicket}
+              className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2"
+            >
               <input
                 type="hidden"
                 value={newTicket.ticketid || ""}
@@ -883,107 +738,13 @@ const Ticketing = () => {
           </form>
         </div>
       </div>
-
-      {/* Add Response Form */}
-      <div
-        className={`${
-          showResponseForm ? "flex" : "hidden"
-        } z-[61] ticketForm overflow-scroll scrollbar-hide  w-full flex fixed bottom-0 md:bottom-auto `}
-      >
-        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] max-h-[70vh] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold">Ticket Response</h2>
-            <IoMdClose
-              onClick={() => {
-                setShowResponseForm(false);
-              }}
-              className="w-6 h-6 cursor-pointer"
-            />
-          </div>
-          <form onSubmit={addResponse} className="w-full ">
-            <input
-              type="hidden"
-              value={newTicket.ticketid || ""}
-              onChange={(e) =>
-                setNewTicketData({ ...newTicket, ticketid: e.target.value })
-              }
-            />
-            <div className={` w-full mt-3`}>
-              <textarea
-                rows={2}
-                cols={40}
-                placeholder="Enter Ticket Response"
-                required
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={ticketResponse}
-                onChange={(e) => setTicketResponse(e.target.value)}
-              />
-            </div>
-
-            <div className="selectTicketStatus min-w-[250px] max-w-[280px] relative inline-block mt-2">
-              <div
-                className={`${
-                  selectedStatus === "Resolved"
-                    ? "bg-[#EAFBF1] text-[#0BB501]"
-                    : selectedStatus === "Open"
-                    ? "bg-[#E9F2FF] text-[#0068FF]"
-                    : selectedStatus === "In Progress"
-                    ? "bg-[#FFF8DD] text-[#FFCA00]"
-                    : selectedStatus === "Pending"
-                    ? "bg-[#FFEAEA] text-[#ff2323]"
-                    : "text-[#000000]"
-                } flex gap-2 items-center justify-between bg-white border border-[#00000033] text-base font-semibold rounded-lg py-3 px-5 focus:outline-none focus:ring-2 focus:ring-[#076300]`}
-              >
-                <span>{selectedStatus || "Select Ticket Status"}</span>
-                <RiArrowDropDownLine className="w-7 h-7 text-[#000000B2]" />
-              </div>
-              <select
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                value={selectedStatus}
-                onChange={(e) => {
-                  const action = e.target.value;
-                  setSelectedStatus(action);
-                }}
-              >
-                <option disabled value="">
-                  Select Ticket Status
-                </option>
-                <option value="Open">Open</option>
-                <option value="Resolved">Resolved</option>
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-              </select>
-            </div>
-
-            <div className="w-full flex mt-8 md:mt-6 justify-end gap-6">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowResponseForm(false);
-                }}
-                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
-              >
-                Save
-              </button>
-              <Loader />
-            </div>
-          </form>
-        </div>
-      </div>
-
       {/* Show Ticket Info */}
       <div
         className={`${
           showTicket ? "flex" : "hidden"
-        } z-[61] property-form overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
+        } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
       >
-        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] max-h-[70vh] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">Ticket Details</h2>
             <IoMdClose
@@ -1045,18 +806,6 @@ const Ticketing = () => {
                 readOnly
               />
             </div>
-            <div className={`${ticket.projectpartnerid && ticket.project_partner ? "block" : "hidden"} w-full`}>
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Project Partner
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={ticket.project_partner}
-                readOnly
-              />
-            </div>
             <div className="w-full ">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Issue
@@ -1082,9 +831,7 @@ const Ticketing = () => {
               value={ticket.details}
             />
           </div>
-          <div
-            className={`${ticket.response ? "block" : "hidden"} w-full mt-3`}
-          >
+          <div className={`${ticket.response ? "block" : "hidden"} w-full`}>
             <label className="block text-sm leading-4 text-[#00000066] font-medium">
               Response
             </label>

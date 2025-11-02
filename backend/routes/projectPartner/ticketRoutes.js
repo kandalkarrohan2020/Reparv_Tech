@@ -1,9 +1,9 @@
 import express from "express";
-import {getAll, getAdmins, getDepartments, getEmployees, getById, reOpen, changeStatus, add, update, del } from "../../controllers/projectPartner/ticketController.js";
+import {getAll, getAdmins, getDepartments, getEmployees, getById, reOpen, changeStatus, add, update, del, addResponse } from "../../controllers/projectPartner/ticketController.js";
 
 const router = express.Router();
 
-router.get("/", getAll);
+router.get("/get/:generator", getAll);
 router.get("/admins", getAdmins);
 router.get("/departments", getDepartments);
 router.get("/employees/:id", getEmployees);
@@ -12,6 +12,7 @@ router.post("/add", add);
 router.put("/re-open/ticket/:id", reOpen);
 router.put("/status/change/:id", changeStatus);
 router.put("/edit/:id", update);
+router.put("/response/add/:id", addResponse);
 router.delete("/delete/:id", del);
 
 export default router;

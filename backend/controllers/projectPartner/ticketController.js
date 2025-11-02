@@ -1,29 +1,119 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 
-// **Fetch All **
 export const getAll = (req, res) => {
+  const Id = req.projectPartnerUser?.id;
   const adharId = req.projectPartnerUser?.adharId;
-  if(!adharId){
-    return res.status(401).json({message: "Unauthorized! Please Login again"})
-  }
-  const sql = `SELECT tickets.*,
-   users.name AS admin_name,
-    departments.department,
-     employees.name AS employee_name,
-      employees.uid
-       FROM tickets LEFT JOIN users ON tickets.adminid = users.id 
-       LEFT JOIN departments ON tickets.departmentid = departments.departmentid
-       LEFT JOIN employees ON tickets.employeeid = employees.id
-       WHERE tickets.ticketadder = ?
-       ORDER BY ticketid DESC`;
 
-  db.query(sql, [adharId], (err, result) => {
+  if (!Id || !adharId) {
+    return res.status(401).json({ message: "Unauthorized! Please login again." });
+  }
+
+  const ticketGenerator = req.params.generator;
+  if (!ticketGenerator) {
+    return res.status(400).json({ message: "Ticket generator not specified." });
+  }
+
+  let sql;
+  let queryParam = null;
+
+  // Case 1: Self — tickets created by this Project Partner
+  if (ticketGenerator === "Self") {
+    sql = `
+      SELECT 
+        tickets.*, 
+        users.name AS admin_name, 
+        departments.department,
+        employees.name AS employee_name, 
+        employees.uid,
+        projectpartner.fullname AS ticketadder_name, 
+        projectpartner.contact AS ticketadder_contact
+      FROM tickets 
+      INNER JOIN projectpartner ON projectpartner.adharno = tickets.ticketadder
+      LEFT JOIN users ON tickets.adminid = users.id 
+      LEFT JOIN departments ON tickets.departmentid = departments.departmentid
+      LEFT JOIN employees ON tickets.employeeid = employees.id
+      WHERE tickets.ticketadder = ?
+      ORDER BY tickets.created_at DESC
+    `;
+    queryParam = adharId;
+
+  // Case 2: Sales Person — tickets linked to this Project Partner
+  } else if (ticketGenerator === "Sales Person") {
+    sql = `
+      SELECT 
+        tickets.*, 
+        users.name AS admin_name, 
+        departments.department,
+        employees.name AS employee_name, 
+        employees.uid,
+        salespersons.fullname AS ticketadder_name, 
+        salespersons.contact AS ticketadder_contact,
+        projectpartner.fullname AS project_partner
+      FROM tickets 
+      INNER JOIN salespersons ON salespersons.adharno = tickets.ticketadder
+      LEFT JOIN users ON tickets.adminid = users.id 
+      LEFT JOIN departments ON tickets.departmentid = departments.departmentid
+      LEFT JOIN employees ON tickets.employeeid = employees.id
+      LEFT JOIN projectpartner ON tickets.projectpartnerid = projectpartner.id
+      WHERE tickets.projectpartnerid = ?
+      ORDER BY tickets.created_at DESC
+    `;
+    queryParam = Id;
+
+  // Case 3: Territory Partner — tickets under this Project Partner
+  } else if (ticketGenerator === "Territory Partner") {
+    sql = `
+      SELECT 
+        tickets.*, 
+        users.name AS admin_name, 
+        departments.department,
+        employees.name AS employee_name, 
+        employees.uid,
+        territorypartner.fullname AS ticketadder_name, 
+        territorypartner.contact AS ticketadder_contact,
+        projectpartner.fullname AS project_partner
+      FROM tickets 
+      INNER JOIN territorypartner ON territorypartner.adharno = tickets.ticketadder
+      LEFT JOIN users ON tickets.adminid = users.id 
+      LEFT JOIN departments ON tickets.departmentid = departments.departmentid
+      LEFT JOIN employees ON tickets.employeeid = employees.id
+      LEFT JOIN projectpartner ON tickets.projectpartnerid = projectpartner.id
+      WHERE tickets.projectpartnerid = ?
+      ORDER BY tickets.created_at DESC
+    `;
+    queryParam = Id;
+
+  // Default: all tickets related to this Project Partner
+  } else {
+    sql = `
+      SELECT 
+        tickets.*, 
+        users.name AS admin_name, 
+        departments.department,
+        employees.name AS employee_name, 
+        employees.uid,
+        projectpartner.fullname AS ticketadder_name, 
+        projectpartner.contact AS ticketadder_contact
+      FROM tickets
+      LEFT JOIN users ON tickets.adminid = users.id 
+      LEFT JOIN departments ON tickets.departmentid = departments.departmentid
+      LEFT JOIN employees ON tickets.employeeid = employees.id
+      LEFT JOIN projectpartner ON tickets.projectpartnerid = projectpartner.id
+      WHERE tickets.projectpartnerid = ? OR tickets.ticketAdder = ?
+      ORDER BY tickets.created_at DESC
+    `;
+    queryParam = Id;
+  }
+
+  // Query Execution
+  db.query(sql, [queryParam, adharId], (err, result) => {
     if (err) {
-      console.error("Error fetching :", err);
+      console.error("Error fetching tickets:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
 
+    // Format Dates
     const formatted = result.map((row) => ({
       ...row,
       created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
@@ -46,11 +136,13 @@ export const getById = (req, res) => {
   const sql = `SELECT tickets.*,
    users.name AS admin_name,
     departments.department,
+     employees.uid,
      employees.name AS employee_name,
-      employees.uid
+     projectpartner.fullname AS project_partner
        FROM tickets LEFT JOIN users ON tickets.adminid = users.id 
        LEFT JOIN departments ON tickets.departmentid = departments.departmentid
        LEFT JOIN employees ON tickets.employeeid = employees.id
+       LEFT JOIN projectpartner ON tickets.projectpartnerid = projectpartner.id
        WHERE ticketid = ? ORDER BY ticketid DESC`;
 
   db.query(sql, [Id], (err, result) => {
@@ -286,6 +378,46 @@ export const update = (req, res) => {
       }
     );
   });
+};
+
+export const addResponse = (req, res) => {
+  const ticketId = req.params.id;
+  const { ticketResponse, selectedStatus } = req.body;
+
+  if (!ticketResponse || ticketResponse.trim() === "") {
+    return res.status(400).json({ message: "Response is required" });
+  }
+  if (!selectedStatus === "") {
+    return res.status(400).json({ message: "Ticket Status is required" });
+  }
+
+  const updateQuery =
+    "UPDATE tickets SET response = ?, status = ? WHERE ticketid = ?";
+
+  db.query(
+    updateQuery,
+    [ticketResponse, selectedStatus, ticketId],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating ticket response:", err);
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Ticket not found" });
+      }
+
+      const fetchQuery = "SELECT * FROM tickets WHERE ticketid = ?";
+      db.query(fetchQuery, [ticketId], (err, rows) => {
+        if (err) {
+          console.error("Error fetching updated ticket:", err);
+          return res.status(500).json({ message: "Internal Server Error" });
+        }
+
+        res.status(200).json(rows[0]);
+      });
+    }
+  );
 };
 
 // **Delete **

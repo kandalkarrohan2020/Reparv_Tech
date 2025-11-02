@@ -3,7 +3,7 @@ import db from "../../config/dbconnect.js";
 export const bookProperty = (req, res) => {
   const { enquiryid, propertyinfoid, amount, paymentid } = req.body;
 
-  if (!enquiryid || !amount || !paymentid) {
+  if ( !amount || !paymentid) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 

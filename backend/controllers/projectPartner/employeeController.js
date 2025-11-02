@@ -137,13 +137,14 @@ export const add = (req, res) => {
       if (result.length === 0) {
         const insertSQL = `
           INSERT INTO employees 
-          (projectpartnerid, name, uid, contact, email, address, state, city, dob, departmentid, roleid, salary, doj, updated_at, created_at) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          (lister, projectpartnerid, name, uid, contact, email, address, state, city, dob, departmentid, roleid, salary, doj, updated_at, created_at) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         db.query(
           insertSQL,
           [ 
+            "Project Partner",
             userId,
             name,
             uid,

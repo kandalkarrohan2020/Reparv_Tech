@@ -1329,6 +1329,18 @@ const SalesPerson = () => {
             />
           </div>
           <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
+            <div className={`${partner.projectpartnerid ? "block" : "hidden"} w-full col-span-2`}>
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Project Partner
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={partner.projectPartnerName + " - " + partner.projectPartnerContact}
+                readOnly
+              />
+            </div>
             <div className="w-full ">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Status

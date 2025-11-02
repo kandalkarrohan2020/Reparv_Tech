@@ -3,7 +3,7 @@ import {getAll, getById, add, update, status, assignLogin, del, getMenus, assign
 
 const router = express.Router();
 
-router.get("/", getAll);
+router.get("/get/all/:lister", getAll);
 router.get("/get/menus", getMenus);
 router.get("/:id", getById);
 router.post("/add", add);

@@ -503,7 +503,12 @@ const Ticketing = () => {
     {
       name: "Employee",
       selector: (row) => row.employee_name || "--NON--",
-      width: "180px",
+      minWidth: "150px",
+    },
+    {
+      name: "Project Partner",
+      selector: (row) => row.project_partner || "--NON--",
+      minWidth: "150px",
     },
     {
       name: "Action",
@@ -1042,6 +1047,18 @@ const Ticketing = () => {
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={ticket.employee_name}
+                readOnly
+              />
+            </div>
+            <div className={`${ticket.projectpartnerid && ticket.project_partner ? "block" : "hidden"} w-full`}>
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Project Partner
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={ticket.project_partner}
                 readOnly
               />
             </div>

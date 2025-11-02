@@ -80,7 +80,7 @@ export const getAdmins = (req, res) => {
 };
 
 export const getDepartments = (req, res) => {
-  const sql = "SELECT * FROM departments ORDER BY departmentid DESC";
+  const sql = "SELECT * FROM departments WHERE projectpartnerid = '' OR projectpartnerid IS NULL ORDER BY departmentid DESC";
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching departments:", err);

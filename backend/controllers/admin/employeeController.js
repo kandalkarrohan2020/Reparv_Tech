@@ -4,15 +4,66 @@ import bcrypt from "bcryptjs";
 import sendEmail from "../../utils/nodeMailer.js";
 
 const saltRounds = 10;
-// **Fetch All **
+
+// **Fetch All**
 export const getAll = (req, res) => {
-  const sql =
-    "SELECT employees.*,departments.department,roles.role FROM employees INNER JOIN departments ON employees.departmentid=departments.departmentid INNER JOIN roles ON employees.roleid=roles.roleid ORDER BY employees.id DESC";
+  const lister = req.params.lister;
+  if (!lister) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized! Please Login Again." });
+  }
+
+  let sql;
+
+  if (lister === "Reparv") {
+    sql = `
+      SELECT 
+        employees.*,
+        departments.department,
+        roles.role,
+        projectpartner.fullname AS projectPartnerName,
+        projectpartner.contact AS projectPartnerContact
+      FROM employees 
+      INNER JOIN departments ON employees.departmentid = departments.departmentid 
+      INNER JOIN roles ON employees.roleid = roles.roleid 
+      LEFT JOIN projectpartner ON employees.projectpartnerid = projectpartner.id
+      WHERE employees.projectpartnerid = '' OR employees.projectpartnerid IS NULL
+      ORDER BY employees.id DESC
+    `;
+  } else if (lister === "Project Partner") {
+    sql = `
+      SELECT 
+        employees.*,
+        departments.department,
+        roles.role,
+        projectpartner.fullname AS projectPartnerName,
+        projectpartner.contact AS projectPartnerContact
+      FROM employees 
+      INNER JOIN departments ON employees.departmentid = departments.departmentid 
+      INNER JOIN roles ON employees.roleid = roles.roleid 
+      INNER JOIN projectpartner ON employees.projectpartnerid = projectpartner.id
+      ORDER BY employees.id DESC
+    `;
+  } else {
+    sql = `
+      SELECT 
+        employees.*, 
+        departments.department, 
+        roles.role 
+      FROM employees 
+      INNER JOIN departments ON employees.departmentid = departments.departmentid 
+      INNER JOIN roles ON employees.roleid = roles.roleid 
+      ORDER BY employees.id DESC
+    `;
+  }
+
   db.query(sql, (err, result) => {
     if (err) {
-      console.error("Error fetching :", err);
+      console.error("Error fetching:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
+
     const formatted = result.map((row) => ({
       ...row,
       created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
@@ -38,27 +89,36 @@ export const getMenus = (req, res) => {
 // **Fetch Single by ID**
 export const getById = (req, res) => {
   const Id = parseInt(req.params.id);
-  const sql = `SELECT employees.*, 
-                      departments.department,
-                      roles.role 
-                  FROM employees 
-                  INNER JOIN departments ON employees.departmentid = departments.departmentid
-                  INNER JOIN roles ON employees.roleid = roles.roleid 
-                  WHERE id = ? 
-                  ORDER BY employees.id DESC`;
+
+  const sql = `
+    SELECT 
+      employees.*, 
+      departments.department,
+      roles.role,
+      projectpartner.fullname AS projectPartnerName,
+      projectpartner.contact AS projectPartnerContact
+    FROM employees 
+    INNER JOIN departments ON employees.departmentid = departments.departmentid
+    INNER JOIN roles ON employees.roleid = roles.roleid
+    LEFT JOIN projectpartner ON employees.projectpartnerid = projectpartner.id
+    WHERE employees.id = ? 
+    ORDER BY employees.id DESC
+  `;
 
   db.query(sql, [Id], (err, result) => {
     if (err) {
       console.error("Error fetching :", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
+
     if (result.length === 0) {
       return res.status(404).json({ message: "Employee not found" });
     }
+
     const formatted = result.map((row) => ({
       ...row,
-      dateOfBirth: moment(row.dob).format("DD MMM YYYY"),
-      dateOfJoining: moment(row.doj).format("DD MMM YYYY"),
+      dateOfBirth: row.dob ? moment(row.dob).format("DD MMM YYYY") : null,
+      dateOfJoining: row.doj ? moment(row.doj).format("DD MMM YYYY") : null,
       created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
       updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
     }));
@@ -118,13 +178,14 @@ export const add = (req, res) => {
       if (result.length === 0) {
         const insertSQL = `
           INSERT INTO employees 
-          (name, uid, contact, email, address, state, city, dob, departmentid, roleid, salary, doj, updated_at, created_at) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          (lister, name, uid, contact, email, address, state, city, dob, departmentid, roleid, salary, doj, updated_at, created_at) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         db.query(
           insertSQL,
           [
+            "Reparv",
             name,
             uid,
             contact,

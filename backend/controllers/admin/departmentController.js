@@ -3,7 +3,7 @@ import moment from "moment";
 
 // **Fetch All **
 export const getAll = (req, res) => {
-  const sql = "SELECT * FROM departments ORDER BY department";
+  const sql = "SELECT * FROM departments WHERE projectpartnerid = '' OR projectpartnerid IS NULL ORDER BY department";
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching :", err);

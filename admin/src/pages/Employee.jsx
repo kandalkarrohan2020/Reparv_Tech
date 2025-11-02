@@ -8,6 +8,7 @@ import { IoMdClose } from "react-icons/io";
 import EmployeeFilter from "../components/employee/EmployeeFilter";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
+import { RiArrowDropDownLine } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
 import { MdDone } from "react-icons/md";
 import Loader from "../components/Loader";
@@ -44,6 +45,9 @@ const Employee = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null); // Stores employee ID
+  const [selectedLister, setSelectedLister] = useState(
+    "Select Employee Lister"
+  );
   const [newEmployee, setEmployeeData] = useState({
     name: "",
     uid: "",
@@ -102,7 +106,7 @@ const Employee = () => {
   // *Fetch Data from API*
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/admin/employees", {
+      const response = await fetch(URI + "/admin/employees/get/all/" + selectedLister, {
         method: "GET",
         credentials: "include", //  Ensures cookies are sent
         headers: {
@@ -405,6 +409,11 @@ const Employee = () => {
     }
   };
 
+
+  useEffect(() => {
+    fetchData();
+  }, [selectedLister]);
+
   useEffect(() => {
     fetchData();
     fetchStates();
@@ -510,6 +519,17 @@ const Employee = () => {
     },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
+      name: "Project Partner",
+      cell: (row) => (
+        <div className="w-full flex flex-col gap-[2px]">
+          <p>{row.projectPartnerName}</p>
+          <p>{row.projectPartnerContact}</p>
+        </div>
+      ),
+      omit: false,
+      minWidth: "200px",
+    },
+    {
       name: "Full Name",
       cell: (row) => (
         <div className={`flex gap-1 items-center justify-center`}>
@@ -581,6 +601,14 @@ const Employee = () => {
     },
   ];
 
+  const hasProjectPartner = datas.some((row) => !!row.projectPartnerName);
+
+  const finalColumns = columns.map((col) => {
+    if (col.name === "Project Partner")
+      return { ...col, omit: !hasProjectPartner };
+    return col;
+  });
+
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
 
@@ -646,8 +674,26 @@ const Employee = () => {
       className={`employee overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
     >
       <div className="employee-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
-        <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
-          <p className="block md:hidden text-lg font-semibold">Employees</p>
+        <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
+          <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+            <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+              <span>{selectedLister || "Select Lister"}</span>
+              <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+            </div>
+            <select
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              value={selectedLister}
+              onChange={(e) => {
+                setSelectedLister(e.target.value);
+              }}
+            >
+              <option value="Select Employee Lister">
+                Select Employee Lister
+              </option>
+              <option value="Reparv">Reparv</option>
+              <option value="Project Partner">Project Partner</option>
+            </select>
+          </div>
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
             <DownloadCSV data={filteredData} filename={"Employee.csv"} />
             <AddButton label={"Add"} func={setShowEplDetailsForm} />
@@ -683,7 +729,7 @@ const Employee = () => {
           <DataTable
             className="scrollbar-hide"
             customStyles={customStyles}
-            columns={columns}
+            columns={finalColumns}
             data={filteredData}
             pagination
             paginationPerPage={15}
@@ -1179,6 +1225,18 @@ const Employee = () => {
                 readOnly
               />
             </div>
+            <div className={`${employee.projectpartnerid ? "block" : "hidden"} w-full col-span-2`}>
+              <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                Project Partner
+              </label>
+              <input
+                type="text"
+                disabled
+                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={employee.projectPartnerName + " - " + employee.projectPartnerContact}
+                readOnly
+              />
+            </div>
             <div className="w-full ">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Department
@@ -1191,6 +1249,7 @@ const Employee = () => {
                 readOnly
               />
             </div>
+            
             <div className="w-full ">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Role
@@ -1203,6 +1262,7 @@ const Employee = () => {
                 readOnly
               />
             </div>
+            
             <div className="w-full ">
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Date of Joining

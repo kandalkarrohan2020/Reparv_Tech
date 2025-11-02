@@ -38,12 +38,14 @@ export const getAll = (req, res) => {
   } else if (ticketGenerator === "Sales Person") {
     sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
            employees.name AS employee_name, employees.uid , 
-           salespersons.fullname AS ticketadder_name, salespersons.contact AS ticketadder_contact
+           salespersons.fullname AS ticketadder_name, salespersons.contact AS ticketadder_contact,
+           projectpartner.fullname AS project_partner
            FROM tickets 
            INNER JOIN salespersons ON salespersons.adharno = tickets.ticketadder
            LEFT JOIN users ON tickets.adminid = users.id 
            LEFT JOIN departments ON tickets.departmentid = departments.departmentid
            LEFT JOIN employees ON tickets.employeeid = employees.id
+           LEFT JOIN projectpartner ON tickets.projectpartnerid = projectpartner.id
            ORDER BY created_at DESC`;
   } else if (ticketGenerator === "Onboarding Partner") {
     sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
@@ -68,12 +70,14 @@ export const getAll = (req, res) => {
   } else if (ticketGenerator === "Territory Partner") {
     sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
            employees.name AS employee_name, employees.uid ,  
-           territorypartner.fullname AS ticketadder_name, territorypartner.contact AS ticketadder_contact
+           territorypartner.fullname AS ticketadder_name, territorypartner.contact AS ticketadder_contact,
+           projectpartner.fullname AS project_partner
            FROM tickets 
            INNER JOIN territorypartner ON territorypartner.adharno = tickets.ticketadder
            LEFT JOIN users ON tickets.adminid = users.id 
            LEFT JOIN departments ON tickets.departmentid = departments.departmentid
            LEFT JOIN employees ON tickets.employeeid = employees.id
+           LEFT JOIN projectpartner ON tickets.projectpartnerid = projectpartner.id
            ORDER BY created_at DESC`;
   } else if (ticketGenerator === "Project Partner") {
     sql = `SELECT tickets.*, users.name AS admin_name, departments.department,
@@ -133,11 +137,13 @@ export const getById = (req, res) => {
   const sql = `SELECT tickets.*,
    users.name AS admin_name,
     departments.department,
+     employees.uid,
      employees.name AS employee_name,
-      employees.uid
+     projectpartner.fullname AS project_partner
        FROM tickets LEFT JOIN users ON tickets.adminid = users.id 
        LEFT JOIN departments ON tickets.departmentid = departments.departmentid
        LEFT JOIN employees ON tickets.employeeid = employees.id
+       LEFT JOIN projectpartner ON tickets.projectpartnerid = projectpartner.id
        WHERE ticketid = ? ORDER BY ticketid DESC`;
 
   db.query(sql, [Id], (err, result) => {
@@ -167,7 +173,7 @@ export const getAdmins = (req, res) => {
 };
 
 export const getDepartments = (req, res) => {
-  const sql = "SELECT * FROM departments ORDER BY departmentid DESC";
+  const sql = "SELECT * FROM departments WHERE projectpartnerid = '' OR projectpartnerid IS NULL ORDER BY departmentid DESC";
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching departments:", err);

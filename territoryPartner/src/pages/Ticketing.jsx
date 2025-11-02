@@ -24,15 +24,9 @@ const Ticketing = () => {
   } = useAuth();
 
   const [data, setData] = useState([]);
-  const [adminData, setAdminData] = useState([]);
-  const [departmentData, setDepartmentData] = useState([]);
-  const [employeeData, setEmployeeData] = useState([]);
   const [ticket, setTicket] = useState({});
   const [selectedTicketFilter, setSelectedTicketFilter] = useState("");
   const [newTicket, setNewTicketData] = useState({
-    adminid: "",
-    departmentid: "",
-    employeeid: "",
     issue: "",
     details: "",
   });
@@ -40,26 +34,7 @@ const Ticketing = () => {
 
   useEffect(() => {
     fetchData();
-    fetchAdminData();
-    fetchDepartmentData();
   }, []);
-
-  useEffect(() => {
-    if (newTicket.adminid !== "") {
-      setNewTicketData((prev) => ({
-        ...prev,
-        departmentid: "",
-        employeeid: "",
-      }));
-    }
-  }, [newTicket.adminid]);
-
-  useEffect(() => {
-    if (newTicket.departmentid) {
-      fetchEmployeeData(newTicket.departmentid);
-      console.log(newTicket.departmentid);
-    }
-  }, [newTicket.departmentid]);
 
   // *Fetch Data from API*
   const fetchData = async () => {
@@ -76,71 +51,12 @@ const Ticketing = () => {
       if (!response.ok) throw new Error("Failed to fetch tickets.");
 
       const data = await response.json();
+      //console.log(data);
       setData(data);
     } catch (err) {
       console.error("Error fetching:", err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  //Fetch department data
-  const fetchAdminData = async () => {
-    try {
-      const response = await fetch(URI + "/territory-partner/tickets/admins", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch Admins.");
-      const data = await response.json();
-      setAdminData(data);
-    } catch (err) {
-      console.error("Error fetching Admins:", err);
-    }
-  };
-
-  //Fetch department data
-  const fetchDepartmentData = async () => {
-    try {
-      const response = await fetch(
-        URI + "/territory-partner/tickets/departments",
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) throw new Error("Failed to fetch departments.");
-      const data = await response.json();
-      setDepartmentData(data);
-    } catch (err) {
-      console.error("Error fetching departments:", err);
-    }
-  };
-
-  //Fetch department data
-  const fetchEmployeeData = async (id) => {
-    try {
-      const response = await fetch(
-        URI + "/territory-partner/tickets/employees/" + id,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) throw new Error("Failed to fetch departments.");
-      const data = await response.json();
-      setEmployeeData(data);
-    } catch (err) {
-      console.error("Error fetching departments:", err);
     }
   };
 
@@ -160,32 +76,35 @@ const Ticketing = () => {
         }
       );
 
-      if (response.status === 409) {
-        alert("Ticket already exists!");
-      } else if (!response.ok) {
-        throw new Error(`Failed to save ticket. Status: ${response.status}`);
-      } else {
+      const data = await response.json(); // Parse backend response
+
+      if (!response.ok) {
+        // Show backend error message (like "No Project Partner linked...")
         alert(
-          newTicket.ticketid
-            ? "Ticket updated successfully!"
-            : "Ticket added successfully!"
+          data.message || `Failed to save ticket. Status: ${response.status}`
         );
+        return;
       }
 
-      // Clear form only after successful fetch
+      // Success — show message from backend
+      alert(
+        data.message ||
+          (newTicket.ticketid
+            ? "Ticket updated successfully!"
+            : "Ticket added successfully!")
+      );
+
+      // Clear form after success
       setNewTicketData({
-        adminid: "",
-        departmentid: "",
-        employeeid: "",
         issue: "",
         details: "",
       });
 
       setShowTicketForm(false);
-
       await fetchData();
     } catch (err) {
-      console.error("Error saving employee:", err);
+      console.error("Error saving ticket:", err);
+      alert("Something went wrong while saving the ticket!");
     } finally {
       setLoading(false);
     }
@@ -196,7 +115,7 @@ const Ticketing = () => {
     try {
       const response = await fetch(`${URI}/territory-partner/tickets/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -210,12 +129,12 @@ const Ticketing = () => {
     }
   };
 
-  // View Ticket
+  //fetch data on form
   const viewTicket = async (id) => {
     try {
       const response = await fetch(`${URI}/territory-partner/tickets/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -302,10 +221,7 @@ const Ticketing = () => {
     const matchesSearch =
       item.ticketno?.toLowerCase().includes(search) ||
       item.status?.toLowerCase().includes(search) ||
-      item.issue?.toLowerCase().includes(search) ||
-      item.admin_name?.toLowerCase().includes(search) ||
-      item.department?.toLowerCase().includes(search) ||
-      item.employee_name?.toLowerCase().includes(search);
+      item.issue?.toLowerCase().includes(search);
 
     // Date range filter
     let startDate = range[0].startDate;
@@ -412,20 +328,9 @@ const Ticketing = () => {
       maxWidth: "350px",
     },
     {
-      name: "Admin",
-      selector: (row) => row.admin_name || "--NON--",
-      width: "130px",
-      omit: false,
-    },
-    {
-      name: "Department",
-      selector: (row) => row.department || "--NON--",
-      width: "130px",
-    },
-    {
-      name: "Employee",
-      selector: (row) => row.employee_name || "--NON--",
-      width: "180px",
+      name: "Project Partner",
+      selector: (row) => row.project_partner || "--NON--",
+      minWidth: "180px",
     },
     {
       name: "Status",
@@ -570,7 +475,7 @@ const Ticketing = () => {
       <div
         className={`${
           showTicketForm ? "flex" : "hidden"
-        } z-[61] ticketForm overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
+        } z-[61] ticketForm overflow-scroll scrollbar-hide w-[400px] max-h-[70vh] md:w-[700px] fixed`}
       >
         <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
@@ -583,7 +488,10 @@ const Ticketing = () => {
             />
           </div>
           <form onSubmit={addTicket} className="w-full">
-            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
+            <div
+              onSubmit={addTicket}
+              className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2"
+            >
               <input
                 type="hidden"
                 value={newTicket.ticketid || ""}
@@ -615,83 +523,6 @@ const Ticketing = () => {
                   <option value="Lead Issue">Lead Issue</option>
                 </select>
               </div>
-
-              <div className="w-full ">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Select Admin
-                </label>
-                <select
-                  required
-                  disabled={newTicket.departmentid === "" ? false : true}
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
-                  style={{ backgroundImage: "none" }}
-                  value={newTicket.adminid}
-                  onChange={(e) =>
-                    setNewTicketData({
-                      ...newTicket,
-                      adminid: e.target.value,
-                    })
-                  }
-                >
-                  <option value="">Select Admin</option>
-                  {adminData?.map((admin, index) => (
-                    <option key={index} value={admin.id}>
-                      {admin.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className={`w-full`}>
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Department
-                </label>
-                <select
-                  required
-                  disabled={newTicket.adminid === "" ? false : true}
-                  className={`w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent`}
-                  style={{ backgroundImage: "none" }}
-                  value={newTicket.departmentid}
-                  onChange={(e) =>
-                    setNewTicketData({
-                      ...newTicket,
-                      departmentid: e.target.value,
-                    })
-                  }
-                >
-                  <option value="">Select Department</option>
-                  {departmentData?.map((department, index) => (
-                    <option key={index} value={department.departmentid}>
-                      {department.department}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className={`w-full`}>
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Employee
-                </label>
-                <select
-                  disabled={newTicket.departmentid === "" ? true : false}
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
-                  style={{ backgroundImage: "none" }}
-                  value={newTicket.employeeid}
-                  onChange={(e) =>
-                    setNewTicketData({
-                      ...newTicket,
-                      employeeid: e.target.value,
-                    })
-                  }
-                >
-                  <option value="">Select Employee</option>
-                  {employeeData?.map((employee, index) => (
-                    <option key={index} value={employee.id}>
-                      {employee.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
             </div>
             <div className={` w-full mt-3`}>
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
@@ -713,7 +544,7 @@ const Ticketing = () => {
               />
             </div>
 
-            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+            <div className="w-full flex mt-8 md:mt-6 justify-end gap-6">
               <button
                 type="button"
                 onClick={() => {
@@ -738,7 +569,7 @@ const Ticketing = () => {
       <div
         className={`${
           showTicket ? "flex" : "hidden"
-        } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] h-[70vh] md:w-[700px] fixed`}
+        } z-[61] property-form overflow-scroll scrollbar-hide w-[400px] max-h-[70vh] md:w-[700px] fixed`}
       >
         <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
@@ -764,41 +595,19 @@ const Ticketing = () => {
                 readOnly
               />
             </div>
-            <div className={`${ticket.adminid ? "block" : "hidden"} w-full`}>
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Admin
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={ticket.admin_name}
-                readOnly
-              />
-            </div>
             <div
-              className={`${ticket.departmentid ? "block" : "hidden"} w-full`}
+              className={`${
+                ticket.projectpartnerid ? "block" : "hidden"
+              } w-full`}
             >
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Department
+                Project Partner
               </label>
               <input
                 type="text"
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={ticket.department}
-                readOnly
-              />
-            </div>
-            <div className={`${ticket.employeeid ? "block" : "hidden"} w-full`}>
-              <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                Employee
-              </label>
-              <input
-                type="text"
-                disabled
-                className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={ticket.employee_name}
+                value={ticket.project_partner}
                 readOnly
               />
             </div>

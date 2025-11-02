@@ -16,8 +16,8 @@ export const AuthProvider = ({ children }) => {
     setAccessToken();
     Cookies.remove("accessToken");
   };
-  const URI = "http://localhost:3000";
-  //const URI = "https://api.reparv.in";
+  //const URI = "http://localhost:3000";
+  const URI = "https://api.reparv.in";
 
   const [loading, setLoading] = useState(false);
   const [successScreen, setSuccessScreen] = useState({

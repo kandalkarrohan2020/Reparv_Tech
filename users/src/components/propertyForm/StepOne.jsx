@@ -508,7 +508,10 @@ const StepOne = ({
                 : "text-[#00000066]"
             } block text-sm leading-4 font-medium`}
           >
-            Registration Fee or Percentage{" "}
+            {newProperty.registrationFee && newProperty.registrationFee != 30000
+              ? "Registration Percentage " +
+                parseFloat(newProperty.registrationFee) + "%"
+              : "Registration Fee or Percentage "}
             <span className="text-red-600">*</span>
           </label>
           <select

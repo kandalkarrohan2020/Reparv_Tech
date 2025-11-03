@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../store/auth";
 import LocationPicker from "./LocationPicker";
 import TagsInput from "./TagsInput";
+import FormatPrice from "../../components/FormatPrice";
 //import MapLibreBuildings from "./MapLibreBuildings";
-
 
 const StepOne = ({
   newProperty,
@@ -518,7 +518,11 @@ const StepOne = ({
                 : "text-[#00000066]"
             } block text-sm leading-4 font-medium`}
           >
-            Registration Fee or Percentage{" "}
+            {newProperty.registrationFee && newProperty.registrationFee != 30000
+              ? "Registration Percentage " +
+                parseFloat(newProperty.registrationFee) + "%"
+              : "Registration Fee or Percentage "}
+
             <span className="text-red-600">*</span>
           </label>
           <select
@@ -695,8 +699,11 @@ const StepOne = ({
             }}
           />
         </div>
-        <div className="col-span-1 lg:col-span-2 xl:col-span-3" >
-          <TagsInput newProperty={newProperty} setPropertyData={setPropertyData} />
+        <div className="col-span-1 lg:col-span-2 xl:col-span-3">
+          <TagsInput
+            newProperty={newProperty}
+            setPropertyData={setPropertyData}
+          />
         </div>
       </div>
     </div>

@@ -174,13 +174,14 @@ import appTicketRoute from "./routes/salesAppRoute/ticketRoute.js";
 import postRoute from "./routes/salesAppRoute/postRoutes.js";
 import userController from "./routes/salesAppRoute/userRoute.js";
 import clientRoute from "./routes/salesAppRoute/clientRoute.js";
-
+import salesPropertyEnquiry from "./routes/salesAppRoute/propertyEnquiry.js"
 //territory app route
 import territoryUserController from "./routes/territoryAppRoute/userRoute.js";
 import territorypostRoute from "./routes/territoryAppRoute/postRoutes.js";
 import territoryBooking from "./routes/territoryPartner/propertyBookingRoute.js";
 import territoryClientRoute from "./routes/territoryAppRoute/profileRoute.js";
 import territoryEnquiryRoute from "./routes/territoryAppRoute/enquiryRoute.js";
+import territoryPropertyEnquiryRoute from "./routes/territoryAppRoute/propertyEnquiriesRoute.js"
 import territorySubscription from "./routes/territoryAppRoute/subscription.js";
 import salesSubscription from "./routes/salesAppRoute/subscription.js";
 import scheduleNotesRoutes from "./routes/salesAppRoute/notesRoute.js";
@@ -365,7 +366,9 @@ export const verifyToken = (req, res, next) => {
     "/projectpartner/enquiries/get" ,
    "/projectpartner/enquiries/enquiry/status/",
    "/projectpartner/ticket",
-   "/projectpartner/enquiries/get/partnersenquiry"
+   "/projectpartner/enquiries/get/partnersenquiry",
+   "/territoryapp/property/enquiry",
+   "/salesapp/property/enquiry"
   ];
 
   // Skip verification for public routes
@@ -595,7 +598,7 @@ app.use("/salesapp/user", userController);
 app.use("/salesapp/client", clientRoute);
 app.use("/salesapp/enquiry", enquiryRoutesSaleApp);
 app.use("/salesapp/subscription", salesSubscription);
-
+app.use('/salesapp/property/enquiry',salesPropertyEnquiry)
 app.use("/salesapp/schedule-notes", scheduleNotesRoutes);
 
 //Territory App Route
@@ -603,6 +606,7 @@ app.use("/territoryapp/user", territoryUserController);
 app.use("/territoryapp/post", territorypostRoute);
 app.use("/territoryapp/client", territoryClientRoute);
 app.use("/territoryapp/enquiry", territoryEnquiryRoute);
+app.use("/territoryapp/property/enquiry", territoryPropertyEnquiryRoute);
 app.use("/territoryapp/subscription", territorySubscription);
 //Book Enquiry Property
 app.use("/api/booking", bookPropertyRoute);

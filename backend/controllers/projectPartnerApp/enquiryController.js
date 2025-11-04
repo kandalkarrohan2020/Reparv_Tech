@@ -449,3 +449,90 @@ export const status = (req, res) => {
     }
   );
 };
+
+
+export const assignToReparv = (req, res) => {
+  const userId = req.params.id;
+
+  if (!userId) {
+    return res.status(400).json({ message: "Invalid Project Partner Id" });
+  }
+
+  const Id = parseInt(req.params.enquiryid);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Enquiry ID" });
+  }console.log(Id);
+
+
+  // First, check if the enquiry exists
+  db.query("SELECT * FROM enquirers WHERE enquirersid = ?", [Id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Enquiry not found" });
+    }
+
+    // Then, update the enquiry
+    const updateSql = `
+      UPDATE enquirers 
+      SET salespersonid=null,territorypartnerid=null, digitalbroker = ? 
+      WHERE enquirersid = ?
+    `;
+
+    db.query(updateSql, [userId, Id], (err, updateResult) => {
+      if (err) {
+        console.error("Error Assigning Enquiry to Reparv:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      res.status(200).json({ message: "Enquiry assigned to Reparv successfully" });
+    });
+  });
+};
+
+
+export const getAllDigitalEnquiry = (req, res) => {
+  const projectpartnerid = req.params.id;
+if (!projectpartnerid) {
+    return res
+      .status(400)
+      .json({ message: "Partner ID is required" });
+  }
+
+   const sql = `
+    SELECT enquirers.*, 
+           properties.frontView, 
+           properties.seoSlug, 
+           properties.commissionAmount,
+           territorypartner.fullname AS territoryName,
+           territorypartner.contact AS territoryContact
+    FROM enquirers
+    LEFT JOIN properties 
+      ON enquirers.propertyid = properties.propertyid
+    LEFT JOIN territorypartner 
+      ON territorypartner.id = enquirers.territorypartnerid
+    WHERE enquirers.digitalbroker = ?
+    ORDER BY enquirers.enquirersid DESC`;
+
+
+  db.query(sql, [projectpartnerid], (err, results) => {
+    if (err) {
+      console.error("Database Query Error:", err);
+      return res
+        .status(500)
+        .json({ message: "Database query error", error: err });
+    }
+
+    const formatted = results.map((row) => ({
+      ...row,
+      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+    }));
+
+    res.json( {data: formatted});
+  });
+};
+

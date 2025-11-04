@@ -415,7 +415,7 @@ const Builders = () => {
       width: "120px",
     },
   ];
-
+  
   const hasBuilderLister = datas.some((row) => !!row.listerName);
 
   const finalColumns = columns.map((col) => {

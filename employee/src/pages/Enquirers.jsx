@@ -855,6 +855,22 @@ const Enquirers = () => {
       minWidth: "150px",
     },
     {
+      name: "Project Partner",
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 rounded-md ${
+            row.projectpartnerid
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : "bg-[#FFEAEA] text-[#ff2323]"
+          }`}
+        >
+          {(row.projectPartnerName ? row.projectPartnerName + " - " : "No ") +
+            (row.projectPartnerContact ? row.projectPartnerContact : "Assign")}
+        </span>
+      ),
+      minWidth: "180px",
+    },
+    {
       name: "Sales Partner",
       cell: (row) => (
         <span
@@ -2023,6 +2039,25 @@ const Enquirers = () => {
                   disabled
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={enquiry.status}
+                  readOnly
+                />
+              </div>
+              <div className="w-full ">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Project Partner
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={
+                    (enquiry.projectPartnerName
+                      ? enquiry.projectPartnerName + " - "
+                      : "No ") +
+                    (enquiry.projectPartnerContact
+                      ? enquiry.projectPartnerContact
+                      : "Assign")
+                  }
                   readOnly
                 />
               </div>

@@ -76,6 +76,7 @@ export const AuthProvider = ({ children }) => {
   const [showPartner, setShowPartner] = useState(false);
   const [showPartnerForm, setShowPartnerForm] = useState(false);
   const [partnerPaymentStatus, setPartnerPaymentStatus] = useState("Unpaid");
+  const [showAssignTaskForm, setShowAssignTaskForm] = useState(false);
 
   return (
     <AuthContext.Provider
@@ -179,6 +180,7 @@ export const AuthProvider = ({ children }) => {
         setShowPartner,
         showPartnerForm,
         setShowPartnerForm,
+        showAssignTaskForm, setShowAssignTaskForm,
       }}
     >
       {children}

@@ -636,6 +636,36 @@ const Enquirers = () => {
     }
   };
 
+  // Assign To Reparv
+  const assignToReparv = async (id) => {
+    if (
+      !window.confirm(
+        "Are you sure to assign this Enquiry to Reparv?"
+      )
+    )
+      return;
+
+    try {
+      const response = await fetch(URI + `/project-partner/enquirers/assign/to/reparv/${id}`, {
+        method: "PUT",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      //console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      fetchData();
+    } catch (error) {
+      console.error("Error Assigning :", error);
+    }
+  };
+
   // Add Additional Info as a CSV File
   const addCsv = async (e) => {
     e.preventDefault();
@@ -743,7 +773,9 @@ const Enquirers = () => {
   const getEnquiryCounts = (data) => {
     return data.reduce(
       (acc, item) => {
-        if (!item.salespersonid && !item.territorypartnerid) {
+         if (item.digitalbroker) {
+          acc.Reparv++;
+        } else if (!item.salespersonid && !item.territorypartnerid) {
           acc.New++;
         } else if (item.salespersonid && !item.territorypartnerid) {
           acc.Alloted++;
@@ -752,7 +784,7 @@ const Enquirers = () => {
         }
         return acc;
       },
-      { New: 0, Alloted: 0, Assign: 0 }
+      { New: 0, Alloted: 0, Assign: 0, Reparv: 0}
     );
   };
 
@@ -816,6 +848,7 @@ const Enquirers = () => {
 
     // Enquiry filter logic: New, Alloted, Assign
     const getEnquiryStatus = () => {
+      if (item.digitalbroker) return "Reparv";
       if (!item.salespersonid && !item.territorypartnerid) return "New";
       if (item.salespersonid && !item.territorypartnerid) return "Alloted";
       if (item.salespersonid && item.territorypartnerid) return "Assign";
@@ -989,8 +1022,15 @@ const Enquirers = () => {
       name: "Action",
       cell: (row) => <ActionDropdown row={row} />,
       width: "120px",
+      omit: false,
     },
   ];
+
+  const finalColumns = columns.map((col) => {
+    if (col.name === "Action")
+      return { ...col, omit: enquiryFilter === "Reparv" };
+    return col;
+  });
 
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
@@ -1012,6 +1052,9 @@ const Enquirers = () => {
         case "assign":
           setEnquiryId(id);
           setShowAssignSalesForm(true);
+          break;
+        case "assigntoreparv":
+          assignToReparv(id);
           break;
         case "update":
           edit(id);
@@ -1048,7 +1091,7 @@ const Enquirers = () => {
             <option value="property">Property</option>
           )}
           <option value="assign">Assign</option>
-
+          <option value="assigntoreparv">Assign To Reparv</option>
           <option value="delete">Delete</option>
         </select>
       </div>
@@ -1147,7 +1190,7 @@ const Enquirers = () => {
           <DataTable
             className="scrollbar-hide"
             customStyles={customStyles}
-            columns={columns}
+            columns={finalColumns}
             data={filteredData}
             pagination
             paginationPerPage={15}

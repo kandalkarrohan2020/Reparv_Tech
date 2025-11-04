@@ -26,6 +26,13 @@ const EnquiryFilter = ({ counts = {} }) => {
       text: "text-blue-600",
       count: counts?.Assign || 0,
     },
+    {
+      name: "Reparv",
+      label: "Reparv",
+      bg: "bg-[#F4F0FB]",
+      text: "text-[#5D00FF]",
+      count: counts?.Reparv || 0,
+    },
   ];
 
   return (

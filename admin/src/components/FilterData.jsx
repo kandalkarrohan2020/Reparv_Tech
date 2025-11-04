@@ -23,7 +23,7 @@ const FilterData = ({selectedFilter, setSelectedFilter}) => {
   };
 
   return (
-    <div className="relative z-10">
+    <div className="relative z-11">
       {/* Filter Button */}
       <div
         className={`min-w-[40px] h-[32px] z-10 ${selectedFilter&&"h-[36px]"} items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm cursor-pointer ${

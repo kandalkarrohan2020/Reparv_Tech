@@ -669,9 +669,12 @@ const Enquirers = () => {
         } else if (item.salespersonid && item.territorypartnerid) {
           acc.Assign++;
         }
+        if (item.digitalbroker) {
+          acc.DigitalBroker++;
+        }
         return acc;
       },
-      { New: 0, Alloted: 0, Assign: 0 }
+      { New: 0, Alloted: 0, Assign: 0, DigitalBroker: 0}
     );
   };
 
@@ -735,6 +738,7 @@ const Enquirers = () => {
 
     // Enquiry filter logic: New, Alloted, Assign
     const getEnquiryStatus = () => {
+      if (item.digitalbroker) return "DigitalBroker";
       if (!item.salespersonid && !item.territorypartnerid) return "New";
       if (item.salespersonid && !item.territorypartnerid) return "Alloted";
       if (item.salespersonid && item.territorypartnerid) return "Assign";
@@ -874,6 +878,39 @@ const Enquirers = () => {
       minWidth: "150px",
     },
     {
+      name: "Digital Broker",
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 rounded-md ${
+            row.digitalbroker
+              ? "bg-[#F4F0FB] text-[#5D00FF]"
+              : "bg-[#FFEAEA] text-[#ff2323]"
+          }`}
+        >
+          {(row.dbName ? row.dbName + " - " : "No ") +
+            (row.dbContact ? row.dbContact : "Broker")}
+        </span>
+      ),
+      omit: false,
+      minWidth: "180px",
+    },
+    {
+      name: "Project Partner",
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 rounded-md ${
+            row.projectpartnerid
+              ? "bg-[#EAFBF1] text-[#0BB501]"
+              : "bg-[#FFEAEA] text-[#ff2323]"
+          }`}
+        >
+          {(row.projectPartnerName ? row.projectPartnerName + " - " : "No ") +
+            (row.projectPartnerContact ? row.projectPartnerContact : "Assign")}
+        </span>
+      ),
+      minWidth: "180px",
+    },
+    {
       name: "Sales Partner",
       cell: (row) => (
         <span
@@ -910,6 +947,14 @@ const Enquirers = () => {
       width: "120px",
     },
   ];
+
+  const hasDigitalBroker = datas.some((row) => !!row.digitalbroker);
+
+  const finalColumns = columns.map((col) => {
+    if (col.name === "Digital Broker")
+      return { ...col, omit: !hasDigitalBroker };
+    return col;
+  });
 
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
@@ -1066,7 +1111,7 @@ const Enquirers = () => {
           <DataTable
             className="scrollbar-hide"
             customStyles={customStyles}
-            columns={columns}
+            columns={finalColumns}
             data={filteredData}
             pagination
             paginationPerPage={15}
@@ -2067,6 +2112,44 @@ const Enquirers = () => {
                   disabled
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={enquiry.status}
+                  readOnly
+                />
+              </div>
+              <div className={`${enquiry.digitalbroker ? "block": "hidden"} w-full`}>
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Digital Broker
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={
+                    (enquiry.dbName
+                      ? enquiry.dbName + " - "
+                      : "No ") +
+                    (enquiry.dbContact
+                      ? enquiry.dbContact
+                      : "Broker")
+                  }
+                  readOnly
+                />
+              </div>
+              <div className="w-full ">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Project Partner
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={
+                    (enquiry.projectPartnerName
+                      ? enquiry.projectPartnerName + " - "
+                      : "No ") +
+                    (enquiry.projectPartnerContact
+                      ? enquiry.projectPartnerContact
+                      : "Assign")
+                  }
                   readOnly
                 />
               </div>

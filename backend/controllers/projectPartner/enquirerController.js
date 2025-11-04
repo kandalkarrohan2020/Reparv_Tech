@@ -5,56 +5,81 @@ import { sanitize } from "../../utils/sanitize.js";
 
 // Fetch All Enquiries
 export const getAll = (req, res) => {
-  const userId = req.projectPartnerUser.id;
-  if(!userId){
-    return res.status(401).json({message: "Unauthorized Access, Please Login Again!"});
+  const userId = req.projectPartnerUser?.id;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized Access, Please Login Again!" });
   }
+
   const enquirySource = req.params.source;
   if (!enquirySource) {
     return res.status(401).json({ message: "Enquiry Source Not Selected" });
   }
 
   let sql;
+  let params = [userId, userId, userId]; // for default query
 
   if (enquirySource === "Onsite") {
-    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
-                  territorypartner.fullname AS territoryName, 
-                  territorypartner.contact AS territoryContact
-           FROM enquirers 
-           LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
-           LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
-           WHERE properties.status = 'active' AND properties.approve = 'Approved' AND enquirers.source = "Onsite" AND enquirers.status != 'Token' AND properties.projectpartnerid = ? 
-           ORDER BY enquirers.enquirersid DESC`;
-  } else if (enquirySource === "Direct") {
-    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
-                  territorypartner.fullname AS territoryName, 
-                  territorypartner.contact AS territoryContact
-           FROM enquirers 
-           LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
-           LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
-           WHERE enquirers.source = "Direct" AND enquirers.status != 'Token' AND enquirers.projectpartnerid = ?
-           ORDER BY enquirers.enquirersid DESC`;
-  } else if (enquirySource === "CSV") {
-    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
-                  territorypartner.fullname AS territoryName, 
-                  territorypartner.contact AS territoryContact
-           FROM enquirers 
-           LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
-           LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
-           WHERE enquirers.source = "CSV File" AND enquirers.status != 'Token' AND properties.projectpartnerid = ?
-           ORDER BY enquirers.enquirersid DESC`;
-  } else {
-    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
-                  territorypartner.fullname AS territoryName, 
-                  territorypartner.contact AS territoryContact
-           FROM enquirers 
-           LEFT JOIN properties ON enquirers.propertyid = properties.propertyid  
-           LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
-           WHERE enquirers.status != 'Token' AND properties.projectpartnerid = ? OR enquirers.projectpartnerid = ?
-           ORDER BY enquirers.enquirersid DESC`;
+    sql = `
+      SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
+             territorypartner.fullname AS territoryName, 
+             territorypartner.contact AS territoryContact
+      FROM enquirers 
+      LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+      LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+      WHERE properties.status = 'active' 
+        AND properties.approve = 'Approved' 
+        AND enquirers.source = "Onsite" 
+        AND enquirers.status != 'Token' 
+        AND properties.projectpartnerid = ?
+      ORDER BY enquirers.enquirersid DESC`;
+    params = [userId];
+  } 
+  else if (enquirySource === "Direct") {
+    sql = `
+      SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
+             territorypartner.fullname AS territoryName, 
+             territorypartner.contact AS territoryContact
+      FROM enquirers 
+      LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+      LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+      WHERE enquirers.source = "Direct" 
+        AND enquirers.status != 'Token' 
+        AND (enquirers.projectpartnerid = ? OR enquirers.digitalbroker = ?)
+      ORDER BY enquirers.enquirersid DESC`;
+    params = [userId, userId];
+  } 
+  else if (enquirySource === "CSV") {
+    sql = `
+      SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
+             territorypartner.fullname AS territoryName, 
+             territorypartner.contact AS territoryContact
+      FROM enquirers 
+      LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+      LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+      WHERE enquirers.source = "CSV File" 
+        AND enquirers.status != 'Token' 
+        AND (properties.projectpartnerid = ? OR enquirers.digitalbroker = ?)
+      ORDER BY enquirers.enquirersid DESC`;
+    params = [userId, userId];
+  } 
+  else {
+    sql = `
+      SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
+             territorypartner.fullname AS territoryName, 
+             territorypartner.contact AS territoryContact
+      FROM enquirers 
+      LEFT JOIN properties ON enquirers.propertyid = properties.propertyid  
+      LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+      WHERE enquirers.status != 'Token'
+        AND (
+          properties.projectpartnerid = ? 
+          OR enquirers.projectpartnerid = ? 
+          OR enquirers.digitalbroker = ?
+        )
+      ORDER BY enquirers.enquirersid DESC`;
   }
 
-  db.query(sql, [userId, userId], (err, result) => {
+  db.query(sql, params, (err, result) => {
     if (err) {
       console.error("Error fetching Enquirers:", err);
       return res.status(500).json({ message: "Database error", error: err });
@@ -727,4 +752,47 @@ export const cancelled = (req, res) => {
       );
     }
   );
+};
+
+// * Assign To Reparv */
+export const assignToReparv = (req, res) => {
+  const userId = req.projectPartnerUser?.id;
+
+  if (!userId) {
+    return res.status(400).json({ message: "Invalid Project Partner Id" });
+  }
+
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Enquiry ID" });
+  }
+
+  // First, check if the enquiry exists
+  db.query("SELECT * FROM enquirers WHERE enquirersid = ?", [Id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Enquiry not found" });
+    }
+
+    // Then, update the enquiry
+    const updateSql = `
+      UPDATE enquirers 
+      SET salespersonid = NULL, territorypartnerid = NULL, projectpartnerid = NULL, 
+          digitalbroker = ? 
+      WHERE enquirersid = ?
+    `;
+
+    db.query(updateSql, [userId, Id], (err, updateResult) => {
+      if (err) {
+        console.error("Error Assigning Enquiry to Reparv:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      res.status(200).json({ message: "Enquiry assigned to Reparv successfully" });
+    });
+  });
 };

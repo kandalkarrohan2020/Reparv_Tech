@@ -364,11 +364,13 @@ export const verifyToken = (req, res, next) => {
        "/projectpartner/enquiries/add",
      "/projectpartner/enquiries/enquiry/",
     "/projectpartner/enquiries/get" ,
+    "/projectpartner/enquiries/assign/to/reparv",
    "/projectpartner/enquiries/enquiry/status/",
    "/projectpartner/ticket",
    "/projectpartner/enquiries/get/partnersenquiry",
    "/territoryapp/property/enquiry",
-   "/salesapp/property/enquiry"
+   "/salesapp/property/enquiry",
+   "/projectpartner/enquiries/getdigitalenquiry/"
   ];
 
   // Skip verification for public routes

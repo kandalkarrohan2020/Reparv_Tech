@@ -3,7 +3,7 @@ import db from "../../config/dbconnect.js";
 import moment from "moment";
 import { sanitize } from "../../utils/sanitize.js";
 
-// Fetch All Enquiries
+// * Fetch All Enquiries
 export const getAll = (req, res) => {
   const enquirySource = req.params.source;
   if (!enquirySource) {
@@ -15,37 +15,72 @@ export const getAll = (req, res) => {
   if (enquirySource === "Onsite") {
     sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
                   territorypartner.fullname AS territoryName, 
-                  territorypartner.contact AS territoryContact
+                  territorypartner.contact AS territoryContact,
+                  projectpartner.fullname AS projectPartnerName, 
+                  projectpartner.contact AS projectPartnerContact,
+                  db.fullname AS dbName, 
+                  db.contact AS dbContact
            FROM enquirers 
            LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
            LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
-           WHERE properties.status = 'active' AND properties.approve = 'Approved' AND enquirers.source = "Onsite" AND enquirers.status != 'Token'
+           LEFT JOIN projectpartner ON projectpartner.id = enquirers.projectpartnerid
+           LEFT JOIN projectpartner db ON db.id = enquirers.digitalbroker
+           WHERE properties.status = 'active' 
+             AND properties.approve = 'Approved' 
+             AND enquirers.source = 'Onsite' 
+             AND enquirers.status != 'Token'
            ORDER BY enquirers.enquirersid DESC`;
-  } else if (enquirySource === "Direct") {
+  } 
+  
+  else if (enquirySource === "Direct") {
     sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
                   territorypartner.fullname AS territoryName, 
-                  territorypartner.contact AS territoryContact
+                  territorypartner.contact AS territoryContact,
+                  projectpartner.fullname AS projectPartnerName, 
+                  projectpartner.contact AS projectPartnerContact,
+                  db.fullname AS dbName,
+                  db.contact AS dbContact
            FROM enquirers 
            LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
            LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
-           WHERE enquirers.source = "Direct" AND enquirers.status != 'Token'
+           LEFT JOIN projectpartner ON projectpartner.id = enquirers.projectpartnerid
+           LEFT JOIN projectpartner db ON db.id = enquirers.digitalbroker
+           WHERE enquirers.source = 'Direct' 
+             AND enquirers.status != 'Token'
            ORDER BY enquirers.enquirersid DESC`;
-  } else if (enquirySource === "CSV") {
+  } 
+  
+  else if (enquirySource === "CSV") {
     sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
                   territorypartner.fullname AS territoryName, 
-                  territorypartner.contact AS territoryContact
+                  territorypartner.contact AS territoryContact,
+                  projectpartner.fullname AS projectPartnerName, 
+                  projectpartner.contact AS projectPartnerContact,
+                  db.fullname AS dbName, 
+                  db.contact AS dbContact
            FROM enquirers 
            LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
            LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
-           WHERE enquirers.source = "CSV File" AND enquirers.status != 'Token' 
+           LEFT JOIN projectpartner ON projectpartner.id = enquirers.projectpartnerid
+           LEFT JOIN projectpartner db ON db.id = enquirers.digitalbroker
+           WHERE enquirers.source = 'CSV File' 
+             AND enquirers.status != 'Token' 
            ORDER BY enquirers.enquirersid DESC`;
-  } else {
+  } 
+  
+  else {
     sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
                   territorypartner.fullname AS territoryName, 
-                  territorypartner.contact AS territoryContact
+                  territorypartner.contact AS territoryContact,
+                  projectpartner.fullname AS projectPartnerName, 
+                  projectpartner.contact AS projectPartnerContact,
+                  db.fullname AS dbName, 
+                  db.contact AS dbContact
            FROM enquirers 
            LEFT JOIN properties ON enquirers.propertyid = properties.propertyid  
            LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+           LEFT JOIN projectpartner ON projectpartner.id = enquirers.projectpartnerid
+           LEFT JOIN projectpartner db ON db.id = enquirers.digitalbroker
            WHERE enquirers.status != 'Token'
            ORDER BY enquirers.enquirersid DESC`;
   }
@@ -58,8 +93,8 @@ export const getAll = (req, res) => {
 
     const formatted = result.map((row) => ({
       ...row,
-      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
-      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+      created_at: row.created_at ? moment(row.created_at).format("DD MMM YYYY | hh:mm A") : null,
+      updated_at: row.updated_at ? moment(row.updated_at).format("DD MMM YYYY | hh:mm A") : null,
     }));
 
     res.json(formatted);
@@ -71,9 +106,15 @@ export const getById = (req, res) => {
   const Id = parseInt(req.params.id);
   const sql = `SELECT enquirers.*,
                 territorypartner.fullname AS territoryName, 
-                territorypartner.contact AS territoryContact
+                territorypartner.contact AS territoryContact,
+                projectpartner.fullname AS projectPartnerName, 
+                projectpartner.contact AS projectPartnerContact,
+                db.fullname AS dbName, 
+                db.contact AS dbContact
                 FROM enquirers 
                 LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+                LEFT JOIN projectpartner ON projectpartner.id = enquirers.projectpartnerid
+               LEFT JOIN projectpartner db ON db.id = enquirers.digitalbroker
                 WHERE enquirersid = ?`;
 
   db.query(sql, [Id], (err, result) => {

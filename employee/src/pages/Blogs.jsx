@@ -623,7 +623,7 @@ const Blogs = () => {
                 <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
                   Blog Content
                 </label>
-                <div className="border border-[#00000033] rounded-[4px] overflow-hidden">
+                <div className="border border-[#00000033] rounded-[4px] blog-content ck-content">
                   {showBlogForm && newBlog.content !== undefined && (
                     <CKEditor
                       key={newBlog.id || "new"}

@@ -16,6 +16,7 @@ import { useLocation } from "react-router-dom";
 import propertyPicture from "../assets/propertyPicture.svg";
 import DownloadCSV from "../components/DownloadCSV";
 import UpdateImagesForm from "../components/propertyForm/UpdateImagesForm";
+import FormatPrice from "../components/FormatPrice";
 
 const Properties = () => {
   const location = useLocation();
@@ -1246,9 +1247,14 @@ const Properties = () => {
       minWidth: "150px",
     },
     {
+      name: "Offer Price",
+      selector: (row) => <FormatPrice price={parseInt(row.totalOfferPrice)} />,
+      width: "150px",
+    },
+    {
       name: "Builder",
       selector: (row) => row.company_name,
-      sortable: true,
+
       minWidth: "150px",
     },
     {
@@ -1261,7 +1267,7 @@ const Properties = () => {
         </div>
       ),
       omit: false,
-      sortable: true,
+
       minWidth: "180px",
     },
     {
@@ -1272,7 +1278,7 @@ const Properties = () => {
     {
       name: "City",
       selector: (row) => row.city,
-      sortable: true,
+
       width: "150px",
     },
     {
@@ -1744,9 +1750,9 @@ const Properties = () => {
                   setShowVideoUploadForm(false);
                   setSelectedImage(null);
                   setVideoUpload({
-                  brochureFile: "",
-                  videoLink: "",
-                });
+                    brochureFile: "",
+                    videoLink: "",
+                  });
                 }}
                 className="px-4 py-2 leading-4 text-white bg-[#000000B2] rounded active:scale-[0.98]"
               >

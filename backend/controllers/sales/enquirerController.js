@@ -87,16 +87,62 @@ export const getPropertyCity = (req, res) => {
 
 // **Fetch All Active Territory Partner**
 export const getTerritoryPartners = (req, res) => {
-  const propertyCity = req.params.city;
+  const city = req.params.city;
+  const salesUserId = req.salesUser?.id;
 
-  const sql =
-    "SELECT * FROM territorypartner WHERE status = 'Active' AND territorypartner.city = ? ORDER BY id DESC";
-  db.query(sql, [propertyCity], (err, result) => {
+  if (!salesUserId) {
+    return res.status(401).json({ message: "Unauthorized! Please Login Again." });
+  }
+
+  // Step 1: Fetch projectpartnerid of the logged-in salesperson
+  const fetchSalesQuery = "SELECT projectpartnerid FROM salespersons WHERE salespersonsid = ?";
+
+  db.query(fetchSalesQuery, [salesUserId], (err, salesResult) => {
     if (err) {
-      console.error("Error fetching:", err);
+      console.error("Error fetching Salesperson:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    res.json(result);
+
+    if (salesResult.length === 0) {
+      return res.status(404).json({ message: "Salesperson not found" });
+    }
+
+    const projectpartnerid = salesResult[0].projectpartnerid;
+
+    // Step 2: Build TerritoryPartner query based on projectpartnerid availability
+    let sql;
+    let params;
+
+    if (projectpartnerid) {
+      // Filter by matching projectpartnerid
+      sql = `
+        SELECT * 
+        FROM territorypartner 
+        WHERE status = 'Active' 
+          AND city = ? 
+          AND projectpartnerid = ?
+        ORDER BY id DESC`;
+      params = [city, projectpartnerid];
+    } else {
+      // No projectpartnerid linked — fetch all active ones in that city
+      sql = `
+        SELECT * 
+        FROM territorypartner 
+        WHERE status = 'Active' 
+          AND city = ?
+        ORDER BY id DESC`;
+      params = [city];
+    }
+
+    // Step 3: Execute final query
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        console.error("Error fetching Territory Partners:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      res.json(result);
+    });
   });
 };
 

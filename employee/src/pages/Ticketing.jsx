@@ -656,7 +656,6 @@ const Ticketing = () => {
               <option value="Builder">Builder</option>
               <option value="Employee">Employee</option>
               <option value="Sales Person">Sales Person</option>
-              <option value="Onboarding Partner">Onboarding Partner</option>
               <option value="Territory Partner">Territory Partner</option>
               <option value="Project Partner">Project Partner</option>
             </select>

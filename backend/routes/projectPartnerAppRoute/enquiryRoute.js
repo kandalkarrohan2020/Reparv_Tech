@@ -3,8 +3,10 @@ import {
   addEnquiry,
   assignEnquiry,
   assignEnquiryToTerritoryPartner,
+  assignToReparv,
   getAll,
   getAllCreatedEnquiry,
+  getAllDigitalEnquiry,
   getPartnersEnquiry,
   status,
 } from "../../controllers/projectPartnerApp/enquiryController.js";
@@ -17,4 +19,6 @@ router.get("/enquiry/:id",getAllCreatedEnquiry)
 router.post("/assignEnquiry/:id", assignEnquiry);
 router.post("/assignEnquryTerritory/:id", assignEnquiryToTerritoryPartner);
 router.put("/enquiry/status/:id",status)
+router.put("/assign/to/reparv/:id/:enquiryid", assignToReparv);
+router.get("/getdigitalenquiry/:id",getAllDigitalEnquiry)
 export default router;

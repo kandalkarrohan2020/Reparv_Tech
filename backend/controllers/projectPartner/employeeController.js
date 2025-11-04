@@ -38,7 +38,7 @@ export const getAll = (req, res) => {
 
 // **Fetch All Menus**
 export const getMenus = (req, res) => {
-  const sql = "SELECT * FROM menu ORDER BY menuName";
+  const sql = "SELECT * FROM projectPartnerMenu ORDER BY menuName";
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching :", err);

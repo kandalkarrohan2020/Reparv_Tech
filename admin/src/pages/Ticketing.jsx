@@ -661,10 +661,7 @@ const Ticketing = () => {
               <option value="Builder">Builder</option>
               <option value="Employee">Employee</option>
               <option value="Promoter">Promoter</option>
-              <option value="Sales Person">Sales Person</option>
               <option value="Project Partner">Project Partner</option>
-              <option value="Territory Partner">Territory Partner</option>
-              <option value="Onboarding Partner">Onboarding Partner</option>
             </select>
           </div>
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">

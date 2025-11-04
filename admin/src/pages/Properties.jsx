@@ -1272,9 +1272,13 @@ const Properties = () => {
       minWidth: "200px",
     },
     {
+      name: "Offer Price",
+      selector: (row) => <FormatPrice price={parseInt(row.totalOfferPrice)} />,
+      width: "150px",
+    },
+    {
       name: "Builder",
       selector: (row) => row.company_name,
-      sortable: true,
       minWidth: "150px",
     },
     {
@@ -1287,7 +1291,6 @@ const Properties = () => {
         </div>
       ),
       omit: false,
-      sortable: true,
       minWidth: "180px",
     },
     {
@@ -1298,7 +1301,6 @@ const Properties = () => {
     {
       name: "City",
       selector: (row) => row.city,
-      sortable: true,
       width: "150px",
     },
     {

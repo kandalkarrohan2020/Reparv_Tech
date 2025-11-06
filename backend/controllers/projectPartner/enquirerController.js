@@ -3,8 +3,213 @@ import db from "../../config/dbconnect.js";
 import moment from "moment";
 import { sanitize } from "../../utils/sanitize.js";
 
-// Fetch All Enquiries
+// * Fetch All Enquiries with Enquiry Lister Details
 export const getAll = (req, res) => {
+  const userId = req.projectPartnerUser?.id;
+  if (!userId) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized Access, Please Login Again!" });
+  }
+
+  const enquirySource = req.params.source;
+  if (!enquirySource) {
+    return res
+      .status(401)
+      .json({ message: "Enquiry Source Not Selected" });
+  }
+
+  let sql;
+  let params = [userId, userId, userId]; // default params
+
+  // Onsite Enquiries (Website Direct)
+  if (enquirySource === "Onsite") {
+    sql = `
+      SELECT 
+        enquirers.*, 
+        properties.frontView, properties.seoSlug, properties.commissionAmount,
+        territorypartner.fullname AS territoryName, 
+        territorypartner.contact AS territoryContact
+      FROM enquirers 
+      LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+      LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+      WHERE properties.status = 'active' 
+        AND properties.approve = 'Approved' 
+        AND enquirers.source = "Onsite" 
+        AND enquirers.status != 'Token' 
+        AND properties.projectpartnerid = ?
+      ORDER BY enquirers.enquirersid DESC`;
+    params = [userId];
+  } 
+  
+  // Direct Enquiries (with Lister Info)
+  else if (enquirySource === "Direct") {
+    sql = `
+      SELECT 
+        enquirers.*, 
+        properties.frontView, properties.seoSlug, properties.commissionAmount,
+
+        -- Territory & Project Partner Info
+        territorypartner.fullname AS territoryName, 
+        territorypartner.contact AS territoryContact,
+        projectpartner.fullname AS projectPartnerName, 
+        projectpartner.contact AS projectPartnerContact,
+
+        -- Enquiry Lister Info
+        CASE 
+          WHEN enquirers.salespartner IS NOT NULL THEN 'Sales Partner'
+          WHEN enquirers.territorypartner IS NOT NULL THEN 'Territory Partner'
+          WHEN enquirers.projectpartner IS NOT NULL THEN 'Project Partner'
+          ELSE '-- Unknown --'
+        END AS listerRole,
+
+        COALESCE(
+          salespersons.fullname,
+          territoryLister.fullname,
+          projectLister.fullname
+        ) AS listerName,
+
+        COALESCE(
+          salespersons.contact,
+          territoryLister.contact,
+          projectLister.contact
+        ) AS listerContact
+
+      FROM enquirers
+      LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+      LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+      LEFT JOIN projectpartner ON projectpartner.id = enquirers.projectpartnerid
+
+      -- Join for dynamic lister details
+      LEFT JOIN salespersons ON enquirers.salespartner = salespersons.salespersonsid
+      LEFT JOIN territorypartner AS territoryLister ON enquirers.territorypartner = territoryLister.id
+      LEFT JOIN projectpartner AS projectLister ON enquirers.projectpartner = projectLister.id
+
+      WHERE enquirers.source = "Direct"
+        AND enquirers.status != 'Token'
+        AND (enquirers.projectpartnerid = ? OR enquirers.projectbroker = ? OR enquirers.projectpartner = ?)
+      ORDER BY enquirers.enquirersid DESC`;
+    params = [userId, userId, userId];
+  } 
+  
+  // CSV Imported Enquiries
+  else if (enquirySource === "CSV") {
+    sql = `
+      SELECT 
+        enquirers.*, 
+        properties.frontView, properties.seoSlug, properties.commissionAmount,
+        territorypartner.fullname AS territoryName, 
+        territorypartner.contact AS territoryContact,
+        projectpartner.fullname AS projectPartnerName, 
+        projectpartner.contact AS projectPartnerContact
+      FROM enquirers 
+      LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+      LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+      LEFT JOIN projectpartner ON projectpartner.id = enquirers.projectpartnerid
+      WHERE enquirers.source = "CSV File" 
+        AND enquirers.status != 'Token' 
+        AND (properties.projectpartnerid = ? OR enquirers.projectbroker = ?)
+      ORDER BY enquirers.enquirersid DESC`;
+    params = [userId, userId, userId];
+  } 
+  
+  // Digital Broker Enquiries (Now Includes Enquiry Lister)
+  else if (enquirySource === "Digital Broker") {
+    sql = `
+      SELECT 
+        enquirers.*, 
+        properties.frontView, properties.seoSlug, properties.commissionAmount,
+
+        -- Partner Info
+        territorypartner.fullname AS territoryName, 
+        territorypartner.contact AS territoryContact,
+        projectpartner.fullname AS projectPartnerName, 
+        projectpartner.contact AS projectPartnerContact,
+
+        -- Enquiry Lister Info
+        CASE 
+          WHEN enquirers.salespartner IS NOT NULL THEN 'Sales Partner'
+          WHEN enquirers.territorypartner IS NOT NULL THEN 'Territory Partner'
+          WHEN enquirers.projectpartner IS NOT NULL THEN 'Project Partner'
+          ELSE 'Unknown'
+        END AS listerRole,
+
+        COALESCE(
+          salespersons.fullname,
+          territoryLister.fullname,
+          projectLister.fullname
+        ) AS listerName,
+
+        COALESCE(
+          salespersons.contact,
+          territoryLister.contact,
+          projectLister.contact
+        ) AS listerContact
+
+      FROM enquirers 
+      LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+      LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+      LEFT JOIN projectpartner ON projectpartner.id = enquirers.projectpartnerid
+
+      -- Join for dynamic lister details
+      LEFT JOIN salespersons ON enquirers.salespartner = salespersons.salespersonsid
+      LEFT JOIN territorypartner AS territoryLister ON enquirers.territorypartner = territoryLister.id
+      LEFT JOIN projectpartner AS projectLister ON enquirers.projectpartner = projectLister.id
+
+      WHERE enquirers.status != 'Token' 
+        AND enquirers.projectpartnerid = ?
+        AND (
+          enquirers.salesbroker IS NOT NULL 
+          OR enquirers.territorybroker IS NOT NULL 
+          OR enquirers.projectbroker IS NOT NULL
+        )
+      ORDER BY enquirers.enquirersid DESC`;
+    params = [userId];
+  } 
+  
+  // Default (All Enquiries)
+  else {
+    sql = `
+      SELECT 
+        enquirers.*, 
+        properties.frontView, properties.seoSlug, properties.commissionAmount,
+        territorypartner.fullname AS territoryName, 
+        territorypartner.contact AS territoryContact
+      FROM enquirers 
+      LEFT JOIN properties ON enquirers.propertyid = properties.propertyid  
+      LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+      WHERE enquirers.status != 'Token'
+        AND (
+          properties.projectpartnerid = ? 
+          OR enquirers.projectpartnerid = ? 
+          OR enquirers.projectbroker = ?
+        )
+      ORDER BY enquirers.enquirersid DESC`;
+  }
+
+  // Execute Query
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      console.error("Error fetching Enquirers:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    const formatted = result.map((row) => ({
+      ...row,
+      created_at: row.created_at
+        ? moment(row.created_at).format("DD MMM YYYY | hh:mm A")
+        : null,
+      updated_at: row.updated_at
+        ? moment(row.updated_at).format("DD MMM YYYY | hh:mm A")
+        : null,
+    }));
+
+    res.json(formatted);
+  });
+};
+
+// Fetch All Enquiries
+export const getAllOld = (req, res) => {
   const userId = req.projectPartnerUser?.id;
   if (!userId) {
     return res.status(401).json({ message: "Unauthorized Access, Please Login Again!" });

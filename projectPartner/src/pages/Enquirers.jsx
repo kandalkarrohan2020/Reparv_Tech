@@ -308,16 +308,13 @@ const Enquirers = () => {
   //Fetch Sales Persons List
   const fetchSalesPersonList = async () => {
     try {
-      const response = await fetch(
-        URI + "/project-partner/sales/active",
-        {
-          method: "GET",
-          credentials: "include", //  Ensures cookies are sent
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(URI + "/project-partner/sales/active", {
+        method: "GET",
+        credentials: "include", //  Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (!response.ok) throw new Error("Failed to fetch Sales Persons.");
       const data = await response.json();
       setSalesPersonList(data);
@@ -646,13 +643,16 @@ const Enquirers = () => {
       return;
 
     try {
-      const response = await fetch(URI + `/project-partner/enquirers/convert/to/digital-broker/${id}`, {
-        method: "PUT",
-        credentials: "include", // Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + `/project-partner/enquirers/convert/to/digital-broker/${id}`,
+        {
+          method: "PUT",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const data = await response.json();
       //console.log(response);
       if (response.ok) {
@@ -773,7 +773,7 @@ const Enquirers = () => {
   const getEnquiryCounts = (data) => {
     return data.reduce(
       (acc, item) => {
-         if (item.salesbroker || item.territorybroker || item.projectbroker) {
+        if (item.salesbroker || item.territorybroker || item.projectbroker) {
           acc.DigitalBroker++;
         } else if (!item.salespersonid && !item.territorypartnerid) {
           acc.New++;
@@ -784,7 +784,7 @@ const Enquirers = () => {
         }
         return acc;
       },
-      { New: 0, Alloted: 0, Assign: 0, DigitalBroker: 0}
+      { New: 0, Alloted: 0, Assign: 0, DigitalBroker: 0 }
     );
   };
 
@@ -848,7 +848,8 @@ const Enquirers = () => {
 
     // Enquiry filter logic: New, Alloted, Assign
     const getEnquiryStatus = () => {
-      if (item.salesbroker || item.territorybroker || item.projectbroker) return "Digital Broker";
+      if (item.salesbroker || item.territorybroker || item.projectbroker)
+        return "Digital Broker";
       if (!item.salespersonid && !item.territorypartnerid) return "New";
       if (item.salespersonid && !item.territorypartnerid) return "Alloted";
       if (item.salespersonid && item.territorypartnerid) return "Assign";
@@ -988,6 +989,18 @@ const Enquirers = () => {
       minWidth: "150px",
     },
     {
+      name: "Enquiry Lister",
+      cell: (row) => (
+        <div className="w-full flex flex-col gap-[2px]">
+          <p>{row.listerRole}</p>
+          <p>{row.listerName}</p>
+          <p>{row.listerContact}</p>
+        </div>
+      ),
+      omit: false,
+      minWidth: "180px",
+    },
+    {
       name: "Sales Partner",
       cell: (row) => (
         <span
@@ -1026,10 +1039,26 @@ const Enquirers = () => {
     },
   ];
 
+  const hasEnquiryLister = datas.some((row) => !!row.listerName);
+
   const finalColumns = columns.map((col) => {
-    if (col.name === "Action" || col.name === "Sales Partner" || col.name === "Territory Partner")
-      return { ...col, omit: enquiryFilter === "Digital Broker" };
-    return col;
+    // Columns to hide when enquiryFilter is "Digital Broker"
+    const hideForDigitalBroker =
+      col.name === "Action" ||
+      col.name === "Enquiry Lister" ||
+      col.name === "Sales Partner" ||
+      col.name === "Territory Partner";
+
+    // Base omit condition
+    let omit = false;
+
+    if (enquiryFilter === "Digital Broker" && hideForDigitalBroker) {
+      omit = true;
+    } else if (col.name === "Enquiry Lister" && !hasEnquiryLister) {
+      omit = true;
+    }
+
+    return { ...col, omit };
   });
 
   const ActionDropdown = ({ row }) => {

@@ -73,9 +73,12 @@ const Enquirers = () => {
   const [selectedSource, setSelectedSource] = useState("Select Enquiry Source");
   //const [selectedEnquiryLister, setSelectedEnquiryLister] = useState("Select Enquiry Lister");
 
+  const [error, setError] = useState("");
+  const [properties, setProperties] = useState([]);
   const [propertyList, setPropertyList] = useState([]);
 
   const [newEnquiry, setNewEnquiry] = useState({
+    propertyid: null,
     customer: "",
     contact: "",
     minbudget: "",
@@ -194,6 +197,49 @@ const Enquirers = () => {
       setRemarkList(list);
     } catch (err) {
       console.error("Error fetching :", err);
+    }
+  };
+
+  // ** Fetch Properties for Update Enquiry **
+  const fetchProperties = async () => {
+    try {
+      setError(""); // clear previous error
+      const response = await fetch(URI + "/admin/enquirers/properties", {
+        method: "POST",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          minbudget: newEnquiry.minbudget,
+          maxbudget: newEnquiry.maxbudget,
+          state: newEnquiry.state,
+          city: newEnquiry.city,
+          category: newEnquiry.category,
+        }),
+      });
+
+      // Check if API failed
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message || "Failed to fetch properties.");
+      }
+
+      const list = await response.json();
+
+      if (list.data.length === 0) {
+        setError("Properties not found based on your requirement.");
+        setProperties([]);
+      } else {
+        setProperties(list.data);
+        //console.log(list);
+      }
+    } catch (err) {
+      console.error("Error fetching properties:", err);
+      setError(
+        err.message || "Something went wrong while fetching properties."
+      );
+      setProperties([]);
     }
   };
 
@@ -515,7 +561,7 @@ const Enquirers = () => {
       : "add/enquiry";
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/sales/enquiry/${endpoint}`, {
+      const response = await fetch(`${URI}/project-partner/enquiry/${endpoint}`, {
         method: newEnquiry.enquirersid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -536,6 +582,7 @@ const Enquirers = () => {
 
       // Clear form only after successful fetch
       setNewEnquiry({
+        propertyid: null,
         customer: "",
         contact: "",
         minbudget: "",
@@ -654,6 +701,24 @@ const Enquirers = () => {
   }, []);
 
   useEffect(() => {
+    if (
+      newEnquiry.minbudget != "" &&
+      newEnquiry.maxbudget != "" &&
+      newEnquiry.category != "" &&
+      newEnquiry.state != "" &&
+      newEnquiry.city != ""
+    ) {
+      fetchProperties();
+    }
+  }, [
+    newEnquiry.minbudget,
+    newEnquiry.maxbudget,
+    newEnquiry.category,
+    newEnquiry.state,
+    newEnquiry.city,
+  ]);
+
+  useEffect(() => {
     if (newEnquiry.state != "" || salesPersonAssign.state != "") {
       fetchCities();
     }
@@ -671,7 +736,7 @@ const Enquirers = () => {
         }
         return acc;
       },
-      { New: 0, Alloted: 0, Assign: 0}
+      { New: 0, Alloted: 0, Assign: 0 }
     );
   };
 
@@ -999,11 +1064,6 @@ const Enquirers = () => {
           <option value="view">View</option>
           <option value="status">Status</option>
           {row.source !== "Onsite" && <option value="update">Update</option>}
-          {row.source !== "Onsite" && (
-            <option value="property">Property</option>
-          )}
-          <option value="assign">Assign</option>
-
           <option value="delete">Delete</option>
         </select>
       </div>
@@ -1186,6 +1246,7 @@ const Enquirers = () => {
               onClick={() => {
                 setShowEnquiryUpdateForm(false);
                 setNewEnquiry({
+                  propertyid: null,
                   customer: "",
                   contact: "",
                   minbudget: "",
@@ -1388,7 +1449,36 @@ const Enquirers = () => {
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              <div className="w-full col-span-2">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  {error === "" ? "Select Property" : error}
+                </label>
+
+                <select
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={newEnquiry.propertyid}
+                  onChange={(e) => {
+                    const selectedValue =
+                      e.target.value === "" ? null : e.target.value;
+                    setNewEnquiry({
+                      ...newEnquiry,
+                      propertyid: selectedValue,
+                    });
+                  }}
+                >
+                  <option value="">Select Property</option>
+                  {properties.length > 0 &&
+                    properties?.map((property, index) => (
+                      <option key={index} value={property.propertyid}>
+                        {property.propertyName} | {property.builtUpArea} sqft |{" "}
+                        <FormatPrice price={property.totalOfferPrice} />
+                      </option>
+                    ))}
+                </select>
+              </div>
             </div>
+
             <div className="flex flex-col gap-3  mt-[10px] text-sm text-[#00000066] font-medium ">
               <label htmlFor="message" className="ml-1">
                 Message <span className="text-red-600">*</span>
@@ -1414,6 +1504,18 @@ const Enquirers = () => {
                 type="button"
                 onClick={() => {
                   setShowEnquiryUpdateForm(false);
+                  setNewEnquiry({
+                    propertyid: null,
+                    customer: "",
+                    contact: "",
+                    minbudget: "",
+                    maxbudget: "",
+                    category: "",
+                    state: "",
+                    city: "",
+                    location: "",
+                    message: "",
+                  });
                 }}
                 className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
               >

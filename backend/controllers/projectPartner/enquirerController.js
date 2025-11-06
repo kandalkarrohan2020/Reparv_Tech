@@ -316,12 +316,15 @@ export const getAllOld = (req, res) => {
 // **Fetch Single by ID**
 export const getById = (req, res) => {
   const Id = parseInt(req.params.id);
-  const sql = `SELECT enquirers.*,
-                territorypartner.fullname AS territoryName, 
-                territorypartner.contact AS territoryContact
-                FROM enquirers 
-                LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
-                WHERE enquirersid = ?`;
+  const sql = `SELECT enquirers.*, 
+       territorypartner.fullname AS territoryName,
+       territorypartner.contact AS territoryContact,
+       territoryenquiry.followup AS territoryFollowUp,
+       territoryenquiry.status AS territoryStatus 
+       FROM enquirers 
+       LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
+       LEFT JOIN territoryenquiry ON territoryenquiry.enquirerid = enquirers.enquirersid
+       WHERE enquirersid = ?`;
 
   db.query(sql, [Id], (err, result) => {
     if (err) {

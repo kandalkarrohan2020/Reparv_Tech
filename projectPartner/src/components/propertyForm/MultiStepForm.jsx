@@ -67,14 +67,11 @@ const MultiStepForm = ({
 
     try {
       setLoading(true);
-      const response = await fetch(
-        `${URI}/project-partner/properties/${endpoint}`,
-        {
-          method: newProperty.propertyid ? "PUT" : "POST",
-          credentials: "include",
-          body: formData,
-        }
-      );
+      const response = await fetch(`${URI}/admin/properties/${endpoint}`, {
+        method: newProperty.propertyid ? "PUT" : "POST",
+        credentials: "include",
+        body: formData,
+      });
 
       // If duplicate property name
       if (response.status === 409) {
@@ -178,7 +175,7 @@ const MultiStepForm = ({
         "totalSalesPrice", // number
         "totalOfferPrice", // number
         "stampDuty", // number
-        "other", // number
+        "other", //number
         "tags",
       ];
 
@@ -236,9 +233,9 @@ const MultiStepForm = ({
     <div
       className={`${
         showPropertyForm ? "flex" : "hidden"
-      } z-[61] property-form overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto`}
+      } z-[61] property-form overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
     >
-      <div className="w-full overflow-scroll scrollbar-hide sm:w-[600px] md:w-[500px] lg:w-[700px] xl:w-[1000px] bg-white py-8 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+      <div className="w-full overflow-scroll scrollbar-hide sm:w-[600px] md:w-[500px] lg:w-[700px] xl:w-[1000px] bg-white py-8 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
         {/* Top Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold">Add Property</h2>
@@ -327,9 +324,9 @@ const MultiStepForm = ({
                 onClick={nextButton == true && nextStep}
                 className={`${
                   nextButton == true
-                    ? "active:scale-[0.98] bg-green-600"
-                    : "bg-blue-400"
-                } px-6 py-2 text-white  rounded `}
+                    ? "active:scale-[0.98] bg-green-600 text-white"
+                    : "bg-blue-400 text-white"
+                } px-6 py-2 rounded `}
               >
                 Next
               </button>

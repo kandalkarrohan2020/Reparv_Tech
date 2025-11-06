@@ -2,34 +2,65 @@ import db from "../../config/dbconnect.js";
 import moment from "moment";
 import { sanitize } from "../../utils/sanitize.js";
 
-// **Fetch All **
+// Fetch All Enquiries
 export const getAll = (req, res) => {
-  console.log("userId: " + req.salesUser?.id);
-  const Id = req.salesUser?.id;
-  if (!Id) {
-    console.log("Invalid User Id: " + Id);
-    return res.status(400).json({ message: "Invalid User Id" });
+  const userId = req.salesUser?.id;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized Access, Please Login Again!" });
   }
 
-  const sql = `
-    SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
-    territorypartner.fullname AS territoryName,
-    territorypartner.contact AS territoryContact
-    FROM enquirers 
-    LEFT JOIN properties 
-    ON enquirers.propertyid = properties.propertyid
-    LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
-    WHERE enquirers.status != 'Token' AND enquirers.salespersonid = ? 
-    ORDER BY enquirers.enquirersid DESC`;
+  const enquirySource = req.params.source;
+  if (!enquirySource) {
+    return res.status(401).json({ message: "Enquiry Source Not Selected" });
+  }
 
-  db.query(sql, [Id], (err, results) => {
+  let sql;
+  let params = [userId, userId]; // for default query
+
+  if (enquirySource === "Enquiry") {
+    sql = `
+      SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
+      territorypartner.fullname AS territoryName,
+      territorypartner.contact AS territoryContact
+      FROM enquirers 
+      LEFT JOIN properties 
+      ON enquirers.propertyid = properties.propertyid
+      LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
+      WHERE enquirers.status != 'Token' AND enquirers.salespersonid = ? 
+      ORDER BY enquirers.enquirersid DESC`;
+    params = [userId];
+  } else if (enquirySource === "Digital Broker") {
+    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
+      territorypartner.fullname AS territoryName,
+      territorypartner.contact AS territoryContact
+      FROM enquirers 
+      LEFT JOIN properties 
+      ON enquirers.propertyid = properties.propertyid
+      LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
+      WHERE enquirers.status != 'Token' AND enquirers.salespersonid = ? 
+      AND (enquirers.salesbroker IS NOT NULL OR enquirers.territorybroker IS NOT NULL OR enquirers.projectbroker IS NOT NULL)
+      ORDER BY enquirers.enquirersid DESC`;
+    params = [userId];
+  } else {
+    sql = `
+      SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
+      territorypartner.fullname AS territoryName,
+      territorypartner.contact AS territoryContact
+      FROM enquirers 
+      LEFT JOIN properties 
+      ON enquirers.propertyid = properties.propertyid
+      LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid 
+      WHERE enquirers.status != 'Token' AND enquirers.salespersonid = ? OR enquirers.salesbroker = ?
+      ORDER BY enquirers.enquirersid DESC`;
+  }
+
+  db.query(sql, params, (err, result) => {
     if (err) {
-      console.error("Database Query Error:", err);
-      return res
-        .status(500)
-        .json({ message: "Database query error", error: err });
+      console.error("Error fetching Enquirers:", err);
+      return res.status(500).json({ message: "Database error", error: err });
     }
-    const formatted = results.map((row) => ({
+
+    const formatted = result.map((row) => ({
       ...row,
       created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
       updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
@@ -64,6 +95,90 @@ export const getById = (req, res) => {
   });
 };
 
+export const getProperties = (req, res) => {
+  const salesUserId = req.salesUser?.id; // make sure this comes from auth middleware
+
+  if (!salesUserId) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized! Please Login Again." });
+  }
+
+  const { minbudget, maxbudget, state, city, category } = req.body;
+
+  // Basic validation
+  if (!state || !city || !category) {
+    return res.status(400).json({
+      success: false,
+      message: "State, City, and Category are required.",
+    });
+  }
+
+  // Parse budgets safely
+  const minBudgetValue = parseFloat(minbudget) || 0;
+  const maxBudgetValue = parseFloat(maxbudget) || Number.MAX_SAFE_INTEGER;
+
+  // Step 1: Fetch projectpartnerid of the logged-in salesperson
+  const fetchSalesQuery =
+    "SELECT projectpartnerid FROM salespersons WHERE salespersonsid = ?";
+
+  db.query(fetchSalesQuery, [salesUserId], (err, salesResult) => {
+    if (err) {
+      console.error("Error fetching Salesperson:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (salesResult.length === 0) {
+      return res.status(404).json({ message: "Salesperson not found" });
+    }
+
+    const projectpartnerid = salesResult[0].projectpartnerid;
+
+    // Step 2: Build properties query
+    let sql = `
+      SELECT * FROM properties
+      WHERE CAST(totalOfferPrice AS DECIMAL(15,2)) BETWEEN ? AND ?
+        AND propertyCategory = ?
+        AND state = ?
+        AND city = ?
+    `;
+    const params = [minBudgetValue, maxBudgetValue, category, state, city];
+
+    // If salesperson is linked to a projectpartner, filter properties by that partner
+    if (projectpartnerid) {
+      sql += " AND projectpartnerid = ?";
+      params.push(projectpartnerid);
+    }
+
+    sql += " ORDER BY created_at DESC";
+
+    // Step 3: Execute final query
+    db.query(sql, params, (err, propertyResults) => {
+      if (err) {
+        console.error("Error fetching properties:", err);
+        return res.status(500).json({
+          success: false,
+          message: "Database error while fetching properties.",
+          error: err,
+        });
+      }
+
+      if (!propertyResults || propertyResults.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "No properties found based on your filters.",
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "Properties fetched successfully.",
+        data: propertyResults,
+      });
+    });
+  });
+};
+
 // **Fetch All Active Territory Partner**
 export const getPropertyCity = (req, res) => {
   const Id = parseInt(req.params.id);
@@ -85,14 +200,15 @@ export const getPropertyCity = (req, res) => {
   });
 };
 
-// **Fetch All Active Territory Partner**
+// Fetch All Active Territory Partner by Date 
 export const getTerritoryPartners = (req, res) => {
-  const city = req.params.city;
   const salesUserId = req.salesUser?.id;
-
   if (!salesUserId) {
     return res.status(401).json({ message: "Unauthorized! Please Login Again." });
   }
+
+  const propertyCity = req.params.city;
+  const { selectedDate } = req.query; // e.g., '2025-09-12'
 
   // Step 1: Fetch projectpartnerid of the logged-in salesperson
   const fetchSalesQuery = "SELECT projectpartnerid FROM salespersons WHERE salespersonsid = ?";
@@ -117,21 +233,28 @@ export const getTerritoryPartners = (req, res) => {
       // Filter by matching projectpartnerid
       sql = `
         SELECT * 
-        FROM territorypartner 
-        WHERE status = 'Active' 
-          AND city = ? 
-          AND projectpartnerid = ?
-        ORDER BY id DESC`;
-      params = [city, projectpartnerid];
+        FROM territorypartner
+        WHERE status = 'Active'
+        AND city = ?
+        AND (
+           inactive_until IS NULL 
+           OR NOT JSON_CONTAINS(inactive_until, JSON_QUOTE(?))
+        ) AND projectpartnerid = ?
+        ORDER BY id DESC`
+      params = [propertyCity, selectedDate, projectpartnerid];
     } else {
       // No projectpartnerid linked — fetch all active ones in that city
       sql = `
         SELECT * 
-        FROM territorypartner 
-        WHERE status = 'Active' 
-          AND city = ?
+        FROM territorypartner
+        WHERE status = 'Active'
+        AND city = ?
+        AND (
+           inactive_until IS NULL 
+           OR NOT JSON_CONTAINS(inactive_until, JSON_QUOTE(?))
+        )
         ORDER BY id DESC`;
-      params = [city];
+      params = [propertyCity, selectedDate];
     }
 
     // Step 3: Execute final query
@@ -149,8 +272,8 @@ export const getTerritoryPartners = (req, res) => {
 // Assign Enquiry To Territory Partners
 export const assignEnquiry = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { territorypartnerid, territorypartnerdate } = req.body;
-  if (!territorypartnerid || !territorypartnerdate) {
+  const { territorypartnerid, territorypartnerdate, territorytimeslot } = req.body;
+  if (!territorypartnerid || !territorypartnerdate || !territorytimeslot) {
     return res.status(400).json({ message: "All Fields Required" });
   }
   const Id = parseInt(req.params.id);
@@ -171,10 +294,11 @@ export const assignEnquiry = async (req, res) => {
       }
 
       db.query(
-        "UPDATE enquirers SET territorypartnerid = ?, visitdate = ?, updated_at = ?, created_at = ? WHERE enquirersid = ?",
+        "UPDATE enquirers SET territorypartnerid = ?, visitdate = ?, territorytimeslot = ?, updated_at = ?, created_at = ? WHERE enquirersid = ?",
         [
           territorypartnerid,
           territorypartnerdate,
+          territorytimeslot,
           currentdate,
           currentdate,
           Id,
@@ -596,29 +720,6 @@ export const getByStatus = (req, res) => {
   });
 };
 
-//get availableTps
-// export const getAvailableTPsForDate = (req, res) => {
-//   const propertyCity = req.params.city;
-//   const { selectedDate } = req.query; // e.g., '2025-09-12'
-
-//   const sql = `
-//     SELECT *
-//     FROM territorypartner
-//     WHERE status = 'Active'
-//       AND city = ?
-//       AND (inactive_until IS NULL OR inactive_until <> ?)
-//     ORDER BY id DESC
-//   `;
-
-//   db.query(sql, [propertyCity, selectedDate], (err, result) => {
-//     if (err) {
-//       console.error("Error fetching:", err);
-//       return res.status(500).json({ message: "Database error", error: err });
-//     }
-//     res.json(result);
-//   });
-// };
-
 export const getAvailableTPsForDate = (req, res) => {
   const propertyCity = req.params.city;
   const { selectedDate } = req.query; // e.g., '2025-09-12'
@@ -643,3 +744,4 @@ export const getAvailableTPsForDate = (req, res) => {
     res.json(result);
   });
 };
+

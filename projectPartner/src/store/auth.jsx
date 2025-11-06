@@ -16,8 +16,8 @@ export const AuthProvider = ({ children }) => {
     setAccessToken();
     Cookies.remove("accessToken");
   };
-  //const URI = "http://localhost:3000";
-  const URI = "https://api.reparv.in";
+  const URI = "http://localhost:3000";
+  //const URI = "https://api.reparv.in";
 
   const [user, setUser] = useState(
     JSON.parse(localStorage.getItem("projectPartnerUser"))
@@ -44,6 +44,7 @@ export const AuthProvider = ({ children }) => {
   const [showNewPlotAdditionalInfoForm, setShowNewPlotAdditionalInfoForm] =
     useState(false);
   const [showPropertyInfo, setShowPropertyInfo] = useState(false);
+  const [showSeoForm, setShowSeoForm] = useState(false);
   const [showTicketInfo, setShowTicketInfo] = useState(true);
   const [showTicketForm, setShowTicketForm] = useState(false);
   const [showResponseForm, setShowResponseForm] = useState(false);
@@ -57,6 +58,7 @@ export const AuthProvider = ({ children }) => {
   const [giveAccess, setGiveAccess] = useState(false);
   const [filterStatus, setFilterStatus] = useState("New");
   const [enquiryFilter, setEnquiryFilter] = useState("New");
+  const [propertyFilter, setPropertyFilter] = useState("Approved");
   const [showAssignSalesForm, setShowAssignSalesForm] = useState(false);
   const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
   const [showEnquiryForm, setShowEnquiryForm] = useState(false);
@@ -69,8 +71,11 @@ export const AuthProvider = ({ children }) => {
   const [showOrder, setShowOrder] = useState(false);
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [showVideoUploadForm, setShowVideoUploadForm] = useState(false);
+  const [showRejectReasonForm, setShowRejectReasonForm] = useState(false);
+  const [showCommissionForm, setShowCommissionForm] = useState(false);
   const [showPropertyLocationForm, setShowPropertyLocationForm] =
     useState(false);
+
   const [showSalesForm, setShowSalesForm] = useState(false);
   const [showSalesPerson, setShowSalesPerson] = useState(false);
   const [showPartner, setShowPartner] = useState(false);
@@ -141,6 +146,8 @@ export const AuthProvider = ({ children }) => {
         setFilterStatus,
         enquiryFilter,
         setEnquiryFilter,
+        propertyFilter, setPropertyFilter,
+        showSeoForm, setShowSeoForm,
         showAssignSalesForm,
         setShowAssignSalesForm,
         showEnquiryStatusForm,
@@ -155,7 +162,8 @@ export const AuthProvider = ({ children }) => {
         setShowEnquirerPropertyForm,
         showPaymentIdForm,
         setShowPaymentIdForm,
-        showFollowUpList, setShowFollowUpList,
+        showFollowUpList,
+        setShowFollowUpList,
         showCart,
         setShowCart,
         showOrder,
@@ -168,6 +176,10 @@ export const AuthProvider = ({ children }) => {
         setShowVideoUploadForm,
         showPropertyLocationForm,
         setShowPropertyLocationForm,
+        showRejectReasonForm,
+        setShowRejectReasonForm,
+        showCommissionForm,
+        setShowCommissionForm,
         dashboardFilter,
         setDashboardFilter,
         showSalesForm,
@@ -180,7 +192,8 @@ export const AuthProvider = ({ children }) => {
         setShowPartner,
         showPartnerForm,
         setShowPartnerForm,
-        showAssignTaskForm, setShowAssignTaskForm,
+        showAssignTaskForm,
+        setShowAssignTaskForm,
       }}
     >
       {children}

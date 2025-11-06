@@ -95,10 +95,11 @@ export const add = async (req, res) => {
   });
 };
 
-// Add Normal Enquiry Without Property ID
+// * Add Normal Enquiry (Sales Partner) — with or without Property ID
 export const addEnquiry = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const salesId = req.salesUser?.id;
+
   if (!salesId) {
     return res.status(400).json({ message: "Invalid Sales Id" });
   }
@@ -113,12 +114,10 @@ export const addEnquiry = async (req, res) => {
     state,
     city,
     location,
-    message,
-    salesPersonName,
-    salesPersonContact,
+    message
   } = req.body;
 
-  // Validate required fields
+  // Validate all required fields
   if (
     !customer ||
     !contact ||
@@ -128,36 +127,37 @@ export const addEnquiry = async (req, res) => {
     !state ||
     !city ||
     !location ||
-    !message ||
-    !salesPersonName ||
-    !salesPersonContact
+    !message
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  let salesInfo = salesPersonName + " - " + salesPersonContact;
+  let insertSQL;
+  let insertData;
 
-  const insertSQL = `INSERT INTO enquirers (
-    salespersonid,
-    customer,
-    contact,
-    minbudget,
-    maxbudget,
-    category,
-    state,
-    city,
-    location,
-    propertyid,
-    message,
-    assign,
-    source,
-   
-    updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  // Case 1: Enquiry with property ID
+  if (propertyid) {
+    insertSQL = `
+      INSERT INTO enquirers (
+        salespartner,
+        customer,
+        contact,
+        minbudget,
+        maxbudget,
+        category,
+        state,
+        city,
+        location,
+        propertyid,
+        message,
+        source,
+        updated_at,
+        created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
 
-  db.query(
-    insertSQL,
-    [
-      salesId,
+    insertData = [
+      salesId,  // salespartner
       customer,
       contact,
       minbudget,
@@ -168,22 +168,63 @@ export const addEnquiry = async (req, res) => {
       location,
       propertyid,
       message,
-      salesInfo,
       "Direct",
       currentdate,
       currentdate,
-    ],
-    (err, result) => {
-      if (err) {
-        console.error("Error inserting:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-      res.status(201).json({
-        message: "Enquiry added successfully",
-        Id: result.insertId,
-      });
+    ];
+  } 
+  
+  // Case 2: Enquiry without property ID
+  else {
+    insertSQL = `
+      INSERT INTO enquirers (
+        salesbroker,
+        salespartner,
+        customer,
+        contact,
+        minbudget,
+        maxbudget,
+        category,
+        state,
+        city,
+        location,
+        message,
+        source,
+        updated_at,
+        created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    insertData = [
+      salesId,  // salesbroker
+      salesId,  // salespartner
+      customer,
+      contact,
+      minbudget,
+      maxbudget,
+      category,
+      state,
+      city,
+      location,
+      message,
+      "Direct",
+      currentdate,
+      currentdate,
+    ];
+  }
+
+  // Execute insert
+  db.query(insertSQL, insertData, (err, result) => {
+    if (err) {
+      console.error("Error inserting enquiry:", err);
+      return res.status(500).json({ message: "Database error", error: err });
     }
-  );
+
+    res.status(201).json({
+      message: "Enquiry added successfully",
+      enquiryId: result.insertId,
+    });
+  });
 };
 
 // Update Normal Enquiry Without Property ID

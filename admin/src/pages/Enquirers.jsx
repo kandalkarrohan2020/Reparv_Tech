@@ -669,12 +669,9 @@ const Enquirers = () => {
         } else if (item.salespersonid && item.territorypartnerid) {
           acc.Assign++;
         }
-        if (item.digitalbroker) {
-          acc.DigitalBroker++;
-        }
         return acc;
       },
-      { New: 0, Alloted: 0, Assign: 0, DigitalBroker: 0}
+      { New: 0, Alloted: 0, Assign: 0}
     );
   };
 
@@ -738,7 +735,6 @@ const Enquirers = () => {
 
     // Enquiry filter logic: New, Alloted, Assign
     const getEnquiryStatus = () => {
-      if (item.digitalbroker) return "DigitalBroker";
       if (!item.salespersonid && !item.territorypartnerid) return "New";
       if (item.salespersonid && !item.territorypartnerid) return "Alloted";
       if (item.salespersonid && item.territorypartnerid) return "Assign";
@@ -868,28 +864,23 @@ const Enquirers = () => {
       minWidth: "150px",
     },
     {
-      name: "Source",
-      selector: (row) => row.source,
-      width: "120px",
-    },
-    {
       name: "Contact",
       selector: (row) => row.contact,
       minWidth: "150px",
     },
     {
-      name: "Digital Broker",
+      name: "Source",
+      selector: (row) => row.source,
+      width: "120px",
+    },
+    {
+      name: "Enquiry Lister",
       cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-md ${
-            row.digitalbroker
-              ? "bg-[#F4F0FB] text-[#5D00FF]"
-              : "bg-[#FFEAEA] text-[#ff2323]"
-          }`}
-        >
-          {(row.dbName ? row.dbName + " - " : "No ") +
-            (row.dbContact ? row.dbContact : "Broker")}
-        </span>
+        <div className="w-full flex flex-col gap-[2px]">
+          <p>{row.listerRole}</p>
+          <p>{row.listerName}</p>
+          <p>{row.listerContact}</p>
+        </div>
       ),
       omit: false,
       minWidth: "180px",
@@ -948,11 +939,11 @@ const Enquirers = () => {
     },
   ];
 
-  const hasDigitalBroker = datas.some((row) => !!row.digitalbroker);
+  const hasEnquiryLister = datas.some((row) => !!row.listerName);
 
   const finalColumns = columns.map((col) => {
-    if (col.name === "Digital Broker")
-      return { ...col, omit: !hasDigitalBroker };
+    if (col.name === "Enquiry Lister")
+      return { ...col, omit: !hasEnquiryLister };
     return col;
   });
 
@@ -2112,25 +2103,6 @@ const Enquirers = () => {
                   disabled
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={enquiry.status}
-                  readOnly
-                />
-              </div>
-              <div className={`${enquiry.digitalbroker ? "block": "hidden"} w-full`}>
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Digital Broker
-                </label>
-                <input
-                  type="text"
-                  disabled
-                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={
-                    (enquiry.dbName
-                      ? enquiry.dbName + " - "
-                      : "No ") +
-                    (enquiry.dbContact
-                      ? enquiry.dbContact
-                      : "Broker")
-                  }
                   readOnly
                 />
               </div>

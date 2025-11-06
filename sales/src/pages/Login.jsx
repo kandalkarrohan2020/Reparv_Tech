@@ -45,7 +45,7 @@ function Login() {
       );
 
       if (response.data.token) {
-        console.log("Login Successful", response.data);
+        console.log("Login Successful", response.data.user);
         localStorage.setItem("salesUser", JSON.stringify(response.data.user));
         storeTokenInCookie(response.data.token);
         navigate("/dashboard", { replace: true });

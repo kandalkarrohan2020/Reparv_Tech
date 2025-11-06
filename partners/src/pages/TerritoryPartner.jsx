@@ -13,6 +13,7 @@ import VideoReviewSection from "../components/VideoReviewSection";
 import MarketRealitySlider from "../components/territoryPartner/MarketRealitySlider";
 import SEO from "../components/SEO";
 import SubscriptionSection from "../components/territoryPartner/SubscriptionSection";
+import playStore from "../assets/google-play-store-logo.png"
 
 function TerritoryPertner() {
   const { URI } = useAuth();
@@ -104,8 +105,8 @@ function TerritoryPertner() {
               className="w-full sm:w-[350px] cursor-pointer"
             >
               <div className="w-full flex gap-2 items-center justify-center text-base sm:text-xl font-semibold text-white bg-[#0BB501] px-12 py-2 sm:py-3 rounded-lg active:scale-95 ">
-                <span>Territory Partner Apk</span>{" "}
-                <IoMdDownload className="w-5 h-5 sm:w-6 sm:h-6 " />
+                <span>Territory Partner</span>{" "}
+                <img className="w-7 h-7" src={playStore} alt="" />
               </div>
             </div>
           </div>

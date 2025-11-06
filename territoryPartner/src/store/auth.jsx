@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }) => {
     JSON.parse(localStorage.getItem("territoryUser"))
   );
   const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
+  const [enquiryFilter, setEnquiryFilter] = useState("Assign");
   const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
   const [showEnquiryForm, setShowEnquiryForm] = useState(false);
   const [showInquiryForm, setShowInquiryForm] = useState(false);
@@ -98,6 +99,7 @@ export const AuthProvider = ({ children }) => {
         setAction,
         showPropertyForm,
         setShowPropertyForm,
+        enquiryFilter, setEnquiryFilter,
         showEnquiryStatusForm,
         setShowEnquiryStatusForm,
         showInquiryForm,

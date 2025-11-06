@@ -2,6 +2,7 @@ import db from "../../config/dbconnect.js";
 import moment from "moment";
 import fs from "fs";
 import path from "path";
+import csv from "csv-parser";
 import { convertImagesToWebp } from "../../utils/convertImagesToWebp.js";
 import { sanitize } from "../../utils/sanitize.js";
 
@@ -29,11 +30,15 @@ const calculateEMI = (principal, rate = 9, years = 20) => {
 
 // **Fetch All Properties**
 export const getAll = (req, res) => {
+  const partnerId = req.projectPartnerUser?.id;
+  if (!partnerId) {
+    return res.status(401).json({ message: "Unauthorized Access" });
+  }
   const sql = `SELECT properties.*, builders.company_name FROM properties 
                INNER JOIN builders ON properties.builderid = builders.builderid 
                WHERE properties.projectpartnerid = ? 
                ORDER BY properties.propertyid DESC`;
-  db.query(sql, [req.projectPartnerUser?.id], (err, result) => {
+  db.query(sql, [partnerId], (err, result) => {
     if (err) {
       console.error("Error fetching properties:", err);
       return res.status(500).json({ message: "Database error", error: err });
@@ -51,20 +56,35 @@ export const getAll = (req, res) => {
 // **Fetch Single Property by ID**
 export const getById = (req, res) => {
   const Id = parseInt(req.params.id);
-  if (isNaN(Id))
+  if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Property ID" });
+  }
 
-  const sql = `SELECT properties.*, builders.company_name FROM properties 
-   INNER JOIN builders on builders.builderid = properties.builderid
-   WHERE properties.propertyid = ?`;
+  const sql = `
+    SELECT 
+      properties.*,
+      builders.company_name, 
+      onboardingpartner.fullname, 
+      onboardingpartner.contact, 
+      onboardingpartner.email,
+      onboardingpartner.city AS partnerCity
+    FROM properties
+    INNER JOIN builders ON builders.builderid = properties.builderid
+    LEFT JOIN onboardingpartner ON properties.partnerid = onboardingpartner.partnerid
+    WHERE properties.propertyid = ?
+    ORDER BY properties.propertyid DESC;
+  `;
+
   db.query(sql, [Id], (err, result) => {
     if (err) {
       console.error("Error fetching property:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
+
     if (result.length === 0) {
       return res.status(404).json({ message: "Property not found" });
     }
+
     // safely parse JSON fields
     const formatted = result.map((row) => {
       let parsedType = null;
@@ -85,14 +105,66 @@ export const getById = (req, res) => {
   });
 };
 
+export const checkPropertyName = (req, res) => {
+  try {
+    let { propertyName } = req.body;
+
+    if (!propertyName || propertyName.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        unique: null,
+        message: "Property Name",
+      });
+    }
+
+    propertyName = propertyName.trim();
+    // Case-insensitive check
+    const sql =
+      "SELECT propertyid FROM properties WHERE LOWER(propertyName) = LOWER(?) LIMIT 1";
+
+    db.query(sql, [propertyName], (err, rows) => {
+      if (err) {
+        console.error("Error checking property name:", err);
+        return res.status(500).json({
+          success: false,
+          unique: null,
+          message: "Server error while checking property name",
+        });
+      }
+
+      if (rows.length > 0) {
+        return res.status(200).json({
+          success: true,
+          unique: false,
+          message: "Property Name already exists",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        unique: true,
+        message: "Property Name is available",
+      });
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return res.status(500).json({
+      success: false,
+      unique: null,
+      message: "Unexpected server error",
+    });
+  }
+};
+
 export const addProperty = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const files = await convertImagesToWebp(req.files);
   const partnerId = req.projectPartnerUser?.id;
   if (!partnerId) {
     return res.status(401).json({ message: "Unauthorized Access" });
   }
-  const Id = req.body.propertyid ? parseInt(req.body.propertyid) : null;
+
+  // Convert uploaded images to WebP
+  const files = await convertImagesToWebp(req.files);
 
   const {
     builderid,
@@ -149,6 +221,7 @@ export const addProperty = async (req, res) => {
     ecofriendlyBenefit,
   } = req.body;
 
+  // Check required fields
   if (
     !builderid ||
     !propertyCategory ||
@@ -189,8 +262,6 @@ export const addProperty = async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const seoSlug = toSlug(propertyName);
-
   // Property Registration Fee is 1% or Maximum 30,000 Rs
   let registrationFees;
   if (totalOfferPrice > 3000000) {
@@ -205,7 +276,17 @@ export const addProperty = async (req, res) => {
     }
   }
 
-  // calculate EMI On OFFER PRICE
+  const seoSlug = toSlug(propertyName);
+
+  const calculateEMI = (price) => {
+    const interestRate = 0.08 / 12; // 8% annual
+    const tenureMonths = 240; // 20 years
+    return Math.round(
+      (price * interestRate * Math.pow(1 + interestRate, tenureMonths)) /
+        (Math.pow(1 + interestRate, tenureMonths) - 1)
+    );
+  };
+
   const emi = calculateEMI(Number(totalOfferPrice));
 
   // Format dates to remove time portion
@@ -240,7 +321,6 @@ export const addProperty = async (req, res) => {
 
   const propertyTypeJson = JSON.stringify(propertyTypeArray);
 
-  // Prepare image URLs
   const getImagePaths = (field) =>
     files[field]
       ? JSON.stringify(files[field].map((f) => `/uploads/${f.filename}`))
@@ -256,32 +336,36 @@ export const addProperty = async (req, res) => {
   const nearestLandmark = getImagePaths("nearestLandmark");
   const developedAmenities = getImagePaths("developedAmenities");
 
+  // Early check: is propertyName already taken?
   db.query(
-    "SELECT * FROM properties WHERE propertyName = ?",
+    "SELECT propertyid FROM properties WHERE propertyName = ?",
     [propertyName],
     (err, result) => {
-      if (err)
+      if (err) {
         return res.status(500).json({ message: "Database error", error: err });
-      if (result.length > 0)
+      }
+      if (result.length > 0) {
         return res
           .status(409)
           .json({ message: "Property name already exists!" });
+      }
 
+      // Insert query
       const insertSQL = `
-      INSERT INTO properties ( projectpartnerid,
-        builderid, projectBy, possessionDate, propertyCategory, propertyApprovedBy, propertyName, address, state, city, pincode, location,
-        distanceFromCityCenter, latitude, longitude, totalSalesPrice, totalOfferPrice, emi, stampDuty, registrationFee, gst, advocateFee, 
-        msebWater, maintenance, other, tags, propertyType, builtYear, ownershipType, builtUpArea, carpetArea,
-        parkingAvailability, totalFloors, floorNo, loanAvailability, propertyFacing, reraRegistered, 
-        furnishing, waterSupply, powerBackup, locationFeature, sizeAreaFeature, parkingFeature, terraceFeature,
-        ageOfPropertyFeature, amenitiesFeature, propertyStatusFeature, smartHomeFeature,
-        securityBenefit, primeLocationBenefit, rentalIncomeBenefit, qualityBenefit, capitalAppreciationBenefit, ecofriendlyBenefit,
-        frontView, sideView, kitchenView, hallView, bedroomView, bathroomView, balconyView,
-        nearestLandmark, developedAmenities, seoSlug,
-        updated_at, created_at
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        INSERT INTO properties ( projectpartnerid,
+          builderid, projectBy, possessionDate, propertyCategory, propertyApprovedBy, propertyName, address, state, city, pincode, location,
+          distanceFromCityCenter, latitude, longitude, totalSalesPrice, totalOfferPrice, emi, stampDuty, registrationFee, gst, advocateFee, 
+          msebWater, maintenance, other, tags, propertyType, builtYear, ownershipType, builtUpArea, carpetArea,
+          parkingAvailability, totalFloors, floorNo, loanAvailability, propertyFacing, reraRegistered, 
+          furnishing, waterSupply, powerBackup, locationFeature, sizeAreaFeature, parkingFeature, terraceFeature,
+          ageOfPropertyFeature, amenitiesFeature, propertyStatusFeature, smartHomeFeature,
+          securityBenefit, primeLocationBenefit, rentalIncomeBenefit, qualityBenefit, capitalAppreciationBenefit, ecofriendlyBenefit,
+          frontView, sideView, kitchenView, hallView, bedroomView, bathroomView, balconyView,
+          nearestLandmark, developedAmenities, seoSlug,
+          updated_at, created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const values = [
         partnerId,
@@ -372,20 +456,16 @@ export const addProperty = async (req, res) => {
   );
 };
 
-// **Update Property**
+// Update property controller
 export const update = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const files = await convertImagesToWebp(req.files);
-  const partnerId = req.projectPartnerUser?.id;
-  if (!partnerId) {
-    return res.status(400).json({ message: "Unauthorized Access" });
-  }
-
-  const Id = req.params.id ? parseInt(req.params.id) : null;
+  const Id = req.params.id;
 
   if (!Id) {
     return res.status(400).json({ message: "Invalid property ID" });
   }
+
+  const files = await convertImagesToWebp(req.files);
 
   const {
     builderid,
@@ -431,10 +511,8 @@ export const update = async (req, res) => {
     parkingFeature,
     terraceFeature,
     ageOfPropertyFeature,
-    furnishingFeature,
     amenitiesFeature,
     propertyStatusFeature,
-    floorNumberFeature,
     smartHomeFeature,
     securityBenefit,
     primeLocationBenefit,
@@ -444,6 +522,7 @@ export const update = async (req, res) => {
     ecofriendlyBenefit,
   } = req.body;
 
+  // Validation
   if (
     !builderid ||
     !propertyCategory ||
@@ -498,7 +577,6 @@ export const update = async (req, res) => {
     }
   }
 
-  // calculate EMI On OFFER PRICE
   const emi = calculateEMI(Number(totalOfferPrice));
 
   // Format dates to remove time portion
@@ -533,44 +611,31 @@ export const update = async (req, res) => {
 
   const propertyTypeJson = JSON.stringify(propertyTypeArray);
 
-  // Prepare image URLs
-  const getImagePaths = (field, existing) =>
-    files && files[field]
-      ? JSON.stringify(files[field].map((f) => `/uploads/${f.filename}`))
-      : existing;
-
-  // Fetch existing property to preserve images if not reuploaded
+  // Fetch existing property to retain old image paths if not replaced
   db.query(
     "SELECT * FROM properties WHERE propertyid = ?",
     [Id],
     (err, result) => {
       if (err)
         return res.status(500).json({ message: "Database error", error: err });
-
-      if (result.length === 0) {
+      if (result.length === 0)
         return res.status(404).json({ message: "Property not found" });
-      }
-
-      let approve;
-      if (
-        result[0].approve === "Rejected" ||
-        result[0].approve === "Not Approved"
-      ) {
-        approve = "Not Approved";
-      } else {
-        approve = "Approved";
-      }
 
       const existing = result[0];
 
+      const getImagePaths = (field) =>
+        files[field]
+          ? JSON.stringify(files[field].map((f) => `/uploads/${f.filename}`))
+          : existing[field];
+
       const updateSQL = `
-      UPDATE properties SET rejectreason=NULL, approve=?,
+      UPDATE properties SET 
         builderid=?, projectBy=?, possessionDate=?, propertyCategory=?, propertyApprovedBy=?, propertyName=?, address=?, state=?, city=?, pincode=?, location=?,
         distanceFromCityCenter=?, latitude=?, longitude=?, totalSalesPrice=?, totalOfferPrice=?, emi=?, stampDuty=?, registrationFee=?, gst=?, advocateFee=?, 
         msebWater=?, maintenance=?, other=?, tags=?, propertyType=?, builtYear=?, ownershipType=?,
         builtUpArea=?, carpetArea=?, parkingAvailability=?, totalFloors=?, floorNo=?, loanAvailability=?,
         propertyFacing=?, reraRegistered=?, furnishing=?, waterSupply=?, powerBackup=?, locationFeature=?, sizeAreaFeature=?, parkingFeature=?, terraceFeature=?,
-        ageOfPropertyFeature=?, furnishingFeature=?, amenitiesFeature=?, propertyStatusFeature=?, floorNumberFeature=?, smartHomeFeature=?,
+        ageOfPropertyFeature=?, amenitiesFeature=?, propertyStatusFeature=?, smartHomeFeature=?,
         securityBenefit=?, primeLocationBenefit=?, rentalIncomeBenefit=?, qualityBenefit=?, capitalAppreciationBenefit=?, ecofriendlyBenefit=?,
         frontView=?, sideView=?, kitchenView=?, hallView=?, bedroomView=?, bathroomView=?, balconyView=?,
         nearestLandmark=?, developedAmenities=?, updated_at=?
@@ -578,7 +643,6 @@ export const update = async (req, res) => {
     `;
 
       const values = [
-        approve,
         builderid,
         sanitize(projectBy),
         sanitize(formattedPossessionDate),
@@ -623,10 +687,8 @@ export const update = async (req, res) => {
         parkingFeature,
         terraceFeature,
         ageOfPropertyFeature,
-        furnishingFeature,
         amenitiesFeature,
         propertyStatusFeature,
-        floorNumberFeature,
         smartHomeFeature,
         securityBenefit,
         primeLocationBenefit,
@@ -634,15 +696,15 @@ export const update = async (req, res) => {
         qualityBenefit,
         capitalAppreciationBenefit,
         ecofriendlyBenefit,
-        getImagePaths("frontView", existing.frontView),
-        getImagePaths("sideView", existing.sideView),
-        getImagePaths("kitchenView", existing.kitchenView),
-        getImagePaths("hallView", existing.hallView),
-        getImagePaths("bedroomView", existing.bedroomView),
-        getImagePaths("bathroomView", existing.bathroomView),
-        getImagePaths("balconyView", existing.balconyView),
-        getImagePaths("nearestLandmark", existing.nearestLandmark),
-        getImagePaths("developedAmenities", existing.developedAmenities),
+        getImagePaths("frontView"),
+        getImagePaths("sideView"),
+        getImagePaths("kitchenView"),
+        getImagePaths("hallView"),
+        getImagePaths("bedroomView"),
+        getImagePaths("bathroomView"),
+        getImagePaths("balconyView"),
+        getImagePaths("nearestLandmark"),
+        getImagePaths("developedAmenities"),
         currentdate,
         Id,
       ];
@@ -659,9 +721,569 @@ export const update = async (req, res) => {
   );
 };
 
+export const del = (req, res) => {
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  const imageFields = [
+    "frontView",
+    "sideView",
+    "kitchenView",
+    "hallView",
+    "bedroomView",
+    "bathroomView",
+    "balconyView",
+    "nearestLandmark",
+    "developedAmenities",
+  ];
+
+  // Fetch all image paths from DB
+  db.query(
+    `SELECT ${imageFields.join(", ")} FROM properties WHERE propertyid = ?`,
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+
+      const property = result[0];
+
+      // Loop through image fields and delete each image
+      imageFields.forEach((field) => {
+        if (property[field]) {
+          try {
+            const paths = JSON.parse(property[field]);
+            if (Array.isArray(paths)) {
+              paths.forEach((imgPath) => {
+                const fullPath = path.join(process.cwd(), imgPath);
+                fs.unlink(fullPath, (err) => {
+                  if (err && err.code !== "ENOENT") {
+                    console.error(`Error deleting ${imgPath}:`, err);
+                  }
+                });
+              });
+            }
+          } catch (e) {
+            console.error(`Failed to parse ${field}:`, e);
+          }
+        }
+      });
+
+      // Delete the property from DB
+      db.query("DELETE FROM properties WHERE propertyid = ?", [Id], (err) => {
+        if (err) {
+          console.error("Error deleting property:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+
+        res.status(200).json({
+          message: "Property and associated images deleted successfully",
+        });
+      });
+    }
+  );
+};
+
+//**Change status */
+export const status = (req, res) => {
+  const Id = parseInt(req.params.id);
+  console.log(Id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  db.query(
+    "SELECT * FROM properties WHERE propertyid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      let status = "";
+      if (result[0].status === "Active") {
+        status = "Inactive";
+      } else {
+        status = "Active";
+      }
+      console.log(status);
+      db.query(
+        "UPDATE properties SET status = ? WHERE propertyid = ?",
+        [status, Id],
+        (err, result) => {
+          if (err) {
+            console.error("Error deleting :", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+          res
+            .status(200)
+            .json({ message: "Property status change successfully" });
+        }
+      );
+    }
+  );
+};
+
+//**approve property */
+export const approve = (req, res) => {
+  const Id = parseInt(req.params.id);
+  console.log(Id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  db.query(
+    "SELECT * FROM properties WHERE propertyid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      let approve = "";
+      if (result[0].approve === "Not Approved" || "Rejected") {
+        approve = "Approved";
+      } else {
+        approve = "Not Approved";
+      }
+
+      db.query(
+        "UPDATE properties SET rejectreason = NULL, approve = ? WHERE propertyid = ?",
+        [approve, Id],
+        (err, result) => {
+          if (err) {
+            console.error("Error deleting :", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+          res
+            .status(200)
+            .json({ message: "Property status change successfully" });
+        }
+      );
+    }
+  );
+};
+
+// get Property Location Latitude and Longitude
+export const getPropertyLocation = (req, res) => {
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  const sql = `
+    SELECT latitude, longitude FROM properties
+    WHERE properties.propertyid = ?
+  `;
+
+  db.query(sql, [Id], (err, result) => {
+    if (err) {
+      console.error("Error fetching property location:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Property not found" });
+    }
+
+    res.json(result[0]);
+  });
+};
+
+//* Change Proprty Location */
+export const changePropertyLocation = (req, res) => {
+  const { latitude, longitude } = req.body;
+  if (!latitude || !longitude) {
+    return res.status(401).json({ message: "All Field Are Required" });
+  }
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  db.query(
+    "SELECT * FROM properties WHERE propertyid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      db.query(
+        "UPDATE properties SET latitude = ?, longitude = ? WHERE propertyid = ?",
+        [latitude, longitude, Id],
+        (err, result) => {
+          if (err) {
+            console.error("Error While changing property location:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+          res
+            .status(200)
+            .json({ message: "Property Location Change Successfully" });
+        }
+      );
+    }
+  );
+};
+
+// * UPLOAD Brochure, Video & Video Link *
+export const uploadBrochureAndVideo = (req, res) => {
+  const propertyId = req.params.id;
+
+  if (!propertyId) {
+    return res.status(400).json({ message: "Property Id is required" });
+  }
+
+  const brochureFile = req.files?.brochureFile?.[0] || null; // brochure (image/pdf)
+  const videoFile = req.files?.videoFile?.[0] || null; // video
+  const { videoLink } = req.body; // YouTube link
+
+  if (!brochureFile && !videoFile && !videoLink) {
+    return res
+      .status(400)
+      .json({ message: "No brochure, video, or video link provided" });
+  }
+
+  const brochurePath = brochureFile
+    ? `/uploads/brochures/${brochureFile.filename}`
+    : null;
+  const videoPath = videoFile ? `/uploads/videos/${videoFile.filename}` : null;
+
+  // Get old file paths
+  db.query(
+    "SELECT brochureFile, videoFile, videoLink FROM properties WHERE propertyid = ?",
+    [propertyId],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+
+      const oldBrochure = result[0].brochureFile;
+      const oldVideo = result[0].videoFile;
+      const oldVideoLink = result[0].videoLink;
+
+      // Delete old files if new ones uploaded
+      if (brochureFile && oldBrochure) {
+        const oldPath = path.join(process.cwd(), oldBrochure);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+      if (videoFile && oldVideo) {
+        const oldPath = path.join(process.cwd(), oldVideo);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+
+      // Update DB with new paths or link
+      db.query(
+        "UPDATE properties SET brochureFile = ?, videoFile = ?, videoLink = ? WHERE propertyid = ?",
+        [
+          brochurePath || oldBrochure,
+          videoPath || oldVideo,
+          videoLink || oldVideoLink,
+          propertyId,
+        ],
+        (err) => {
+          if (err) {
+            console.error("Error while saving brochure/video:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+
+          res.status(200).json({
+            message: "Brochure, Video, or Link uploaded successfully",
+            brochurePath: brochurePath || oldBrochure,
+            videoPath: videoPath || oldVideo,
+            videoLink: videoLink || oldVideoLink,
+          });
+        }
+      );
+    }
+  );
+};
+
+// * UPLOAD Brochure & Video Link *
+export const uploadBrochureAndVideoLink = async (req, res) => {
+  try {
+    const propertyId = req.params.id;
+
+    if (!propertyId) {
+      return res.status(400).json({ message: "Property Id is required" });
+    }
+
+    const brochureFile = req.file || null; // brochure (image/pdf)
+    const { videoLink } = req.body; // YouTube or other video link
+
+    if (!brochureFile && !videoLink) {
+      return res
+        .status(400)
+        .json({ message: "No brochure or video link provided" });
+    }
+
+    const brochurePath = brochureFile
+      ? `/uploads/brochures/${brochureFile.filename}`
+      : null;
+
+    // Get old data
+    db.query(
+      "SELECT brochureFile, videoLink FROM properties WHERE propertyid = ?",
+      [propertyId],
+      async (err, result) => {
+        if (err) {
+          console.error("Database error:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+
+        if (result.length === 0) {
+          return res.status(404).json({ message: "Property not found" });
+        }
+
+        const oldBrochure = result[0].brochureFile;
+        const oldVideoLink = result[0].videoLink;
+
+        // Delete old brochure if new one uploaded
+        if (brochureFile && oldBrochure) {
+          try {
+            const oldPath = path.join(process.cwd(), oldBrochure);
+            await fs.unlink(oldPath);
+          } catch (error) {
+            console.warn("Failed to delete old brochure:", error.message);
+          }
+        }
+
+        // Update DB with new brochure & video link
+        db.query(
+          "UPDATE properties SET brochureFile = ?, videoLink = ? WHERE propertyid = ?",
+          [brochurePath || oldBrochure, videoLink || oldVideoLink, propertyId],
+          (err) => {
+            if (err) {
+              console.error("Error while saving brochure/video link:", err);
+              return res
+                .status(500)
+                .json({ message: "Database error", error: err });
+            }
+
+            res.status(200).json({
+              message: "Brochure & Video Link updated successfully",
+              brochurePath: brochurePath || oldBrochure,
+              videoLink: videoLink || oldVideoLink,
+            });
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+//* ADD Seo Details */
+export const seoDetails = (req, res) => {
+  const { seoSlug, seoTittle, seoDescription, propertyDescription } = req.body;
+  if (!seoSlug || !seoTittle || !seoDescription || !propertyDescription) {
+    return res.status(401).json({ message: "All Field Are Required" });
+  }
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  db.query(
+    "SELECT * FROM properties WHERE propertyid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      db.query(
+        "UPDATE properties SET seoSlug = ?, seoTittle = ?, seoDescription = ?, propertyDescription = ? WHERE propertyid = ?",
+        [seoSlug, seoTittle, seoDescription, propertyDescription, Id],
+        (err, result) => {
+          if (err) {
+            console.error("Error While Add Seo Details:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+          res.status(200).json({ message: "Seo Details Add successfully" });
+        }
+      );
+    }
+  );
+};
+
+export const addRejectReason = (req, res) => {
+  const { rejectReason } = req.body;
+  if (!rejectReason) {
+    return res.status(401).json({ message: "All Field Are Required" });
+  }
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  db.query(
+    "SELECT * FROM properties WHERE propertyid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      db.query(
+        "UPDATE properties SET approve = 'Rejected', rejectreason = ? WHERE propertyid = ?",
+        [rejectReason, Id],
+        (err, result) => {
+          if (err) {
+            console.error("Error While Add Reject Reason :", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+          res
+            .status(200)
+            .json({ message: "Property Reject Reason Add successfully" });
+        }
+      );
+    }
+  );
+};
+
+export const setPropertyCommission = (req, res) => {
+  const {
+    commissionType,
+    commissionAmount,
+    commissionPercentage,
+    commissionAmountPerSquareFeet,
+  } = req.body;
+
+  const Id = parseInt(req.params.id);
+
+  if (!commissionType || isNaN(Id)) {
+    return res
+      .status(400)
+      .json({ message: "Commission type and valid Property ID are required" });
+  }
+
+  // Step 1: Fetch property to get required data
+  db.query(
+    "SELECT * FROM properties WHERE propertyid = ?",
+    [Id],
+    (err, results) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+
+      const property = results[0];
+      let updateSQL = "";
+      let updateParams = [];
+
+      // Step 2: Handle different commission types
+      if (commissionType === "Fixed") {
+        if (!commissionAmount) {
+          return res
+            .status(400)
+            .json({ message: "commissionAmount is required for Fixed type" });
+        }
+
+        updateSQL = `UPDATE properties 
+                   SET commissionType = ?, commissionAmount = ?, commissionPercentage = NULL, commissionAmountPerSquareFeet = NULL 
+                   WHERE propertyid = ?`;
+        updateParams = [commissionType, commissionAmount, Id];
+      } else if (commissionType === "Percentage") {
+        if (!commissionPercentage) {
+          return res.status(400).json({
+            message: "commissionPercentage is required for Percentage type",
+          });
+        }
+
+        const totalPrice = parseFloat(property.totalOfferPrice || 0);
+        const calculatedAmount = (totalPrice * commissionPercentage) / 100;
+
+        updateSQL = `UPDATE properties 
+                   SET commissionType = ?, commissionAmount = ?, commissionPercentage = ?, commissionAmountPerSquareFeet = NULL 
+                   WHERE propertyid = ?`;
+        updateParams = [
+          commissionType,
+          calculatedAmount,
+          commissionPercentage,
+          Id,
+        ];
+      } else if (commissionType === "PerSquareFeet") {
+        if (!commissionAmountPerSquareFeet) {
+          return res.status(400).json({
+            message:
+              "commissionAmountPerSquareFeet is required for PerSquareFeet type",
+          });
+        }
+
+        const carpetArea = parseFloat(property.carpetArea || 0);
+        const calculatedAmount = carpetArea * commissionAmountPerSquareFeet;
+
+        updateSQL = `UPDATE properties 
+                   SET commissionType = ?, commissionAmount = ?, commissionAmountPerSquareFeet = ?, commissionPercentage = NULL 
+                   WHERE propertyid = ?`;
+        updateParams = [
+          commissionType,
+          calculatedAmount,
+          commissionAmountPerSquareFeet,
+          Id,
+        ];
+      } else {
+        return res.status(400).json({ message: "Invalid commission type" });
+      }
+
+      // Step 3: Run the update
+      db.query(updateSQL, updateParams, (err, result) => {
+        if (err) {
+          console.error("Error While Updating Commission:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+        res
+          .status(200)
+          .json({ message: "Property commission saved successfully" });
+      });
+    }
+  );
+};
+
 // Get all images for a specific property
 export const getImages = (req, res) => {
-  const userId = req.projectPartnerUser?.id;
+  const userId = req.user?.id;
   if (!userId) {
     return res.status(401).json({ message: "Unauthorized access" });
   }
@@ -693,7 +1315,7 @@ export const getImages = (req, res) => {
   });
 };
 
-// **Add Property**
+// ** Add Property **
 export const updateImages = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const Id = req.params.id;
@@ -831,39 +1453,6 @@ export const deleteImages = (req, res) => {
       );
     }
   );
-};
-
-// **Add Property Images**
-export const addImages = (req, res) => {
-  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const Id = req.body.propertyid ? parseInt(req.body.propertyid) : null;
-
-  try {
-    const files = req.files; // Array of uploaded files
-    const imagePaths = files.map((file) => file.filename); // Get filenames
-
-    // Insert each image as a separate row
-    const insertSQL = `INSERT INTO propertiesimages (propertyid, image, updated_at, created_at) 
-                       VALUES ?`;
-
-    const values = imagePaths.map((filename) => [
-      Id,
-      filename,
-      currentdate,
-      currentdate,
-    ]);
-
-    db.query(insertSQL, [values], (err, result) => {
-      if (err) {
-        console.error("Error inserting Images:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-      res.status(200).json({ message: "Images uploaded", images: imagePaths });
-    });
-  } catch (err) {
-    console.error("Upload error:", err);
-    res.status(500).json({ error: "Upload failed" });
-  }
 };
 
 // ** New Additional Info Add API **
@@ -1045,6 +1634,7 @@ export const editAdditionalInfo = (req, res) => {
   });
 };
 
+// Get Property Info
 export const propertyInfo = (req, res) => {
   const Id = parseInt(req.params.id);
   if (isNaN(Id))
@@ -1060,5 +1650,232 @@ export const propertyInfo = (req, res) => {
       return res.status(201).json({ propertyid: Id });
     }
     res.json(result[0]);
+  });
+};
+
+// Add Additional Info Using CSV
+export const addCsvFileForFlat = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "CSV file is required" });
+  }
+
+  const propertyId = parseInt(req.params?.propertyid);
+  if (isNaN(propertyId)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  const results = [];
+
+  const filePath = req.file.path;
+
+  const stream = fs.createReadStream(filePath).pipe(csv());
+
+  let responded = false; // Prevent multiple responses
+
+  stream.on("data", (row) => {
+    results.push(row);
+  });
+
+  stream.on("end", () => {
+    const values = results.map((row) => [
+      row.propertyid || propertyId,
+      row.Mouza || null,
+      row.Khasra_No || null,
+      row.Wing || null,
+      row.Wing_Facing || null,
+      row.Floor_No || null,
+      row.Flat_No || null,
+      row.Flat_Facing || null,
+      row.BHK_Type || null,
+      row.Carpet_Area || null,
+      row.Builtup_Area || null,
+      row.Super_Builtup_Area || null,
+      row.Additional_Area || null,
+      row.Payable_Area || null,
+      row.SQFT_Price || null,
+      row.Basic_Cost || null,
+      row.Stamp_Duty || null,
+      row.Registration || null,
+      row.Advocate_Fee || null,
+      row.GOV_Water_Charge || null,
+      row.Maintenance || null,
+      row.GST || null,
+      row.Other_Charges || null,
+      row.Total_Cost || null,
+      row.updated_at || new Date(),
+      row.created_at || new Date(),
+    ]);
+
+    const query = `
+      INSERT INTO propertiesinfo (
+        propertyid, mouza, khasrano, wing, wingfacing, floorno, flatno, flatfacing, type,
+        carpetarea, builtuparea, superbuiltuparea, additionalarea, payablearea, sqftprice, basiccost,
+        stampduty, registration, advocatefee, watercharge, maintenance, gst, other, totalcost,
+        updated_at, created_at
+      ) VALUES ?
+    `;
+
+    db.query(query, [values], (err, result) => {
+      fs.unlink(filePath, (unlinkErr) => {
+        if (unlinkErr) {
+          console.error("Error deleting file:", unlinkErr);
+        }
+      });
+
+      if (responded) return; // Avoid duplicate response
+      if (err) {
+        console.error("Database error:", err);
+        responded = true;
+        return res.status(500).json({
+          message: "Failed to insert CSV data into database.",
+          error: err.sqlMessage || err.message,
+        });
+      }
+
+      responded = true;
+      return res.status(200).json({
+        message: "CSV data inserted successfully.",
+        insertedRows: result.affectedRows,
+      });
+    });
+  });
+
+  stream.on("error", (csvError) => {
+    fs.unlink(filePath, (unlinkErr) => {
+      if (unlinkErr) {
+        console.error("Error deleting file after CSV error:", unlinkErr);
+      }
+    });
+
+    if (!responded) {
+      responded = true;
+      console.error("CSV parsing error:", csvError);
+      return res.status(500).json({
+        message: "Error reading CSV file.",
+        error: csvError.message,
+      });
+    }
+  });
+};
+
+// Add Additional Info Using CSV
+export const addCsvFileForPlot = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "CSV file is required" });
+  }
+
+  const propertyId = parseInt(req.params?.propertyid);
+  if (isNaN(propertyId)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  const results = [];
+
+  const filePath = req.file.path;
+
+  const stream = fs.createReadStream(filePath).pipe(csv());
+
+  let responded = false; // Prevent multiple responses
+
+  stream.on("data", (row) => {
+    results.push(row);
+  });
+
+  stream.on("end", () => {
+    const values = results.map((row) => [
+      row.propertyid || propertyId,
+      row.Mouza || null,
+      row.Khasra_No || null,
+      row.Plot_No || null,
+      row.Facing || null,
+      row.Plot_Size || null,
+      row.Plot_Area || null,
+      row.SQFT_Price || null,
+      row.Basic_Cost || null,
+      row.Stamp_Duty || null,
+      row.Registration || null,
+      row.Advocate_Fee || null,
+      row.Maintenance || null,
+      row.GST || null,
+      row.Other_Charges || null,
+      row.Total_Cost || null,
+      row.updated_at || new Date(),
+      row.created_at || new Date(),
+    ]);
+
+    const query = `
+      INSERT INTO propertiesinfo (
+        propertyid, mouza, khasrano, plotno, plotfacing, plotsize,
+        payablearea, sqftprice, basiccost,
+        stampduty, registration, advocatefee, maintenance, gst, other, totalcost,
+        updated_at, created_at
+      ) VALUES ?
+    `;
+
+    db.query(query, [values], (err, result) => {
+      fs.unlink(filePath, (unlinkErr) => {
+        if (unlinkErr) {
+          console.error("Error deleting file:", unlinkErr);
+        }
+      });
+
+      if (responded) return; // Avoid duplicate response
+      if (err) {
+        console.error("Database error:", err);
+        responded = true;
+        return res.status(500).json({
+          message: "Failed to insert CSV data into database.",
+          error: err.sqlMessage || err.message,
+        });
+      }
+
+      responded = true;
+      return res.status(200).json({
+        message: "CSV data inserted successfully.",
+        insertedRows: result.affectedRows,
+      });
+    });
+  });
+
+  stream.on("error", (csvError) => {
+    fs.unlink(filePath, (unlinkErr) => {
+      if (unlinkErr) {
+        console.error("Error deleting file after CSV error:", unlinkErr);
+      }
+    });
+
+    if (!responded) {
+      responded = true;
+      console.error("CSV parsing error:", csvError);
+      return res.status(500).json({
+        message: "Error reading CSV file.",
+        error: csvError.message,
+      });
+    }
+  });
+};
+
+// ** Fetch Property Information by ID **
+export const fetchAdditionalInfo = (req, res) => {
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  const sql = `SELECT * FROM propertiesinfo WHERE propertyid = ? ORDER BY propertyinfoid`;
+
+  db.query(sql, [Id], (err, result) => {
+    if (err) {
+      console.error("Error fetching property Details:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Property Additional Information not found" });
+    }
+
+    res.json(result); // Return only the first property
   });
 };

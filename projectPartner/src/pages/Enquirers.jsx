@@ -637,16 +637,16 @@ const Enquirers = () => {
   };
 
   // Assign To Reparv
-  const assignToReparv = async (id) => {
+  const toDigitalBroker = async (id) => {
     if (
       !window.confirm(
-        "Are you sure to assign this Enquiry to Reparv?"
+        "Are you sure to convert this Enquiry into Digital Broker?"
       )
     )
       return;
 
     try {
-      const response = await fetch(URI + `/project-partner/enquirers/assign/to/reparv/${id}`, {
+      const response = await fetch(URI + `/project-partner/enquirers/convert/to/digital-broker/${id}`, {
         method: "PUT",
         credentials: "include", // Ensures cookies are sent
         headers: {
@@ -662,7 +662,7 @@ const Enquirers = () => {
       }
       fetchData();
     } catch (error) {
-      console.error("Error Assigning :", error);
+      console.error("Error Converting :", error);
     }
   };
 
@@ -773,8 +773,8 @@ const Enquirers = () => {
   const getEnquiryCounts = (data) => {
     return data.reduce(
       (acc, item) => {
-         if (item.digitalbroker) {
-          acc.Reparv++;
+         if (item.salesbroker || item.territorybroker || item.projectbroker) {
+          acc.DigitalBroker++;
         } else if (!item.salespersonid && !item.territorypartnerid) {
           acc.New++;
         } else if (item.salespersonid && !item.territorypartnerid) {
@@ -784,7 +784,7 @@ const Enquirers = () => {
         }
         return acc;
       },
-      { New: 0, Alloted: 0, Assign: 0, Reparv: 0}
+      { New: 0, Alloted: 0, Assign: 0, DigitalBroker: 0}
     );
   };
 
@@ -848,7 +848,7 @@ const Enquirers = () => {
 
     // Enquiry filter logic: New, Alloted, Assign
     const getEnquiryStatus = () => {
-      if (item.digitalbroker) return "Reparv";
+      if (item.salesbroker || item.territorybroker || item.projectbroker) return "Digital Broker";
       if (!item.salespersonid && !item.territorypartnerid) return "New";
       if (item.salespersonid && !item.territorypartnerid) return "Alloted";
       if (item.salespersonid && item.territorypartnerid) return "Assign";
@@ -1027,8 +1027,8 @@ const Enquirers = () => {
   ];
 
   const finalColumns = columns.map((col) => {
-    if (col.name === "Action")
-      return { ...col, omit: enquiryFilter === "Reparv" };
+    if (col.name === "Action" || col.name === "Sales Partner" || col.name === "Territory Partner")
+      return { ...col, omit: enquiryFilter === "Digital Broker" };
     return col;
   });
 
@@ -1053,8 +1053,8 @@ const Enquirers = () => {
           setEnquiryId(id);
           setShowAssignSalesForm(true);
           break;
-        case "assigntoreparv":
-          assignToReparv(id);
+        case "todigitalbroker":
+          toDigitalBroker(id);
           break;
         case "update":
           edit(id);
@@ -1091,7 +1091,7 @@ const Enquirers = () => {
             <option value="property">Property</option>
           )}
           <option value="assign">Assign</option>
-          <option value="assigntoreparv">Assign To Reparv</option>
+          <option value="todigitalbroker">Digital Broker</option>
           <option value="delete">Delete</option>
         </select>
       </div>
@@ -1123,6 +1123,7 @@ const Enquirers = () => {
               <option value="Onsite">Onsite</option>
               <option value="Direct">Direct</option>
               <option value="CSV">CSV File</option>
+              <option value="Digital Broker">Digital Broker</option>
             </select>
           </div>
 

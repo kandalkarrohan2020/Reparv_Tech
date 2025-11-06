@@ -3,13 +3,26 @@ import {
   getAll,
   getById,
   getImages,
+  deleteImages,
   addProperty,
   update,
-  deleteImages,
+  status,
+  approve,
+  del,
   updateImages,
-  additionalInfoAdd,
   editAdditionalInfo,
+  additionalInfoAdd,
   propertyInfo,
+  addRejectReason,
+  fetchAdditionalInfo,
+  seoDetails,
+  setPropertyCommission,
+  checkPropertyName,
+  changePropertyLocation,
+  getPropertyLocation,
+  addCsvFileForFlat,
+  addCsvFileForPlot,
+  uploadBrochureAndVideoLink,
 } from "../../controllers/projectPartner/propertyController.js";
 import multer from "multer";
 import path from "path";
@@ -59,6 +72,7 @@ router.get("/", getAll);
 router.get("/:id", getById);
 router.get("/images/get/:id", getImages);
 router.delete("/images/delete/:id", deleteImages);
+router.post("/check-property-name", checkPropertyName);
 router.post(
   "/add",
   upload.fields([
@@ -107,6 +121,12 @@ router.put(
   updateImages
 );
 
+router.put("/status/:id", status);
+router.put("/seo/:id", seoDetails);
+router.put("/reject/:id", addRejectReason);
+router.put("/commission/:id", setPropertyCommission);
+router.put("/approve/:id", approve);
+router.delete("/delete/:id", del);
 router.get("/propertyinfo/:id", propertyInfo);
 router.post(
   "/additionalinfoadd",
@@ -133,4 +153,86 @@ router.put(
   editAdditionalInfo
 );
 
+// property location update
+router.get("/location/get/:id", getPropertyLocation);
+router.put("/location/edit/:id", changePropertyLocation);
+
+// === Multer Setting for Upload Brochure ===
+const brochureStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./uploads/brochures/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const brochureUpload = multer({
+  storage: brochureStorage,
+  limits: { fileSize: 300 * 1024 * 1024 }, // 300 MB
+  fileFilter: (req, file, cb) => {
+    const allowedFileTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "application/pdf",
+    ];
+
+    if (!allowedFileTypes.includes(file.mimetype)) {
+      return cb(
+        new Error("Only JPG, PNG, WEBP images or PDF files are allowed.")
+      );
+    }
+
+    cb(null, true);
+  },
+});
+
+// === Route for Brochure Upload (and Video Link in Body) ===
+router.put(
+  "/brochure/upload/:id",
+  brochureUpload.single("brochureFile"),
+  uploadBrochureAndVideoLink
+);
+
+// multer for Upload Property Additional Information
+const uploadForCsv = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ["text/csv", "application/vnd.ms-excel"];
+    if (!allowedTypes.includes(file.mimetype)) {
+      return cb(new Error("Only CSV files are allowed"));
+    }
+    cb(null, true);
+  },
+});
+
+const uploadCsvMiddleware = (req, res, next) => {
+  uploadForCsv.single("csv")(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      // Multer-specific error (e.g. file too large)
+      return res.status(400).json({ message: err.message });
+    } else if (err) {
+      // Other errors
+      return res.status(400).json({ message: err.message });
+    }
+    next();
+  });
+};
+
+// Fetch & Upload CSV File
+router.get("/additionalinfo/get/:id", fetchAdditionalInfo);
+router.post(
+  "/additionalinfo/flat/csv/add/:propertyid",
+  uploadCsvMiddleware,
+  addCsvFileForFlat
+);
+router.post(
+  "/additionalinfo/plot/csv/add/:propertyid",
+  uploadCsvMiddleware,
+  addCsvFileForPlot
+);
+
 export default router;
+

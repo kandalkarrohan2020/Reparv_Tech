@@ -43,7 +43,7 @@ router.post("/login", async (req, res) => {
     }
 
     //  Generate JWT Token
-    const token = jwt.sign({ id: user.salespersonsid, username: user.username, contact: user.contact, email: user.email, adharId: user.adharno }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user.salespersonsid, username: user.username, contact: user.contact, email: user.email, adharId: user.adharno, state: user.state, city: user.city }, process.env.JWT_SECRET, {
       expiresIn: "10d",
     });
 
@@ -60,6 +60,8 @@ router.post("/login", async (req, res) => {
       contact: user.contact,
       adharId: user.adharno,
       role: "Sales Person",
+      state: user.state,
+      city: user.city,
     };
 
     //  Set Secure Cookie in Production

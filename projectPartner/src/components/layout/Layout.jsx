@@ -107,7 +107,14 @@ function Layout() {
     setShowSalesForm,
     showSalesPerson,
     setShowSalesPerson,
-     showAssignTaskForm, setShowAssignTaskForm,
+    showAssignTaskForm,
+    setShowAssignTaskForm,
+    showSeoForm,
+    setShowSeoForm,
+    showRejectReasonForm,
+    setShowRejectReasonForm,
+    showCommissionForm,
+    setShowCommissionForm,
     isLoggedIn,
   } = useAuth();
 
@@ -153,6 +160,9 @@ function Layout() {
     { state: showEnquirerPropertyForm, setter: setShowEnquirerPropertyForm },
     { state: showEnquiry, setter: setShowEnquiry },
     { state: showAssignTaskForm, setter: setShowAssignTaskForm },
+    { state: showSeoForm, setter: setShowSeoForm },
+    { state: showRejectReasonForm, setter: setShowRejectReasonForm },
+    { state: showCommissionForm, setter: setShowCommissionForm },
   ];
 
   const getNavLinkClass = (path) => {

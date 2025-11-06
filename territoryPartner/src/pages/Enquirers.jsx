@@ -6,6 +6,7 @@ import propertyPicture from "../assets/property/propertyPicture.svg";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import FilterData from "../components/FilterData";
 import DataTable from "react-data-table-component";
+import { RiArrowDropDownLine } from "react-icons/ri";
 import { FiMoreVertical } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import { useAuth } from "../store/auth";
@@ -13,6 +14,7 @@ import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 import AddButton from "../components/AddButton";
 import FormatPrice from "../components/FormatPrice";
+import EnquiryFilter from "../components/EnquiryFilter";
 
 const Enquirers = () => {
   const navigate = useNavigate();
@@ -30,6 +32,8 @@ const Enquirers = () => {
     showEnquiryForm,
     showEnquirerPropertyForm,
     setShowEnquirerPropertyForm,
+    enquiryFilter,
+    setEnquiryFilter,
   } = useAuth();
 
   const [datas, setDatas] = useState([]);
@@ -49,13 +53,12 @@ const Enquirers = () => {
     minbudget: "",
     maxbudget: "",
     category: "",
-    state: "Maharashtra",
+    state: user?.state,
     city: user?.city,
     location: "",
     message: "",
-    territoryName: user.name,
-    territoryContact: user.contact,
   });
+  const [selectedSource, setSelectedSource] = useState("Select Enquiry Source");
   const [property, setProperty] = useState({});
   const [error, setError] = useState("");
   const [properties, setProperties] = useState([]);
@@ -126,7 +129,7 @@ const Enquirers = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/territory-partner/enquirers", {
+      const response = await fetch(URI + "/territory-partner/enquirers/get/" + selectedSource, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -145,7 +148,7 @@ const Enquirers = () => {
   const fetchProperties = async () => {
     try {
       setError(""); // clear previous error
-      const response = await fetch(URI + "/admin/enquirers/properties", {
+      const response = await fetch(URI + "/territory-partner/enquirers/properties", {
         method: "POST",
         credentials: "include", // Ensures cookies are sent
         headers: {
@@ -570,6 +573,10 @@ const Enquirers = () => {
 
   useEffect(() => {
     fetchData();
+  }, [selectedSource]);
+
+  useEffect(() => {
+    fetchData();
     fetchStates();
     fetchCities();
   }, []);
@@ -597,6 +604,22 @@ const Enquirers = () => {
     newEnquiry.state,
     newEnquiry.city,
   ]);
+
+  const getEnquiryCounts = (data) => {
+    return data.reduce(
+      (acc, item) => {
+         if (item.territorybroker) {
+          acc.DigitalBroker++;
+        } else if (item.salespersonid && item.territorypartnerid) {
+          acc.Assign++;
+        }
+        return acc;
+      },
+      { Assign: 0, DigitalBroker: 0}
+    );
+  };
+
+  const enquiryCounts = getEnquiryCounts(datas);
 
   const [range, setRange] = useState([
     {
@@ -635,7 +658,17 @@ const Enquirers = () => {
       (!startDate && !endDate) ||
       (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
 
-    return matchesStatus && matchesSearch && matchesDate;
+    // Enquiry filter logic: New, Alloted, Assign
+    const getEnquiryStatus = () => {
+      if (item.territorybroker) return "Digital Broker";
+      if (item.salespersonid && item.territorypartnerid) return "Assign";
+      return "";
+    };
+
+    const matchesEnquiry =
+      !enquiryFilter || getEnquiryStatus() === enquiryFilter;
+
+    return matchesStatus && matchesSearch && matchesDate && matchesEnquiry;
   });
 
   const customStyles = {
@@ -745,7 +778,7 @@ const Enquirers = () => {
       width: "130px",
     },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
-    { name: "Source", selector: (row) => row.source, width: "100px" },
+    { name: "Source", selector: (row) => row.source, minWidth: "100px" },
     {
       name: "Customer",
       selector: (row) => row.customer,
@@ -779,6 +812,12 @@ const Enquirers = () => {
       width: "120px",
     },
   ];
+
+  const finalColumns = columns.map((col) => {
+    if (col.name === "Action" || col.name === "Accept Status" || col.name === "Territory Partner")
+      return { ...col, omit: enquiryFilter === "Digital Broker" };
+    return col;
+  });
 
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
@@ -848,8 +887,28 @@ const Enquirers = () => {
   return (
     <div className="enquirers overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
       <div className="enquirers-table w-full h-[80vh] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
-        <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
-          <p className="block md:hidden text-lg font-semibold">Enquirers</p>
+        <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
+          <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+            <div className="flex gap-1 sm:gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+              <span>{selectedSource || "Select Source"}</span>
+              <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+            </div>
+            <select
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              value={selectedSource}
+              onChange={(e) => {
+                const action = e.target.value;
+                setSelectedSource(action);
+              }}
+            >
+              <option value="Select Enquiry Source">
+                Select Enquiry Source
+              </option>
+              <option value="Enquiry">Enquiry</option>
+              <option value="Digital Broker">Digital Broker</option>
+            </select>
+          </div>
+
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
             <AddButton label={"Add "} func={setShowEnquiryForm} />
           </div>
@@ -880,12 +939,15 @@ const Enquirers = () => {
             </div>
           </div>
         </div>
+        <div className="filterContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
+          <EnquiryFilter counts={enquiryCounts} />
+        </div>
         <h2 className="text-[16px] font-semibold">Enquiry List</h2>
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"
             customStyles={customStyles}
-            columns={columns}
+            columns={finalColumns}
             data={filteredData}
             pagination
             paginationPerPage={15}
@@ -1056,11 +1118,11 @@ const Enquirers = () => {
                   disabled
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
                   style={{ backgroundImage: "none" }}
-                  value={"Maharashtra"}
+                  value={user?.state}
                   onChange={(e) =>
                     setNewEnquiry({
                       ...newEnquiry,
-                      state: "Maharashtra",
+                      state: user?.state,
                     })
                   }
                 >
@@ -1083,11 +1145,11 @@ const Enquirers = () => {
                   disabled
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
                   style={{ backgroundImage: "none" }}
-                  value={user.city}
+                  value={user?.city}
                   onChange={(e) =>
                     setNewEnquiry({
                       ...newEnquiry,
-                      city: user.city,
+                      city: user?.city,
                     })
                   }
                 >

@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../store/auth";
 import LocationPicker from "./LocationPicker";
 import TagsInput from "./TagsInput";
+import FormatPrice from "../../components/FormatPrice";
+//import MapLibreBuildings from "./MapLibreBuildings";
 
 const StepOne = ({
   newProperty,
@@ -58,7 +60,7 @@ const StepOne = ({
           </label>
           <select
             required
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent  placeholder:text-black"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
             style={{ backgroundImage: "none" }}
             value={newProperty.builderid}
             onChange={(e) =>
@@ -77,7 +79,6 @@ const StepOne = ({
           </select>
         </div>
 
-        
         <div className="w-full ">
           <label
             className={`text-green-600 block text-sm leading-4 font-medium`}
@@ -131,7 +132,7 @@ const StepOne = ({
             Property Category <span className="text-red-600">*</span>
           </label>
           <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
+            className="w-full placeholder:text-black mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent"
             style={{ backgroundImage: "none" }}
             value={newProperty.propertyCategory}
             onChange={(e) =>
@@ -174,7 +175,7 @@ const StepOne = ({
             Property Approved by <span className="text-red-600">*</span>
           </label>
           <select
-            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent placeholder:text-black"
+            className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none bg-transparent"
             style={{ backgroundImage: "none" }}
             value={newProperty.propertyApprovedBy}
             onChange={(e) =>
@@ -223,6 +224,7 @@ const StepOne = ({
             }
           />
         </div>
+
         <div className="w-full">
           <label
             className={`${
@@ -275,6 +277,7 @@ const StepOne = ({
             }}
           />
         </div>
+
         <div className="w-full ">
           <label
             className={`${
@@ -294,6 +297,7 @@ const StepOne = ({
             }
           />
         </div>
+
         {/* State Select Input */}
         <div className="w-full">
           <label
@@ -386,6 +390,7 @@ const StepOne = ({
             type="text"
             required
             placeholder="Enter Location"
+            placeholder:text-black
             className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder:text-black"
             value={newProperty.location}
             onChange={(e) =>
@@ -396,6 +401,7 @@ const StepOne = ({
             }
           />
         </div>
+
         <div className="w-full">
           <label
             className={`${
@@ -425,8 +431,8 @@ const StepOne = ({
             ))}
           </select>
         </div>
-        
-      {/* Map Picker */}
+
+        {/* Map Picker */}
         <div
           className={`${
             newProperty.state && newProperty.city && newProperty.pincode
@@ -516,6 +522,7 @@ const StepOne = ({
               ? "Registration Percentage " +
                 parseFloat(newProperty.registrationFee) + "%"
               : "Registration Fee or Percentage "}
+
             <span className="text-red-600">*</span>
           </label>
           <select

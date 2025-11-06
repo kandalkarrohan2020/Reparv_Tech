@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Enquirers from "./pages/Enquirers.jsx";
+import DigitalBroker from "./pages/DigitalBroker.jsx";
 import Map from "./pages/Map.jsx";
 import Calender from "./pages/Calender.jsx";
 import Customers from "./pages/Customers.jsx";
@@ -47,6 +48,7 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/enquirers" element={<Enquirers />} />
+          <Route path="/digital-broker" element={<DigitalBroker />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/map" element={<Map />} />
           <Route path="/calender" element={<Calender />} />

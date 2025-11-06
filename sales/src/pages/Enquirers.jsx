@@ -7,6 +7,7 @@ import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import FilterData from "../components/FilterData";
 import DataTable from "react-data-table-component";
 import Select from "react-select";
+import { RiArrowDropDownLine } from "react-icons/ri";
 import { FiMoreVertical } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import { useAuth } from "../store/auth";
@@ -14,6 +15,7 @@ import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 import AddButton from "../components/AddButton";
 import FormatPrice from "../components/FormatPrice";
+import EnquiryFilter from "../components/EnquiryFilter";
 
 const Enquirers = () => {
   const navigate = useNavigate();
@@ -31,6 +33,8 @@ const Enquirers = () => {
     showEnquiryForm,
     showEnquirerPropertyForm,
     setShowEnquirerPropertyForm,
+    enquiryFilter,
+    setEnquiryFilter,
   } = useAuth();
 
   const [datas, setDatas] = useState([]);
@@ -53,21 +57,38 @@ const Enquirers = () => {
     city: "",
     location: "",
     message: "",
-    salesPersonName: user?.name,
-    salesPersonContact: user?.contact,
   });
+  const [selectedSource, setSelectedSource] = useState("Select Enquiry Source");
   const [enquiryStatus, setEnquiryStatus] = useState("");
+  const [territoryCity, setTerritoryCity] = useState(null);
   const [territoryPartnerList, setTerritoryPartnerList] = useState([]);
-  const [error, setError] = useState("");
-  const [properties, setProperties] = useState([]);
-  const [propertyList, setPropertyList] = useState([]);
-  //const [propertyCity, setPropertyCity] = useState("");
+  const allTimeSlots = [
+    "8 - 9AM",
+    "9 - 10AM",
+    "10 - 11AM",
+    "11 - 12AM",
+    "12 - 1PM",
+    "1 - 2PM",
+    "2 - 3PM",
+    "3 - 4PM",
+    "4 - 5PM",
+    "5 - 6PM",
+  ];
+  const [selectedSlot, setSelectedSlot] = useState("");
+  const [bookedSlots, setBookedSlots] = useState([]);
   const [territoryPartnerToAssign, setTerritoryPartnerToAssign] = useState({
     territorypartnerid: "",
     territorypartner: "",
     territorypartnercontact: "",
     territorypartnerdate: "",
+    territorytimeslot: "",
   });
+
+  const [error, setError] = useState("");
+  const [properties, setProperties] = useState([]);
+  const [propertyList, setPropertyList] = useState([]);
+  //const [propertyCity, setPropertyCity] = useState("");
+
   const [followUpRemark, setFollowUpRemark] = useState("");
   const [cancelledRemark, setCancelledRemark] = useState("");
   const [visitRemark, setVisitRemark] = useState("");
@@ -145,13 +166,16 @@ const Enquirers = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/sales/enquirers", {
-        method: "GET",
-        credentials: "include", //  Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        URI + "/sales/enquirers/get/" + selectedSource,
+        {
+          method: "GET",
+          credentials: "include", //  Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch enquirers.");
       const data = await response.json();
       setDatas(data);
@@ -164,7 +188,7 @@ const Enquirers = () => {
   const fetchProperties = async () => {
     try {
       setError(""); // clear previous error
-      const response = await fetch(URI + "/admin/enquirers/properties", {
+      const response = await fetch(URI + "/sales/enquirers/properties", {
         method: "POST",
         credentials: "include", // Ensures cookies are sent
         headers: {
@@ -348,8 +372,9 @@ const Enquirers = () => {
       );
       if (!response.ok) throw new Error("Failed to fetch City.");
       const data = await response.json();
-      console.log(data);
-      fetchTerritoryPartner(data.city);
+      //console.log(data);
+      setTerritoryCity(data.city);
+      setShowAssignTerritory(true);
     } catch (err) {
       console.error("Error fetching :", err);
     } finally {
@@ -357,12 +382,77 @@ const Enquirers = () => {
     }
   };
 
-  //Fetch Territory Partner List By City of Property
-  const fetchTerritoryPartner = async (city) => {
+  const formatDate = (date) => {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) {
+      throw new Error(`Invalid date: ${JSON.stringify(date)}`);
+    }
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
+  const updateBookedSlots = (partnerId, date) => {
+    if (!partnerId || !date) return;
+
+    // Convert to "dd-MM-yyyy" with leading zeros
+    const formattedSelectedDate = `${String(date.day).padStart(
+      2,
+      "0"
+    )}-${String(date.month).padStart(2, "0")}-${date.year}`;
+
+    const newDate = convertDateFormat(formattedSelectedDate);
+
+    const taken = enquiries
+      .filter((e) => {
+        return e.territorypartnerid === partnerId && e.visitdate === newDate;
+      })
+      .map((e) => e.territorytimeslot)
+      .filter(Boolean);
+
+    setBookedSlots(taken);
+    console.log("Taken slots for", newDate, taken);
+  };
+
+  const handleOk = (date) => {
+    setSelectedDate(date);
+    setShowPicker(false);
+    setFollowUpDate(date);
+
+    const formattedSelectedDate = `${String(date.day).padStart(
+      2,
+      "0"
+    )}-${String(date.month).padStart(2, "0")}-${date.year}`;
+    const newDate = convertDateFormat(formattedSelectedDate);
+
+    setTerritoryPartnerToAssign({
+      ...territoryPartnerToAssign,
+      territorypartnerdate: newDate,
+    });
+
+    updateBookedSlots(territoryPartnerToAssign?.territorypartnerid, date);
+    setSelectedSlot(null);
+
+    handleChange("edate", newDate);
+  };
+
+  const fetchTerritoryPartner = async () => {
     try {
-      setLoading(true);
-      const response = await fetch(
-        URI + "/sales/enquirers/territorypartner/active/" + city,
+      console.log(
+        "Raw selectedDate:",
+        territoryPartnerToAssign.territorypartnerdate
+      );
+
+      const formattedDate = formatDate(
+        territoryPartnerToAssign.territorypartnerdate
+      );
+      console.log("Formatted Date:", formattedDate);
+
+      const res = await fetch(
+        `${URI}/sales/enquirers/territorypartner/available/get/${territoryCity}?selectedDate=${formattedDate}`,
         {
           method: "GET",
           credentials: "include",
@@ -371,15 +461,54 @@ const Enquirers = () => {
           },
         }
       );
-      if (!response.ok) throw new Error("Failed to fetch Territory Partner.");
-      const data = await response.json();
+
+      if (!res.ok) throw new Error("Failed to fetch TPs.");
+
+      const data = await res.json();
       setTerritoryPartnerList(data);
-      setShowAssignTerritory(true);
     } catch (err) {
-      console.error("Error fetching :", err);
-    } finally {
-      setLoading(false);
+      console.error("Error fetching TPs for date:", err);
     }
+  };
+
+  const getFilteredTimeSlots = () => {
+    if (!territoryPartnerToAssign.territorypartnerdate) return allTimeSlots;
+
+    // Parse selectedDate ("YYYY-MM-DD") into a Date object
+    const selected = new Date(territoryPartnerToAssign.territorypartnerdate);
+    const today = new Date();
+
+    // Check if selected date is today
+    const isToday =
+      selected.getDate() === today.getDate() &&
+      selected.getMonth() === today.getMonth() &&
+      selected.getFullYear() === today.getFullYear();
+
+    if (!isToday) return allTimeSlots;
+
+    // Filter only upcoming time slots for today
+    const currentHour = today.getHours();
+    const currentMinutes = today.getMinutes();
+
+    const parseStartHour = (slot) => {
+      let [range, period] = slot.split(/(AM|PM)/);
+      let [start] = range.trim().split("-");
+      let hour = parseInt(start.trim(), 10);
+      if (period === "PM" && hour !== 12) hour += 12;
+      if (period === "AM" && hour === 12) hour = 0;
+      return hour;
+    };
+
+    const availableSlots = allTimeSlots.filter((slot) => {
+      const startHour = parseStartHour(slot);
+      return (
+        startHour > currentHour ||
+        (startHour === currentHour && currentMinutes < 30)
+      );
+    });
+
+    console.log("Filtered Slots:", availableSlots);
+    return availableSlots;
   };
 
   const assignTerritoryPartner = async (e) => {
@@ -408,6 +537,7 @@ const Enquirers = () => {
       setTerritoryPartnerToAssign({
         territorypartnerid: "",
         territorypartnerdate: "",
+        territorytimeslot: "",
       });
       setShowAssignTerritory(false);
       fetchData();
@@ -626,6 +756,16 @@ const Enquirers = () => {
   };
 
   useEffect(() => {
+    if (territoryPartnerToAssign.territorypartnerdate && territoryCity) {
+      fetchTerritoryPartner();
+    }
+  }, [territoryPartnerToAssign.territorypartnerdate, territoryCity]);
+
+  useEffect(() => {
+    fetchData();
+  }, [selectedSource]);
+
+  useEffect(() => {
     fetchData();
     fetchStates();
   }, []);
@@ -653,6 +793,24 @@ const Enquirers = () => {
     newEnquiry.state,
     newEnquiry.city,
   ]);
+
+  const getEnquiryCounts = (data) => {
+    return data.reduce(
+      (acc, item) => {
+        if (item.salesbroker) {
+          acc.DigitalBroker++;
+        } else if (item.salespersonid && !item.territorypartnerid) {
+          acc.Alloted++;
+        } else if (item.salespersonid && item.territorypartnerid) {
+          acc.Assign++;
+        }
+        return acc;
+      },
+      { Alloted: 0, Assign: 0, DigitalBroker: 0 }
+    );
+  };
+
+  const enquiryCounts = getEnquiryCounts(datas);
 
   const [range, setRange] = useState([
     {
@@ -691,7 +849,18 @@ const Enquirers = () => {
       (!startDate && !endDate) ||
       (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
 
-    return matchesStatus && matchesSearch && matchesDate;
+    // Enquiry filter logic: New, Alloted, Assign
+    const getEnquiryStatus = () => {
+      if (item.salesbroker) return "Digital Broker";
+      if (item.salespersonid && !item.territorypartnerid) return "Alloted";
+      if (item.salespersonid && item.territorypartnerid) return "Assign";
+      return "";
+    };
+
+    const matchesEnquiry =
+      !enquiryFilter || getEnquiryStatus() === enquiryFilter;
+
+    return matchesStatus && matchesSearch && matchesDate && matchesEnquiry;
   });
 
   const customStyles = {
@@ -801,7 +970,7 @@ const Enquirers = () => {
       width: "140px",
     },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
-    { name: "Source", selector: (row) => row.source, width: "120px" },
+    { name: "Source", selector: (row) => row.source, minWidth: "100px" },
     {
       name: "Customer",
       selector: (row) => row.customer,
@@ -827,6 +996,16 @@ const Enquirers = () => {
       width: "120px",
     },
   ];
+
+  const finalColumns = columns.map((col) => {
+    if (
+      col.name === "Action" ||
+      col.name === "Sales Partner" ||
+      col.name === "Territory Partner"
+    )
+      return { ...col, omit: enquiryFilter === "Digital Broker" };
+    return col;
+  });
 
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
@@ -891,12 +1070,33 @@ const Enquirers = () => {
   return (
     <div className="enquirers overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
       <div className="enquirers-table w-full h-[80vh] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
-        <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
-          <p className="block md:hidden text-lg font-semibold">Enquirers</p>
+        <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
+          <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+            <div className="flex gap-1 sm:gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+              <span>{selectedSource || "Select Source"}</span>
+              <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+            </div>
+            <select
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              value={selectedSource}
+              onChange={(e) => {
+                const action = e.target.value;
+                setSelectedSource(action);
+              }}
+            >
+              <option value="Select Enquiry Source">
+                Select Enquiry Source
+              </option>
+              <option value="Enquiry">Enquiry</option>
+              <option value="Digital Broker">Digital Broker</option>
+            </select>
+          </div>
+
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
             <AddButton label={"Add "} func={setShowEnquiryForm} />
           </div>
         </div>
+
         <div className="searchBarContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
             <CiSearch />
@@ -923,12 +1123,16 @@ const Enquirers = () => {
             </div>
           </div>
         </div>
+        <div className="filterContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
+          <EnquiryFilter counts={enquiryCounts} />
+        </div>
+
         <h2 className="text-[16px] font-semibold">Enquiry List</h2>
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"
             customStyles={customStyles}
-            columns={columns}
+            columns={finalColumns}
             data={filteredData}
             pagination
             paginationPerPage={15}
@@ -1622,7 +1826,7 @@ const Enquirers = () => {
           !showAssignTerritory && "hidden"
         } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto`}
       >
-        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] h-[40vh] max-h-[60vh] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] max-h-[75vh] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">
               Assign Enquiry to Territory Partner
@@ -1643,6 +1847,27 @@ const Enquirers = () => {
                   setEnquiryId(e.target.value);
                 }}
               />
+
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  required
+                  min={new Date().toISOString().split("T")[0]} // disables past dates
+                  className="w-full mt-[10px] text-[14px] font-medium p-2 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={territoryPartnerToAssign.territorypartnerdate}
+                  onChange={(e) => {
+                    const selectedDate = e.target.value; // Get full date (YYYY-MM-DD)
+                    setTerritoryPartnerToAssign({
+                      ...territoryPartnerToAssign,
+                      territorypartnerdate: selectedDate,
+                    });
+                  }}
+                />
+              </div>
+
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium mb-[10px]">
                   Territory Partner
@@ -1680,25 +1905,84 @@ const Enquirers = () => {
                 />
               </div>
 
+              {/* Time Slot Selection */}
               <div className="w-full">
-                <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  Date
+                <label className="block text-sm leading-4 text-[#00000066] font-medium mb-[10px]">
+                  Select Time Slot
                 </label>
-                <input
-                  type="date"
-                  required
-                  className="w-full mt-[10px] text-[14px] font-medium p-2 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={territoryPartnerToAssign.territorypartnerdate}
-                  onChange={(e) => {
-                    const selectedDate = e.target.value; // Get full date
-                    const formattedDate = selectedDate.split("T")[0]; // Extract only YYYY-MM-DD
 
-                    setTerritoryPartnerToAssign({
-                      ...territoryPartnerToAssign,
-                      territorypartnerdate: formattedDate,
-                    });
-                  }}
-                />
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[300px] md:max-h-[200px] overflow-y-auto border p-3 rounded-md bg-white">
+                  {getFilteredTimeSlots().length > 0 ? (
+                    getFilteredTimeSlots().map((slot) => {
+                      // --- Determine if slot is in the past ---
+                      const selected = new Date(
+                        territoryPartnerToAssign.territorypartnerdate
+                      );
+                      const today = new Date();
+
+                      // Check if selected date is today
+                      const isToday =
+                        selected.getDate() === today.getDate() &&
+                        selected.getMonth() === today.getMonth() &&
+                        selected.getFullYear() === today.getFullYear();
+
+                      // Parse slot start hour
+                      const parseStartHour = (slot) => {
+                        let [range, period] = slot.split(/(AM|PM)/);
+                        let [start] = range.trim().split("-");
+                        let hour = parseInt(start.trim(), 10);
+                        if (period === "PM" && hour !== 12) hour += 12;
+                        if (period === "AM" && hour === 12) hour = 0;
+                        return hour;
+                      };
+
+                      const startHour = parseStartHour(slot);
+
+                      // Disable if booked OR (today && past slot)
+                      const currentHour = today.getHours();
+                      const currentMinutes = today.getMinutes();
+
+                      const isPastToday =
+                        isToday &&
+                        (startHour < currentHour ||
+                          (startHour === currentHour && currentMinutes >= 30));
+
+                      const isDisabled =
+                        bookedSlots.includes(slot) || isPastToday;
+
+                      const isSelected = territoryPartnerToAssign.territorytimeslot === slot;
+
+                      return (
+                        <button
+                          key={slot}
+                          type="button"
+                          disabled={isDisabled}
+                          onClick={() =>
+                            !isDisabled &&
+                            setTerritoryPartnerToAssign({
+                              ...territoryPartnerToAssign,
+                              territorytimeslot: slot,
+                            })
+                          }
+                          className={`px-3 py-2 rounded-md text-sm font-medium border transition-all duration-200 ${
+                            isDisabled
+                              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                              : isSelected
+                              ? "bg-green-600 text-white border-green-600"
+                              : "bg-white text-gray-800 hover:bg-blue-50 border-gray-300"
+                          }`}
+                        >
+                          {slot}
+                        </button>
+                      );
+                    })
+                  ) : (
+                    <span className="text-sm col-span-3 font-semibold text-[#00000066]">
+                      {" "}
+                      Time Slot not found
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
             <div className="flex mt-8 md:mt-6 justify-end gap-6">

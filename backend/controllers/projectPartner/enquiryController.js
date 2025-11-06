@@ -1,10 +1,11 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 
-// Add Normal Enquiry Without Property ID
+// * Add Normal Enquiry (with or without Property ID)
 export const addEnquiry = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const Id = req.projectPartnerUser?.id;
+
   if (!Id) {
     return res.status(400).json({ message: "Invalid Id" });
   }
@@ -37,24 +38,31 @@ export const addEnquiry = async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const insertSQL = `INSERT INTO enquirers (
-    projectpartnerid,
-    customer,
-    contact,
-    minbudget,
-    maxbudget,
-    category,
-    state,
-    city,
-    location,
-    propertyid,
-    message,
-    source,
-    updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  let insertSQL;
+  let insertData;
 
-  db.query(
-    insertSQL,
-    [
+  // Case 1: Enquiry with Property ID
+  if (propertyid) {
+    insertSQL = `
+      INSERT INTO enquirers (
+        projectpartner,
+        customer,
+        contact,
+        minbudget,
+        maxbudget,
+        category,
+        state,
+        city,
+        location,
+        propertyid,
+        message,
+        source,
+        updated_at,
+        created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    insertData = [
       Id,
       customer,
       contact,
@@ -69,18 +77,59 @@ export const addEnquiry = async (req, res) => {
       "Direct",
       currentdate,
       currentdate,
-    ],
-    (err, result) => {
-      if (err) {
-        console.error("Error inserting:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-      res.status(201).json({
-        message: "Enquiry added successfully",
-        Id: result.insertId,
-      });
+    ];
+  } 
+  
+  // Case 2: Enquiry without Property ID
+  else {
+    insertSQL = `
+      INSERT INTO enquirers (
+        projectbroker,
+        projectpartner,
+        customer,
+        contact,
+        minbudget,
+        maxbudget,
+        category,
+        state,
+        city,
+        location,
+        message,
+        source,
+        updated_at,
+        created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    insertData = [
+      Id, // projectbroker
+      Id, // projectpartner
+      customer,
+      contact,
+      minbudget,
+      maxbudget,
+      category,
+      state,
+      city,
+      location,
+      message,
+      "Direct",
+      currentdate,
+      currentdate,
+    ];
+  }
+
+  db.query(insertSQL, insertData, (err, result) => {
+    if (err) {
+      console.error("Error inserting enquiry:", err);
+      return res.status(500).json({ message: "Database error", error: err });
     }
-  );
+
+    res.status(201).json({
+      message: "Enquiry added successfully",
+      enquiryId: result.insertId,
+    });
+  });
 };
 
 // Update Normal Enquiry Without Property ID

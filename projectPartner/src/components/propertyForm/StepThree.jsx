@@ -6,11 +6,11 @@ const StepThree = ({
   imageFiles,
   setImageFiles,
 }) => {
-  // Handle Image Upload
+  // Handle Image Upload with Validation
   const handleImageChange = (event, category) => {
     const files = Array.from(event.target.files);
-    const validFormats = ["image/jpeg", "image/png", "image/jpg"];
-    const maxSize = 500 * 1024; // 500 KB
+    const validFormats = ["image/jpeg", "image/jpg", "image/png"];
+    const maxSize = 500 * 1024; // 500 KB limit
 
     const validFiles = [];
     for (const file of files) {
@@ -33,16 +33,14 @@ const StepThree = ({
     setImageFiles((prev) => {
       const existing = prev[category] || [];
       const newFiles = [...existing, ...validFiles];
-
       if (newFiles.length > 3) {
         alert("⚠️ You can only upload up to 3 images per category.");
         return { ...prev, [category]: newFiles.slice(0, 3) };
       }
-
       return { ...prev, [category]: newFiles };
     });
 
-    event.target.value = "";
+    event.target.value = ""; // reset input
   };
 
   // Remove Image
@@ -54,8 +52,8 @@ const StepThree = ({
     });
   };
 
-  // Reusable Image Upload Component
-  const renderImageSection = (category, label, required = false, hidden = false) => {
+  // Reusable Image Upload UI
+  const renderUploadSection = (category, label, required = false, hidden = false) => {
     if (hidden) return null;
     return (
       <div className="w-full">
@@ -83,7 +81,6 @@ const StepThree = ({
             </div>
           </label>
         </div>
-
         <div className="grid grid-cols-3 gap-2 mt-2">
           {(imageFiles[category] || []).map((image, index) => {
             const imageUrl = URL.createObjectURL(image);
@@ -119,25 +116,23 @@ const StepThree = ({
       </div>
 
       <div className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-        {renderImageSection("frontView", "Front View", true)}
-        {renderImageSection("nearestLandmark", "Nearest Landmark", true)}
-        {renderImageSection("developedAmenities", "Developed Amenities", true)}
+        {renderUploadSection("frontView", "Front View", true)}
+        {renderUploadSection("nearestLandmark", "Nearest Landmark", true)}
+        {renderUploadSection("developedAmenities", "Developed Amenities", true)}
 
-        {renderImageSection(
+        {renderUploadSection(
           "sideView",
           "Side View",
           false,
           ["CommercialPlot", "NewPlot", "FarmLand"].includes(newProperty.propertyCategory)
         )}
-
-        {renderImageSection(
+        {renderUploadSection(
           "hallView",
           "Hall View",
           false,
           ["CommercialPlot", "NewPlot", "FarmLand"].includes(newProperty.propertyCategory)
         )}
-
-        {renderImageSection(
+        {renderUploadSection(
           "kitchenView",
           "Kitchen View",
           false,
@@ -145,8 +140,7 @@ const StepThree = ({
             newProperty.propertyCategory
           )
         )}
-
-        {renderImageSection(
+        {renderUploadSection(
           "bedroomView",
           "Bedroom View",
           false,
@@ -154,8 +148,7 @@ const StepThree = ({
             newProperty.propertyCategory
           )
         )}
-
-        {renderImageSection(
+        {renderUploadSection(
           "bathroomView",
           "Bathroom View",
           false,
@@ -163,8 +156,7 @@ const StepThree = ({
             newProperty.propertyCategory
           )
         )}
-
-        {renderImageSection(
+        {renderUploadSection(
           "balconyView",
           "Balcony View",
           false,

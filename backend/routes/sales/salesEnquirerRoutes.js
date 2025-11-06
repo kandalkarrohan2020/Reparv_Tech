@@ -14,6 +14,7 @@ import {
   getPropertyCity,
   getByStatus,
   getAvailableTPsForDate,
+  getProperties,
 } from "../../controllers/sales/enquirerController.js";
 
 const router = express.Router();
@@ -39,10 +40,11 @@ const upload = multer({
   },
 });
 
-router.get("/", getAll);
+router.get("/get/:source", getAll);
 router.get("/:id", getById);
 router.get("/property/city/:id", getPropertyCity);
-router.get("/territorypartner/active/:city", getTerritoryPartners);
+router.post("/properties", getProperties);
+router.get("/territorypartner/available/get/:city", getTerritoryPartners);
 router.post("/assign/to/partner/:id", assignEnquiry);
 router.put("/status/:id", status);
 router.post("/visitscheduled/:id", visitScheduled);

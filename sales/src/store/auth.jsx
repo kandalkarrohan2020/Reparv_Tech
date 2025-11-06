@@ -45,6 +45,7 @@ export const AuthProvider = ({ children }) => {
   const [showEnquirerPropertyForm, setShowEnquirerPropertyForm] =
     useState(false);
   const [showInquiryForm, setShowInquiryForm] = useState(false);
+  const [enquiryFilter, setEnquiryFilter] = useState("Alloted");
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [showEnquiryForm, setShowEnquiryForm] = useState(false);
   const [showTicket, setShowTicket] = useState(false);
@@ -101,6 +102,7 @@ export const AuthProvider = ({ children }) => {
         setAction,
         showPropertyForm,
         setShowPropertyForm,
+        enquiryFilter, setEnquiryFilter,
         showEnquiryForm,
         setShowEnquiryForm,
         user,

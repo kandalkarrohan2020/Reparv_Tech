@@ -300,6 +300,7 @@ function Layout() {
             {[
               { to: "/dashboard", icon: overviewIcon, label: "Dashboard" },
               { to: "/enquirers", icon: enquirersIcon, label: "Enquirers" },
+              { to: "/digital-broker", icon: enquirersIcon, label: "Digital Broker" },
               { to: "/customers", icon: customersIcon, label: "Customers" },
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/map", icon: mapIcon, label: "Map" },

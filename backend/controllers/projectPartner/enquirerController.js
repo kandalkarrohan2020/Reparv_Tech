@@ -44,7 +44,7 @@ export const getAll = (req, res) => {
       LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
       WHERE enquirers.source = "Direct" 
         AND enquirers.status != 'Token' 
-        AND (enquirers.projectpartnerid = ? OR enquirers.digitalbroker = ?)
+        AND (enquirers.projectpartnerid = ? OR enquirers.projectbroker = ?)
       ORDER BY enquirers.enquirersid DESC`;
     params = [userId, userId];
   } 
@@ -58,11 +58,24 @@ export const getAll = (req, res) => {
       LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
       WHERE enquirers.source = "CSV File" 
         AND enquirers.status != 'Token' 
-        AND (properties.projectpartnerid = ? OR enquirers.digitalbroker = ?)
+        AND (properties.projectpartnerid = ? OR enquirers.projectbroker = ?)
       ORDER BY enquirers.enquirersid DESC`;
     params = [userId, userId];
-  } 
-  else {
+  }  else if (enquirySource === "Digital Broker") {
+    sql = `SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
+                  territorypartner.fullname AS territoryName, 
+                  territorypartner.contact AS territoryContact,
+                  projectpartner.fullname AS projectPartnerName, 
+                  projectpartner.contact AS projectPartnerContact
+           FROM enquirers 
+           LEFT JOIN properties ON enquirers.propertyid = properties.propertyid
+           LEFT JOIN territorypartner ON territorypartner.id = enquirers.territorypartnerid
+           LEFT JOIN projectpartner ON projectpartner.id = enquirers.projectpartnerid
+           WHERE enquirers.status != 'Token' AND enquirers.projectpartnerid = ?
+             AND (enquirers.salesbroker IS NOT NULL OR enquirers.territorybroker IS NOT NULL OR enquirers.projectbroker IS NOT NULL)
+           ORDER BY enquirers.enquirersid DESC`;
+    params = [userId];
+  } else {
     sql = `
       SELECT enquirers.*, properties.frontView, properties.seoSlug, properties.commissionAmount,
              territorypartner.fullname AS territoryName, 
@@ -74,7 +87,7 @@ export const getAll = (req, res) => {
         AND (
           properties.projectpartnerid = ? 
           OR enquirers.projectpartnerid = ? 
-          OR enquirers.digitalbroker = ?
+          OR enquirers.projectbroker = ?
         )
       ORDER BY enquirers.enquirersid DESC`;
   }
@@ -754,8 +767,8 @@ export const cancelled = (req, res) => {
   );
 };
 
-// * Assign To Reparv */
-export const assignToReparv = (req, res) => {
+// * convert Into Digital Broker */
+export const toDigitalBroker = (req, res) => {
   const userId = req.projectPartnerUser?.id;
 
   if (!userId) {
@@ -782,17 +795,17 @@ export const assignToReparv = (req, res) => {
     const updateSql = `
       UPDATE enquirers 
       SET salespersonid = NULL, territorypartnerid = NULL, projectpartnerid = NULL, 
-          digitalbroker = ? 
+          projectbroker = ? 
       WHERE enquirersid = ?
     `;
 
     db.query(updateSql, [userId, Id], (err, updateResult) => {
       if (err) {
-        console.error("Error Assigning Enquiry to Reparv:", err);
+        console.error("Error Converting Enquiry into Digital Broker:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
 
-      res.status(200).json({ message: "Enquiry assigned to Reparv successfully" });
+      res.status(200).json({ message: "Enquiry convert into digital broker successfully" });
     });
   });
 };

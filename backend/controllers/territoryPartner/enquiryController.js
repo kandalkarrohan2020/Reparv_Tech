@@ -96,12 +96,13 @@ export const add = async (req, res) => {
   });
 };
 
-// Add Normal Enquiry With optional Property ID
+// * Add Normal Enquiry (Territory Partner) — with optional Property ID
 export const addEnquiry = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const territoryId = req.territoryUser?.id;
+
   if (!territoryId) {
-    return res.status(400).json({ message: "Invalid Sales Id" });
+    return res.status(400).json({ message: "Invalid Territory Partner Id" });
   }
 
   const {
@@ -115,8 +116,6 @@ export const addEnquiry = async (req, res) => {
     city,
     location,
     message,
-    territoryName,
-    territoryContact,
   } = req.body;
 
   // Validate required fields
@@ -129,37 +128,37 @@ export const addEnquiry = async (req, res) => {
     !state ||
     !city ||
     !location ||
-    !message ||
-    !territoryName ||
-    !territoryContact
+    !message
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  let territoryInfo = territoryName + " - " + territoryContact;
+  let insertSQL;
+  let insertData;
 
-  const insertSQL = `INSERT INTO enquirers (
-    territorypartnerid,
-    customer,
-    contact,
-    minbudget,
-    maxbudget,
-    category,
-    state,
-    city,
-    location,
-    propertyid,
-    message,
-    assign,
-    source,
-   
-    territorystatus,
-    updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  // Case 1: With Property ID
+  if (propertyid) {
+    insertSQL = `
+      INSERT INTO enquirers (
+        territorypartner,
+        customer,
+        contact,
+        minbudget,
+        maxbudget,
+        category,
+        state,
+        city,
+        location,
+        propertyid,
+        message,
+        source,
+        updated_at,
+        created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
 
-  db.query(
-    insertSQL,
-    [
-      territoryId,
+    insertData = [
+      territoryId, // territorypartnerid
       customer,
       contact,
       minbudget,
@@ -170,23 +169,62 @@ export const addEnquiry = async (req, res) => {
       location,
       propertyid,
       message,
-      territoryInfo,
       "Direct",
-      "Accepted",
       currentdate,
       currentdate,
-    ],
-    (err, result) => {
-      if (err) {
-        console.error("Error inserting:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-      res.status(201).json({
-        message: "Enquiry added successfully",
-        Id: result.insertId,
-      });
+    ];
+  }
+
+  // Case 2: Without Property ID
+  else {
+    insertSQL = `
+      INSERT INTO enquirers (
+        territorybroker,
+        territorypartner,
+        customer,
+        contact,
+        minbudget,
+        maxbudget,
+        category,
+        state,
+        city,
+        location,
+        message,
+        source,
+        updated_at,
+        created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    insertData = [
+      territoryId, // territorybroker
+      territoryId, // territorypartnerid
+      customer,
+      contact,
+      minbudget,
+      maxbudget,
+      category,
+      state,
+      city,
+      location,
+      message,
+      "Direct",
+      currentdate,
+      currentdate,
+    ];
+  }
+
+  db.query(insertSQL, insertData, (err, result) => {
+    if (err) {
+      console.error("Error inserting enquiry:", err);
+      return res.status(500).json({ message: "Database error", error: err });
     }
-  );
+
+    res.status(201).json({
+      message: "Enquiry added successfully",
+      enquiryId: result.insertId,
+    });
+  });
 };
 
 // Update Normal Enquiry With Optional Property ID

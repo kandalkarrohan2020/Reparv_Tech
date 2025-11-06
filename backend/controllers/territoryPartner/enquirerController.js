@@ -2,24 +2,61 @@ import db from "../../config/dbconnect.js";
 import moment from "moment";
 import { sanitize } from "../../utils/sanitize.js";
 
-// **Fetch All **
+// Fetch All Enquiries
 export const getAll = (req, res) => {
-  const sql = `SELECT enquirers.*, 
+  const userId = req.territoryUser?.id;
+  if (!userId) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized Access, Please Login Again!" });
+  }
+
+  const enquirySource = req.params.source;
+  if (!enquirySource) {
+    return res.status(401).json({ message: "Enquiry Source Not Selected" });
+  }
+
+  let sql;
+  let params = [userId, userId]; // for default query
+
+  if (enquirySource === "Enquiry") {
+    sql = `SELECT enquirers.*, 
     properties.frontView, properties.seoSlug, properties.commissionAmount
     FROM enquirers 
     LEFT JOIN properties 
     ON enquirers.propertyid = properties.propertyid 
-    WHERE enquirers.status != 'Token' AND enquirers.territorypartnerid = ? 
+    WHERE enquirers.status != 'Token' AND enquirers.territorypartnerid = ?
     ORDER BY enquirersid DESC
     `;
-  db.query(sql, [req.territoryUser?.id], (err, results) => {
+    params = [userId];
+  } else if (enquirySource === "Digital Broker") {
+    sql = `SELECT enquirers.*, 
+    properties.frontView, properties.seoSlug, properties.commissionAmount
+    FROM enquirers 
+    LEFT JOIN properties 
+    ON enquirers.propertyid = properties.propertyid 
+    WHERE enquirers.status != 'Token' AND enquirers.territorypartnerid = ?
+      AND (enquirers.salesbroker IS NOT NULL OR enquirers.territorybroker IS NOT NULL OR enquirers.projectbroker IS NOT NULL)
+      ORDER BY enquirers.enquirersid DESC`;
+    params = [userId];
+  } else {
+    sql = `SELECT enquirers.*, 
+    properties.frontView, properties.seoSlug, properties.commissionAmount
+    FROM enquirers 
+    LEFT JOIN properties 
+    ON enquirers.propertyid = properties.propertyid 
+    WHERE enquirers.status != 'Token' AND enquirers.territorypartnerid = ? OR enquirers.territorybroker = ?
+    ORDER BY enquirersid DESC
+    `;
+  }
+
+  db.query(sql, params, (err, result) => {
     if (err) {
-      console.error("Database Query Error:", err);
-      return res
-        .status(500)
-        .json({ message: "Database query error", error: err });
+      console.error("Error fetching Enquirers:", err);
+      return res.status(500).json({ message: "Database error", error: err });
     }
-    const formatted = results.map((row) => ({
+
+    const formatted = result.map((row) => ({
       ...row,
       created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
       updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
@@ -28,6 +65,7 @@ export const getAll = (req, res) => {
     res.json(formatted);
   });
 };
+
 
 // **Fetch Single by ID**
 export const getById = (req, res) => {
@@ -47,6 +85,90 @@ export const getById = (req, res) => {
       return res.status(404).json({ message: "Enquiry not found" });
     }
     res.json(result[0]);
+  });
+};
+
+export const getProperties = (req, res) => {
+  const territoryUserId = req.territoryUser?.id; // make sure this comes from auth middleware
+
+  if (!territoryUserId) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized! Please Login Again." });
+  }
+
+  const { minbudget, maxbudget, state, city, category } = req.body;
+
+  // Basic validation
+  if (!state || !city || !category) {
+    return res.status(400).json({
+      success: false,
+      message: "State, City, and Category are required.",
+    });
+  }
+
+  // Parse budgets safely
+  const minBudgetValue = parseFloat(minbudget) || 0;
+  const maxBudgetValue = parseFloat(maxbudget) || Number.MAX_SAFE_INTEGER;
+
+  // Step 1: Fetch projectpartnerid of the logged-in Territory Partner
+  const fetchTerritoryQuery =
+    "SELECT projectpartnerid FROM territorypartner WHERE id = ?";
+
+  db.query(fetchTerritoryQuery, [territoryUserId], (err, territoryResult) => {
+    if (err) {
+      console.error("Error fetching Territory:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (salesResult.length === 0) {
+      return res.status(404).json({ message: "Territory Partner not found" });
+    }
+
+    const projectpartnerid = territoryResult[0].projectpartnerid;
+
+    // Step 2: Build properties query
+    let sql = `
+      SELECT * FROM properties
+      WHERE CAST(totalOfferPrice AS DECIMAL(15,2)) BETWEEN ? AND ?
+        AND propertyCategory = ?
+        AND state = ?
+        AND city = ?
+    `;
+    const params = [minBudgetValue, maxBudgetValue, category, state, city];
+
+    // If Territory is linked to a projectpartner, filter properties by that partner
+    if (projectpartnerid) {
+      sql += " AND projectpartnerid = ?";
+      params.push(projectpartnerid);
+    }
+
+    sql += " ORDER BY created_at DESC";
+
+    // Step 3: Execute final query
+    db.query(sql, params, (err, propertyResults) => {
+      if (err) {
+        console.error("Error fetching properties:", err);
+        return res.status(500).json({
+          success: false,
+          message: "Database error while fetching properties.",
+          error: err,
+        });
+      }
+
+      if (!propertyResults || propertyResults.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "No properties found based on your filters.",
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "Properties fetched successfully.",
+        data: propertyResults,
+      });
+    });
   });
 };
 

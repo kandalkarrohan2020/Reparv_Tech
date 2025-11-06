@@ -15,7 +15,7 @@ import {
   getProperties,
   getPropertyList,
   updateEnquirerProperty,
-  assignToReparv,
+  toDigitalBroker,
 } from "../../controllers/projectPartner/enquirerController.js";
 
 const router = express.Router();
@@ -54,7 +54,7 @@ router.post("/followup/:id", followUp);
 router.post("/cancelled/:id", cancelled);
 router.post("/token/:id",upload.single("paymentimage"), token);
 router.put("/property/update/:id", updateEnquirerProperty);
-router.put("/assign/to/reparv/:id", assignToReparv);
+router.put("/convert/to/digital-broker/:id", toDigitalBroker);
 router.delete("/delete/:id", del);
 
 export default router;

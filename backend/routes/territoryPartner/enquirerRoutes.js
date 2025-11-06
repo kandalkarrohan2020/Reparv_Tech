@@ -4,12 +4,14 @@ import {
   getById,
   status,
   followUp,
-  acceptEnquiry, rejectEnquiry
+  acceptEnquiry, rejectEnquiry,
+  getProperties
 } from "../../controllers/territoryPartner/enquirerController.js";
 
 const router = express.Router();
 
-router.get("/", getAll);
+router.get("/get/:source", getAll);
+router.post("/properties", getProperties);
 router.get("/:id", getById);
 router.get("/status/:id", status);
 router.put("/accept/:id", acceptEnquiry);

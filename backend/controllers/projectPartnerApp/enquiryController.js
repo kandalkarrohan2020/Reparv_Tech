@@ -478,7 +478,7 @@ export const assignToReparv = (req, res) => {
     // Then, update the enquiry
     const updateSql = `
       UPDATE enquirers 
-      SET salespersonid=null,territorypartnerid=null, digitalbroker = ? 
+      SET salespersonid=null,territorypartnerid=null, projectbroker = ? 
       WHERE enquirersid = ?
     `;
 
@@ -494,16 +494,58 @@ export const assignToReparv = (req, res) => {
 };
 
 
+// export const getAllDigitalEnquiry = (req, res) => {
+//   const projectpartnerid = req.params.id;
+// if (!projectpartnerid) {
+//     return res
+//       .status(400)
+//       .json({ message: "Partner ID is required" });
+//   }
+
+//    const sql = `
+//     SELECT enquirers.*,
+//            properties.frontView, 
+//            properties.seoSlug, 
+//            properties.commissionAmount,
+//            territorypartner.fullname AS territoryName,
+//            territorypartner.contact AS territoryContact
+//     FROM enquirers
+//     LEFT JOIN properties 
+//       ON enquirers.propertyid = properties.propertyid
+//     LEFT JOIN territorypartner 
+//       ON territorypartner.id = enquirers.territorypartnerid
+//     WHERE enquirers.projectpartner = ?
+//     ORDER BY enquirers.enquirersid DESC`;
+
+
+//   db.query(sql, [projectpartnerid], (err, results) => {
+//     if (err) {
+//       console.error("Database Query Error:", err);
+//       return res
+//         .status(500)
+//         .json({ message: "Database query error", error: err });
+//     }
+
+//     const formatted = results.map((row) => ({
+//       ...row,
+//       created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+//       updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+//     }));
+
+//     res.json( {data: formatted});
+//   });
+// };
+
+
 export const getAllDigitalEnquiry = (req, res) => {
   const projectpartnerid = req.params.id;
-if (!projectpartnerid) {
-    return res
-      .status(400)
-      .json({ message: "Partner ID is required" });
+
+  if (!projectpartnerid) {
+    return res.status(400).json({ message: "Partner ID is required" });
   }
 
-   const sql = `
-    SELECT enquirers.*, 
+  const sql = `
+    SELECT DISTINCT enquirers.*,
            properties.frontView, 
            properties.seoSlug, 
            properties.commissionAmount,
@@ -513,17 +555,22 @@ if (!projectpartnerid) {
     LEFT JOIN properties 
       ON enquirers.propertyid = properties.propertyid
     LEFT JOIN territorypartner 
-      ON territorypartner.id = enquirers.territorypartnerid
-    WHERE enquirers.digitalbroker = ?
-    ORDER BY enquirers.enquirersid DESC`;
+      ON (
+        territorypartner.id = enquirers.territorypartnerid 
+        OR territorypartner.id = enquirers.territorybroker
+      )
+    LEFT JOIN salespersons
+      ON enquirers.salespartner = salespersons.salespersonsid
+    WHERE enquirers.projectbroker = ?
+       OR salespersons.projectpartnerid = ?
+       OR territorypartner.projectpartnerid = ?
+    ORDER BY enquirers.enquirersid DESC
+  `;
 
-
-  db.query(sql, [projectpartnerid], (err, results) => {
+  db.query(sql, [projectpartnerid, projectpartnerid, projectpartnerid], (err, results) => {
     if (err) {
       console.error("Database Query Error:", err);
-      return res
-        .status(500)
-        .json({ message: "Database query error", error: err });
+      return res.status(500).json({ message: "Database query error", error: err });
     }
 
     const formatted = results.map((row) => ({
@@ -532,7 +579,6 @@ if (!projectpartnerid) {
       updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
     }));
 
-    res.json( {data: formatted});
+    res.json({ data: formatted });
   });
 };
-

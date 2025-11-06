@@ -26,13 +26,6 @@ const EnquiryFilter = ({ counts = {} }) => {
       text: "text-blue-600",
       count: counts?.Assign || 0,
     },
-    {
-      name: "Digital Broker",
-      label: "DigitalBroker",
-      bg: "bg-[#F4F0FB]",
-      text: "text-[#5D00FF]",
-      count: counts?.DigitalBroker || 0,
-    },
   ];
 
   return (

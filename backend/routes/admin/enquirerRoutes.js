@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import {
   getAll,
+  getAllDigitalBroker,
   getById,
   del,
   status,
@@ -42,6 +43,8 @@ const upload = multer({
 
 //router.get("/", getAll);
 router.get("/get/:source", getAll);
+// get digital broker enquiries
+router.get("/digital-broker/get/:broker", getAllDigitalBroker);
 router.get("/:id", getById);
 router.get("/remark/list/:id", getRemarkList);
 router.post("/properties", getProperties);

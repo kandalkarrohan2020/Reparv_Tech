@@ -42,30 +42,17 @@ const markerIcon = new L.DivIcon({
   popupAnchor: [0, -30],
 });
 
-// helper Function
-function isValidCoords(coords) {
-  return (
-    Array.isArray(coords) &&
-    coords.length === 2 &&
-    typeof coords[0] === "number" &&
-    typeof coords[1] === "number" &&
-    !isNaN(coords[0]) &&
-    !isNaN(coords[1])
-  );
-}
-
 // Cache for geocoding results
 const geocodeCache = {};
 
 // Smooth map movement
 function FlyToLocation({ coords }) {
   const map = useMap();
-
   useEffect(() => {
-    if (!isValidCoords(coords)) return;
-    map.flyTo(coords, 12, { animate: true, duration: 1.2 });
+    if (coords) {
+      map.flyTo(coords, 12, { animate: true, duration: 1.2 });
+    }
   }, [coords, map]);
-
   return null;
 }
 
@@ -123,10 +110,8 @@ export default function LocationPicker({
 
   // If lat/lon already present → set as initial marker
   useEffect(() => {
-    const lat = parseFloat(latitude);
-    const lng = parseFloat(longitude);
-    if (!isNaN(lat) && !isNaN(lng)) {
-      setCoords([lat, lng]);
+    if (latitude && longitude) {
+      setCoords([parseFloat(latitude), parseFloat(longitude)]);
     }
   }, [latitude, longitude]);
 
@@ -181,8 +166,8 @@ export default function LocationPicker({
     <div className="w-full">
       <div className="w-full h-[300px] rounded-lg overflow-hidden border">
         <MapContainer
-          center={isValidCoords(coords) ? coords : [20.5937, 78.9629]}
-          zoom={isValidCoords(coords) ? 12 : 5}
+          center={coords || [20.5937, 78.9629]}
+          zoom={coords ? 12 : 5}
           style={{ height: "100%", width: "100%" }}
         >
           <LayersControl position="topright">
@@ -211,10 +196,8 @@ export default function LocationPicker({
           </LayersControl>
 
           {/* Other children */}
-          {isValidCoords(coords) && <FlyToLocation coords={coords} />}
-          {isValidCoords(coords) && (
-            <Marker position={coords} icon={markerIcon} />
-          )}
+          <FlyToLocation coords={coords} />
+          {coords && <Marker position={coords} icon={markerIcon} />}
           <LocationMarker onLocationSelect={onChange} URI={URI} />
         </MapContainer>
       </div>

@@ -13,6 +13,7 @@ const SalesTestimonial = lazy(() =>
 );
 import SEO from "../components/SEO";
 import SubscriptionSection from "../components/salesPartner/SubscriptionSection";
+import playStore from "../assets/google-play-store-logo.png"
 
 function SalesPartner() {
   const { URI } = useAuth();
@@ -104,9 +105,9 @@ function SalesPartner() {
             }}
             className="w-full sm:w-[350px] px-4 cursor-pointer"
           >
-            <div className="w-full flex gap-2 items-center justify-center text-lg sm:text-xl font-semibold text-white bg-[#076300] px-12 py-3 rounded-lg active:scale-95 ">
-              <span>Sales Partner Apk</span>{" "}
-              <IoMdDownload className="w-6 h-6" />
+            <div className="w-full flex gap-3 items-center justify-center text-lg sm:text-xl font-semibold text-white bg-[#076300] px-12 py-3 rounded-lg active:scale-95 ">
+              <span>Sales Partner  {" "} </span>
+              <img className="w-7 h-7" src={playStore} alt="" />
             </div>
           </div>
         </div>

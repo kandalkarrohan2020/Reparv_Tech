@@ -6,47 +6,76 @@ import { useAuth } from "../store/auth";
 import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import FilterData from "../components/FilterData";
 import AddButton from "../components/AddButton";
+import { IoMdClose } from "react-icons/io";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
-import MultiStepForm from "../components/propertyForm/MultiStepForm";
-import propertyPicture from "../assets/propertyPicture.svg";
 import Loader from "../components/Loader";
-import { IoMdClose } from "react-icons/io";
+import { RiArrowDropDownLine } from "react-icons/ri";
+import MultiStepForm from "../components/propertyForm/MultiStepForm";
+import { useLocation } from "react-router-dom";
+import propertyPicture from "../assets/propertyPicture.svg";
 import DownloadCSV from "../components/DownloadCSV";
 import UpdateImagesForm from "../components/propertyForm/UpdateImagesForm";
+import PropertyFilter from "../components/propertyFilter";
+import FormatPrice from "../components/FormatPrice";
+import PropertyCommissionPopup from "../components/PropertyCommissionPopup";
 
 const Properties = () => {
+  const location = useLocation();
   const {
     setShowPropertyForm,
-    URI,
-    setLoading,
+    showPropertyForm,
     showUpdateImagesForm,
     setShowUpdateImagesForm,
     showAdditionalInfoForm,
     setShowAdditionalInfoForm,
     showNewPlotAdditionalInfoForm,
     setShowNewPlotAdditionalInfoForm,
+    propertyFilter,
+    setPropertyFilter,
+    showRejectReasonForm,
+    setShowRejectReasonForm,
+    showSeoForm,
+    setShowSeoForm,
+    showCommissionForm,
+    setShowCommissionForm,
     showVideoUploadForm,
     setShowVideoUploadForm,
     showPropertyLocationForm,
     setShowPropertyLocationForm,
+    propertyCommissionData,
+    setPropertyCommissionData,
+    showPropertyCommissionPopup,
+    setShowPropertyCommissionPopup,
+    URI,
+    loading,
+    setLoading,
   } = useAuth();
   const [datas, setDatas] = useState([]);
+  const [propertyTypeData, setPropertyTypeData] = useState([]);
+  const [propertyType, setPropertyType] = useState("");
+  const [property, setProperty] = useState({});
+  const [propertyKey, setPropertyKey] = useState("");
+  const [rejectReason, setRejectReason] = useState("");
   const [authorities, setAuthorities] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-  const [propertyKey, setPropertyKey] = useState("");
   const [builderData, setBuilderData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Property Location Latitude & Longitude
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
+  const [propertyImages, setPropertyImages] = useState([]);
   const [file, setFile] = useState(null);
   const [newAddInfo, setNewAddInfo] = useState({
     propertyid: "",
   });
 
+  // Property Location Latitude & Longitude
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+
+  const [seoSlug, setSeoSlug] = useState("");
+  const [seoTittle, setSeoTittle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [propertyDescription, setPropertyDescription] = useState("");
   const [newProperty, setPropertyData] = useState({
     builderid: "",
     projectBy: "",
@@ -91,10 +120,8 @@ const Properties = () => {
     parkingFeature: "",
     terraceFeature: "",
     ageOfPropertyFeature: "",
-    furnishingFeature: "",
     amenitiesFeature: "",
     propertyStatusFeature: "",
-    floorNumberFeature: "",
     smartHomeFeature: "",
     securityBenefit: "",
     primeLocationBenefit: "",
@@ -116,6 +143,17 @@ const Properties = () => {
     balconyView: [],
     nearestLandmark: [],
     developedAmenities: [],
+  });
+
+  const [selectedPartner, setSelectedPartner] = useState(
+    "Select Property Lister"
+  );
+
+  const [propertyCommission, setPropertyCommission] = useState({
+    commissionType: "",
+    commissionAmount: "",
+    commissionPercentage: "",
+    commissionAmountPerSquareFeet: "",
   });
 
   const additionalInfoCSVFileFormat = [
@@ -323,7 +361,7 @@ const Properties = () => {
       );
       if (!response.ok) throw new Error("Failed to fetch cities.");
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       setCities(data);
     } catch (err) {
       console.error("Error fetching :", err);
@@ -335,7 +373,7 @@ const Properties = () => {
     try {
       const response = await fetch(URI + "/project-partner/builders/active", {
         method: "GET",
-        credentials: "include", // Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -353,7 +391,7 @@ const Properties = () => {
     try {
       const response = await fetch(URI + "/admin/propertytypes/active", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -369,19 +407,25 @@ const Properties = () => {
 
   //Fetch Data
   const fetchData = async () => {
+    setLoading(true);
     try {
-      const response = await fetch(URI + "/project-partner/properties", {
-        method: "GET",
-        credentials: "include", // Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${URI}/project-partner/properties/`,
+        {
+          method: "GET",
+          credentials: "include", //  Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch properties.");
       const data = await response.json();
       setDatas(data);
     } catch (err) {
       console.error("Error fetching :", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -390,7 +434,7 @@ const Properties = () => {
     try {
       const response = await fetch(URI + `/project-partner/properties/${id}`, {
         method: "GET",
-        credentials: "include", // Ensures cookies are sent
+        credentials: "include", //  Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -399,30 +443,83 @@ const Properties = () => {
       const data = await response.json();
       setPropertyData(data);
       console.log(data);
-
       setShowPropertyForm(true);
     } catch (err) {
       console.error("Error fetching :", err);
     }
   };
 
-  //fetch data on form
-  const fetchImages = async (id) => {
+  // Delete record
+  const del = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this property?"))
+      return;
+
     try {
-      const response = await fetch(URI + `/admin/properties/${id}`, {
-        method: "GET",
-        credentials: "include", //  Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await fetch(URI + `/project-partner/properties/delete/${id}`, {
+        method: "DELETE",
+        credentials: "include",
       });
-      if (!response.ok) throw new Error("Failed to fetch property.");
+
       const data = await response.json();
-      setPropertyImageData(data);
-      //console.log(data);
-      setShowUpdateImagesForm(true);
-    } catch (err) {
-      console.error("Error fetching :", err);
+      if (response.ok) {
+        alert("Property deleted successfully!");
+        // Refresh employee list
+        fetchData();
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error deleting :", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // change status record
+  const status = async (id) => {
+    if (
+      !window.confirm("Are you sure you want to change this property status?")
+    )
+      return;
+
+    try {
+      const response = await fetch(URI + `/project-partner/properties/status/${id}`, {
+        method: "PUT",
+        credentials: "include",
+      });
+      const data = await response.json();
+      console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      fetchData();
+    } catch (error) {
+      console.error("Error deleting :", error);
+    }
+  };
+
+  // change status record
+  const approve = async (id) => {
+    if (!window.confirm("Are you sure you want to approve this property?"))
+      return;
+
+    try {
+      const response = await fetch(URI + `/project-partner/properties/approve/${id}`, {
+        method: "PUT",
+        credentials: "include",
+      });
+      const data = await response.json();
+      console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      fetchData();
+    } catch (error) {
+      console.error("Error deleting :", error);
     }
   };
 
@@ -430,7 +527,7 @@ const Properties = () => {
   const fetchPropertyLocation = async (id) => {
     try {
       const response = await fetch(
-        URI + `/admin/properties/location/get/${id}`,
+        URI + `/project-partner/properties/location/get/${id}`,
         {
           method: "GET",
           credentials: "include", // Ensures cookies are sent
@@ -455,7 +552,7 @@ const Properties = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        URI + `/admin/properties/location/edit/${propertyKey}`,
+        URI + `/project-partner/properties/location/edit/${propertyKey}`,
         {
           method: "PUT",
           credentials: "include",
@@ -489,7 +586,7 @@ const Properties = () => {
   //fetch Brochure and Video Data From Property
   const showBrochure = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/properties/${id}`, {
+      const response = await fetch(URI + `/project-partner/properties/${id}`, {
         method: "GET",
         credentials: "include", // Ensures cookies are sent
         headers: {
@@ -498,7 +595,6 @@ const Properties = () => {
       });
       if (!response.ok) throw new Error("Failed to fetch property.");
       const data = await response.json();
-      //console.log(data);
       setVideoUpload({
         ...videoUpload,
         brochureFile: data.brochureFile,
@@ -562,7 +658,7 @@ const Properties = () => {
       setLoading(true);
 
       const response = await fetch(
-        `${URI}/admin/properties/brochure/upload/${propertyKey}`,
+        `${URI}/project-partner/properties/brochure/upload/${propertyKey}`,
         {
           method: "PUT",
           credentials: "include",
@@ -591,7 +687,175 @@ const Properties = () => {
     }
   };
 
-  // Add Additional Info as a CSV File For Flat
+  //fetch data on form
+  const showSEO = async (id) => {
+    try {
+      const response = await fetch(URI + `/project-partner/properties/${id}`, {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch property.");
+      const data = await response.json();
+      setSeoSlug(data.seoSlug);
+      setSeoTittle(data.seoTittle);
+      setSeoDescription(data.seoDescription);
+      setPropertyDescription(data.propertyDescription);
+      setShowSeoForm(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // Add Or Update SEO Details Tittle , Description
+  const addSeoDetails = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const response = await fetch(
+        URI + `/project-partner/properties/seo/${propertyKey}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            seoSlug,
+            seoTittle,
+            seoDescription,
+            propertyDescription,
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      setShowSeoForm(false);
+      setSeoSlug("");
+      setSeoTittle("");
+      setSeoDescription("");
+      setPropertyDescription("");
+      await fetchData();
+    } catch (error) {
+      console.error("Error adding Seo Details reason:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add Property Reject Reason
+  const addRejectReason = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const response = await fetch(
+        URI + `/project-partner/properties/reject/${propertyKey}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ rejectReason }),
+        }
+      );
+      const data = await response.json();
+      console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      setShowRejectReasonForm(false);
+      setRejectReason("");
+      await fetchData();
+    } catch (error) {
+      console.error("Error adding reject reason:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //Property Image Uploader
+  const [images, setImages] = useState([]);
+  const [propertyId, setPropertyId] = useState(null);
+
+  const handleImageChange = (event) => {
+    const files = Array.from(event.target.files);
+    setImages((prevImages) => [...prevImages, ...files]);
+  };
+
+  const removeImage = (index) => {
+    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  };
+
+  //fetch data on form
+  const fetchImages = async (id) => {
+    try {
+      const response = await fetch(URI + `/project-partner/properties/${id}`, {
+        method: "GET",
+        credentials: "include", //  Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch property.");
+      const data = await response.json();
+      setPropertyImageData(data);
+      //console.log(data);
+      setShowUpdateImagesForm(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  const addImages = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("propertyid", propertyId);
+    if (images && images.length > 0) {
+      images.forEach((image) => {
+        formData.append("images[]", image);
+      });
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${URI}/project-partner/properties/addimages`, {
+        method: "POST",
+        credentials: "include",
+        body: formData, // FormData allows file uploads
+      });
+
+      if (response.status === 409) {
+        alert("Property already exists!");
+      } else if (!response.ok) {
+        throw new Error(`Failed to save property. Status: ${response.status}`);
+      } else {
+        setLoading(false);
+        alert("Images Uploaded Successfully!");
+      }
+
+      // Reset after upload
+      setImages([]);
+      setShowUpdateImagesForm(false);
+      await fetchData(); // Refresh data
+    } catch (err) {
+      console.error("Error saving property:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add Additional Info as a CSV File for New Flat
   const addCsv = async (e) => {
     e.preventDefault();
 
@@ -601,12 +865,12 @@ const Properties = () => {
     }
 
     const formData = new FormData();
-    formData.append("csv", file);
     formData.append("propertyid", propertyKey);
+    formData.append("csv", file);
 
     try {
       const response = await fetch(
-        `${URI}/admin/properties/additionalinfo/flat/csv/add`,
+        `${URI}/project-partner/properties/additionalinfo/flat/csv/add/${propertyKey}`,
         {
           method: "POST",
           credentials: "include",
@@ -630,7 +894,7 @@ const Properties = () => {
     }
   };
 
-  // Add Additional Info as a CSV File for Plot
+  // Add Additional Info as a CSV File for New Plot
   const addCsvForNewPlot = async (e) => {
     e.preventDefault();
 
@@ -645,7 +909,7 @@ const Properties = () => {
 
     try {
       const response = await fetch(
-        `${URI}/admin/properties/additionalinfo/plot/csv/add/${propertyKey}`,
+        `${URI}/project-partner/properties/additionalinfo/plot/csv/add/${propertyKey}`,
         {
           method: "POST",
           credentials: "include",
@@ -669,6 +933,159 @@ const Properties = () => {
     }
   };
 
+  const additionalInfo = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("propertyid", newAddInfo.propertyid);
+    formData.append("wing", newAddInfo.wing);
+    formData.append("floor", newAddInfo.floor);
+    formData.append("flatno", newAddInfo.flatno);
+    formData.append("direction", newAddInfo.direction);
+    formData.append("ageofconstruction", newAddInfo.ageofconstruction);
+    formData.append("carpetarea", newAddInfo.carpetarea);
+    formData.append("superbuiltup", newAddInfo.superbuiltup);
+    formData.append("salesprice", newAddInfo.salesprice);
+    formData.append("description", newAddInfo.description);
+    formData.append("ownercontact", newAddInfo.ownercontact);
+
+    if (selectedOwnerAdharImage) {
+      formData.append("owneradhar", selectedOwnerAdharImage);
+    }
+    if (selectedOwnerPanImage) {
+      formData.append("ownerpan", selectedOwnerPanImage);
+    }
+    if (selectedScheduledPropertyImage) {
+      formData.append("schedule", selectedScheduledPropertyImage);
+    }
+    if (selectedSignedDocumentImage) {
+      formData.append("signed", selectedSignedDocumentImage);
+    }
+    if (selectedSatBaraImage) {
+      formData.append("satbara", selectedSatBaraImage);
+    }
+    if (selectedEBillImage) {
+      formData.append("ebill", selectedEBillImage);
+    }
+
+    const endpoint = newAddInfo.propertyinfoid
+      ? `editadditionalinfo/${newAddInfo.propertyinfoid}`
+      : "additionalinfoadd";
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${URI}/project-partner/properties/${endpoint}`, {
+        method: newAddInfo.propertyinfoid ? "PUT" : "POST",
+        credentials: "include",
+        body: formData,
+      });
+
+      if (response.status === 409) {
+        alert("Additional Info already exists!");
+      } else if (!response.ok) {
+        throw new Error(
+          `Failed to save Additional Info. Status: ${response.status}`
+        );
+      } else {
+        alert(
+          newAddInfo.propertyinfoid
+            ? "Additional Info updated successfully!"
+            : "Additional Info added successfully!"
+        );
+      }
+      // Clear form only after a successful response
+      setNewAddInfo({
+        propertyid: "",
+        wing: "",
+        floor: "",
+        flatno: "",
+        direction: "",
+        ageofconstruction: "",
+        carpetarea: "",
+        superbuiltup: "",
+        salesprice: "",
+        description: "",
+        ownercontact: "",
+      });
+
+      setShowAdditionalInfoForm(false);
+
+      await fetchData();
+    } catch (err) {
+      console.error("Error saving property:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //fetch data on form
+  const showPropertyCommission = async (id) => {
+    try {
+      const response = await fetch(URI + `/project-partner/properties/${id}`, {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch property.");
+      const data = await response.json();
+      setPropertyCommission({
+        ...propertyCommission,
+        commissionType: data.commissionType || "",
+        commissionAmount: data.commissionAmount || "",
+        commissionPercentage: data.commissionPercentage || "",
+        commissionAmountPerSquareFeet: data.commissionAmountPerSquareFeet || "",
+      });
+      setShowCommissionForm(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
+  // Set Commission Type
+  const addPropertyCommission = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const response = await fetch(
+        URI + `/project-partner/properties/commission/${propertyKey}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(propertyCommission),
+        }
+      );
+      const data = await response.json();
+      console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      setShowCommissionForm(false);
+      setPropertyCommission({
+        ...propertyCommission,
+        commissionType: "",
+        commissionAmount: "",
+        commissionPercentage: "",
+        commissionAmountPerSquareFeet: "",
+      });
+      await fetchData();
+    } catch (error) {
+      console.error("Error adding property commission reason:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [selectedPartner]);
+
   useEffect(() => {
     fetchData();
     fetchStates();
@@ -681,6 +1098,24 @@ const Properties = () => {
       fetchCities();
     }
   }, [newProperty.state]);
+
+  const getPropertyCounts = (data) => {
+    return data.reduce(
+      (acc, item) => {
+        if (item.approve === "Approved") {
+          acc.Approved++;
+        } else if (item.approve === "Not Approved") {
+          acc.NotApproved++;
+        } else if (item.approve === "Rejected") {
+          acc.Rejected++;
+        }
+        return acc;
+      },
+      { Approved: 0, NotApproved: 0, Rejected: 0 }
+    );
+  };
+
+  const propertyCounts = getPropertyCounts(datas);
 
   const [range, setRange] = useState([
     {
@@ -719,8 +1154,19 @@ const Properties = () => {
       (!startDate && !endDate) || // no filter
       (startDate && endDate && itemDate >= startDate && itemDate <= endDate);
 
+    // Enquiry filter logic: New, Alloted, Assign
+    const getPropertyApprovedStatus = () => {
+      if (item.approve === "Approved") return "Approved";
+      if (item.approve === "Not Approved") return "Not Approved";
+      if (item.approve === "Rejected") return "Rejected";
+      return "";
+    };
+
+    const matchesProperty =
+      !propertyFilter || getPropertyApprovedStatus() === propertyFilter;
+
     // Final return
-    return matchesSearch && matchesDate;
+    return matchesSearch && matchesDate && matchesProperty;
   });
 
   const customStyles = {
@@ -805,45 +1251,57 @@ const Properties = () => {
       },
       width: "130px",
     },
+    { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
       name: "Property Name",
-      selector: (row) => row.propertyName,
+      cell: (row, index) => (
+        <div className="relative group flex items-center w-full">
+          {/* Property Name */}
+          <span
+            onClick={async () => {
+              await setPropertyCommissionData(row);
+              setShowPropertyCommissionPopup(true);
+            }}
+            className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md cursor-pointer`}
+          >
+            {row.propertyName}
+          </span>
+        </div>
+      ),
       sortable: true,
+      minWidth: "200px",
+    },
+    {
+      name: "Offer Price",
+      selector: (row) => <FormatPrice price={parseInt(row.totalOfferPrice)} />,
       width: "150px",
     },
     {
       name: "Builder",
       selector: (row) => row.company_name,
-      sortable: true,
       minWidth: "150px",
+    },
+    {
+      name: "Property Lister",
+      cell: (row) => (
+        <div className="flex flex-col gap-[2px]">
+          <span>{row.fullname}</span>
+          <span> {row.contact}</span>
+          <span> {row.partnerCity}</span>
+        </div>
+      ),
+      omit: false,
+      minWidth: "180px",
     },
     {
       name: "Category",
       selector: (row) => row.propertyCategory,
-      sortable: true,
       width: "150px",
-    },
-    { name: "Address", selector: (row) => row.address, minWidth: "200px" },
-    {
-      name: "State",
-      selector: (row) => row.state,
-      sortable: true,
-      minWidth: "150px",
     },
     {
       name: "City",
       selector: (row) => row.city,
-      sortable: true,
       width: "150px",
-    },
-    { name: "Pin Code", selector: (row) => row.pincode, width: "100px" },
-    { name: "Location", selector: (row) => row.location, width: "150px" },
-    { name: "Area", selector: (row) => row.builtUpArea },
-    {
-      name: "Total Price",
-      selector: (row) => row.totalOfferPrice,
-      sortable: true,
-      minWidth: "150px",
     },
     {
       name: "Approve",
@@ -868,37 +1326,59 @@ const Properties = () => {
       minWidth: "150px",
     },
     {
-      name: "Action",
+      name: "Actions",
       cell: (row) => <ActionDropdown row={row} />,
       width: "120px",
     },
   ];
 
+  const hasPropertyLister = datas.some((row) => !!row.fullname);
+
+  const finalColumns = columns.map((col) => {
+    if (col.name === "Property Lister")
+      return { ...col, omit: !hasPropertyLister };
+    return col;
+  });
+
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
 
-    const handleActionSelect = (action, propertyid, seoSlug) => {
+    const handleActionSelect = (action, propertyid, slug) => {
       switch (action) {
         case "view":
-          window.open(
-            "https://www.reparv.in/property-info/" + seoSlug,
-            "_blank"
-          );
+          window.open("https://www.reparv.in/property-info/" + slug, "_blank");
+          break;
+        case "status":
+          status(propertyid);
           break;
         case "update":
           edit(propertyid);
+          break;
+        case "delete":
+          del(propertyid);
+          break;
+        case "approve":
+          approve(propertyid);
           break;
         case "updateLocation":
           setPropertyKey(propertyid);
           fetchPropertyLocation(propertyid);
           break;
-        case "updateImages":
-          setPropertyKey(propertyid);
-          fetchImages(propertyid);
-          break;
         case "videoUpload":
           setPropertyKey(propertyid);
           showBrochure(propertyid);
+          break;
+        case "SEO":
+          setPropertyKey(propertyid);
+          showSEO(propertyid);
+          break;
+        case "rejectReason":
+          setPropertyKey(propertyid);
+          setShowRejectReasonForm(true);
+          break;
+        case "setCommission":
+          setPropertyKey(propertyid);
+          showPropertyCommission(propertyid);
           break;
         case "additionalinfo":
           setPropertyKey(propertyid);
@@ -907,6 +1387,10 @@ const Properties = () => {
         case "additionalinfoforplot":
           setPropertyKey(propertyid);
           setShowNewPlotAdditionalInfoForm(true);
+          break;
+        case "updateImages":
+          setPropertyKey(propertyid);
+          fetchImages(propertyid);
           break;
         default:
           console.log("Invalid action");
@@ -931,8 +1415,10 @@ const Properties = () => {
             Select Action
           </option>
           <option value="view">View</option>
+          <option value="status">Status</option>
           <option value="update">Update</option>
-          <option value="updateImages">Update Images</option>
+          <option value="delete">Delete</option>
+          <option value="approve">Approve</option>
           {row.propertyCategory === "NewFlat" ||
           row.propertyCategory === "CommercialFlat" ? (
             <option value="additionalinfo">Additional Info</option>
@@ -945,6 +1431,10 @@ const Properties = () => {
           ) : (
             <></>
           )}
+          <option value="SEO">SEO Details</option>
+          <option value="rejectReason">Reject Reason</option>
+          <option value="updateImages">Update Images</option>
+          <option value="setCommission">Set Commission</option>
           <option value="videoUpload">Brochure & Video</option>
           <option value="updateLocation">Latitude & Longitude</option>
         </select>
@@ -954,11 +1444,29 @@ const Properties = () => {
 
   return (
     <div className="properties overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
-      <div className="properties-table w-full h-[578px] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
-        <div className="w-full flex items-center justify-between md:justify-end gap-1 sm:gap-3">
-          <p className="block md:hidden text-lg font-semibold">Properties</p>
+      <div className="properties-table w-full h-[80vh] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+        <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
+          <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+            <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+              <span>{selectedPartner || "Select Partner"}</span>
+              <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+            </div>
+            <select
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              value={selectedPartner}
+              onChange={(e) => {
+                const action = e.target.value;
+                setSelectedPartner(action);
+              }}
+            >
+              <option value="Select Property Lister">
+                Select Property Lister
+              </option>
+            </select>
+          </div>
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
-            <AddButton label={"Add"} func={setShowPropertyForm} />
+            <DownloadCSV data={filteredData} filename={"Properties.csv"} />
+            <AddButton label={"Add "} func={setShowPropertyForm} />
           </div>
         </div>
         <div className="searchBarContainer w-full flex flex-col lg:flex-row items-center justify-between gap-3">
@@ -979,17 +1487,20 @@ const Properties = () => {
               </div>
             </div>
             <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
-              <AddButton label={"Add"} func={setShowPropertyForm} />
+              <DownloadCSV data={filteredData} filename={"Properties.csv"} />
+              <AddButton label={"Add "} func={setShowPropertyForm} />
             </div>
           </div>
         </div>
-
+        <div className="filterContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
+          <PropertyFilter counts={propertyCounts} />
+        </div>
         <h2 className="text-[16px] font-semibold">Properties List</h2>
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"
             customStyles={customStyles}
-            columns={columns}
+            columns={finalColumns}
             data={filteredData}
             pagination
             paginationPerPage={15}
@@ -1018,8 +1529,8 @@ const Properties = () => {
 
       {/* Upload Images Form */}
       <UpdateImagesForm
-        fetchImages={fetchImages}
         fetchData={fetchData}
+        fetchImages={fetchImages}
         propertyId={propertyKey}
         setPropertyId={setPropertyKey}
         newProperty={propertyImageData}
@@ -1027,6 +1538,9 @@ const Properties = () => {
         imageFiles={imageFiles}
         setImageFiles={setImageFiles}
       />
+
+      {/* Show Property Commission Popup */}
+      <PropertyCommissionPopup />
 
       {/* ADD Property Location Latitude & Longitude Form */}
       <div
@@ -1128,7 +1642,7 @@ const Properties = () => {
               onClick={() => {
                 setShowVideoUploadForm(false);
                 setSelectedImage(null);
-                setVideoUpload({ videoLink: null });
+                setVideoUpload({ brochureFile: "", videoLink: "" });
               }}
               className="w-6 h-6 cursor-pointer"
             />
@@ -1255,7 +1769,7 @@ const Properties = () => {
                 onClick={() => {
                   setShowVideoUploadForm(false);
                   setSelectedImage(null);
-                  setVideoUpload({ videoLink: null });
+                  setVideoUpload({ brochureFile: "", videoLink: "" });
                 }}
                 className="px-4 py-2 leading-4 text-white bg-[#000000B2] rounded active:scale-[0.98]"
               >
@@ -1273,7 +1787,6 @@ const Properties = () => {
         </div>
       </div>
 
-      {/* Aditional information Form */}
       <div
         className={`${
           showAdditionalInfoForm ? "flex" : "hidden"
@@ -1307,7 +1820,6 @@ const Properties = () => {
               <div className="w-full mt-2">
                 <input
                   type="file"
-                  required
                   accept=".csv"
                   multiple
                   onChange={(e) => setFile(e.target.files[0])}
@@ -1336,7 +1848,7 @@ const Properties = () => {
                 type="submit"
                 className="px-4 py-2 text-white font-semibold bg-[#076300] rounded active:scale-[0.98]"
               >
-                Add CSV File
+                ADD CSV File
               </button>
               <Loader />
             </div>
@@ -1409,6 +1921,316 @@ const Properties = () => {
                 ADD CSV File
               </button>
               <Loader />
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* ADD SEO Details */}
+      <div
+        className={` ${
+          !showSeoForm && "hidden"
+        } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
+      >
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] max-h-[80vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">SEO Details</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowSeoForm(false);
+                setSeoSlug("");
+                setSeoTittle("");
+                setSeoDescription("");
+                setPropertyDescription("");
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={addSeoDetails}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-1">
+              <input
+                type="hidden"
+                value={propertyKey || ""}
+                onChange={(e) => setPropertyKey(e.target.value)}
+              />
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                  Seo Slug
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter Slug"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={seoSlug}
+                  onChange={(e) => {
+                    setSeoSlug(e.target.value);
+                  }}
+                />
+              </div>
+              <div className={`w-full `}>
+                <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                  Seo Tittle
+                </label>
+                <textarea
+                  rows={2}
+                  cols={40}
+                  placeholder="Enter Tittle"
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={seoTittle}
+                  onChange={(e) => setSeoTittle(e.target.value)}
+                />
+              </div>
+              <div className={`w-full `}>
+                <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                  Seo Description
+                </label>
+                <textarea
+                  rows={4}
+                  cols={40}
+                  placeholder="Enter SEO Description"
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={seoDescription}
+                  onChange={(e) => setSeoDescription(e.target.value)}
+                />
+              </div>
+              <div className={`w-full `}>
+                <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                  Property Description
+                </label>
+                <textarea
+                  rows={4}
+                  cols={40}
+                  placeholder="Enter Property Description"
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={propertyDescription}
+                  onChange={(e) => setPropertyDescription(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSeoForm(false);
+                  setSeoSlug("");
+                  setSeoTittle("");
+                  setSeoDescription("");
+                  setPropertyDescription("");
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Add SEO Details
+              </button>
+              <Loader></Loader>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* ADD Reject Reason Form */}
+      <div
+        className={` ${
+          !showRejectReasonForm && "hidden"
+        } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
+      >
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] max-h-[80vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">
+              Property Reject Reason
+            </h2>
+            <IoMdClose
+              onClick={() => {
+                setShowRejectReasonForm(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={addRejectReason}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-1">
+              <input
+                type="hidden"
+                value={propertyKey || ""}
+                onChange={(e) => setPropertyKey(e.target.value)}
+              />
+
+              <div className={`w-full `}>
+                <textarea
+                  rows={2}
+                  cols={40}
+                  placeholder="Enter Reason"
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={rejectReason}
+                  onChange={(e) => {
+                    setRejectReason(e.target.value);
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowRejectReasonForm(false);
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Add Reason
+              </button>
+              <Loader></Loader>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* ADD Property Commission Form */}
+      <div
+        className={` ${
+          !showCommissionForm && "hidden"
+        } z-[61] overflow-scroll scrollbar-hide w-full flex fixed bottom-0 md:bottom-auto `}
+      >
+        <div className="w-full overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] max-h-[80vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">Property Commission</h2>
+            <IoMdClose
+              onClick={() => {
+                setShowCommissionForm(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+          <form onSubmit={addPropertyCommission}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-1">
+              <input
+                type="hidden"
+                value={propertyKey || ""}
+                onChange={(e) => setPropertyKey(e.target.value)}
+              />
+
+              <div className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Commission Type
+                </label>
+                <select
+                  required
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={propertyCommission.commissionType}
+                  onChange={(e) => {
+                    setPropertyCommission({
+                      ...propertyCommission,
+                      commissionType: e.target.value,
+                    });
+                  }}
+                >
+                  <option value="" disabled>
+                    Select Commission Type
+                  </option>
+                  <option value="Fixed">Fixed</option>
+                  <option value="Percentage">Percentage</option>
+                  <option value="PerSquareFeet">Square Feet</option>
+                </select>
+              </div>
+
+              {propertyCommission.commissionType === "Fixed" && (
+                <div className={`w-full`}>
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                    Commission Amount
+                  </label>
+                  <input
+                    name="commissionAmount"
+                    type="number"
+                    required
+                    placeholder="Enter Amount"
+                    className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={propertyCommission.commissionAmount}
+                    onChange={(e) => {
+                      setPropertyCommission({
+                        ...propertyCommission,
+                        commissionAmount: e.target.value,
+                      });
+                    }}
+                  />
+                </div>
+              )}
+
+              {propertyCommission.commissionType === "Percentage" && (
+                <div className={`w-full`}>
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                    Commission Percentage
+                  </label>
+                  <input
+                    name="commissionPercentage"
+                    type="number"
+                    required
+                    placeholder="Enter Percentage"
+                    className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={propertyCommission.commissionPercentage}
+                    onChange={(e) => {
+                      setPropertyCommission({
+                        ...propertyCommission,
+                        commissionPercentage: e.target.value,
+                      });
+                    }}
+                  />
+                </div>
+              )}
+
+              {propertyCommission.commissionType === "PerSquareFeet" && (
+                <div className={`w-full`}>
+                  <label className="block text-sm leading-4 text-[#00000066] font-medium ">
+                    Commission per Square Feet
+                  </label>
+                  <input
+                    name="commissionAmountPerSquareFeet"
+                    type="number"
+                    required
+                    placeholder="Enter Amount per Square Feet"
+                    className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={propertyCommission.commissionAmountPerSquareFeet}
+                    onChange={(e) => {
+                      setPropertyCommission({
+                        ...propertyCommission,
+                        commissionAmountPerSquareFeet: e.target.value,
+                      });
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCommissionForm(false);
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                Save
+              </button>
+              <Loader></Loader>
             </div>
           </form>
         </div>

@@ -19,7 +19,7 @@ import EnquiryFilter from "../components/enquiryFilter";
 
 const Enquirers = () => {
   const {
-    URI,
+    URI, user,
     setLoading,
     showAssignSalesForm,
     setShowAssignSalesForm,
@@ -71,9 +71,14 @@ const Enquirers = () => {
   });
 
   const [selectedSource, setSelectedSource] = useState("Select Enquiry Source");
+  //const [selectedEnquiryLister, setSelectedEnquiryLister] = useState("Select Enquiry Lister");
+
+  const [error, setError] = useState("");
+  const [properties, setProperties] = useState([]);
   const [propertyList, setPropertyList] = useState([]);
 
   const [newEnquiry, setNewEnquiry] = useState({
+    propertyid: null,
     customer: "",
     contact: "",
     minbudget: "",
@@ -116,7 +121,7 @@ const Enquirers = () => {
   // **Fetch States from API**
   const fetchStates = async () => {
     try {
-      const response = await fetch(URI + "/admin/states", {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "admin":"admin"}/states`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -158,7 +163,7 @@ const Enquirers = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${URI}/admin/enquirers/get/${selectedSource}`,
+        `${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/get/${selectedSource}`,
         {
           method: "GET",
           credentials: "include", //  Ensures cookies are sent
@@ -180,7 +185,7 @@ const Enquirers = () => {
   // **Fetch Data from API**
   const fetchEnquiryRemarkList = async (id) => {
     try {
-      const response = await fetch(URI + "/admin/enquirers/remark/list/" + id, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/remark/list/` + id, {
         method: "GET",
         credentials: "include", // Ensures cookies are sent
         headers: {
@@ -195,11 +200,54 @@ const Enquirers = () => {
     }
   };
 
+  // ** Fetch Properties for Update Enquiry **
+  const fetchProperties = async () => {
+    try {
+      setError(""); // clear previous error
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/properties`, {
+        method: "POST",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          minbudget: newEnquiry.minbudget,
+          maxbudget: newEnquiry.maxbudget,
+          state: newEnquiry.state,
+          city: newEnquiry.city,
+          category: newEnquiry.category,
+        }),
+      });
+
+      // Check if API failed
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message || "Failed to fetch properties.");
+      }
+
+      const list = await response.json();
+
+      if (list.data.length === 0) {
+        setError("Properties not found based on your requirement.");
+        setProperties([]);
+      } else {
+        setProperties(list.data);
+        //console.log(list);
+      }
+    } catch (err) {
+      console.error("Error fetching properties:", err);
+      setError(
+        err.message || "Something went wrong while fetching properties."
+      );
+      setProperties([]);
+    }
+  };
+
   // **Fetch Data from API**
   const fetchPropertyList = async (id) => {
     try {
       const response = await fetch(
-        URI + "/admin/enquirers/property/list/" + id,
+        `${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/property/list/` + id,
         {
           method: "GET",
           credentials: "include", // Ensures cookies are sent
@@ -224,7 +272,7 @@ const Enquirers = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        URI + `/admin/enquirers/property/update/${enquiryId}`,
+        `${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/property/update/${enquiryId}`,
         {
           method: "PUT",
           credentials: "include",
@@ -254,7 +302,7 @@ const Enquirers = () => {
   //Fetch Sales Persons List
   const fetchSalesPersonList = async () => {
     try {
-      const response = await fetch(URI + "/admin/salespersons/active", {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/salespersons/active`, {
         method: "GET",
         credentials: "include", //  Ensures cookies are sent
         headers: {
@@ -280,7 +328,7 @@ const Enquirers = () => {
 
       try {
         const response = await fetch(
-          `${URI}/admin/enquirers/visitscheduled/${enquiryId}`,
+          `${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/visitscheduled/${enquiryId}`,
           {
             method: "POST",
             credentials: "include",
@@ -456,7 +504,7 @@ const Enquirers = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        URI + `/admin/enquirers/assign/${enquiryId}`,
+        `${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/assign/${enquiryId}`,
         {
           method: "PUT",
           credentials: "include",
@@ -489,7 +537,7 @@ const Enquirers = () => {
 
   const viewEnquiry = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/enquirers/${id}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/${id}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -513,7 +561,7 @@ const Enquirers = () => {
       : "add/enquiry";
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/sales/enquiry/${endpoint}`, {
+      const response = await fetch(`${URI}/project-partner/enquiry/${endpoint}`, {
         method: newEnquiry.enquirersid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -534,6 +582,7 @@ const Enquirers = () => {
 
       // Clear form only after successful fetch
       setNewEnquiry({
+        propertyid: null,
         customer: "",
         contact: "",
         minbudget: "",
@@ -652,6 +701,24 @@ const Enquirers = () => {
   }, []);
 
   useEffect(() => {
+    if (
+      newEnquiry.minbudget != "" &&
+      newEnquiry.maxbudget != "" &&
+      newEnquiry.category != "" &&
+      newEnquiry.state != "" &&
+      newEnquiry.city != ""
+    ) {
+      fetchProperties();
+    }
+  }, [
+    newEnquiry.minbudget,
+    newEnquiry.maxbudget,
+    newEnquiry.category,
+    newEnquiry.state,
+    newEnquiry.city,
+  ]);
+
+  useEffect(() => {
     if (newEnquiry.state != "" || salesPersonAssign.state != "") {
       fetchCities();
     }
@@ -684,6 +751,23 @@ const Enquirers = () => {
   ]);
 
   const filteredData = datas.filter((item) => {
+    // Enquiry Lister
+    {
+      /*const getEnquiryLister = () => {
+      if (!item.salespersonid && !item.territorypartnerid && !item.propertyid)
+        return "Admin";
+      if (!item.salespersonid && !item.territorypartnerid && item.propertyid)
+        return "Customer";
+      if (item.salespersonid) return "Sales Partner";
+      if (item.territorypartnerid) return "Territory Partner";
+      return "";
+    };
+
+    const matchesEnquiryLister =
+      !selectedEnquiryLister || getEnquiryLister() === selectedEnquiryLister;
+    */
+    }
+
     // Status filter
     const matchesStatus = item.status
       ?.toLowerCase()
@@ -845,14 +929,26 @@ const Enquirers = () => {
       minWidth: "150px",
     },
     {
+      name: "Contact",
+      selector: (row) => row.contact,
+      minWidth: "150px",
+    },
+    {
       name: "Source",
       selector: (row) => row.source,
       width: "120px",
     },
     {
-      name: "Contact",
-      selector: (row) => row.contact,
-      minWidth: "150px",
+      name: "Enquiry Lister",
+      cell: (row) => (
+        <div className="w-full flex flex-col gap-[2px]">
+          <p>{row.listerRole}</p>
+          <p>{row.listerName}</p>
+          <p>{row.listerContact}</p>
+        </div>
+      ),
+      omit: false,
+      minWidth: "180px",
     },
     {
       name: "Project Partner",
@@ -908,6 +1004,14 @@ const Enquirers = () => {
     },
   ];
 
+  const hasEnquiryLister = datas.some((row) => !!row.listerName);
+
+  const finalColumns = columns.map((col) => {
+    if (col.name === "Enquiry Lister")
+      return { ...col, omit: !hasEnquiryLister };
+    return col;
+  });
+
   const ActionDropdown = ({ row }) => {
     const [selectedAction, setSelectedAction] = useState("");
 
@@ -960,11 +1064,6 @@ const Enquirers = () => {
           <option value="view">View</option>
           <option value="status">Status</option>
           {row.source !== "Onsite" && <option value="update">Update</option>}
-          {row.source !== "Onsite" && (
-            <option value="property">Property</option>
-          )}
-          <option value="assign">Assign</option>
-
           <option value="delete">Delete</option>
         </select>
       </div>
@@ -973,8 +1072,9 @@ const Enquirers = () => {
 
   return (
     <div className="enquirers overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start">
-      <div className="enquirers-table w-full h-[80vh] flex flex-col p-4 md:p-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
+      <div className="enquirers-table w-full h-[80vh] flex flex-col p-4 md:p-6 gap-3 my-[10px] bg-white md:rounded-[24px]">
         {/* <p className="block md:hidden text-lg font-semibold">Enquirers</p> */}
+
         <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
           <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
             <div className="flex gap-1 sm:gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
@@ -1003,6 +1103,30 @@ const Enquirers = () => {
             <AddButton label={"Add "} func={setShowEnquiryForm} />
           </div>
         </div>
+
+        {/*}
+        <div className="w-full sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+          <div className="flex gap-1 sm:gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
+            <span>{selectedEnquiryLister || "Select Enquiry Lister"}</span>
+            <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />
+          </div>
+          <select
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            value={selectedEnquiryLister}
+            onChange={(e) => {
+              const action = e.target.value;
+              setSelectedEnquiryLister(action);
+            }}
+          >
+            <option value="Select Enquiry Lister">Select Enquiry Lister</option>
+            <option value="Admin">Admin</option>
+            <option value="Customer">Customer</option>
+            <option value="Sales Partner">Sales Partner</option>
+            <option value="Territory Partner">Territory Partner</option>
+          </select>
+        </div>
+        */}
+
         <div className="searchBarContainer w-full flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="search-bar w-full lg:w-[30%] min-w-[150px] max:w-[289px] xl:w-[289px] h-[36px] flex gap-[10px] rounded-[12px] p-[10px] items-center justify-start lg:justify-between bg-[#0000000A]">
             <CiSearch />
@@ -1038,7 +1162,7 @@ const Enquirers = () => {
           <DataTable
             className="scrollbar-hide"
             customStyles={customStyles}
-            columns={columns}
+            columns={finalColumns}
             data={filteredData}
             pagination
             paginationPerPage={15}
@@ -1122,6 +1246,7 @@ const Enquirers = () => {
               onClick={() => {
                 setShowEnquiryUpdateForm(false);
                 setNewEnquiry({
+                  propertyid: null,
                   customer: "",
                   contact: "",
                   minbudget: "",
@@ -1324,7 +1449,36 @@ const Enquirers = () => {
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              <div className="w-full col-span-2">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  {error === "" ? "Select Property" : error}
+                </label>
+
+                <select
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-transparent"
+                  style={{ backgroundImage: "none" }}
+                  value={newEnquiry.propertyid}
+                  onChange={(e) => {
+                    const selectedValue =
+                      e.target.value === "" ? null : e.target.value;
+                    setNewEnquiry({
+                      ...newEnquiry,
+                      propertyid: selectedValue,
+                    });
+                  }}
+                >
+                  <option value="">Select Property</option>
+                  {properties.length > 0 &&
+                    properties?.map((property, index) => (
+                      <option key={index} value={property.propertyid}>
+                        {property.propertyName} | {property.builtUpArea} sqft |{" "}
+                        <FormatPrice price={property.totalOfferPrice} />
+                      </option>
+                    ))}
+                </select>
+              </div>
             </div>
+
             <div className="flex flex-col gap-3  mt-[10px] text-sm text-[#00000066] font-medium ">
               <label htmlFor="message" className="ml-1">
                 Message <span className="text-red-600">*</span>
@@ -1350,6 +1504,18 @@ const Enquirers = () => {
                 type="button"
                 onClick={() => {
                   setShowEnquiryUpdateForm(false);
+                  setNewEnquiry({
+                    propertyid: null,
+                    customer: "",
+                    contact: "",
+                    minbudget: "",
+                    maxbudget: "",
+                    category: "",
+                    state: "",
+                    city: "",
+                    location: "",
+                    message: "",
+                  });
                 }}
                 className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
               >

@@ -2,10 +2,8 @@ import axios from "axios";
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 
-
 export const getAll = (req, res) => {
   try {
-    
     const enquirySource = req.params.source;
     const partnerId = req.projectPartnerUser?.id || req.params?.id; // Project Partner Logic
 
@@ -103,16 +101,14 @@ export const getAll = (req, res) => {
 };
 
 export const getPartnersEnquiry = (req, res) => {
-  
-
   const Id = req.params.id;
   if (!Id) {
     console.log("Invalid User Id:", Id);
     return res.status(400).json({ message: "Invalid User Id" });
   }
-  const source=req.params.source;
+  const source = req.params.source;
 
- const sql = `
+  const sql = `
   SELECT 
     enquirers.*, 
     properties.frontView, 
@@ -138,7 +134,7 @@ export const getPartnersEnquiry = (req, res) => {
   ORDER BY enquirers.enquirersid DESC
 `;
 
-  db.query(sql, [source,Id,Id], (err, results) => {
+  db.query(sql, [source, Id, Id], (err, results) => {
     if (err) {
       console.error("Database Query Error:", err);
       return res.status(500).json({
@@ -278,16 +274,17 @@ export const assignEnquiryToTerritoryPartner = async (req, res) => {
   );
 };
 
-
 export const addEnquiry = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const projectpartnerid = req.body.projectpartnerid;
-  if (!projectpartnerid) {
-    return res.status(400).json({ message: "Invalid Project PArtner Id" });
+  const Id = req.body.projectpartnerid;
+  console.log(req.body);
+
+  if (!Id) {
+    return res.status(400).json({ message: "Invalid Id" });
   }
 
   const {
-    propertyid, // optional now
+    propertyid,
     customer,
     contact,
     minbudget,
@@ -299,7 +296,7 @@ export const addEnquiry = async (req, res) => {
     message,
   } = req.body;
 
-  // Validate required fields (exclude propertyid)
+  // Validate required fields
   if (
     !customer ||
     !contact ||
@@ -310,34 +307,76 @@ export const addEnquiry = async (req, res) => {
     !city ||
     !location ||
     !message
-   
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  
-  const insertSQL = `INSERT INTO enquirers (
-  projectpartnerid,
-    propertyid,
-    customer,
-    contact,
-    minbudget,
-    maxbudget,
-    category,
-    state,
-    city,
-    location,
-    message,
-    
-    source,
-    updated_at, created_at
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  let insertSQL;
+  let insertData;
 
-  db.query(
-    insertSQL,
-    [
-      projectpartnerid,
+  // Case 1: Enquiry with Property ID
+  if (propertyid) {
+    insertSQL = `
+      INSERT INTO enquirers (
+        projectpartner,
+        customer,
+        contact,
+        minbudget,
+        maxbudget,
+        category,
+        state,
+        city,
+        location,
+        propertyid,
+        message,
+        source,
+        updated_at,
+        created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    insertData = [
+      Id,
+      customer,
+      contact,
+      minbudget,
+      maxbudget,
+      category,
+      state,
+      city,
+      location,
       propertyid,
+      message,
+      "Direct",
+      currentdate,
+      currentdate,
+    ];
+  }
+
+  // Case 2: Enquiry without Property ID
+  else {
+    insertSQL = `
+      INSERT INTO enquirers (
+        projectbroker,
+        projectpartner,
+        customer,
+        contact,
+        minbudget,
+        maxbudget,
+        category,
+        state,
+        city,
+        location,
+        message,
+        source,
+        updated_at,
+        created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    insertData = [
+      Id, // projectbroker
+      Id, // projectpartner
       customer,
       contact,
       minbudget,
@@ -347,33 +386,32 @@ export const addEnquiry = async (req, res) => {
       city,
       location,
       message,
-      
       "Direct",
       currentdate,
       currentdate,
-    ],
-    (err, result) => {
-      if (err) {
-        console.error("Error inserting:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
-      res.status(201).json({
-        message: "Enquiry added successfully",
-        Id: result.insertId,
-      });
+    ];
+  }
+
+  db.query(insertSQL, insertData, (err, result) => {
+    if (err) {
+      console.error("Error inserting enquiry:", err);
+      return res.status(500).json({ message: "Database error", error: err });
     }
-  );
+
+    res.status(201).json({
+      message: "Enquiry added successfully",
+      enquiryId: result.insertId,
+    });
+  });
 };
 
 export const getAllCreatedEnquiry = (req, res) => {
   const projectpartnerid = req.params.id;
-if (!projectpartnerid) {
-    return res
-      .status(400)
-      .json({ message: "Partner ID is required" });
+  if (!projectpartnerid) {
+    return res.status(400).json({ message: "Partner ID is required" });
   }
 
-   const sql = `
+  const sql = `
     SELECT enquirers.*, 
            properties.frontView, 
            properties.seoSlug, 
@@ -387,7 +425,6 @@ if (!projectpartnerid) {
       ON territorypartner.id = enquirers.territorypartnerid
     WHERE enquirers.projectpartnerid = ?
     ORDER BY enquirers.enquirersid DESC`;
-
 
   db.query(sql, [projectpartnerid], (err, results) => {
     if (err) {
@@ -403,14 +440,14 @@ if (!projectpartnerid) {
       updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
     }));
 
-    res.json( {data: formatted});
+    res.json({ data: formatted });
   });
 };
 
 //**Change status */
 export const status = (req, res) => {
   const Id = parseInt(req.params.id);
- 
+
   if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid enquirers  ID" });
   }
@@ -433,7 +470,7 @@ export const status = (req, res) => {
       console.log(status);
       db.query(
         "UPDATE enquirers SET digitalbroker = ? WHERE  enquirersid= ? ",
-        [status,Id],
+        [status, Id],
         (err, result) => {
           if (err) {
             console.error("Error deleting :", err);
@@ -443,13 +480,17 @@ export const status = (req, res) => {
           }
           res
             .status(200)
-            .json({ message:status==='Active'? "Enquiry Assign successfully":"Change Assign Status  successfully" });
+            .json({
+              message:
+                status === "Active"
+                  ? "Enquiry Assign successfully"
+                  : "Change Assign Status  successfully",
+            });
         }
       );
     }
   );
 };
-
 
 export const assignToReparv = (req, res) => {
   const userId = req.params.id;
@@ -461,38 +502,45 @@ export const assignToReparv = (req, res) => {
   const Id = parseInt(req.params.enquiryid);
   if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Enquiry ID" });
-  }console.log(Id);
-
+  }
+  console.log(Id);
 
   // First, check if the enquiry exists
-  db.query("SELECT * FROM enquirers WHERE enquirersid = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
+  db.query(
+    "SELECT * FROM enquirers WHERE enquirersid = ?",
+    [Id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
 
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Enquiry not found" });
-    }
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Enquiry not found" });
+      }
 
-    // Then, update the enquiry
-    const updateSql = `
+      // Then, update the enquiry
+      const updateSql = `
       UPDATE enquirers 
       SET salespersonid=null,territorypartnerid=null, projectbroker = ? 
       WHERE enquirersid = ?
     `;
 
-    db.query(updateSql, [userId, Id], (err, updateResult) => {
-      if (err) {
-        console.error("Error Assigning Enquiry to Reparv:", err);
-        return res.status(500).json({ message: "Database error", error: err });
-      }
+      db.query(updateSql, [userId, Id], (err, updateResult) => {
+        if (err) {
+          console.error("Error Assigning Enquiry to Reparv:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
 
-      res.status(200).json({ message: "Enquiry assigned to Reparv successfully" });
-    });
-  });
+        res
+          .status(200)
+          .json({ message: "Enquiry assigned to Reparv successfully" });
+      });
+    }
+  );
 };
-
 
 // export const getAllDigitalEnquiry = (req, res) => {
 //   const projectpartnerid = req.params.id;
@@ -504,19 +552,18 @@ export const assignToReparv = (req, res) => {
 
 //    const sql = `
 //     SELECT enquirers.*,
-//            properties.frontView, 
-//            properties.seoSlug, 
+//            properties.frontView,
+//            properties.seoSlug,
 //            properties.commissionAmount,
 //            territorypartner.fullname AS territoryName,
 //            territorypartner.contact AS territoryContact
 //     FROM enquirers
-//     LEFT JOIN properties 
+//     LEFT JOIN properties
 //       ON enquirers.propertyid = properties.propertyid
-//     LEFT JOIN territorypartner 
+//     LEFT JOIN territorypartner
 //       ON territorypartner.id = enquirers.territorypartnerid
 //     WHERE enquirers.projectpartner = ?
 //     ORDER BY enquirers.enquirersid DESC`;
-
 
 //   db.query(sql, [projectpartnerid], (err, results) => {
 //     if (err) {
@@ -535,7 +582,6 @@ export const assignToReparv = (req, res) => {
 //     res.json( {data: formatted});
 //   });
 // };
-
 
 export const getAllDigitalEnquiry = (req, res) => {
   const projectpartnerid = req.params.id;
@@ -567,18 +613,24 @@ export const getAllDigitalEnquiry = (req, res) => {
     ORDER BY enquirers.enquirersid DESC
   `;
 
-  db.query(sql, [projectpartnerid, projectpartnerid, projectpartnerid], (err, results) => {
-    if (err) {
-      console.error("Database Query Error:", err);
-      return res.status(500).json({ message: "Database query error", error: err });
+  db.query(
+    sql,
+    [projectpartnerid, projectpartnerid, projectpartnerid],
+    (err, results) => {
+      if (err) {
+        console.error("Database Query Error:", err);
+        return res
+          .status(500)
+          .json({ message: "Database query error", error: err });
+      }
+
+      const formatted = results.map((row) => ({
+        ...row,
+        created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+        updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
+      }));
+
+      res.json({ data: formatted });
     }
-
-    const formatted = results.map((row) => ({
-      ...row,
-      created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
-      updated_at: moment(row.updated_at).format("DD MMM YYYY | hh:mm A"),
-    }));
-
-    res.json({ data: formatted });
-  });
+  );
 };

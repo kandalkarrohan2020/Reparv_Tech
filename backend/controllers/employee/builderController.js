@@ -1,37 +1,98 @@
 import db from "../../config/dbconnect.js";
 import moment from "moment";
 import bcrypt from "bcryptjs";
+import sendEmail from "../../utils/nodeMailer.js";
 
 const saltRounds = 10;
 
-// **Fetch All**
+// **Fetch All Builders (For Employee Only)**
 export const getAll = (req, res) => {
-  const sql = `SELECT builders.*
-    FROM builders 
-    INNER JOIN employees ON builders.builderadder = employees.uid
-    ORDER BY builders.builderid DESC;`;
-  db.query(sql, (err, result) => {
+  const projectPartnerId = req.employeeUser?.projectpartnerid;
+
+  if (!projectPartnerId) {
+    return res.status(401).json({
+      message: "Unauthorized Access — Employee is not linked to any Project Partner.",
+    });
+  }
+
+  // Step 1: Fetch the Project Partner's adharno using projectpartnerid
+  const getProjectPartnerAdharQuery =
+    "SELECT adharno FROM projectpartner WHERE id = ?";
+
+  db.query(getProjectPartnerAdharQuery, [projectPartnerId], (err, result) => {
     if (err) {
-      console.error("Error fetching:", err);
+      console.error("Error fetching Project Partner adharno:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    res.json(result);
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Project Partner not found." });
+    }
+
+    const projectPartnerAdhar = result[0].adharno;
+
+    // Step 2: Fetch all builders added by this Project Partner
+    const fetchBuildersQuery =
+      "SELECT * FROM builders WHERE builders.builderadder = ? ORDER BY builderid DESC";
+
+    db.query(fetchBuildersQuery, [projectPartnerAdhar], (err, builders) => {
+      if (err) {
+        console.error("Error fetching builders:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      const formatted = builders.map((row) => ({
+        ...row,
+        created_at: row.created_at
+          ? moment(row.created_at).format("DD MMM YYYY | hh:mm A")
+          : null,
+        updated_at: row.updated_at
+          ? moment(row.updated_at).format("DD MMM YYYY | hh:mm A")
+          : null,
+      }));
+
+      res.json(formatted);
+    });
   });
 };
 
-// **Fetch All**
+// **Fetch All Active Builders (For Employee Only)**
 export const getAllActive = (req, res) => {
-  const sql = `SELECT builders.*
-    FROM builders 
-    INNER JOIN employees ON builders.builderadder = employees.uid
-    WHERE builders.status = 'Active'
-    ORDER BY builders.company_name`;
-  db.query(sql, (err, result) => {
+  const projectPartnerId = req.employeeUser?.projectpartnerid;
+
+  if (!projectPartnerId) {
+    return res.status(401).json({
+      message: "Unauthorized Access — Employee is not linked to any Project Partner.",
+    });
+  }
+
+  // Step 1: Get project partner's adharno
+  const getPartnerAdharQuery = "SELECT adharno FROM projectpartner WHERE id = ?";
+
+  db.query(getPartnerAdharQuery, [projectPartnerId], (err, partnerResult) => {
     if (err) {
-      console.error("Error fetching:", err);
+      console.error("Error fetching project partner adharno:", err);
       return res.status(500).json({ message: "Database error", error: err });
     }
-    res.json(result);
+
+    if (partnerResult.length === 0) {
+      return res.status(404).json({ message: "Project Partner not found." });
+    }
+
+    const projectPartnerAdhar = partnerResult[0].adharno;
+
+    // Step 2: Fetch all active builders added by this partner
+    const sql =
+      "SELECT * FROM builders WHERE status = 'Active' AND builders.builderadder = ? ORDER BY company_name";
+
+    db.query(sql, [projectPartnerAdhar], (err, result) => {
+      if (err) {
+        console.error("Error fetching active builders:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      res.json(result);
+    });
   });
 };
 
@@ -52,35 +113,113 @@ export const getById = (req, res) => {
   });
 };
 
-// **Add New Builder**
+// **Add New Builder (For Employee Only)**
 export const add = (req, res) => {
-  const adharId = req.employeeUser?.adharId;
-  if(!adharId){
-    return res.status(401).json({ message: "Unauthorized! Please Login Again." });
-  }
-  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
-  const { company_name, contact_person, contact, email, uid, office_address, registration_no, dor, website, notes } = req.body;
+  const projectPartnerId = req.employeeUser?.projectpartnerid;
 
-  if (!company_name || !contact_person || !contact || !email || !uid || !office_address || !registration_no || !dor || !website || !notes) {
+  if (!projectPartnerId) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized! Please login as an employee." });
+  }
+
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const {
+    company_name,
+    contact_person,
+    contact,
+    email,
+    uid,
+    office_address,
+    registration_no,
+    dor,
+    website,
+    notes,
+  } = req.body;
+
+  // Validation
+  if (
+    !company_name ||
+    !contact_person ||
+    !contact ||
+    !email ||
+    !uid ||
+    !office_address ||
+    !registration_no ||
+    !dor ||
+    !website ||
+    !notes
+  ) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  db.query("SELECT * FROM builders WHERE contact = ? OR email = ?", [contact, email], (err, result) => {
-    if (err) return res.status(500).json({ message: "Database error", error: err });
+  // Step 1: Fetch project partner's adharno using their ID
+  const getPartnerAdharQuery = "SELECT adharno FROM projectpartner WHERE id = ?";
 
-    if (result.length === 0) {
-      const insertSQL = `INSERT INTO builders (builderadder, company_name, contact_person, contact, email, uid, office_address, registration_no, dor, website, notes, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-      db.query(insertSQL, [adharId, company_name, contact_person, contact, email, uid, office_address, registration_no, dor, website, notes, currentdate, currentdate], (err, result) => {
-        if (err) {
-          console.error("Error inserting:", err);
-          return res.status(500).json({ message: "Database error", error: err });
-        }
-        res.status(201).json({ message: "Builder added successfully", Id: result.insertId });
-      });
-    } else {
-      return res.status(409).json({ message: "Builder already exists!" });
+  db.query(getPartnerAdharQuery, [projectPartnerId], (err, partnerResult) => {
+    if (err) {
+      console.error("Error fetching project partner adharno:", err);
+      return res.status(500).json({ message: "Database error", error: err });
     }
+
+    if (partnerResult.length === 0) {
+      return res.status(404).json({ message: "Project Partner not found." });
+    }
+
+    const partnerAdhar = partnerResult[0].adharno;
+
+    // Step 2: Check for duplicate contact/email
+    db.query(
+      "SELECT * FROM builders WHERE contact = ? OR email = ?",
+      [contact, email],
+      (err, result) => {
+        if (err)
+          return res.status(500).json({ message: "Database error", error: err });
+
+        if (result.length > 0) {
+          return res.status(409).json({ message: "Builder already exists!" });
+        }
+
+        // Step 3: Insert new builder
+        const insertSQL = `
+          INSERT INTO builders 
+          (builderadder, company_name, contact_person, contact, email, uid, office_address, registration_no, dor, website, notes, updated_at, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+        db.query(
+          insertSQL,
+          [
+            partnerAdhar,
+            company_name,
+            contact_person,
+            contact,
+            email,
+            uid,
+            office_address,
+            registration_no,
+            dor,
+            website,
+            notes,
+            currentdate,
+            currentdate,
+          ],
+          (err, result) => {
+            if (err) {
+              console.error("Error inserting builder:", err);
+              return res
+                .status(500)
+                .json({ message: "Database error", error: err });
+            }
+
+            res.status(201).json({
+              message: "Builder added successfully",
+              builderId: result.insertId,
+            });
+          }
+        );
+      }
+    );
   });
 };
 
@@ -88,26 +227,73 @@ export const add = (req, res) => {
 export const update = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const Id = req.body.builderid;
-  const { company_name, contact_person, contact, email, uid, office_address, registration_no, dor, website, notes } = req.body;
+  const {
+    company_name,
+    contact_person,
+    contact,
+    email,
+    uid,
+    office_address,
+    registration_no,
+    dor,
+    website,
+    notes,
+  } = req.body;
 
-  if (!company_name || !contact_person || !contact || !email || !uid || !office_address || !registration_no || !dor || !website || !notes) {
+  if (
+    !company_name ||
+    !contact_person ||
+    !contact ||
+    !email ||
+    !uid ||
+    !office_address ||
+    !registration_no ||
+    !dor ||
+    !website ||
+    !notes
+  ) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  db.query("SELECT * FROM builders WHERE builderid = ?", [Id], (err, result) => {
-    if (err) return res.status(500).json({ message: "Database error", error: err });
-    if (result.length === 0) return res.status(404).json({ message: "Builder not found" });
-
-    const sql = `UPDATE builders SET company_name=?, contact_person=?, contact=?, email=?, uid=?, office_address=?, registration_no=?, dor=?, website=?, notes=?, updated_at=? WHERE builderid=?`;
-
-    db.query(sql, [company_name, contact_person, contact, email, uid, office_address, registration_no, dor, website, notes, currentdate, Id], (err) => {
-      if (err) {
-        console.error("Error updating:", err);
+  db.query(
+    "SELECT * FROM builders WHERE builderid = ?",
+    [Id],
+    (err, result) => {
+      if (err)
         return res.status(500).json({ message: "Database error", error: err });
-      }
-      res.status(200).json({ message: "Builder updated successfully" });
-    });
-  });
+      if (result.length === 0)
+        return res.status(404).json({ message: "Builder not found" });
+
+      const sql = `UPDATE builders SET company_name=?, contact_person=?, contact=?, email=?, uid=?, office_address=?, registration_no=?, dor=?, website=?, notes=?, updated_at=? WHERE builderid=?`;
+
+      db.query(
+        sql,
+        [
+          company_name,
+          contact_person,
+          contact,
+          email,
+          uid,
+          office_address,
+          registration_no,
+          dor,
+          website,
+          notes,
+          currentdate,
+          Id,
+        ],
+        (err) => {
+          if (err) {
+            console.error("Error updating:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+          res.status(200).json({ message: "Builder updated successfully" });
+        }
+      );
+    }
+  );
 };
 
 // **Delete**
@@ -118,23 +304,29 @@ export const deleteBuilder = (req, res) => {
     return res.status(400).json({ message: "Invalid Builder ID" });
   }
 
-  db.query("SELECT * FROM builders WHERE builderid = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Builder not found" });
-    }
-
-    db.query("DELETE FROM builders WHERE builderid = ?", [Id], (err) => {
+  db.query(
+    "SELECT * FROM builders WHERE builderid = ?",
+    [Id],
+    (err, result) => {
       if (err) {
-        console.error("Error deleting:", err);
+        console.error("Database error:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
-      res.status(200).json({ message: "Builder deleted successfully" });
-    });
-  });
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Builder not found" });
+      }
+
+      db.query("DELETE FROM builders WHERE builderid = ?", [Id], (err) => {
+        if (err) {
+          console.error("Error deleting:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+        res.status(200).json({ message: "Builder deleted successfully" });
+      });
+    }
+  );
 };
 
 // **Change Status**
@@ -145,56 +337,101 @@ export const status = (req, res) => {
     return res.status(400).json({ message: "Invalid Builder ID" });
   }
 
-  db.query("SELECT * FROM builders WHERE builderid = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Builder not found" });
-    }
-
-    const newStatus = result[0].status === "Active" ? "Inactive" : "Active";
-
-    db.query("UPDATE builders SET status = ? WHERE builderid = ?", [newStatus, Id], (err) => {
+  db.query(
+    "SELECT * FROM builders WHERE builderid = ?",
+    [Id],
+    (err, result) => {
       if (err) {
-        console.error("Error updating status:", err);
+        console.error("Database error:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
-      res.status(200).json({ message: `Builder status changed to ${newStatus}` });
-    });
-  });
+
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Builder not found" });
+      }
+
+      const newStatus = result[0].status === "Active" ? "Inactive" : "Active";
+
+      db.query(
+        "UPDATE builders SET status = ? WHERE builderid = ?",
+        [newStatus, Id],
+        (err) => {
+          if (err) {
+            console.error("Error updating status:", err);
+            return res
+              .status(500)
+              .json({ message: "Database error", error: err });
+          }
+          res
+            .status(200)
+            .json({ message: `Builder status changed to ${newStatus}` });
+        }
+      );
+    }
+  );
 };
 
-// **Assign Login to Builder**
+// ** Assign Login to Builder **
 export const assignLogin = async (req, res) => {
-  const { username, password } = req.body;
-  const Id = parseInt(req.params.id);
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  try {
+    const { username, password } = req.body;
+    const Id = parseInt(req.params.id);
 
-  if (isNaN(Id)) {
-    return res.status(400).json({ message: "Invalid Builder ID" });
-  }
-
-  db.query("SELECT * FROM builders WHERE builderid = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
+    if (isNaN(Id)) {
+      return res.status(400).json({ message: "Invalid Builder ID" });
     }
 
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Builder not found" });
-    }
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const newLoginStatus = result[0].loginstatus === "Active" ? "Inactive" : "Active";
+    db.query(
+      "SELECT * FROM builders WHERE builderid = ?",
+      [Id],
+      (err, result) => {
+        if (err) {
+          console.error("Database error:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+        if (result.length === 0) {
+          return res.status(404).json({ message: "Builder not found" });
+        }
 
-    db.query("UPDATE builders SET loginstatus = ?, username = ?, password = ? WHERE builderid = ?", [newLoginStatus, username, hashedPassword, Id], (err) => {
-      if (err) {
-        console.error("Error assigning login:", err);
-        return res.status(500).json({ message: "Database error", error: err });
+        let loginstatus =
+          result[0].loginstatus === "Active" ? "Inactive" : "Active";
+        const email = result[0].email;
+
+        db.query(
+          "UPDATE builders SET loginstatus = ?, username = ?, password = ? WHERE builderid = ?",
+          [loginstatus, username, hashedPassword, Id],
+          (err, updateResult) => {
+            if (err) {
+              console.error("Error updating record:", err);
+              return res
+                .status(500)
+                .json({ message: "Database error", error: err });
+            }
+
+            // Send email after successful update
+            sendEmail(email, username, password, "Builder")
+              .then(() => {
+                res.status(200).json({
+                  message:
+                    "Builder login assigned successfully and email sent.",
+                });
+              })
+              .catch((emailError) => {
+                console.error("Error sending email:", emailError);
+                res
+                  .status(500)
+                  .json({ message: "Login updated but email failed to send." });
+              });
+          }
+        );
       }
-      res.status(200).json({ message: `Builder login assigned successfully, status changed to ${newLoginStatus}` });
-    });
-  });
+    );
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    res.status(500).json({ message: "Unexpected server error", error });
+  }
 };

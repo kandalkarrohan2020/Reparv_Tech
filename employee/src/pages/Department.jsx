@@ -11,7 +11,7 @@ import DataTable from "react-data-table-component";
 import Loader from "../components/Loader";
 
 const Department = () => {
-  const { showDepartmentForm, setShowDepartmentForm, action, URI, setLoading } =
+  const { showDepartmentForm, setShowDepartmentForm, action, URI, user, setLoading } =
     useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,9 +23,9 @@ const Department = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/admin/departments", {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/departments`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -48,7 +48,7 @@ const Department = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(URI + `/admin/departments/${endpoint}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/departments/${endpoint}`, {
         method: newDepartment.departmentid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -79,7 +79,7 @@ const Department = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/departments/${id}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/departments/${id}`, {
         method: "GET",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -99,7 +99,7 @@ const Department = () => {
       return;
 
     try {
-      const response = await fetch(URI + `/admin/departments/delete/${id}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/departments/delete/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -125,7 +125,7 @@ const Department = () => {
       return;
 
     try {
-      const response = await fetch(URI + `/admin/departments/status/${id}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/departments/status/${id}`, {
         method: "PUT",
         credentials: "include",
       });

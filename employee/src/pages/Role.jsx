@@ -11,7 +11,7 @@ import DataTable from "react-data-table-component";
 import Loader from "../components/Loader";
 
 const Role = () => {
-  const { showRoleForm, setShowRoleForm, action, URI, setLoading } = useAuth();
+  const { showRoleForm, setShowRoleForm, action, URI, user, setLoading } = useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [newRole, setNewRole] = useState({ roleid: "", role: "" });
@@ -19,9 +19,9 @@ const Role = () => {
   // **Fetch Data from API**
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/admin/roles", {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/roles`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -41,7 +41,7 @@ const Role = () => {
     const endpoint = newRole.roleid ? `edit/${newRole.roleid}` : "add";
     try {
       setLoading(true);
-      const response = await fetch(URI + `/admin/roles/${endpoint}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/roles/${endpoint}`, {
         method: action === "update" ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -72,9 +72,9 @@ const Role = () => {
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/roles/${id}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/roles/${id}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -92,7 +92,7 @@ const Role = () => {
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this role?")) return;
     try {
-      const response = await fetch(URI + `/admin/roles/delete/${id}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/roles/delete/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -116,7 +116,7 @@ const Role = () => {
       return;
 
     try {
-      const response = await fetch(URI + `/admin/roles/status/${id}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/roles/status/${id}`, {
         method: "PUT",
         credentials: "include",
       });

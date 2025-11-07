@@ -41,7 +41,7 @@ const Properties = () => {
     setShowVideoUploadForm,
     showPropertyLocationForm,
     setShowPropertyLocationForm,
-    URI,
+    URI, user,
     loading,
     setLoading,
   } = useAuth();
@@ -365,9 +365,9 @@ const Properties = () => {
   //Fetch Builder
   const fetchBuilder = async () => {
     try {
-      const response = await fetch(URI + "/admin/builders/active", {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/builders/active`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -398,35 +398,38 @@ const Properties = () => {
     }
   };
   */
-
-  //Fetch Data
+  
   const fetchData = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `${URI}/admin/properties/get/${selectedPartner}`,
-        {
-          method: "GET",
-          credentials: "include", //  Ensures cookies are sent
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) throw new Error("Failed to fetch properties.");
-      const data = await response.json();
-      setDatas(data);
-    } catch (err) {
-      console.error("Error fetching :", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const endpoint = user?.projectpartnerid
+      ? `${URI}/project-partner/properties/`
+      : `${URI}/admin/properties/get/${selectedPartner}`;
+
+    const response = await fetch(endpoint, {
+      method: "GET",
+      credentials: "include", // Ensures cookies are sent
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch properties.");
+
+    const data = await response.json();
+    setDatas(data);
+  } catch (err) {
+    console.error("Error fetching properties:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+  
 
   //fetch data on form
   const edit = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/properties/${id}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/properties/${id}`, {
         method: "GET",
         credentials: "include", //  Ensures cookies are sent
         headers: {
@@ -793,7 +796,7 @@ const Properties = () => {
   //fetch data on form
   const fetchImages = async (id) => {
     try {
-      const response = await fetch(URI + `/admin/properties/${id}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/properties/${id}`, {
         method: "GET",
         credentials: "include", //  Ensures cookies are sent
         headers: {

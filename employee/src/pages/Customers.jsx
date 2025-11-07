@@ -14,7 +14,7 @@ import FormatPrice from "../components/FormatPrice";
 
 const Customers = () => {
   const {
-    URI,
+    URI, user,
     setLoading,
     showCustomer,
     setShowCustomer,
@@ -65,7 +65,7 @@ const Customers = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${URI}/admin/customers`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/customers`, {
         method: "GET",
         credentials: "include", //  Ensures cookies are sent
         headers: {
@@ -84,7 +84,7 @@ const Customers = () => {
 
   const viewCustomer = async (id) => {
     try {
-      const response = await fetch(`${URI}/admin/customers/${id}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/customers/${id}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -104,7 +104,7 @@ const Customers = () => {
 
   const fetchPaymentData = async (id, customer) => {
     try {
-      const response = await fetch(`${URI}/admin/customers/payment/get/${id}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/customers/payment/get/${id}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -134,7 +134,7 @@ const Customers = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${URI}/admin/customers/payment/add/${enquirerId}`,
+        `${URI}/${user?.projectpartnerid ? "employee":"admin"}/customers/payment/add/${enquirerId}`,
         {
           method: "POST",
           credentials: "include",

@@ -45,6 +45,7 @@ router.post("/login", async (req, res) => {
         username: user.username,
         email: user.email,
         adharId: user.uid,
+        projectpartnerid: user.projectpartnerid,
         assignMenus: JSON.parse(user.menus),
       },
       process.env.JWT_SECRET,
@@ -61,6 +62,7 @@ router.post("/login", async (req, res) => {
       name: user.name,
       contact: user.contact,
       role: user.role,
+      projectpartnerid: user.projectpartnerid,
       assignMenus: JSON.parse(user.menus),
     };
 

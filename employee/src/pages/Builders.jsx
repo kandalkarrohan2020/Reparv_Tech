@@ -23,7 +23,7 @@ const Builders = () => {
     setGiveAccess,
     setShowBuilder,
     showBuilder,
-    URI,
+    URI, user,
     loading,
     setLoading,
   } = useAuth();
@@ -50,10 +50,10 @@ const Builders = () => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        URI + "/admin/builders/get/" + selectedLister,
+        `${URI}/${user?.projectpartnerid ? "employee":"admin"}/builders/get/${selectedLister}`,
         {
           method: "GET",
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include", // Ensures cookies are sent
           headers: {
             "Content-Type": "application/json",
           },
@@ -76,7 +76,7 @@ const Builders = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/admin/builders/${endpoint}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/builders/${endpoint}`, {
         method: newBuilder.builderid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -122,9 +122,9 @@ const Builders = () => {
   //fetch data on form
   const edit = async (builderid) => {
     try {
-      const response = await fetch(URI + `/admin/builders/${builderid}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/builders/${builderid}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -141,9 +141,9 @@ const Builders = () => {
   //fetch data on form
   const viewBuilder = async (builderid) => {
     try {
-      const response = await fetch(URI + `/admin/builders/${builderid}`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/builders/${builderid}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -163,10 +163,10 @@ const Builders = () => {
       return;
     try {
       const response = await fetch(
-        URI + `/admin/builders/delete/${builderid}`,
+        `${URI}/${user?.projectpartnerid ? "employee":"admin"}/builders/delete/${builderid}`,
         {
           method: "DELETE",
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include", // Ensures cookies are sent
           headers: {
             "Content-Type": "application/json",
           },
@@ -195,10 +195,10 @@ const Builders = () => {
 
     try {
       const response = await fetch(
-        URI + `/admin/builders/status/${builderid}`,
+        `${URI}/${user?.projectpartnerid ? "employee":"admin"}/builders/status/${builderid}`,
         {
           method: "PUT",
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include", // Ensures cookies are sent
           headers: {
             "Content-Type": "application/json",
           },
@@ -228,7 +228,7 @@ const Builders = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        URI + `/admin/builders/assignlogin/${selectedBuilderId}`,
+        `${URI}/${user?.projectpartnerid ? "employee":"admin"}/builders/assignlogin/${selectedBuilderId}`,
         {
           method: "PUT",
           headers: {

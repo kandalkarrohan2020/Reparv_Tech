@@ -13,14 +13,14 @@ const statusClasses = {
 };
 
 const CalendarScheduler = () => {
-  const { URI } = useAuth();
+  const { URI, user } = useAuth();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [meetings, setMeetings] = useState([]);
 
   //Fetch Data
   const fetchData = async () => {
     try {
-      const response = await fetch(URI + "/admin/calender/meetings", {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/calender/meetings`, {
         method: "GET",
         credentials: "include", // Ensures cookies are sent
         headers: {

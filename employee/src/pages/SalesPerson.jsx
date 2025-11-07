@@ -20,6 +20,7 @@ const SalesPerson = () => {
     showSalesForm,
     setShowSalesForm,
     URI,
+    user,
     giveAccess,
     setGiveAccess,
     showPaymentIdForm,
@@ -104,17 +105,17 @@ const SalesPerson = () => {
 
   // **Fetch Data from API**
   const fetchData = async () => {
+    const endpoint = user?.projectpartnerid
+      ? `${URI}/employee/sales/`
+      : `${URI}/admin/salespersons/${selectedPartnerLister}`;
     try {
-      const response = await fetch(
-        `${URI}/admin/salespersons/${selectedPartnerLister}`,
-        {
-          method: "GET",
-          credentials: "include", // Ensures cookies are sent
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(endpoint, {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) throw new Error("Failed to fetch salespersons.");
 
@@ -129,14 +130,16 @@ const SalesPerson = () => {
 
   const add = async (e) => {
     e.preventDefault();
-
     const endpoint = newSalesPerson.salespersonsid
       ? `edit/${newSalesPerson.salespersonsid}`
       : "add";
+    const endpoint1 = user?.projectpartnerid
+      ? `${URI}/employee/sales/`
+      : `${URI}/admin/salespersons/${endpoint}`;
 
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/admin/salespersons/${endpoint}`, {
+      const response = await fetch(endpoint1, {
         method: newSalesPerson.salespersonsid ? "PUT" : "POST",
         credentials: "include",
         headers: {
@@ -1329,7 +1332,11 @@ const SalesPerson = () => {
             />
           </div>
           <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
-            <div className={`${partner.projectpartnerid ? "block" : "hidden"} w-full col-span-2`}>
+            <div
+              className={`${
+                partner.projectpartnerid ? "block" : "hidden"
+              } w-full col-span-2`}
+            >
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Project Partner
               </label>
@@ -1337,7 +1344,11 @@ const SalesPerson = () => {
                 type="text"
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={partner.projectPartnerName + " - " + partner.projectPartnerContact}
+                value={
+                  partner.projectPartnerName +
+                  " - " +
+                  partner.projectPartnerContact
+                }
                 readOnly
               />
             </div>
@@ -1600,7 +1611,9 @@ const SalesPerson = () => {
                     return images.map((img, index) => (
                       <img
                         key={index}
-                        onClick={()=>{window.open(`${URI}${img}`,"_blank")}}
+                        onClick={() => {
+                          window.open(`${URI}${img}`, "_blank");
+                        }}
                         className="w-full border border-[#00000033] rounded-[4px] object-cover cursor-pointer"
                         src={`${URI}${img}`}
                         alt={`Aadhar ${index + 1}`}
@@ -1627,7 +1640,9 @@ const SalesPerson = () => {
                     return images.map((img, index) => (
                       <img
                         key={index}
-                        onClick={()=>{window.open(`${URI}${img}`,"_blank")}}
+                        onClick={() => {
+                          window.open(`${URI}${img}`, "_blank");
+                        }}
                         className="w-full border border-[#00000033] rounded-[4px] object-cover cursor-pointer"
                         src={`${URI}${img}`}
                         alt={`PAN ${index + 1}`}
@@ -1654,7 +1669,9 @@ const SalesPerson = () => {
                     return images.map((img, index) => (
                       <img
                         key={index}
-                        onClick={()=>{window.open(`${URI}${img}`,"_blank")}}
+                        onClick={() => {
+                          window.open(`${URI}${img}`, "_blank");
+                        }}
                         className="w-full border border-[#00000033] rounded-[4px] object-cover cursor-pointer"
                         src={`${URI}${img}`}
                         alt={`RERA ${index + 1}`}

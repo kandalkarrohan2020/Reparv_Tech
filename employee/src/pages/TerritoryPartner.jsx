@@ -21,6 +21,7 @@ const TerritoryPartner = () => {
     showPartnerForm,
     setShowPartnerForm,
     URI,
+    user,
     setLoading,
     giveAccess,
     setGiveAccess,
@@ -102,17 +103,17 @@ const TerritoryPartner = () => {
 
   // **Fetch Data from API**
   const fetchData = async () => {
+    const endpoint = user?.projectpartnerid
+      ? `${URI}/employee/territory/`
+      : `${URI}/admin/territorypartner/${selectedPartnerLister}`;
     try {
-      const response = await fetch(
-        `${URI}/admin/territorypartner/${selectedPartnerLister}`,
-        {
-          method: "GET",
-          credentials: "include", // Ensures cookies are sent
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(endpoint, {
+        method: "GET",
+        credentials: "include", // Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) throw new Error("Failed to fetch Territory Partners.");
 
@@ -127,22 +128,23 @@ const TerritoryPartner = () => {
 
   const add = async (e) => {
     e.preventDefault();
-
-    const endpoint = newPartner.id ? `edit/${newPartner.id}` : "add";
+    const endpoint = newSalesPerson.salespersonsid
+      ? `edit/${newSalesPerson.salespersonsid}`
+      : "add";
+    const endpoint1 = user?.projectpartnerid
+      ? `${URI}/employee/sales/`
+      : `${URI}/admin/salespersons/${endpoint}`;
 
     try {
       setLoading(true);
-      const response = await fetch(
-        `${URI}/admin/territorypartner/${endpoint}`,
-        {
-          method: newPartner.id ? "PUT" : "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newPartner),
-        }
-      );
+      const response = await fetch(endpoint1, {
+        method: newPartner.id ? "PUT" : "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newPartner),
+      });
 
       if (response.status === 409) {
         alert("partner all ready exists!");
@@ -1331,7 +1333,11 @@ const TerritoryPartner = () => {
             />
           </div>
           <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
-            <div className={`${partner.projectpartnerid ? "block" : "hidden"} w-full col-span-2`}>
+            <div
+              className={`${
+                partner.projectpartnerid ? "block" : "hidden"
+              } w-full col-span-2`}
+            >
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Project Partner
               </label>
@@ -1339,7 +1345,11 @@ const TerritoryPartner = () => {
                 type="text"
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={partner.projectPartnerName + " - " + partner.projectPartnerContact}
+                value={
+                  partner.projectPartnerName +
+                  " - " +
+                  partner.projectPartnerContact
+                }
                 readOnly
               />
             </div>
@@ -1602,7 +1612,9 @@ const TerritoryPartner = () => {
                     return images.map((img, index) => (
                       <img
                         key={index}
-                        onClick={()=>{window.open(`${URI}${img}`,"_blank")}}
+                        onClick={() => {
+                          window.open(`${URI}${img}`, "_blank");
+                        }}
                         className="w-full border border-[#00000033] rounded-[4px] object-cover cursor-pointer"
                         src={`${URI}${img}`}
                         alt={`Aadhar ${index + 1}`}
@@ -1629,7 +1641,9 @@ const TerritoryPartner = () => {
                     return images.map((img, index) => (
                       <img
                         key={index}
-                        onClick={()=>{window.open(`${URI}${img}`,"_blank")}}
+                        onClick={() => {
+                          window.open(`${URI}${img}`, "_blank");
+                        }}
                         className="w-full border border-[#00000033] rounded-[4px] object-cover cursor-pointer"
                         src={`${URI}${img}`}
                         alt={`PAN ${index + 1}`}
@@ -1656,7 +1670,9 @@ const TerritoryPartner = () => {
                     return images.map((img, index) => (
                       <img
                         key={index}
-                        onClick={()=>{window.open(`${URI}${img}`,"_blank")}}
+                        onClick={() => {
+                          window.open(`${URI}${img}`, "_blank");
+                        }}
                         className="w-full border border-[#00000033] rounded-[4px] object-cover cursor-pointer"
                         src={`${URI}${img}`}
                         alt={`RERA ${index + 1}`}

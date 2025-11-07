@@ -88,10 +88,19 @@ import builderTicketRoutes from "./routes/builder/ticketRoutes.js";
 import employeeLoginRoutes from "./routes/employee/employeeLoginRoutes.js";
 import employeeProfileRoutes from "./routes/employee/employeeProfileRoutes.js";
 import employeeDashboardRoutes from "./routes/employee/dashboardRoutes.js";
-import employeeBuildersRoutes from "./routes/employee/employeeBuildersRoutes.js";
-import employeePropertyRoutes from "./routes/employee/employeePropertyRoutes.js";
 import employeeTicketRoutes from "./routes/employee/employeeTicketRoutes.js";
-import employeeEnquirersRoutes from "./routes/employee/employeeEnquirersRoutes.js";
+// employee project partner routes
+import employeeBuilderRoutes from "./routes/employee/builderRoutes.js";
+import employeePropertyRoutes from "./routes/employee/propertyRoutes.js";
+import employeeEnquirersRoutes from "./routes/employee/enquirerRoutes.js";
+import employeeEnquiryRoutes from "./routes/employee/enquiryRoutes.js";
+import employeeCustomerRoutes from "./routes/employee/customerRoutes.js";
+import employeeSalesPartnerRoutes from "./routes/employee/salesPartnerRoutes.js";
+import employeeTerritoryPartnerRoutes from "./routes/employee/territoryPartnerRoutes.js";
+import employeeMapRoutes from "./routes/employee/mapRoutes.js";
+import employeeCalenderRoutes from "./routes/employee/calenderRoutes.js";
+import employeeRoleRoutes from "./routes/employee/roleRoutes.js";
+import employeeDepartmentRoutes from "./routes/employee/departmentRoutes.js";
 
 // import Promoter Routes
 import promoterLoginRoutes from "./routes/promoter/loginRoutes.js";
@@ -174,14 +183,14 @@ import appTicketRoute from "./routes/salesAppRoute/ticketRoute.js";
 import postRoute from "./routes/salesAppRoute/postRoutes.js";
 import userController from "./routes/salesAppRoute/userRoute.js";
 import clientRoute from "./routes/salesAppRoute/clientRoute.js";
-import salesPropertyEnquiry from "./routes/salesAppRoute/propertyEnquiry.js"
+import salesPropertyEnquiry from "./routes/salesAppRoute/propertyEnquiry.js";
 //territory app route
 import territoryUserController from "./routes/territoryAppRoute/userRoute.js";
 import territorypostRoute from "./routes/territoryAppRoute/postRoutes.js";
 import territoryBooking from "./routes/territoryPartner/propertyBookingRoute.js";
 import territoryClientRoute from "./routes/territoryAppRoute/profileRoute.js";
 import territoryEnquiryRoute from "./routes/territoryAppRoute/enquiryRoute.js";
-import territoryPropertyEnquiryRoute from "./routes/territoryAppRoute/propertyEnquiriesRoute.js"
+import territoryPropertyEnquiryRoute from "./routes/territoryAppRoute/propertyEnquiriesRoute.js";
 import territorySubscription from "./routes/territoryAppRoute/subscription.js";
 import salesSubscription from "./routes/salesAppRoute/subscription.js";
 import scheduleNotesRoutes from "./routes/salesAppRoute/notesRoute.js";
@@ -196,7 +205,7 @@ import projectSubscription from "./routes/projectPartnerAppRoute/subscription.js
 import projectEnquiriesRoute from "./routes/projectPartnerAppRoute/enquiryRoute.js";
 import projectpartnerSalesAndTerritoryRoute from "./routes/projectPartnerAppRoute/partnerRoute.js";
 import projectPartnerEmployee from "./routes/projectPartnerAppRoute/employeeRoute.js";
-import projectPartnerTickets from './routes/projectPartnerAppRoute/ticketRouter.js'
+import projectPartnerTickets from "./routes/projectPartnerAppRoute/ticketRouter.js";
 //Customer App
 import customerEmi from "./routes/customerAppRoute/EmiRoute.js";
 import customerSignUp from "./routes/customerAppRoute/userRoute.js";
@@ -361,16 +370,16 @@ export const verifyToken = (req, res, next) => {
     "/territoryapp/enquiry/add/",
     "/projectpartner/employee/",
     "/salesapp/schedule-notes",
-       "/projectpartner/enquiries/add",
-     "/projectpartner/enquiries/enquiry/",
-    "/projectpartner/enquiries/get" ,
+    "/projectpartner/enquiries/add",
+    "/projectpartner/enquiries/enquiry/",
+    "/projectpartner/enquiries/get",
     "/projectpartner/enquiries/assign/to/reparv",
-   "/projectpartner/enquiries/enquiry/status/",
-   "/projectpartner/ticket",
-   "/projectpartner/enquiries/get/partnersenquiry",
-   "/territoryapp/property/enquiry",
-   "/salesapp/property/enquiry",
-   "/projectpartner/enquiries/getdigitalenquiry/"
+    "/projectpartner/enquiries/enquiry/status/",
+    "/projectpartner/ticket",
+    "/projectpartner/enquiries/get/partnersenquiry",
+    "/territoryapp/property/enquiry",
+    "/salesapp/property/enquiry",
+    "/projectpartner/enquiries/getdigitalenquiry/",
   ];
 
   // Skip verification for public routes
@@ -512,10 +521,19 @@ app.use("/builder/tickets", builderTicketRoutes);
 app.use("/employee", employeeLoginRoutes);
 app.use("/employee/profile", employeeProfileRoutes);
 app.use("/employee/dashboard", employeeDashboardRoutes);
-app.use("/employee/builders", employeeBuildersRoutes);
+app.use("/employee/tickets", employeeTicketRoutes);
+// Employee Project Partner Routes
+app.use("/employee/builders", employeeBuilderRoutes);
 app.use("/employee/properties", employeePropertyRoutes);
 app.use("/employee/enquirers", employeeEnquirersRoutes);
-app.use("/employee/tickets", employeeTicketRoutes);
+app.use("/employee/map", employeeMapRoutes);
+app.use("/employee/customers", employeeCustomerRoutes);
+app.use("/employee/sales", employeeSalesPartnerRoutes);
+app.use("/employee/territory", employeeTerritoryPartnerRoutes);
+app.use("/employee/enquiry", employeeEnquiryRoutes);
+app.use("/employee/calender", employeeCalenderRoutes);
+app.use("/employee/roles", employeeRoleRoutes);
+app.use("/employee/departments", employeeDepartmentRoutes);
 
 // Promoter Partner Routes
 app.use("/promoter", promoterLoginRoutes);
@@ -600,7 +618,7 @@ app.use("/salesapp/user", userController);
 app.use("/salesapp/client", clientRoute);
 app.use("/salesapp/enquiry", enquiryRoutesSaleApp);
 app.use("/salesapp/subscription", salesSubscription);
-app.use('/salesapp/property/enquiry',salesPropertyEnquiry)
+app.use("/salesapp/property/enquiry", salesPropertyEnquiry);
 app.use("/salesapp/schedule-notes", scheduleNotesRoutes);
 
 //Territory App Route
@@ -626,7 +644,7 @@ app.use("/projectpartner/subscription", projectSubscription);
 app.use("/projectpartner/enquiries", projectEnquiriesRoute);
 app.use("/projectpartner/partner", projectpartnerSalesAndTerritoryRoute);
 app.use("/projectpartner/employee", projectPartnerEmployee);
-app.use("/projectpartner/ticket",projectPartnerTickets)
+app.use("/projectpartner/ticket", projectPartnerTickets);
 
 //Customer app
 app.use("/customerapp", customerEmi);

@@ -53,7 +53,7 @@ const Builders = () => {
         URI + "/admin/builders/get/" + selectedLister,
         {
           method: "GET",
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include", // Ensures cookies are sent
           headers: {
             "Content-Type": "application/json",
           },
@@ -124,7 +124,7 @@ const Builders = () => {
     try {
       const response = await fetch(URI + `/admin/builders/${builderid}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -143,7 +143,7 @@ const Builders = () => {
     try {
       const response = await fetch(URI + `/admin/builders/${builderid}`, {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent
+        credentials: "include", // Ensures cookies are sent
         headers: {
           "Content-Type": "application/json",
         },
@@ -166,7 +166,7 @@ const Builders = () => {
         URI + `/admin/builders/delete/${builderid}`,
         {
           method: "DELETE",
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include", // Ensures cookies are sent
           headers: {
             "Content-Type": "application/json",
           },
@@ -198,7 +198,7 @@ const Builders = () => {
         URI + `/admin/builders/status/${builderid}`,
         {
           method: "PUT",
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include", // Ensures cookies are sent
           headers: {
             "Content-Type": "application/json",
           },

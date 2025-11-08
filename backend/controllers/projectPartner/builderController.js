@@ -154,7 +154,9 @@ export const update = (req, res) => {
     website,
     notes,
   } = req.body;
-
+  const date = moment(dor).isValid()
+    ? moment(dor).add(1, "days").format("YYYY-MM-DD")
+    : "";
   if (
     !company_name ||
     !contact_person ||
@@ -191,7 +193,7 @@ export const update = (req, res) => {
           uid,
           office_address,
           registration_no,
-          dor,
+          date,
           website,
           notes,
           currentdate,

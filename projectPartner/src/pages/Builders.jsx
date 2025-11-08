@@ -127,7 +127,7 @@ const Builders = () => {
         URI + `/project-partner/builders/${builderid}`,
         {
           method: "GET",
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include", // Ensures cookies are sent
           headers: {
             "Content-Type": "application/json",
           },
@@ -149,7 +149,7 @@ const Builders = () => {
         URI + `/project-partner/builders/${builderid}`,
         {
           method: "GET",
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include", // Ensures cookies are sent
           headers: {
             "Content-Type": "application/json",
           },
@@ -173,7 +173,7 @@ const Builders = () => {
         URI + `/project-partner/builders/delete/${builderid}`,
         {
           method: "DELETE",
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include", // Ensures cookies are sent
           headers: {
             "Content-Type": "application/json",
           },
@@ -205,7 +205,7 @@ const Builders = () => {
         URI + `/project-partner/builders/status/${builderid}`,
         {
           method: "PUT",
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include", // Ensures cookies are sent
           headers: {
             "Content-Type": "application/json",
           },

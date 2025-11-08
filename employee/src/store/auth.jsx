@@ -4,8 +4,8 @@ import Cookies from "js-cookie";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const URI = "http://localhost:3000";
-  //const URI = "https://api.reparv.in";
+  //const URI = "http://localhost:3000";
+  const URI = "https://api.reparv.in";
 
   const [accessToken, setAccessToken] = useState(Cookies.get("accessToken"));
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("employeeUser")));

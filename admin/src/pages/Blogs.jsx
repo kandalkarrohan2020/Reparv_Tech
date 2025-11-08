@@ -383,7 +383,7 @@ const Blogs = () => {
     },
     { name: "Date & Time", selector: (row) => row.created_at, width: "200px" },
     {
-      name: "Blog Tittle",
+      name: "Blog Title",
       selector: (row) => row.tittle,
       sortable: true,
       minWidth: "150px",
@@ -585,7 +585,7 @@ const Blogs = () => {
                   htmlFor="blogTittle"
                   className="block text-sm leading-4 text-[#00000066] font-medium mt-2"
                 >
-                  Blog Tittle
+                  Blog Title
                 </label>
                 <textarea
                   rows={2}
@@ -622,9 +622,7 @@ const Blogs = () => {
                 <label className="block text-sm leading-4 text-[#00000066] font-medium mb-2">
                   Blog Content
                 </label>
-                <div
-                  className="border border-[#00000033] rounded-[4px] blog-content ck-content overflow-hidden"
-                >
+                <div className="border border-[#00000033] rounded-[4px] blog-content ck-content overflow-hidden">
                   {showBlogForm && newBlog.content !== undefined && (
                     <CKEditor
                       key={newBlog.id || "new"}
@@ -635,6 +633,20 @@ const Blogs = () => {
                       }}
                       config={{
                         placeholder: "Enter Blog Content",
+                        toolbar: [
+                          "heading",
+                          "|",
+                          "bold",
+                          "italic",
+                          "link",
+                          "|",
+                          "bulletedList",
+                          "numberedList",
+                          "blockQuote",
+                          "|",
+                          "undo",
+                          "redo",
+                        ],
                       }}
                     />
                   )}

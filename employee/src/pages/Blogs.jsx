@@ -62,7 +62,7 @@ const Blogs = () => {
     setSelectedImage(file);
     setNewBlog((prev) => ({ ...prev, blogImage: file }));
   };
-  
+
   const removeSingleImage = () => {
     setSelectedImage(null);
   };
@@ -586,7 +586,7 @@ const Blogs = () => {
                   htmlFor="blogTittle"
                   className="block text-sm leading-4 text-[#00000066] font-medium mt-2"
                 >
-                  Blog Tittle
+                  Blog Title
                 </label>
                 <textarea
                   rows={2}
@@ -634,6 +634,20 @@ const Blogs = () => {
                       }}
                       config={{
                         placeholder: "Enter Blog Content",
+                        toolbar: [
+                          "heading",
+                          "|",
+                          "bold",
+                          "italic",
+                          "link",
+                          "|",
+                          "bulletedList",
+                          "numberedList",
+                          "blockQuote",
+                          "|",
+                          "undo",
+                          "redo",
+                        ],
                       }}
                     />
                   )}

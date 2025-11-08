@@ -114,3 +114,23 @@ input[type='range']::-webkit-slider-thumb {
 .animate-blink {
   animation: blink 1s infinite;
 }
+
+/* Fix CKEditor bullet list visibility across Windows & macOS */
+.blog-content.ck-content ul,
+.blog-content.ck-content ol {
+  list-style-position: outside !important;
+  margin-left: 1rem !important;
+  padding-left: 1rem !important;
+}
+
+.blog-content.ck-content li {
+  list-style-type: disc !important;
+  display: list-item !important;
+  margin-bottom: 0.4rem;
+}
+
+/* Optional - improve spacing and readability */
+.blog-content.ck-content p {
+  margin-bottom: 0.75rem;
+  line-height: 1;
+}

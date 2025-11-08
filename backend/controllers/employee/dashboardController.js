@@ -56,7 +56,7 @@ export const getCount = (req, res) => {
           FROM enquirers e
           JOIN properties p ON e.propertyid = p.propertyid
           WHERE (e.status != 'Token' AND p.projectpartnerid = ?) OR e.projectpartnerid = ?
-        ) AS totalEnquirer,
+        ) AS totalEnquiry,
 
         (
           SELECT IFNULL(SUM(p.carpetArea), 0)
@@ -87,7 +87,7 @@ export const getCount = (req, res) => {
           SELECT COUNT(salespersonsid) 
           FROM salespersons
           WHERE projectpartnerid = ?
-        ) AS totalSalesPartner,
+        ) AS totalSalesPerson,
 
         (
           SELECT COUNT(id) 

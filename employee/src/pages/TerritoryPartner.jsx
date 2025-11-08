@@ -738,8 +738,8 @@ const TerritoryPartner = () => {
       className={`sales Persons overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start`}
     >
       <div className="sales-table w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white md:rounded-[24px]">
-        <div className="w-full flex items-center justify-between gap-1 sm:gap-3">
-          <div className="w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block">
+        <div className={`w-full flex items-center ${user?.projectpartnerid ? "justify-end" : "justify-between"} gap-1 sm:gap-3`}>
+          <div className={`${user?.projectpartnerid && "hidden"} w-[65%] sm:min-w-[220px] sm:max-w-[230px] relative inline-block`}>
             <div className="flex gap-2 items-center justify-between bg-white border border-[#00000033] text-sm font-semibold  text-black rounded-lg py-1 px-3 focus:outline-none focus:ring-2 focus:ring-[#076300]">
               <span>{selectedPartnerLister || "Select Partner Lister"}</span>
               <RiArrowDropDownLine className="w-6 h-6 text-[#000000B2]" />

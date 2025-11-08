@@ -3,12 +3,12 @@ import {getAll, getAdmins, getDepartments, getEmployees, getById, changeStatus, 
 
 const router = express.Router();
 
-router.get("/get/:generator/:id", getAll);
+router.get("/get/:generator/:id/:adharId", getAll);
 router.get("/admins", getAdmins);
 router.get("/departments", getDepartments);
 router.get("/employees/:id", getEmployees);
 router.get("/:id", getById);
-router.post("/add", add);
+router.post("/add/:adharId", add);
 router.put("/status/change/:id", changeStatus);
 router.put("/edit/:id", update);
 router.put("/response/add/:id", addResponse);

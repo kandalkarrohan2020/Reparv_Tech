@@ -5,6 +5,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Enquirers from "./pages/Enquirers.jsx";
+import DigitalBroker from "./pages/DigitalBroker.jsx";
 import Map from "./pages/Map.jsx";
 import Calender from "./pages/Calender.jsx";
 import Customers from "./pages/Customers.jsx";
@@ -38,12 +39,17 @@ import { useAuth } from "./store/auth.jsx";
 import PropertyAuthority from "./pages/PropertyAuthority.jsx";
 import Subscription from "./pages/Subscription.jsx";
 
+
 const App = () => {
   const { URI, setLoading, user } = useAuth();
   const [menus, setMenus] = useState([
     {
       name: "Enquirers",
       menu: <Route path="/enquirers" element={<Enquirers />} />,
+    },
+    {
+      name: "Digital Broker",
+      menu: <Route path="/digital-broker" element={<DigitalBroker />} />,
     },
     {
       name: "Properties",

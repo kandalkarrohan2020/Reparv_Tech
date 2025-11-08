@@ -420,6 +420,8 @@ const Ticketing = () => {
               ? "bg-[#EAFBF1] text-[#0BB501]"
               : row.status === "Open"
               ? "bg-[#E9F2FF] text-[#0068FF]"
+              : row.status === "Closed"
+              ? "bg-[#ebebeb] text-[#646464]"
               : row.status === "In Progress"
               ? "bg-[#fff8e3] text-[#ffbc21]"
               : row.status === "Pending"
@@ -445,6 +447,8 @@ const Ticketing = () => {
               ? "bg-[#EAFBF1] text-[#0BB501]"
               : row.status === "Open"
               ? "bg-[#E9F2FF] text-[#0068FF]"
+              : row.status === "Closed"
+              ? "bg-[#ebebeb] text-[#646464]"
               : row.status === "In Progress"
               ? "bg-[#fff8e3] text-[#ffbc21]"
               : row.status === "Pending"
@@ -580,6 +584,9 @@ const Ticketing = () => {
         case "Open":
           changeStatus(id, "Open");
           break;
+        case "Closed":
+          changeStatus(id, "Closed");
+          break;
         case "Resolved":
           changeStatus(id, "Resolved");
           break;
@@ -602,6 +609,8 @@ const Ticketing = () => {
               ? "bg-[#EAFBF1] text-[#0BB501]"
               : row.status === "Open"
               ? "bg-[#E9F2FF] text-[#0068FF]"
+              : row.status === "Closed"
+              ? "bg-[#ebebeb] text-[#646464]"
               : row.status === "In Progress"
               ? "bg-[#fff8e3] text-[#ffbc21]"
               : row.status === "Pending"
@@ -623,6 +632,7 @@ const Ticketing = () => {
             Change Status
           </option>
           <option value="Open">Open</option>
+          <option value="Closed">Closed</option>
           <option value="Resolved">Resolved</option>
           <option value="Pending">Pending</option>
           <option value="In Progress">In Progress</option>
@@ -925,6 +935,8 @@ const Ticketing = () => {
                     ? "bg-[#EAFBF1] text-[#0BB501]"
                     : selectedStatus === "Open"
                     ? "bg-[#E9F2FF] text-[#0068FF]"
+                    : selectedStatus === "Closed"
+                    ? "bg-[#ebebeb] text-[#646464]"
                     : selectedStatus === "In Progress"
                     ? "bg-[#FFF8DD] text-[#FFCA00]"
                     : selectedStatus === "Pending"
@@ -947,6 +959,7 @@ const Ticketing = () => {
                   Select Ticket Status
                 </option>
                 <option value="Open">Open</option>
+                <option value="Open">Closed</option>
                 <option value="Resolved">Resolved</option>
                 <option value="Pending">Pending</option>
                 <option value="In Progress">In Progress</option>

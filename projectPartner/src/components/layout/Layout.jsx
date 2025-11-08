@@ -319,11 +319,6 @@ function Layout() {
                 icon: marketingIcon,
                 label: "Marketing Content",
               },
-              {
-                to: "/subscription",
-                icon: enquirersIcon,
-                label: "Subscription",
-              },
             ].map(({ to, icon, label }) => (
               <NavLink
                 onClick={() => {

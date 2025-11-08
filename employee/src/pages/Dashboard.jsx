@@ -92,7 +92,7 @@ function Dashboard() {
 
   const fetchCountData = async () => {
     try {
-      const response = await fetch(`${URI}/admin/dashboard/count`, {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/dashboard/count`, {
         method: "GET",
         credentials: "include",
         headers: {

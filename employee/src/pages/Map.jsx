@@ -7,7 +7,7 @@ import propertyPicture from "../assets/propertyPicture.svg";
 import FormatPrice from "../components/FormatPrice";
 
 const Map = () => {
-  const { URI, setLoading } = useAuth();
+  const { URI, user, setLoading } = useAuth();
   const [properties, setProperties] = useState([]);
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState("Nagpur");
@@ -34,7 +34,7 @@ const Map = () => {
   // *Fetch Data from API*
   const fetchAllCity = async () => {
     try {
-      const response = await fetch(URI + "/admin/map/properties/cities", {
+      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/map/properties/cities`, {
         method: "GET",
         credentials: "include", // Ensures cookies are sent
         headers: {
@@ -57,7 +57,7 @@ const Map = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${URI}/admin/map/properties/get/${selectedCity}`,
+        `${URI}/${user?.projectpartnerid ? "employee":"admin"}/map/properties/get/${selectedCity}`,
         {
           method: "GET",
           credentials: "include", //  Ensures cookies are sent

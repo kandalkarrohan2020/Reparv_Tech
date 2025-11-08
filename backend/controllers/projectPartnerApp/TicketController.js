@@ -4,7 +4,7 @@ import moment from "moment";
 export const getAll = (req, res) => {
   const ticketGenerator = req.params.generator;
   const projectpartnerid = req.params.id;
-
+  const adharId=req.params.adharId
   if (!ticketGenerator) {
     return res.status(401).json({ message: "Select Generator Not Selected" });
   }
@@ -56,7 +56,25 @@ export const getAll = (req, res) => {
       ORDER BY tickets.created_at DESC
     `;
   } else {
-    return res.status(400).json({ message: "Invalid Generator Type" });
+
+     sql = `
+      SELECT 
+        tickets.*, 
+        users.name AS admin_name, 
+        departments.department,
+        employees.name AS employee_name, 
+        employees.uid,
+        projectpartner.fullname AS ticketadder_name, 
+        projectpartner.contact AS ticketadder_contact
+      FROM tickets 
+      INNER JOIN projectpartner ON projectpartner.adharno = tickets.ticketadder
+      LEFT JOIN users ON tickets.adminid = users.id 
+      LEFT JOIN departments ON tickets.departmentid = departments.departmentid
+      LEFT JOIN employees ON tickets.employeeid = employees.id
+      WHERE tickets.ticketadder = ?
+      ORDER BY tickets.created_at DESC
+    `;
+    params=[adharId]
   }
 
   db.query(sql, params, (err, result) => {
@@ -152,8 +170,11 @@ export const getEmployees = (req, res) => {
 // **Add New **
 export const add = (req, res) => {
   const currentDate = moment().format("YYYY-MM-DD HH:mm:ss");
+console.log(req.body);
 
-  const adharId = req.adminUser?.adharId;
+  const adharId = req.params?.adharId;
+ // console.log(adharId);
+  
   if (!adharId) {
     return res
       .status(401)

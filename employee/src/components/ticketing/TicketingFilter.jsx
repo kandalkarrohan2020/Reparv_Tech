@@ -4,6 +4,7 @@ import { HiMiniFunnel } from "react-icons/hi2";
 const filterOptions = [
   { label: "", color: "text-black" },
   { label: "Open", color: "text-[#0068FF]" },
+   { label: "Closed", color: "text-[#7c7c7c]" },
   { label: "Resolved", color: "text-[#0BB501]" },
   { label: "In progress", color: "text-[#FFCA00]" },
   { label: "Pending", color: "text-[#FF4646]" },
@@ -29,8 +30,10 @@ const TicketingFilter = ({selectedFilter, setSelectedFilter}) => {
         className={`min-w-[40px] h-[32px] ${selectedFilter&&"h-[36px]"} items-center justify-center leading-[20px] border border-[#0000001A] rounded-[8px] gap-4 py-2 px-3 text-sm cursor-pointer ${
           selectedFilter === "Resolved"
             ? "text-[#0BB501]"
-             : selectedFilter === "Open"
+            : selectedFilter === "Open"
             ? "text-[#0068FF]"
+            : selectedFilter === "Closed"
+            ? "text-[#7c7c7c]"
             : selectedFilter === "In progress"
             ? "text-[#FFCA00]"
             : selectedFilter === "Pending"

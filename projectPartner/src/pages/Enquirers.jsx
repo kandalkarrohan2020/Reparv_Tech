@@ -94,15 +94,15 @@ const Enquirers = () => {
 
   const enquirersCSVFileFormat = [
     {
-      customer: "",
-      contact: "",
-      minbudget: "",
-      maxbudget: "",
-      category: "",
-      state: "",
-      city: "",
-      location: "",
-      message: "",
+      customer: "Customer Name",
+      contact: 9200000000,
+      minbudget: 1000000,
+      maxbudget: 10000000000,
+      category: "NewFlat",
+      state: "Maharashtra",
+      city: "Nagpur",
+      location: "Nagpur",
+      message: "ASAP",
     },
   ];
 
@@ -677,7 +677,7 @@ const Enquirers = () => {
     formData.append("csv", file);
 
     try {
-      const response = await fetch(`${URI}/project-partner/enquiries/csv/add`, {
+      const response = await fetch(`${URI}/project-partner/enquiry/csv/add`, {
         method: "POST",
         credentials: "include",
         body: formData,

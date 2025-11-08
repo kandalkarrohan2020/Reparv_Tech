@@ -1,9 +1,9 @@
-*{
+* {
   box-sizing: border-box;
   scroll-behavior: smooth;
   font-family: "Inter", sans-serif;
-  font-family: 'Ubuntu', sans-serif;
-  font-family: "Poppins", sans-serif;  
+  font-family: "Ubuntu", sans-serif;
+  font-family: "Poppins", sans-serif;
   background-color: "#FAFAFA";
 }
 
@@ -13,7 +13,7 @@
 @import "swiper/css/pagination";
 
 /* Styling for pagination bullets */
-.custom-pagination span{
+.custom-pagination span {
   width: 20px; /* Width of the bullet */
   height: 5px; /* Height of the bullet */
   background-color: #ffffff; /* Tailwind gray-300 */
@@ -22,7 +22,7 @@
   opacity: 1;
 }
 
-.custom-pagination2 span{
+.custom-pagination2 span {
   width: 20px; /* Width of the bullet */
   height: 5px; /* Height of the bullet */
   background-color: #00000066; /* Tailwind gray-300 */
@@ -33,11 +33,11 @@
 
 /* Active bullet */
 .custom-pagination .swiper-pagination-bullet-active {
-  background-color: #0BB501; /* Active color: green */
+  background-color: #0bb501; /* Active color: green */
 }
 
 .custom-pagination2 .swiper-pagination-bullet-active {
-  background-color: #0BB501; /* Active color: green */
+  background-color: #0bb501; /* Active color: green */
 }
 
 /* scrollbar hide */
@@ -46,11 +46,11 @@
 }
 
 /* global.css */
-input[type='range'] {
+input[type="range"] {
   -webkit-appearance: none;
   background: transparent;
 }
-input[type='range']::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   height: 1rem;
   width: 1rem;
@@ -61,7 +61,8 @@ input[type='range']::-webkit-slider-thumb {
 
 /*Swipper Clases*/
 
-.swiper-button-prev::after, .swiper-button-next::after {
+.swiper-button-prev::after,
+.swiper-button-next::after {
   display: none;
 }
 
@@ -107,30 +108,52 @@ input[type='range']::-webkit-slider-thumb {
 
 /* Brochure Download Button Styling */
 @keyframes blink {
-  0%, 100% { color: white; }
-  50% { color: #c5c5c5; }
+  0%,
+  100% {
+    color: white;
+  }
+  50% {
+    color: #c5c5c5;
+  }
 }
 
 .animate-blink {
   animation: blink 1s infinite;
 }
 
-/* Fix CKEditor bullet list visibility across Windows & macOS */
+/* === CKEditor Editing View === */
 .blog-content.ck-content ul,
 .blog-content.ck-content ol {
   list-style-position: outside !important;
-  margin-left: 1rem !important;
-  padding-left: 1rem !important;
+  margin-left: 1.25rem !important;
+  padding-left: 1.25rem !important;
 }
 
 .blog-content.ck-content li {
-  list-style-type: disc !important;
   display: list-item !important;
   margin-bottom: 0.4rem;
 }
 
-/* Optional - improve spacing and readability */
+/* Improve text spacing while editing */
 .blog-content.ck-content p {
   margin-bottom: 0.75rem;
-  line-height: 1;
+  line-height: 1.6;
+}
+
+/* === Blog Display View === */
+.blog-content ul {
+  list-style-type: disc !important;
+  margin-left: 1.5rem !important;
+  margin-top: 0.5rem !important;
+}
+
+.blog-content ol {
+  list-style-type: decimal !important;
+  margin-left: 1.5rem !important;
+  margin-top: 0.5rem !important;
+}
+
+.blog-content li {
+  margin-bottom: 0.35rem;
+  line-height: 1.6;
 }

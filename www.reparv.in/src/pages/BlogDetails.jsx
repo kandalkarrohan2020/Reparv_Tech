@@ -82,7 +82,7 @@ function BlogDetails() {
           </div>
           
           <div
-            className="prose max-w-none"
+            className="blog-content prose max-w-none"
             dangerouslySetInnerHTML={{ __html: blog?.content }}
           />
 

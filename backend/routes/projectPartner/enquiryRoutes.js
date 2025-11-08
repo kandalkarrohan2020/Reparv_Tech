@@ -27,7 +27,7 @@ const upload = multer({
 });
 
 router.post("/add/enquiry", addEnquiry);
-router.post("/csv/add/", addCSVEnquiry);
+router.post("/csv/add/", upload.single("csv"), addCSVEnquiry);
 router.put("/update/enquiry/:id", updateEnquiry);
 
 export default router;

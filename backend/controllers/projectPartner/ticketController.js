@@ -92,14 +92,11 @@ export const getAll = (req, res) => {
         users.name AS admin_name, 
         departments.department,
         employees.name AS employee_name, 
-        employees.uid,
-        projectpartner.fullname AS ticketadder_name, 
-        projectpartner.contact AS ticketadder_contact
+        employees.uid
       FROM tickets
       LEFT JOIN users ON tickets.adminid = users.id 
       LEFT JOIN departments ON tickets.departmentid = departments.departmentid
       LEFT JOIN employees ON tickets.employeeid = employees.id
-      LEFT JOIN projectpartner ON tickets.projectpartnerid = projectpartner.id
       WHERE tickets.projectpartnerid = ? OR tickets.ticketadder = ?
       ORDER BY tickets.created_at DESC
     `;

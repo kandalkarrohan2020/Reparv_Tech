@@ -108,7 +108,7 @@ export const getAll = (req, res) => {
       LEFT JOIN projectpartner ON projectpartner.id = enquirers.projectpartnerid
       WHERE enquirers.source = "CSV File" 
         AND enquirers.status != 'Token' 
-        AND (properties.projectpartnerid = ? OR enquirers.projectbroker = ?)
+        AND (properties.projectpartnerid = ? OR enquirers.projectpartnerid = ? OR enquirers.projectbroker = ?)
       ORDER BY enquirers.enquirersid DESC`;
     params = [userId, userId, userId];
   } 

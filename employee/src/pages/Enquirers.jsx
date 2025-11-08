@@ -19,7 +19,8 @@ import EnquiryFilter from "../components/enquiryFilter";
 
 const Enquirers = () => {
   const {
-    URI, user,
+    URI,
+    user,
     setLoading,
     showAssignSalesForm,
     setShowAssignSalesForm,
@@ -31,6 +32,8 @@ const Enquirers = () => {
     setShowEnquiry,
     showEnquiryForm,
     setShowEnquiryForm,
+    showCSVEnquiryForm,
+    setShowCSVEnquiryForm,
     showEnquiryUpdateForm,
     setShowEnquiryUpdateForm,
     showEnquirerPropertyForm,
@@ -121,13 +124,16 @@ const Enquirers = () => {
   // **Fetch States from API**
   const fetchStates = async () => {
     try {
-      const response = await fetch(`${URI}/${user?.projectpartnerid ? "admin":"admin"}/states`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${URI}/${user?.projectpartnerid ? "admin" : "admin"}/states`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch States.");
       const data = await response.json();
       setStates(data);
@@ -163,7 +169,9 @@ const Enquirers = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/get/${selectedSource}`,
+        `${URI}/${
+          user?.projectpartnerid ? "employee" : "admin"
+        }/enquirers/get/${selectedSource}`,
         {
           method: "GET",
           credentials: "include", //  Ensures cookies are sent
@@ -185,13 +193,18 @@ const Enquirers = () => {
   // **Fetch Data from API**
   const fetchEnquiryRemarkList = async (id) => {
     try {
-      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/remark/list/` + id, {
-        method: "GET",
-        credentials: "include", // Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${URI}/${
+          user?.projectpartnerid ? "employee" : "admin"
+        }/enquirers/remark/list/` + id,
+        {
+          method: "GET",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch enquirers.");
       const list = await response.json();
       setRemarkList(list);
@@ -204,20 +217,25 @@ const Enquirers = () => {
   const fetchProperties = async () => {
     try {
       setError(""); // clear previous error
-      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/properties`, {
-        method: "POST",
-        credentials: "include", // Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          minbudget: newEnquiry.minbudget,
-          maxbudget: newEnquiry.maxbudget,
-          state: newEnquiry.state,
-          city: newEnquiry.city,
-          category: newEnquiry.category,
-        }),
-      });
+      const response = await fetch(
+        `${URI}/${
+          user?.projectpartnerid ? "employee" : "admin"
+        }/enquirers/properties`,
+        {
+          method: "POST",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            minbudget: newEnquiry.minbudget,
+            maxbudget: newEnquiry.maxbudget,
+            state: newEnquiry.state,
+            city: newEnquiry.city,
+            category: newEnquiry.category,
+          }),
+        }
+      );
 
       // Check if API failed
       if (!response.ok) {
@@ -247,7 +265,9 @@ const Enquirers = () => {
   const fetchPropertyList = async (id) => {
     try {
       const response = await fetch(
-        `${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/property/list/` + id,
+        `${URI}/${
+          user?.projectpartnerid ? "employee" : "admin"
+        }/enquirers/property/list/` + id,
         {
           method: "GET",
           credentials: "include", // Ensures cookies are sent
@@ -272,7 +292,9 @@ const Enquirers = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/property/update/${enquiryId}`,
+        `${URI}/${
+          user?.projectpartnerid ? "employee" : "admin"
+        }/enquirers/property/update/${enquiryId}`,
         {
           method: "PUT",
           credentials: "include",
@@ -302,13 +324,18 @@ const Enquirers = () => {
   //Fetch Sales Persons List
   const fetchSalesPersonList = async () => {
     try {
-      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/salespersons/active`, {
-        method: "GET",
-        credentials: "include", //  Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${URI}/${
+          user?.projectpartnerid ? "employee" : "admin"
+        }/salespersons/active`,
+        {
+          method: "GET",
+          credentials: "include", //  Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch Sales Persons.");
       const data = await response.json();
       setSalesPersonList(data);
@@ -328,7 +355,9 @@ const Enquirers = () => {
 
       try {
         const response = await fetch(
-          `${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/visitscheduled/${enquiryId}`,
+          `${URI}/${
+            user?.projectpartnerid ? "employee" : "admin"
+          }/enquirers/visitscheduled/${enquiryId}`,
           {
             method: "POST",
             credentials: "include",
@@ -504,7 +533,9 @@ const Enquirers = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/assign/${enquiryId}`,
+        `${URI}/${
+          user?.projectpartnerid ? "employee" : "admin"
+        }/enquirers/assign/${enquiryId}`,
         {
           method: "PUT",
           credentials: "include",
@@ -537,13 +568,18 @@ const Enquirers = () => {
 
   const viewEnquiry = async (id) => {
     try {
-      const response = await fetch(`${URI}/${user?.projectpartnerid ? "employee":"admin"}/enquirers/${id}`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${URI}/${
+          user?.projectpartnerid ? "employee" : "admin"
+        }/enquirers/${id}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch enquiry.");
       const data = await response.json();
       setEnquiry(data);
@@ -553,7 +589,7 @@ const Enquirers = () => {
     }
   };
 
-  const updateEnquiry = async (e) => {
+  const addEnquiry = async (e) => {
     e.preventDefault();
 
     const endpoint = newEnquiry.enquirersid
@@ -561,12 +597,17 @@ const Enquirers = () => {
       : "add/enquiry";
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/project-partner/enquiry/${endpoint}`, {
-        method: newEnquiry.enquirersid ? "PUT" : "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newEnquiry),
-      });
+      const response = await fetch(
+        `${URI}/${
+          user?.projectpartnerid ? "employee/enquiry" : "admin/enquiries"
+        }/${endpoint}`,
+        {
+          method: newEnquiry.enquirersid ? "PUT" : "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newEnquiry),
+        }
+      );
 
       if (response.status === 409) {
         alert("Enquiry already exists!");
@@ -594,7 +635,7 @@ const Enquirers = () => {
         message: "",
       });
 
-      setShowEnquiryUpdateForm(false);
+      setShowEnquiryForm(false);
 
       await fetchData();
     } catch (err) {
@@ -632,11 +673,16 @@ const Enquirers = () => {
     formData.append("csv", file);
 
     try {
-      const response = await fetch(`${URI}/admin/enquiries/csv/add`, {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-      });
+      const response = await fetch(
+        `${URI}/${
+          user?.projectpartnerid ? "employee" : "admin"
+        }/enquiries/csv/add`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        }
+      );
 
       const data = await response.json();
       fetchData();
@@ -1101,6 +1147,7 @@ const Enquirers = () => {
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
             <DownloadCSV data={filteredData} filename={"Enquirers.csv"} />
             <AddButton label={"Add "} func={setShowEnquiryForm} />
+            <AddButton label={"Add CSV"} func={setShowCSVEnquiryForm} />
           </div>
         </div>
 
@@ -1151,6 +1198,7 @@ const Enquirers = () => {
             <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
               <DownloadCSV data={filteredData} filename={"Enquirers.csv"} />
               <AddButton label={"Add "} func={setShowEnquiryForm} />
+              <AddButton label={"Add CSV"} func={setShowCSVEnquiryForm} />
             </div>
           </div>
         </div>
@@ -1178,7 +1226,7 @@ const Enquirers = () => {
 
       <div
         className={`${
-          showEnquiryForm ? "flex" : "hidden"
+          showCSVEnquiryForm ? "flex" : "hidden"
         } z-[61] overflow-scroll scrollbar-hide w-[400px] min-h-[250px] max:h-[75vh] md:w-[450px] fixed`}
       >
         <div className="w-[350px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
@@ -1186,7 +1234,7 @@ const Enquirers = () => {
             <h2 className="text-[16px] font-semibold">Add Enquiries</h2>
             <IoMdClose
               onClick={() => {
-                setShowEnquiryForm(false);
+                setShowCSVEnquiryForm(false);
               }}
               className="w-6 h-6 cursor-pointer"
             />
@@ -1233,18 +1281,18 @@ const Enquirers = () => {
         </div>
       </div>
 
-      {/* Update Enquiry Form */}
+      {/* Add New Enquiry Form */}
       <div
         className={` ${
-          !showEnquiryUpdateForm && "hidden"
-        }  z-[61] overflow-scroll scrollbar-hide h-[75vh] flex fixed`}
+          !showEnquiryForm && "hidden"
+        } z-[61] overflow-scroll scrollbar-hide w-full max-h-[85vh] fixed bottom-0 md:bottom-auto`}
       >
-        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-10 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-full sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-10 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">Enquiry Details</h2>
             <IoMdClose
               onClick={() => {
-                setShowEnquiryUpdateForm(false);
+                setShowEnquiryForm(false);
                 setNewEnquiry({
                   propertyid: null,
                   customer: "",
@@ -1261,7 +1309,7 @@ const Enquirers = () => {
               className="w-6 h-6 cursor-pointer"
             />
           </div>
-          <form onSubmit={updateEnquiry}>
+          <form onSubmit={addEnquiry}>
             <div className="w-full grid gap-4 place-items-center grid-cols-1 lg:grid-cols-2">
               <input
                 type="hidden"
@@ -1449,6 +1497,7 @@ const Enquirers = () => {
                   className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+
               <div className="w-full col-span-2">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
                   {error === "" ? "Select Property" : error}
@@ -1478,7 +1527,6 @@ const Enquirers = () => {
                 </select>
               </div>
             </div>
-
             <div className="flex flex-col gap-3  mt-[10px] text-sm text-[#00000066] font-medium ">
               <label htmlFor="message" className="ml-1">
                 Message <span className="text-red-600">*</span>
@@ -1503,7 +1551,7 @@ const Enquirers = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setShowEnquiryUpdateForm(false);
+                  setShowEnquiryForm(false);
                   setNewEnquiry({
                     propertyid: null,
                     customer: "",

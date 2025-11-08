@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }) => {
   const [showAssignSalesForm, setShowAssignSalesForm] = useState(false);
   const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
   const [showEnquiryForm, setShowEnquiryForm] = useState(false);
+  const [showCSVEnquiryForm, setShowCSVEnquiryForm] = useState(false);
   const [showEnquiryUpdateForm, setShowEnquiryUpdateForm] = useState(false);
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [showEnquirerPropertyForm, setShowEnquirerPropertyForm] =
@@ -146,14 +147,18 @@ export const AuthProvider = ({ children }) => {
         setFilterStatus,
         enquiryFilter,
         setEnquiryFilter,
-        propertyFilter, setPropertyFilter,
-        showSeoForm, setShowSeoForm,
+        propertyFilter,
+        setPropertyFilter,
+        showSeoForm,
+        setShowSeoForm,
         showAssignSalesForm,
         setShowAssignSalesForm,
         showEnquiryStatusForm,
         setShowEnquiryStatusForm,
         showEnquiryForm,
         setShowEnquiryForm,
+        showCSVEnquiryForm,
+        setShowCSVEnquiryForm,
         showEnquiryUpdateForm,
         setShowEnquiryUpdateForm,
         showEnquiry,

@@ -73,6 +73,8 @@ function Layout() {
     setShowAssignSalesForm,
     showEnquiryForm,
     setShowEnquiryForm,
+    showCSVEnquiryForm,
+    setShowCSVEnquiryForm,
     showEnquiryUpdateForm,
     setShowEnquiryUpdateForm,
     showEnquiryStatusForm,
@@ -155,6 +157,7 @@ function Layout() {
 
     { state: showAssignSalesForm, setter: setShowAssignSalesForm },
     { state: showEnquiryForm, setter: setShowEnquiryForm },
+    { state: showCSVEnquiryForm, setter: setShowCSVEnquiryForm },
     { state: showEnquiryUpdateForm, setter: setShowEnquiryUpdateForm },
     { state: showEnquiryStatusForm, setter: setShowEnquiryStatusForm },
     { state: showEnquirerPropertyForm, setter: setShowEnquirerPropertyForm },

@@ -31,6 +31,8 @@ const Enquirers = () => {
     setShowEnquiry,
     showEnquiryForm,
     setShowEnquiryForm,
+    showCSVEnquiryForm,
+    setShowCSVEnquiryForm,
     showEnquiryUpdateForm,
     setShowEnquiryUpdateForm,
     showEnquirerPropertyForm,
@@ -666,7 +668,7 @@ const Enquirers = () => {
     }
   };
 
-  // Add Additional Info as a CSV File
+  // Add Enquiry as a CSV File
   const addCsv = async (e) => {
     e.preventDefault();
     if (!file) return alert("Please select a CSV file.");
@@ -1159,6 +1161,7 @@ const Enquirers = () => {
           <div className="flex xl:hidden flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
             <DownloadCSV data={filteredData} filename={"Enquirers.csv"} />
             <AddButton label={"Add "} func={setShowEnquiryForm} />
+            <AddButton label={"Add CSV"} func={setShowCSVEnquiryForm} />
           </div>
         </div>
 
@@ -1209,6 +1212,7 @@ const Enquirers = () => {
             <div className="hidden xl:flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">
               <DownloadCSV data={filteredData} filename={"Enquirers.csv"} />
               <AddButton label={"Add "} func={setShowEnquiryForm} />
+              <AddButton label={"Add CSV"} func={setShowCSVEnquiryForm} />
             </div>
           </div>
         </div>
@@ -1234,10 +1238,9 @@ const Enquirers = () => {
         </div>
       </div>
 
-      {/* 
       <div
         className={`${
-          showEnquiryForm ? "flex" : "hidden"
+          showCSVEnquiryForm ? "flex" : "hidden"
         } z-[61] overflow-scroll scrollbar-hide w-[400px] min-h-[250px] max:h-[75vh] md:w-[450px] fixed`}
       >
         <div className="w-[350px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
@@ -1245,7 +1248,7 @@ const Enquirers = () => {
             <h2 className="text-[16px] font-semibold">Add Enquiries</h2>
             <IoMdClose
               onClick={() => {
-                setShowEnquiryForm(false);
+                setShowCSVEnquiryForm(false);
               }}
               className="w-6 h-6 cursor-pointer"
             />
@@ -1291,15 +1294,14 @@ const Enquirers = () => {
           </form>
         </div>
       </div>
-      */}
 
       {/* Add New Enquiry Form */}
       <div
         className={` ${
           !showEnquiryForm && "hidden"
-        }  z-[61] overflow-scroll scrollbar-hide h-[75vh] flex fixed`}
+        } z-[61] overflow-scroll scrollbar-hide w-full max-h-[85vh] fixed bottom-0 md:bottom-auto`}
       >
-        <div className="w-[330px] sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-10 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
+        <div className="w-full sm:w-[600px] overflow-scroll scrollbar-hide md:w-[500px] lg:w-[700px] bg-white py-8 pb-10 px-3 sm:px-6 border border-[#cfcfcf33] rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">Enquiry Details</h2>
             <IoMdClose

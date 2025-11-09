@@ -35,6 +35,7 @@ import Trends from "./pages/Trends.jsx";
 import BrandAccessories from "./pages/BrandAccessories.jsx";
 import PropertyAuthority from "./pages/PropertyAuthority.jsx";
 import SubscriptionDiscount from "./pages/SubscriptionDiscount.jsx";
+import PropertiesFlatAndPlotInfo from "./pages/PropertiesFlatAndPlotInfo.jsx";
 
 
 const App = () => {
@@ -50,6 +51,7 @@ const App = () => {
           <Route path="/enquirers" element={<Enquirers />} />
           <Route path="/digital-broker" element={<DigitalBroker />} />
           <Route path="/properties" element={<Properties />} />
+          <Route path="/property/additional-info/:propertyid" element={<PropertiesFlatAndPlotInfo />} />
           <Route path="/map" element={<Map />} />
           <Route path="/calender" element={<Calender />} />
           <Route path="/customers" element={<Customers />} />

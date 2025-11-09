@@ -107,13 +107,54 @@ router.post("/add/enquiry", async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  let insertSQL;
-  let insertData;
+  try {
+    let projectpartnerid = null;
 
-  // Case 1: Enquiry with Property ID
-  if (propertyid) {
-    insertSQL = `
-      INSERT INTO enquirers (
+    // Case 1: If propertyid is provided, fetch projectpartnerid from properties
+    if (propertyid) {
+      const [property] = await new Promise((resolve, reject) => {
+        db.query(
+          "SELECT projectpartnerid FROM properties WHERE propertyid = ?",
+          [propertyid],
+          (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+          }
+        );
+      });
+
+      if (property) {
+        projectpartnerid = property.projectpartnerid;
+      } else {
+        return res.status(404).json({ message: "Property not found" });
+      }
+    }
+
+    // Build Insert SQL and Data
+    let insertSQL;
+    let insertData;
+
+    if (propertyid) {
+      insertSQL = `
+        INSERT INTO enquirers (
+          customer,
+          contact,
+          minbudget,
+          maxbudget,
+          category,
+          state,
+          city,
+          location,
+          propertyid,
+          projectpartnerid,
+          message,
+          source,
+          updated_at,
+          created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      insertData = [
         customer,
         contact,
         minbudget,
@@ -123,34 +164,31 @@ router.post("/add/enquiry", async (req, res) => {
         city,
         location,
         propertyid,
+        projectpartnerid,
         message,
-        source,
-        updated_at,
-        created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+        "Direct",
+        currentdate,
+        currentdate,
+      ];
+    } else {
+      insertSQL = `
+        INSERT INTO enquirers (
+          customer,
+          contact,
+          minbudget,
+          maxbudget,
+          category,
+          state,
+          city,
+          location,
+          message,
+          source,
+          updated_at,
+          created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
 
-    insertData = [
-      customer,
-      contact,
-      minbudget,
-      maxbudget,
-      category,
-      state,
-      city,
-      location,
-      propertyid,
-      message,
-      "Direct",
-      currentdate,
-      currentdate,
-    ];
-  }
-
-  // Case 2: Enquiry without Property ID
-  else {
-    insertSQL = `
-      INSERT INTO enquirers (
+      insertData = [
         customer,
         contact,
         minbudget,
@@ -160,39 +198,28 @@ router.post("/add/enquiry", async (req, res) => {
         city,
         location,
         message,
-        source,
-        updated_at,
-        created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-
-    insertData = [
-      customer,
-      contact,
-      minbudget,
-      maxbudget,
-      category,
-      state,
-      city,
-      location,
-      message,
-      "Direct",
-      currentdate,
-      currentdate,
-    ];
-  }
-
-  db.query(insertSQL, insertData, (err, result) => {
-    if (err) {
-      console.error("Error inserting enquiry:", err);
-      return res.status(500).json({ message: "Database error", error: err });
+        "Direct",
+        currentdate,
+        currentdate,
+      ];
     }
 
-    res.status(201).json({
-      message: "Enquiry added successfully",
-      enquiryId: result.insertId,
+    // Insert the enquiry record
+    db.query(insertSQL, insertData, (err, result) => {
+      if (err) {
+        console.error("Error inserting enquiry:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+
+      res.status(201).json({
+        message: "Enquiry added successfully",
+        enquiryId: result.insertId,
+      });
     });
-  });
+  } catch (error) {
+    console.error("Error adding enquiry:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
 });
 
 router.put("/update/enquiry/:id", async (req, res) => {
@@ -231,64 +258,95 @@ router.put("/update/enquiry/:id", async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const updateSQL = `UPDATE enquirers SET 
-    customer = ?,
-    contact = ?,
-    minbudget = ?,
-    maxbudget = ?,
-    category = ?,
-    state = ?,
-    city = ?,
-    location = ?,
-    propertyid = ?,
-    message = ?,
-    updated_at = ?
-    WHERE enquirersid = ?`;
+  try {
+    // Check if enquiry exists
+    const existing = await new Promise((resolve, reject) => {
+      db.query(
+        "SELECT * FROM enquirers WHERE enquirersid = ?",
+        [enquiryId],
+        (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
+        }
+      );
+    });
 
-  db.query(
-    "SELECT * FROM enquirers WHERE enquirersid = ?",
-    [enquiryId],
-    (err, result) => {
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "Enquiry not found" });
+    }
+
+    // Fetch projectpartnerid if propertyid is provided
+    let projectpartnerid = null;
+
+    if (propertyid) {
+      const [property] = await new Promise((resolve, reject) => {
+        db.query(
+          "SELECT projectpartnerid FROM properties WHERE propertyid = ?",
+          [propertyid],
+          (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+          }
+        );
+      });
+
+      if (property) {
+        projectpartnerid = property.projectpartnerid;
+      } else {
+        return res.status(404).json({ message: "Property not found" });
+      }
+    }
+
+    // Build the UPDATE query
+    const updateSQL = `
+      UPDATE enquirers SET 
+        customer = ?,
+        contact = ?,
+        minbudget = ?,
+        maxbudget = ?,
+        category = ?,
+        state = ?,
+        city = ?,
+        location = ?,
+        propertyid = ?,
+        projectpartnerid = ?,
+        message = ?,
+        updated_at = ?
+      WHERE enquirersid = ?
+    `;
+
+    const updateData = [
+      customer,
+      contact,
+      minbudget,
+      maxbudget,
+      category,
+      state,
+      city,
+      location,
+      propertyid,
+      projectpartnerid,
+      message,
+      currentdate,
+      enquiryId,
+    ];
+
+    // Perform update
+    db.query(updateSQL, updateData, (err, result) => {
       if (err) {
+        console.error("Error updating enquiry:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
 
-      if (result.length === 0) {
-        return res.status(404).json({ message: "Enquiry not found" });
-      }
-
-      db.query(
-        updateSQL,
-        [
-          customer,
-          contact,
-          minbudget,
-          maxbudget,
-          category,
-          state,
-          city,
-          location,
-          propertyid,
-          message,
-          currentdate,
-          enquiryId,
-        ],
-        (err, result) => {
-          if (err) {
-            console.error("Error updating enquiry:", err);
-            return res
-              .status(500)
-              .json({ message: "Database error", error: err });
-          }
-
-          res.status(200).json({
-            message: "Enquiry updated successfully",
-            affectedRows: result.affectedRows,
-          });
-        }
-      );
-    }
-  );
+      res.status(200).json({
+        message: "Enquiry updated successfully",
+        affectedRows: result.affectedRows,
+      });
+    });
+  } catch (error) {
+    console.error("Error updating enquiry:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
 });
 
 export default router;

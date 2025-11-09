@@ -301,7 +301,7 @@ function Layout() {
               {
                 to: "/salespersons",
                 icon: partnerIcon,
-                label: "Sales Persons",
+                label: "Sales Partner",
               },
               {
                 to: "/territorypartner",

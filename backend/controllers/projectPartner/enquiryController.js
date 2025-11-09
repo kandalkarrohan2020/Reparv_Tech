@@ -102,6 +102,7 @@ export const addEnquiry = async (req, res) => {
     insertSQL = `
       INSERT INTO enquirers (
         projectpartner,
+        projectpartnerid,
         customer,
         contact,
         minbudget,
@@ -115,10 +116,11 @@ export const addEnquiry = async (req, res) => {
         source,
         updated_at,
         created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     insertData = [
+      Id,
       Id,
       customer,
       contact,

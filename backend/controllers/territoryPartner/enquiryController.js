@@ -105,6 +105,9 @@ export const addEnquiry = async (req, res) => {
     return res.status(400).json({ message: "Invalid Territory Partner Id" });
   }
 
+  // Use projectpartnerid if available, else NULL
+  const projectPartnerId = req.territoryUser?.projectpartnerid || null;
+
   const {
     propertyid,
     customer,
@@ -140,6 +143,7 @@ export const addEnquiry = async (req, res) => {
   if (propertyid) {
     insertSQL = `
       INSERT INTO enquirers (
+        projectpartnerid,
         territorypartner,
         customer,
         contact,
@@ -154,11 +158,12 @@ export const addEnquiry = async (req, res) => {
         source,
         updated_at,
         created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     insertData = [
-      territoryId, // territorypartnerid
+      projectPartnerId, // may be null
+      territoryId,      // territorypartner
       customer,
       contact,
       minbudget,
@@ -173,12 +178,13 @@ export const addEnquiry = async (req, res) => {
       currentdate,
       currentdate,
     ];
-  }
-
+  } 
+  
   // Case 2: Without Property ID
   else {
     insertSQL = `
       INSERT INTO enquirers (
+        projectbroker,
         territorybroker,
         territorypartner,
         customer,
@@ -193,12 +199,13 @@ export const addEnquiry = async (req, res) => {
         source,
         updated_at,
         created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     insertData = [
-      territoryId, // territorybroker
-      territoryId, // territorypartnerid
+      projectPartnerId, // may be null
+      territoryId,      // territorybroker
+      territoryId,      // territorypartner
       customer,
       contact,
       minbudget,
@@ -214,6 +221,7 @@ export const addEnquiry = async (req, res) => {
     ];
   }
 
+  // Execute Insert
   db.query(insertSQL, insertData, (err, result) => {
     if (err) {
       console.error("Error inserting enquiry:", err);

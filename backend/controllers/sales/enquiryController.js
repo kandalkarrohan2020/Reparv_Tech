@@ -95,7 +95,6 @@ export const add = async (req, res) => {
   });
 };
 
-// * Add Normal Enquiry (Sales Partner) — with or without Property ID
 export const addEnquiry = async (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const salesId = req.salesUser?.id;
@@ -103,6 +102,9 @@ export const addEnquiry = async (req, res) => {
   if (!salesId) {
     return res.status(400).json({ message: "Invalid Sales Id" });
   }
+
+  // If exists, use projectpartnerid — otherwise null
+  const projectPartnerId = req.salesUser?.projectpartnerid || null;
 
   const {
     propertyid,
@@ -117,7 +119,7 @@ export const addEnquiry = async (req, res) => {
     message
   } = req.body;
 
-  // Validate all required fields
+  // Validate required fields
   if (
     !customer ||
     !contact ||
@@ -139,6 +141,7 @@ export const addEnquiry = async (req, res) => {
   if (propertyid) {
     insertSQL = `
       INSERT INTO enquirers (
+        projectpartnerid,
         salespartner,
         customer,
         contact,
@@ -153,11 +156,12 @@ export const addEnquiry = async (req, res) => {
         source,
         updated_at,
         created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     insertData = [
-      salesId,  // salespartner
+      projectPartnerId, // can be null if not linked
+      salesId,          // salespartner
       customer,
       contact,
       minbudget,
@@ -178,6 +182,7 @@ export const addEnquiry = async (req, res) => {
   else {
     insertSQL = `
       INSERT INTO enquirers (
+        projectbroker,
         salesbroker,
         salespartner,
         customer,
@@ -192,12 +197,13 @@ export const addEnquiry = async (req, res) => {
         source,
         updated_at,
         created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     insertData = [
-      salesId,  // salesbroker
-      salesId,  // salespartner
+      projectPartnerId, // can be null if not linked
+      salesId,          // salesbroker
+      salesId,          // salespartner
       customer,
       contact,
       minbudget,
@@ -213,7 +219,7 @@ export const addEnquiry = async (req, res) => {
     ];
   }
 
-  // Execute insert
+  // Execute Insert
   db.query(insertSQL, insertData, (err, result) => {
     if (err) {
       console.error("Error inserting enquiry:", err);

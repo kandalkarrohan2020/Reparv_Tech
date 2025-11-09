@@ -133,6 +133,8 @@ function Layout() {
     setShowSubscriptionPlan,
     showSubscriptionForm,
     setShowSubscriptionForm,
+    showInfoForm,
+    setShowInfoForm,
     showDiscount,
     setShowDiscount,
     showDiscountForm,
@@ -202,6 +204,7 @@ function Layout() {
     { state: showAuthorityForm, setter: setShowAuthorityForm },
     { state: showSubscriptionPlan, setter: setShowSubscriptionPlan },
     { state: showSubscriptionForm, setter: setShowSubscriptionForm },
+    { state: showInfoForm, setter: setShowInfoForm },
     { state: showDiscount, setter: setShowDiscount },
     { state: showDiscountForm, setter: setShowDiscountForm },
     {
@@ -311,7 +314,7 @@ function Layout() {
               {
                 to: "/salespersons",
                 icon: partnerIcon,
-                label: "Sales Persons",
+                label: "Sales Partner",
               },
               {
                 to: "/onboardingpartner",

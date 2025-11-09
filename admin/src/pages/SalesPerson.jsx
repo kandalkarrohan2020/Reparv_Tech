@@ -868,7 +868,7 @@ const SalesPerson = () => {
             </div>
           </div>
         </div>
-        <h2 className="text-[16px] font-semibold">Sales Person List</h2>
+        <h2 className="text-[16px] font-semibold">Sales Partner List</h2>
         <div className="overflow-scroll scrollbar-hide">
           <DataTable
             className="scrollbar-hide"

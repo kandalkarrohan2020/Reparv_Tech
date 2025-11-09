@@ -13,6 +13,7 @@ import dashboardRoutes from "./routes/admin/dashboardRoutes.js";
 import employeeRoutes from "./routes/admin/employeeRoutes.js";
 import builderRoutes from "./routes/admin/builderRoutes.js";
 import propertyRoutes from "./routes/admin/propertyRoutes.js";
+import propertyAdditionalInfoRoutes from "./routes/admin/propertyAdditionalInfoRoutes.js"
 import customerRoutes from "./routes/admin/customerRoutes.js";
 import roleRoutes from "./routes/admin/roleRoutes.js";
 import departmentRoutes from "./routes/admin/departmentRoutes.js";
@@ -473,6 +474,7 @@ app.use("/admin/profile", profileRoutes);
 app.use("/admin/dashboard", dashboardRoutes);
 app.use("/admin/employees", employeeRoutes);
 app.use("/admin/properties", propertyRoutes);
+app.use("/admin/property/additional-info", propertyAdditionalInfoRoutes);
 app.use("/admin/builders", builderRoutes);
 app.use("/admin/customers", customerRoutes);
 app.use("/admin/roles", roleRoutes);

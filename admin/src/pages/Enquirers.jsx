@@ -561,7 +561,7 @@ const Enquirers = () => {
       : "add/enquiry";
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/project-partner/enquiry/${endpoint}`, {
+      const response = await fetch(`${URI}/admin/enquiries/${endpoint}`, {
         method: newEnquiry.enquirersid ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

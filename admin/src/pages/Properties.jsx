@@ -12,6 +12,7 @@ import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import MultiStepForm from "../components/propertyForm/MultiStepForm";
+import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import propertyPicture from "../assets/propertyPicture.svg";
 import DownloadCSV from "../components/DownloadCSV";
@@ -21,6 +22,7 @@ import FormatPrice from "../components/FormatPrice";
 import PropertyCommissionPopup from "../components/PropertyCommissionPopup";
 
 const Properties = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const {
     setShowPropertyForm,
@@ -1380,6 +1382,9 @@ const Properties = () => {
           setPropertyKey(propertyid);
           showPropertyCommission(propertyid);
           break;
+        case "gotoadditionalinfo":
+          navigate("/property/additional-info/" + propertyid);
+          break;
         case "additionalinfo":
           setPropertyKey(propertyid);
           setShowAdditionalInfoForm(true);
@@ -1419,6 +1424,12 @@ const Properties = () => {
           <option value="update">Update</option>
           <option value="delete">Delete</option>
           <option value="approve">Approve</option>
+          {["NewFlat", "NewPlot", "CommercialFlat", "CommercialPlot"].includes(row.propertyCategory) ? (
+            <option value="gotoadditionalinfo">View Additional Info</option>
+          ) : (
+            <></>
+          )}
+          
           {row.propertyCategory === "NewFlat" ||
           row.propertyCategory === "CommercialFlat" ? (
             <option value="additionalinfo">Additional Info</option>

@@ -85,7 +85,7 @@ const App = () => {
       menu: <Route path="/promoters" element={<Promoter />} />,
     },
     {
-      name: "Sales Persons",
+      name: "Sales Partner",
       menu: <Route path="/salespersons" element={<SalesPerson />} />,
     },
     {

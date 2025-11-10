@@ -23,6 +23,7 @@ import {
   addCsvFileForFlat,
   addCsvFileForPlot,
   uploadBrochureAndVideoLink,
+  hotDeal,
 } from "../../controllers/admin/propertyController.js";
 import multer from "multer";
 import path from "path";
@@ -122,6 +123,7 @@ router.put(
 );
 
 router.put("/status/:id", status);
+router.put("/set/hotdeal/:id", hotDeal);
 router.put("/seo/:id", seoDetails);
 router.put("/reject/:id", addRejectReason);
 router.put("/commission/:id", setPropertyCommission);

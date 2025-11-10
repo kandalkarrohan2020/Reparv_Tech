@@ -38,7 +38,7 @@ import UpdateEMI from "./components/usersLoanEligibility/UpdateEMI.jsx";
 import { useAuth } from "./store/auth.jsx";
 import PropertyAuthority from "./pages/PropertyAuthority.jsx";
 import Subscription from "./pages/Subscription.jsx";
-
+import PropertiesFlatAndPlotInfo from "./pages/PropertiesFlatAndPlotInfo.jsx";
 
 const App = () => {
   const { URI, setLoading, user } = useAuth();
@@ -107,7 +107,9 @@ const App = () => {
     },
     {
       name: "Authorities",
-      menu: <Route path="/property-authorities" element={<PropertyAuthority />} />,
+      menu: (
+        <Route path="/property-authorities" element={<PropertyAuthority />} />
+      ),
     },
     {
       name: "Tickets",
@@ -155,9 +157,14 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route
+            path="/property/additional-info/:propertyid"
+            element={<PropertiesFlatAndPlotInfo />}
+          />
+          <Route
             path="/user-loan-eligibility-data-update/:id"
             element={<UpdateEMI />}
           />
+
           {/* Menu Wise Dynamic Routes */}
           {dynamicRoutes.map((menu, index) => (
             <React.Fragment key={index}>{menu.menu}</React.Fragment>

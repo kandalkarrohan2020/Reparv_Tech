@@ -8,12 +8,14 @@ export const AuthProvider = ({ children }) => {
   const URI = "https://api.reparv.in";
 
   const [accessToken, setAccessToken] = useState(Cookies.get("accessToken"));
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("employeeUser")));
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("employeeUser"))
+  );
   const [loading, setLoading] = useState(false);
-  
+
   // Check if user is logged in based on token
   const isLoggedIn = !!accessToken;
-  
+
   const storeTokenInCookie = (token) => {
     Cookies.set("accessToken", token);
     setAccessToken(token);
@@ -47,17 +49,21 @@ export const AuthProvider = ({ children }) => {
   const [isActive, setIsActive] = useState("Builders");
   const [showPaymentIdForm, setShowPaymentIdForm] = useState(false);
   const [giveAccess, setGiveAccess] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+  const [showInfoForm, setShowInfoForm] = useState(false);
   const [showAssignTaskForm, setShowAssignTaskForm] = useState(false);
   const [showUpdateImagesForm, setShowUpdateImagesForm] = useState(false);
   const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
-  const [showNewPlotAdditionalInfoForm, setShowNewPlotAdditionalInfoForm] = useState(false);
+  const [showNewPlotAdditionalInfoForm, setShowNewPlotAdditionalInfoForm] =
+    useState(false);
   const [showAssignSalesForm, setShowAssignSalesForm] = useState(false);
   const [showEnquiryStatusForm, setShowEnquiryStatusForm] = useState(false);
   const [showEnquiryForm, setShowEnquiryForm] = useState(false);
   const [showEnquiryUpdateForm, setShowEnquiryUpdateForm] = useState(false);
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [showPropertyInfo, setShowPropertyInfo] = useState(false);
-  const [showEnquirerPropertyForm, setShowEnquirerPropertyForm] = useState(false);
+  const [showEnquirerPropertyForm, setShowEnquirerPropertyForm] =
+    useState(false);
   const [showSliderForm, setShowSliderForm] = useState(false);
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [showPartnerForm, setShowPartnerForm] = useState(false);
@@ -85,7 +91,8 @@ export const AuthProvider = ({ children }) => {
   const [showOrder, setShowOrder] = useState(false);
   const [showStatusForm, setShowStatusForm] = useState(false);
   const [showVideoUploadForm, setShowVideoUploadForm] = useState(false);
-  const [showPropertyLocationForm, setShowPropertyLocationForm] = useState(false);
+  const [showPropertyLocationForm, setShowPropertyLocationForm] =
+    useState(false);
   const [showAuthorityForm, setShowAuthorityForm] = useState(false);
   const [showSubscriptionForm, setShowSubscriptionForm] = useState(false);
 
@@ -116,6 +123,10 @@ export const AuthProvider = ({ children }) => {
         setShowBuilderForm,
         showBuilder,
         setShowBuilder,
+        showInfo,
+        setShowInfo,
+        showInfoForm,
+        setShowInfoForm,
         showSalesForm,
         setShowSalesForm,
         showSalesPerson,
@@ -222,8 +233,10 @@ export const AuthProvider = ({ children }) => {
         setShowVideoUploadForm,
         showPropertyLocationForm,
         setShowPropertyLocationForm,
-        showAuthorityForm, setShowAuthorityForm,
-        showSubscriptionForm, setShowSubscriptionForm,
+        showAuthorityForm,
+        setShowAuthorityForm,
+        showSubscriptionForm,
+        setShowSubscriptionForm,
       }}
     >
       {children}

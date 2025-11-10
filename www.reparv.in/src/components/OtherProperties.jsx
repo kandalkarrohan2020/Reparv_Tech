@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import FormatPrice from "./FormatPrice";
 import { useAuth } from "../store/auth";
+import { FaFire } from "react-icons/fa6";
 
 function OtherProperties({ propertyCity, propertyCategory, propertyId }) {
   const navigate = useNavigate();
@@ -68,8 +69,12 @@ function OtherProperties({ propertyCity, propertyCategory, propertyId }) {
       {properties.map((property) => (
         <div
           key={property.seoSlug}
-          className="w-[350px] sm:w-[375px] border border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
+          className="relative w-[350px] sm:w-[375px] border border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
         >
+          <div className="absolute w-[65px] h-[40px] p-2 top-[10px] left-[10px] flex gap-1 items-center justify-center bg-red-600 rounded-md">
+            <FaFire className="text-white" />
+            <span className="text-white text-xs font-semibold">Hot Deal</span>
+          </div>
           <img
             onClick={() => navigate(`/property-info/${property.seoSlug}`)}
             src={(() => {

@@ -7,6 +7,7 @@ import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import FilterData from "../components/FilterData";
 import AddButton from "../components/AddButton";
 import { IoMdClose } from "react-icons/io";
+import { FaFire } from "react-icons/fa6";
 import DataTable from "react-data-table-component";
 import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
@@ -504,8 +505,9 @@ const Properties = () => {
 
   // change status record
   const approve = async (id) => {
-    if (!window.confirm("Are you sure you want to approve this property?"))
+    if (!window.confirm("Are you sure you want to approve this property?")) {
       return;
+    }
 
     try {
       const response = await fetch(URI + `/admin/properties/approve/${id}`, {
@@ -522,6 +524,30 @@ const Properties = () => {
       fetchData();
     } catch (error) {
       console.error("Error deleting :", error);
+    }
+  };
+
+  // change property into hot deal
+  const hotDeal = async (id) => {
+    if (!window.confirm("Are you sure to change hot Deal status?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(URI + `/admin/properties/set/hotdeal/${id}`, {
+        method: "PUT",
+        credentials: "include",
+      });
+      const data = await response.json();
+      //console.log(response);
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+      fetchData();
+    } catch (error) {
+      console.error("Error hot Dealingg :", error);
     }
   };
 
@@ -1266,7 +1292,7 @@ const Properties = () => {
             }}
             className={`min-w-6 flex items-center justify-center px-2 py-1 rounded-md cursor-pointer`}
           >
-            {row.propertyName}
+            {row.hotDeal === "Active" && <FaFire className="text-red-600 mr-1"/>}{" "}{row.propertyName}
           </span>
         </div>
       ),
@@ -1352,6 +1378,8 @@ const Properties = () => {
           break;
         case "status":
           status(propertyid);
+        case "hotdeal":
+          hotDeal(propertyid);
           break;
         case "update":
           edit(propertyid);
@@ -1424,8 +1452,8 @@ const Properties = () => {
           <option value="update">Update</option>
           <option value="delete">Delete</option>
           <option value="approve">Approve</option>
-          
-          
+          <option value="hotdeal">Set Hot Deal</option>
+
           {row.propertyCategory === "NewFlat" ||
           row.propertyCategory === "CommercialFlat" ? (
             <option value="additionalinfo">Additional Info</option>
@@ -1439,7 +1467,9 @@ const Properties = () => {
             <></>
           )}
 
-          {["NewFlat", "NewPlot", "CommercialFlat", "CommercialPlot"].includes(row.propertyCategory) ? (
+          {["NewFlat", "NewPlot", "CommercialFlat", "CommercialPlot"].includes(
+            row.propertyCategory
+          ) ? (
             <option value="gotoadditionalinfo">View Additional Info</option>
           ) : (
             <></>

@@ -12,13 +12,14 @@ import { FiMoreVertical } from "react-icons/fi";
 import Loader from "../components/Loader";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import MultiStepForm from "../components/propertyForm/MultiStepForm";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import propertyPicture from "../assets/propertyPicture.svg";
 import DownloadCSV from "../components/DownloadCSV";
 import UpdateImagesForm from "../components/propertyForm/UpdateImagesForm";
 import FormatPrice from "../components/FormatPrice";
 
 const Properties = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const {
     setShowPropertyForm,
@@ -1369,6 +1370,9 @@ const Properties = () => {
           setPropertyKey(propertyid);
           setShowNewPlotAdditionalInfoForm(true);
           break;
+        case "gotoadditionalinfo":
+          navigate("/property/additional-info/" + propertyid);
+          break;
         case "updateImages":
           setPropertyKey(propertyid);
           fetchImages(propertyid);
@@ -1409,6 +1413,12 @@ const Properties = () => {
           {row.propertyCategory === "NewPlot" ||
           row.propertyCategory === "CommercialPlot" ? (
             <option value="additionalinfoforplot">Additional Info</option>
+          ) : (
+            <></>
+          )}
+
+           {["NewFlat", "NewPlot", "CommercialFlat", "CommercialPlot"].includes(row.propertyCategory) ? (
+            <option value="gotoadditionalinfo">View Additional Info</option>
           ) : (
             <></>
           )}

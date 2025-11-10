@@ -8,6 +8,7 @@ import FormatPrice from "../FormatPrice";
 import { IoMdDoneAll } from "react-icons/io";
 import { MdOutlineFileDownload } from "react-icons/md";
 import { MdOutlinePlayCircleOutline } from "react-icons/md";
+import { FaFire } from "react-icons/fa6";
 
 function PropertyCard({ property }) {
   const navigate = useNavigate();
@@ -23,8 +24,17 @@ function PropertyCard({ property }) {
   return (
     <div
       key={property.seoSlug}
-      className="border border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
+      className=" relative border border-[#00000033] rounded-2xl shadow-md bg-white overflow-hidden"
     >
+      {" "}
+      <div
+        className={`${
+          property.hotDeal === "Active" ? "flex" : "hidden"
+        } absolute w-[65px] h-[40px] p-2 top-[10px] left-[10px] flex gap-1 items-center justify-center bg-red-600 rounded-md`}
+      >
+        <FaFire className="text-white" />
+        <span className="text-white text-xs font-semibold">Hot Deal</span>
+      </div>
       <img
         onClick={() => navigate(`/property-info/${property.seoSlug}`)}
         src={(() => {
@@ -44,7 +54,6 @@ function PropertyCard({ property }) {
         }}
         className="object-cover h-[200px] bg-[#00000020] w-full"
       />
-
       <div className="relative flex flex-col gap-2">
         {property.likes > 500 && (
           <img
@@ -192,7 +201,13 @@ function PropertyCard({ property }) {
                 : property.location}
               , {property.city}
             </p>
-            <p className={`${property.projectBy && property.projectBy !== "null" ? "flex font-semibold text-black" : "hidden"}`}>
+            <p
+              className={`${
+                property.projectBy && property.projectBy !== "null"
+                  ? "flex font-semibold text-black"
+                  : "hidden"
+              }`}
+            >
               Project By : {property.projectBy}
             </p>
           </div>

@@ -16,9 +16,17 @@ import FormatPrice from "../components/FormatPrice";
 const PropertiesFlatAndPlotInfo = () => {
   const { propertyid } = useParams();
   const [category, setCategory] = useState("");
-  const { showInfoForm, setShowInfoForm, URI, setLoading } = useAuth();
+  const {
+    showInfo,
+    setShowInfo,
+    showInfoForm,
+    setShowInfoForm,
+    URI,
+    setLoading,
+  } = useAuth();
   const [datas, setDatas] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [info, setInfo] = useState({});
   const [newInfo, setNewInfo] = useState({
     mouza: "",
     khasrano: "",
@@ -93,6 +101,28 @@ const PropertiesFlatAndPlotInfo = () => {
     }
   };
 
+  //View data
+  const view = async (id) => {
+    try {
+      const response = await fetch(
+        URI + `/admin/property/additional-info/get/${id}`,
+        {
+          method: "GET",
+          credentials: "include", // Ensures cookies are sent
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch property info.");
+      const data = await response.json();
+      setInfo(data);
+      setShowInfo(true);
+    } catch (err) {
+      console.error("Error fetching :", err);
+    }
+  };
+
   //Add or update record
   const addOrUpdate = async (e) => {
     e.preventDefault();
@@ -102,12 +132,15 @@ const PropertiesFlatAndPlotInfo = () => {
       : `add/${propertyid}`;
     try {
       setLoading(true);
-      const response = await fetch(URI + `/admin/property/additional-info/${endpoint}`, {
-        method: newInfo.propertyinfoid ? "PUT" : "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newInfo),
-      });
+      const response = await fetch(
+        URI + `/admin/property/additional-info/${endpoint}`,
+        {
+          method: newInfo.propertyinfoid ? "PUT" : "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newInfo),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to save role.");
 
@@ -183,10 +216,13 @@ const PropertiesFlatAndPlotInfo = () => {
   const del = async (id) => {
     if (!window.confirm("Are you sure you want to delete this role?")) return;
     try {
-      const response = await fetch(URI + `/admin/property/additional-info/delete/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const response = await fetch(
+        URI + `/admin/property/additional-info/delete/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
       if (response.ok) {
@@ -205,10 +241,13 @@ const PropertiesFlatAndPlotInfo = () => {
     if (!window.confirm("Are you sure to change this status?")) return;
 
     try {
-      const response = await fetch(URI + `/admin/property/additional-info/status/${id}`, {
-        method: "PUT",
-        credentials: "include",
-      });
+      const response = await fetch(
+        URI + `/admin/property/additional-info/status/${id}`,
+        {
+          method: "PUT",
+          credentials: "include",
+        }
+      );
       const data = await response.json();
       console.log(response);
       if (response.ok) {
@@ -227,10 +266,13 @@ const PropertiesFlatAndPlotInfo = () => {
     if (!window.confirm(`Are you sure to reserve this ${category}?`)) return;
 
     try {
-      const response = await fetch(URI + `/admin/property/additional-info/reserved/${id}`, {
-        method: "PUT",
-        credentials: "include",
-      });
+      const response = await fetch(
+        URI + `/admin/property/additional-info/reserved/${id}`,
+        {
+          method: "PUT",
+          credentials: "include",
+        }
+      );
       const data = await response.json();
       //console.log(response);
       if (response.ok) {
@@ -516,8 +558,7 @@ const PropertiesFlatAndPlotInfo = () => {
     const handleActionSelect = (action, id) => {
       switch (action) {
         case "view":
-          //view(id);
-          setShowInfoForm(true);
+          view(id);
           break;
         case "status":
           status(id);
@@ -1137,6 +1178,186 @@ const PropertiesFlatAndPlotInfo = () => {
               </button>
             </div>
           </form>
+        </div>
+      </div>
+      {/* For View Only  */}
+      {/* ===== View Flat Details (Read Only) ===== */}
+      <div
+        className={`${
+          showInfoForm && category === "Flat" ? "flex" : "hidden"
+        } z-[61] overflow-scroll scrollbar-hide w-full fixed bottom-0 md:bottom-auto`}
+      >
+        <div className="w-full md:w-[550px] lg:w-[750px] xl:w-[900px] max-h-[75vh] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">
+              Property Additional Info
+            </h2>
+            <IoMdClose
+              onClick={() => setShowInfoForm(false)}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+
+          <div className="w-full grid gap-4 place-items-center grid-cols-1">
+            {/* ---- General Info ---- */}
+            {[
+              ["status", "Status"],
+              ["mouza", "Mouza"],
+              ["khasrano", "Khasra No"],
+              ["wing", "Wing"],
+              ["wingfacing", "Wing Facing"],
+              ["floorno", "Floor No"],
+              ["flatno", "Flat No"],
+              ["flatfacing", "Flat Facing"],
+              ["type", "BHK Type"],
+            ].map(([field, label]) => (
+              <div key={field} className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium capitalize">
+                  {label}
+                </label>
+                <div className="mt-[5px] bg-gray-100 text-[16px] font-medium p-2 border border-[#00000033] rounded-[4px]">
+                  {info[field] || "—"}
+                </div>
+              </div>
+            ))}
+
+            {/* ---- Area Details ---- */}
+            <h3 className="w-full font-semibold text-gray-700 mt-4">
+              Area Details
+            </h3>
+            {[
+              ["carpetarea", "Carpet Area"],
+              ["builtuparea", "Built-up Area"],
+              ["superbuiltuparea", "Super Built-up Area"],
+              ["additionalarea", "Additional Area"],
+              ["payablearea", "Payable Area"],
+              ["sqftprice", "Sqft Price"],
+            ].map(([field, label]) => (
+              <div key={field} className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium capitalize">
+                  {label}
+                </label>
+                <div className="mt-[5px] bg-gray-100 text-[16px] font-medium p-2 border border-[#00000033] rounded-[4px]">
+                  {info[field] || "—"}
+                </div>
+              </div>
+            ))}
+
+            {/* ---- Cost Details ---- */}
+            <h3 className="w-full font-semibold text-gray-700 mt-4">
+              Cost Details
+            </h3>
+
+            {[
+              ["basiccost", "Basic Cost"],
+              ["stampduty", "Stamp Duty"],
+              ["registration", "Registration"],
+              ["advocatefee", "Advocate Fee"],
+              ["watercharge", "Water Charge"],
+              ["maintenance", "Maintenance"],
+              ["gst", "GST"],
+              ["other", "Other"],
+              ["totalcost", "Total Cost"],
+            ].map(([field, label]) => (
+              <div key={field} className="w-full">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium capitalize">
+                  {label}
+                </label>
+                <div className="mt-[5px] bg-gray-100 text-[16px] font-medium p-2 border border-[#00000033] rounded-[4px]">
+                  {info[field] || "—"}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ---- Buttons ---- */}
+          <div className="flex mt-8 md:mt-6 justify-end">
+            <button
+              type="button"
+              onClick={() => setShowInfoForm(false)}
+              className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ===== View Plot Details (Read Only) ===== */}
+      <div
+        className={`${
+          showInfo && category === "Plot" ? "flex" : "hidden"
+        } z-[61] overflow-scroll scrollbar-hide w-full fixed bottom-0 md:bottom-auto`}
+      >
+        <div className="w-full md:w-[550px] lg:w-[750px] xl:w-[900px] max-h-[75vh] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">
+              Plot Details (View Only)
+            </h2>
+            <IoMdClose
+              onClick={() => setShowInfo(false)}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+
+          {/* Plot Info Fields */}
+          <div className="w-full grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {[
+              ["status", "Status"],
+              ["mouza", "Mouza"],
+              ["khasrano", "Khasra No"],
+              ["plotno", "Plot No"],
+              ["plotfacing", "Plot Facing"],
+              ["plotsize", "Plot Size"],
+              ["payablearea", "Plot Area (sq.ft)"],
+              ["sqftprice", "Sqft Price"],
+            ].map(([field, label]) => (
+              <div key={field} className="w-full">
+                <label className="block text-sm text-[#00000066] font-medium">
+                  {label}
+                </label>
+                <div className="mt-[5px] p-2 bg-gray-100 border border-[#00000033] rounded-[4px] text-[16px] font-medium">
+                  {info[field] || "—"}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Cost Details */}
+          <h3 className="font-semibold text-gray-700 mt-6">Cost Details</h3>
+          <div className="w-full grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-2">
+            {[
+              ["basiccost", "Basic Cost"],
+              ["stampduty", "Stamp Duty"],
+              ["registration", "Registration Fees"],
+              ["gst", "GST"],
+              ["maintenance", "Maintenance"],
+              ["advocatefee", "Advocate Fee"],
+              ["other", "Other Charges"],
+              ["totalcost", "Total Cost"],
+            ].map(([field, label]) => (
+              <div key={field} className="w-full">
+                <label className="block text-sm text-[#00000066] font-medium">
+                  {label}
+                </label>
+                <div className="mt-[5px] p-2 bg-gray-100 border border-[#00000033] rounded-[4px] text-[16px] font-medium">
+                  {info[field] || "—"}
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Close Button */}
+          <div className="flex mt-8 md:mt-6 justify-end">
+            <button
+              type="button"
+              onClick={() => setShowInfo(false)}
+              className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+            >
+              Close
+            </button>
+          </div>
         </div>
       </div>
     </div>

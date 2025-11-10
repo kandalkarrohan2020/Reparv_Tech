@@ -1424,11 +1424,7 @@ const Properties = () => {
           <option value="update">Update</option>
           <option value="delete">Delete</option>
           <option value="approve">Approve</option>
-          {["NewFlat", "NewPlot", "CommercialFlat", "CommercialPlot"].includes(row.propertyCategory) ? (
-            <option value="gotoadditionalinfo">View Additional Info</option>
-          ) : (
-            <></>
-          )}
+          
           
           {row.propertyCategory === "NewFlat" ||
           row.propertyCategory === "CommercialFlat" ? (
@@ -1439,6 +1435,12 @@ const Properties = () => {
           {row.propertyCategory === "NewPlot" ||
           row.propertyCategory === "CommercialPlot" ? (
             <option value="additionalinfoforplot">Additional Info</option>
+          ) : (
+            <></>
+          )}
+
+          {["NewFlat", "NewPlot", "CommercialFlat", "CommercialPlot"].includes(row.propertyCategory) ? (
+            <option value="gotoadditionalinfo">View Additional Info</option>
           ) : (
             <></>
           )}

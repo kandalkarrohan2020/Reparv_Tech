@@ -21,7 +21,7 @@ export const getAll = (req, res) => {
 
 // **Fetch Single by ID**
 export const getById = (req, res) => {
-  const Id = parseInt(req.params.propertyid);
+  const Id = parseInt(req.params.id);
   const sql = "SELECT * FROM propertiesinfo WHERE propertyinfoid = ?";
 
   db.query(sql, [Id], (err, result) => {

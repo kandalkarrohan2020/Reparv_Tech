@@ -65,6 +65,7 @@ export const AuthProvider = ({ children }) => {
   const [showPropertyInfo, setShowPropertyInfo] = useState(false);
   const [showEnquirerPropertyForm, setShowEnquirerPropertyForm] =
     useState(false);
+  const [showInfo, setShowInfo] = useState(false);
   const [showInfoForm, setShowInfoForm] = useState(false);
   const [showSliderForm, setShowSliderForm] = useState(false);
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
@@ -157,6 +158,8 @@ export const AuthProvider = ({ children }) => {
         setShowPaymentIdForm,
         giveAccess,
         setGiveAccess,
+        showInfo,
+        setShowInfo,
         showInfoForm,
         setShowInfoForm,
         showAssignTaskForm,

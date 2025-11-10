@@ -117,6 +117,10 @@ function Layout() {
     setShowRejectReasonForm,
     showCommissionForm,
     setShowCommissionForm,
+    showInfo,
+    setShowInfo,
+    showInfoForm,
+    setShowInfoForm,
     isLoggedIn,
   } = useAuth();
 
@@ -166,6 +170,8 @@ function Layout() {
     { state: showSeoForm, setter: setShowSeoForm },
     { state: showRejectReasonForm, setter: setShowRejectReasonForm },
     { state: showCommissionForm, setter: setShowCommissionForm },
+    { state: showInfo, setter: setShowInfo },
+    { state: showInfoForm, setter: setShowInfoForm },
   ];
 
   const getNavLinkClass = (path) => {

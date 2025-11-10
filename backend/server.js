@@ -13,7 +13,7 @@ import dashboardRoutes from "./routes/admin/dashboardRoutes.js";
 import employeeRoutes from "./routes/admin/employeeRoutes.js";
 import builderRoutes from "./routes/admin/builderRoutes.js";
 import propertyRoutes from "./routes/admin/propertyRoutes.js";
-import propertyAdditionalInfoRoutes from "./routes/admin/propertyAdditionalInfoRoutes.js"
+import propertyAdditionalInfoRoutes from "./routes/admin/propertyAdditionalInfoRoutes.js";
 import customerRoutes from "./routes/admin/customerRoutes.js";
 import roleRoutes from "./routes/admin/roleRoutes.js";
 import departmentRoutes from "./routes/admin/departmentRoutes.js";
@@ -148,6 +148,7 @@ import projectPartnerProfileRoutes from "./routes/projectPartner/profileRoutes.j
 import projectPartnerAgreementRoutes from "./routes/projectPartner/agreementRoutes.js";
 import projectPartnerDashboardRoutes from "./routes/projectPartner/dashboardRoutes.js";
 import projectPartnerPropertyRoutes from "./routes/projectPartner/propertyRoutes.js";
+import projectPartnerPropertyAdditionalInfoRoutes from "./routes/projectPartner/propertyAdditionalInfoRoutes.js";
 import projectPartnerMapRoutes from "./routes/projectPartner/mapRoutes.js";
 import projectPartnerCustomerRoutes from "./routes/projectPartner/customerRoutes.js";
 import projectPartnerBuilderRoutes from "./routes/projectPartner/builderRoutes.js";
@@ -207,8 +208,8 @@ import projectEnquiriesRoute from "./routes/projectPartnerAppRoute/enquiryRoute.
 import projectpartnerSalesAndTerritoryRoute from "./routes/projectPartnerAppRoute/partnerRoute.js";
 import projectPartnerEmployee from "./routes/projectPartnerAppRoute/employeeRoute.js";
 import projectPartnerTickets from "./routes/projectPartnerAppRoute/ticketRouter.js";
-import projectpartnerappDepartment from "./routes/projectPartnerAppRoute/departmentRoutes.js"
-import projectPartnerRoles from "./routes/projectPartnerAppRoute/roleRoutes.js"
+import projectpartnerappDepartment from "./routes/projectPartnerAppRoute/departmentRoutes.js";
+import projectPartnerRoles from "./routes/projectPartnerAppRoute/roleRoutes.js";
 //Customer App
 import customerEmi from "./routes/customerAppRoute/EmiRoute.js";
 import customerSignUp from "./routes/customerAppRoute/userRoute.js";
@@ -384,7 +385,7 @@ export const verifyToken = (req, res, next) => {
     "/salesapp/property/enquiry",
     "/projectpartner/enquiries/getdigitalenquiry/",
     "/projectpartner/departments",
-    "/projectpartner/roles"
+    "/projectpartner/roles",
   ];
 
   // Skip verification for public routes
@@ -586,6 +587,10 @@ app.use("/project-partner/profile", projectPartnerProfileRoutes);
 app.use("/project-partner/agreement", projectPartnerAgreementRoutes);
 app.use("/project-partner/dashboard", projectPartnerDashboardRoutes);
 app.use("/project-partner/properties", projectPartnerPropertyRoutes);
+app.use(
+  "/project-partner/property/additional-info",
+  projectPartnerPropertyAdditionalInfoRoutes
+);
 app.use("/project-partner/map", projectPartnerMapRoutes);
 app.use("/project-partner/customers", projectPartnerCustomerRoutes);
 app.use("/project-partner/builders", projectPartnerBuilderRoutes);
@@ -651,8 +656,8 @@ app.use("/projectpartner/enquiries", projectEnquiriesRoute);
 app.use("/projectpartner/partner", projectpartnerSalesAndTerritoryRoute);
 app.use("/projectpartner/employee", projectPartnerEmployee);
 app.use("/projectpartner/ticket", projectPartnerTickets);
-app.use("/projectpartner/departments",projectpartnerappDepartment)
-app.use("/projectpartner/roles",projectPartnerRoles)
+app.use("/projectpartner/departments", projectpartnerappDepartment);
+app.use("/projectpartner/roles", projectPartnerRoles);
 
 //Customer app
 app.use("/customerapp", customerEmi);

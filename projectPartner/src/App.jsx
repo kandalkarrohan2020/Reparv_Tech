@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Properties from "./pages/Properties.jsx";
+import PropertiesFlatAndPlotInfo from "./pages/PropertiesFlatAndPlotInfo.jsx";
 import Builders from "./pages/Builders.jsx";
 import Map from "./pages/Map.jsx";
 import Calender from "./pages/Calender.jsx";
@@ -21,6 +22,7 @@ import Employee from "./pages/Employee.jsx";
 import Role from "./pages/Role.jsx";
 import Department from "./pages/Department.jsx";
 
+
 const App = () => {
   return (
     <>
@@ -32,6 +34,10 @@ const App = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/builders" element={<Builders />} />
           <Route path="/properties" element={<Properties />} />
+          <Route
+            path="/property/additional-info/:propertyid"
+            element={<PropertiesFlatAndPlotInfo />}
+          />
           <Route path="/enquirers" element={<Enquirers />} />
           <Route path="/map" element={<Map />} />
           <Route path="/calender" element={<Calender />} />

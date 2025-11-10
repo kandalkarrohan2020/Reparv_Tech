@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
     Cookies.remove("accessToken");
   };
   //const URI = "http://localhost:3000";
-   const URI = "https://api.reparv.in";
+  const URI = "https://api.reparv.in";
 
   const [user, setUser] = useState(
     JSON.parse(localStorage.getItem("projectPartnerUser"))
@@ -45,6 +45,8 @@ export const AuthProvider = ({ children }) => {
     useState(false);
   const [showPropertyInfo, setShowPropertyInfo] = useState(false);
   const [showSeoForm, setShowSeoForm] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+  const [showInfoForm, setShowInfoForm] = useState(false);
   const [showTicketInfo, setShowTicketInfo] = useState(true);
   const [showTicketForm, setShowTicketForm] = useState(false);
   const [showResponseForm, setShowResponseForm] = useState(false);
@@ -199,6 +201,8 @@ export const AuthProvider = ({ children }) => {
         setShowPartnerForm,
         showAssignTaskForm,
         setShowAssignTaskForm,
+        showInfo, setShowInfo,
+        showInfoForm, setShowInfoForm,
       }}
     >
       {children}

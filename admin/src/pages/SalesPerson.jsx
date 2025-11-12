@@ -453,7 +453,7 @@ const SalesPerson = () => {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify({projectPartnerId}),
+          body: JSON.stringify({ projectPartnerId }),
         }
       );
 
@@ -504,9 +504,13 @@ const SalesPerson = () => {
         ) {
           acc.Free++;
         }
+
+        if (item.changeProjectPartnerReason){
+          acc.Request++;
+        }
         return acc;
       },
-      { Unpaid: 0, FollowUp: 0, Paid: 0, Free: 0 }
+      { Unpaid: 0, FollowUp: 0, Paid: 0, Free: 0, Request: 0}
     );
   };
 
@@ -546,12 +550,14 @@ const SalesPerson = () => {
 
     // Enquiry filter logic: New, Alloted, Assign
     const getPartnerPaymentStatus = () => {
+      if (item.changeProjectPartnerReason) return "Partner Change Request"
       if (item.paymentstatus === "Success") return "Paid";
       if (item.paymentstatus === "Follow Up" && item.loginstatus === "Inactive")
         return "Follow Up";
       if (item.paymentstatus === "Pending") return "Unpaid";
       if (item.paymentstatus !== "Success" && item.loginstatus === "Active")
         return "Free";
+      
       return "";
     };
 
@@ -839,7 +845,6 @@ const SalesPerson = () => {
                 Select Partner Lister
               </option>
               <option value="Reparv">Reparv</option>
-              <option value="Promoter">Promoter</option>
               <option value="Project Partner">Project Partner</option>
             </select>
           </div>
@@ -861,7 +866,9 @@ const SalesPerson = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <PartnerFilter counts={partnerCounts} />
+              <PartnerFilter counts={partnerCounts} showRequestButton={true} />
+            </div>
+            <div className="flex flex-wrap items-center justify-end gap-3 px-2">
               <div className="block">
                 <CustomDateRangePicker range={range} setRange={setRange} />
               </div>
@@ -1413,7 +1420,9 @@ const SalesPerson = () => {
               />
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#00000066] font-medium">
-                  {projectPartnerList.length > 0 ? "Select Project Partner" : "Project Partner Not Found"}
+                  {projectPartnerList.length > 0
+                    ? "Select Project Partner"
+                    : "Project Partner Not Found"}
                 </label>
 
                 <select
@@ -1478,7 +1487,11 @@ const SalesPerson = () => {
             />
           </div>
           <form className="grid gap-6 md:gap-4 grid-cols-1 lg:grid-cols-2">
-            <div className={`${partner.projectpartnerid ? "block" : "hidden"} w-full col-span-2`}>
+            <div
+              className={`${
+                partner.projectpartnerid ? "block" : "hidden"
+              } w-full col-span-2`}
+            >
               <label className="block text-sm leading-4 text-[#00000066] font-medium">
                 Project Partner
               </label>
@@ -1486,7 +1499,11 @@ const SalesPerson = () => {
                 type="text"
                 disabled
                 className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={partner.projectPartnerName + " - " + partner.projectPartnerContact}
+                value={
+                  partner.projectPartnerName +
+                  " - " +
+                  partner.projectPartnerContact
+                }
                 readOnly
               />
             </div>

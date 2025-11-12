@@ -504,9 +504,12 @@ const TerritoryPartner = () => {
         ) {
           acc.Free++;
         }
+        if (item.changeProjectPartnerReason){
+          acc.Request++;
+        }
         return acc;
       },
-      { Unpaid: 0, FollowUp: 0, Paid: 0, Free: 0 }
+      { Unpaid: 0, FollowUp: 0, Paid: 0, Free: 0, Request: 0 }
     );
   };
 
@@ -546,6 +549,7 @@ const TerritoryPartner = () => {
 
     // Enquiry filter logic: New, Alloted, Assign
     const getPartnerPaymentStatus = () => {
+      if (item.changeProjectPartnerReason) return "Partner Change Request"
       if (item.paymentstatus === "Success") return "Paid";
       if (item.paymentstatus === "Follow Up" && item.loginstatus === "Inactive")
         return "Follow Up";
@@ -843,7 +847,6 @@ const TerritoryPartner = () => {
                 Select Partner Lister
               </option>
               <option value="Reparv">Reparv</option>
-              <option value="Promoter">Promoter</option>
               <option value="Project Partner">Project Partner</option>
             </select>
           </div>
@@ -868,7 +871,9 @@ const TerritoryPartner = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <div className="flex flex-wrap items-center justify-end gap-3 px-2">
-              <PartnerFilter counts={partnerCounts} />
+              <PartnerFilter counts={partnerCounts} showRequestButton={true} />
+            </div>
+            <div className="flex flex-wrap items-center justify-end gap-3 px-2">
               <div className="block">
                 <CustomDateRangePicker range={range} setRange={setRange} />
               </div>

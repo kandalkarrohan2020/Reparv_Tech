@@ -15,13 +15,6 @@ export default function Home() {
 
   const partners = [
     {
-      title: "Sales Partner",
-      icon: <FaHandshake className="text-[#00b501] w-10 h-10" />,
-      desc: "Join as a Sales Partner and boost your property sales with digital tools, verified listings, and instant commission on successful deals.",
-      link: "/sales-partner",
-      color: "from-green-50 to-white",
-    },
-    {
       title: "Project Partner",
       icon: <FaBuilding className="text-[#00b501] w-10 h-10" />,
       desc: "Collaborate with builders and developers, manage projects, and reach buyers through Reparv’s trusted marketing ecosystem.",
@@ -29,17 +22,17 @@ export default function Home() {
       color: "from-green-50 to-white",
     },
     {
+      title: "Sales Partner",
+      icon: <FaHandshake className="text-[#00b501] w-10 h-10" />,
+      desc: "Join as a Sales Partner and boost your property sales with digital tools, verified listings, and instant commission on successful deals.",
+      link: "/sales-partner",
+      color: "from-green-50 to-white",
+    },
+    {
       title: "Territory Partner",
       icon: <FaMapMarkedAlt className="text-[#00b501] w-10 h-10" />,
       desc: "Lead your region, manage a team, and drive property growth as a Territory Partner with strong leadership and strategic execution.",
       link: "/territory-partner",
-      color: "from-white to-green-50",
-    },
-    {
-      title: "Onboarding Partner",
-      icon: <FaUserPlus className="text-[#00b501] w-10 h-10" />,
-      desc: "Work directly with property owners, ensure smooth listing, documentation, and onboarding while earning structured commissions.",
-      link: "/onboarding-partner",
       color: "from-white to-green-50",
     },
   ];

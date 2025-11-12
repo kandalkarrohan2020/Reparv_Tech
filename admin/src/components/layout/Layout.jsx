@@ -315,6 +315,11 @@ function Layout() {
               { to: "/builders", icon: partnerIcon, label: "Builders" },
               { to: "/promoters", icon: partnerIcon, label: "Promoters" },
               {
+                to: "/projectpartner",
+                icon: partnerIcon,
+                label: "Project Partners",
+              },
+              {
                 to: "/salespersons",
                 icon: partnerIcon,
                 label: "Sales Partner",
@@ -323,11 +328,6 @@ function Layout() {
                 to: "/onboardingpartner",
                 icon: partnerIcon,
                 label: "Onboarding Partners",
-              },
-              {
-                to: "/projectpartner",
-                icon: partnerIcon,
-                label: "Project Partners",
               },
               {
                 to: "/territorypartner",

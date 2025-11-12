@@ -19,7 +19,9 @@ const Profile = () => {
     referral: "",
     userimage: "",
   });
-
+  
+  const [showProjectPartner, setShowProjectPartner] = useState(false);
+  const [changePartnerReason, setChangePartnerReason] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -154,6 +156,49 @@ const Profile = () => {
     }
   };
 
+  const changeProjectPartner = async (e) => {
+    e.preventDefault();
+  
+    // Ensure state variables exist
+    if (!changePartnerReason) {
+      setErrorMessage("reason is required.");
+      return;
+    }
+  
+    try {
+      setLoading(true); // Show loading state before the request
+  
+      const response = await fetch(`${URI}/sales/profile/project-partner/change/request`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          changePartnerReason
+        }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json(); // Get error message from response
+        throw new Error(errorData.message || `Error ${response.status}`);
+      }
+  
+      const data = await response.json();
+      alert("Request Send Successfully!");
+  
+      setShowProjectPartner(false);
+      setErrorMessage(""); 
+      
+    } catch (err) {
+      console.error("Error changing project partner reason:", err);
+      setErrorMessage(err.message || "Project partner change reson send failed. Please try again.");
+    } finally {
+      setLoading(false);
+      setChangePartnerReason("");
+    }
+  };
+
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -192,12 +237,58 @@ const Profile = () => {
           </h2>
         </Link>
 
-        <Link to={`/subscription/${user?.salespersonsid}`}
+        <div onClick={()=>{setShowProjectPartner(true)}}
          className="userOtherDetails cursor-pointer text-[#076300] active:scale-95 w-[320px] h-[40px] bg-[#FFFFFF] hover:bg-[#00760c] hover:text-[#FFFFFF] flex flex-col items-center justify-center p-5 gap-3 rounded-[20px] shadow-[#0000001A] ">
           <h2 className="text-[16px] leading-5 font-semibold flex gap-2 items-center justify-center">
-            <span>Subscription Plan</span> <IoCheckmarkDoneCircleSharp className={`${user?.status === "Active" ? "block":"hidden"} w-5 h-5`} /> 
+            <span>Project Partner</span> <IoCheckmarkDoneCircleSharp className={`${user?.projectpartnerid ? "block":"hidden"} w-5 h-5`} /> 
           </h2>
-        </Link>
+        </div>
+
+        {/* Upload Project Partner */}
+        <div className={` ${showProjectPartner ? "flex" : "hidden"}  w-[320px] `}>
+          <div className="w-[330px] sm:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-[20px]">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[16px] font-semibold">Send Request for Changing Project partner</h2>
+              <IoMdClose
+                onClick={() => {
+                  setShowProjectPartner(false);
+                }}
+                className="w-6 h-6 cursor-pointer"
+              />
+            </div>
+            <form
+              onSubmit={changeProjectPartner}
+              className="w-full grid gap-4 place-items-center grid-cols-1"
+            >
+              <div className="w-full ">
+                <label className="block text-sm leading-4 text-[#00000066] font-medium">
+                  Reason for Change Project Partner
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter Reason"
+                  className="w-full mt-[10px] text-[16px] font-medium p-4 border border-[#00000033] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={changePartnerReason}
+                  onChange={(e) => setChangePartnerReason(e.target.value)}
+                />
+              </div>
+              {/* Show Error Message */}
+              {errorMessage && (
+                <p className="text-red-500 text-sm">{errorMessage}</p>
+              )}
+              <div className="flex justify-end mt-1">
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+                >
+                 Send Request To Admin
+                </button>
+                <Loader />
+              </div>
+            </form>
+          </div>
+        </div>
 
         {/* Upload Profile Image */}
         <div className={` ${showEditProfile ? "flex" : "hidden"}  w-[320px] `}>

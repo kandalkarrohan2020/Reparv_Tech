@@ -751,7 +751,6 @@ const ProjectPartner = () => {
                 Select Partner Lister
               </option>
               <option value="Reparv">Reparv</option>
-              <option value="Promoter">Promoter</option>
             </select>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3 px-2">

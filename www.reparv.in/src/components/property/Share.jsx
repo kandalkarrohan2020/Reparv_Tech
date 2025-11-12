@@ -19,14 +19,11 @@ function Share() {
   // Fetch Property Info
   const fetchData = async () => {
     try {
-      const response = await fetch(
-        `${URI}/frontend/propertyinfo/${id}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await fetch(`${URI}/frontend/propertyinfo/${id}`, {
+        method: "GET",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
       if (!response.ok) throw new Error("Failed to fetch property info.");
       const data = await response.json();
       setPropertyInfo(data);
@@ -48,18 +45,17 @@ function Share() {
   // Build formatted WhatsApp message
   const buildPropertyShareText = (property) => {
     return `✨ Best Property on Reparv! ✨
+             🏠 Property             
+             📝 Name: ${property?.propertyName}             
+             📍 Location: ${property?.location}, ${property?.city}             
+             💰 Price: ₹${             
+                    property?.totalOfferPrice || property?.price || "Contact for Price"             
 
-🏠 Property
-📝 Name: ${property?.propertyName}
-📍 Location: ${property?.location}, ${property?.city}
-💰 Price: ₹${
-      property?.totalOfferPrice || property?.price || "Contact for Price"
-    }
+                 }             
+             🔗 Check out full details, photos, and book a visit:             
+             ${propertyUrl}
 
-🔗 Check out full details, photos, and book a visit:
-${propertyUrl}
-
-Don't miss this opportunity! 🚀 `;
+             Don't miss this opportunity! 🚀 `;
   };
 
   // WhatsApp share

@@ -7,6 +7,7 @@ import {
   changePassword,
   updateOneSignalId,
   updateProjectPartner,
+  changeProjectPartnerRequestSend,
 } from "../../controllers/territoryPartner/profileController.js";
 
 const router = express.Router();
@@ -37,4 +38,5 @@ router.put("/edit", upload.single("image"), editProfile);
 router.put("/changepassword", changePassword);
 router.put("/update-onesignal", updateOneSignalId);
 router.put("/update-projectpartner", updateProjectPartner);
+router.put("/project-partner/change/request", changeProjectPartnerRequestSend);
 export default router;

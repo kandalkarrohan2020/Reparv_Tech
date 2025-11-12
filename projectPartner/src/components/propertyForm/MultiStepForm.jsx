@@ -67,7 +67,7 @@ const MultiStepForm = ({
 
     try {
       setLoading(true);
-      const response = await fetch(`${URI}/admin/properties/${endpoint}`, {
+      const response = await fetch(`${URI}/project-partner/properties/${endpoint}`, {
         method: newProperty.propertyid ? "PUT" : "POST",
         credentials: "include",
         body: formData,

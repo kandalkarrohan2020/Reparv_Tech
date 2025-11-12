@@ -16,46 +16,11 @@ import { Link } from "react-router-dom";
 
 function Layout() {
   const { successScreen, URI } = useAuth();
-  const [apks, setApks] = useState();
   const location = useLocation();
   const [showSidebar, setShowSidebar] = useState(false);
   const getNavLinkClass = (path) => {
     return location.pathname === path ? "font-bold text-[#0BB501]" : "";
   };
-
-  const customerApkUrl =
-    apks?.find((apk) => apk.apkName === "Customer")?.filePath || null;
-  const salesApkUrl =
-    apks?.find((apk) => apk.apkName === "Sales Partner")?.filePath || null;
-  const projectApkUrl =
-    apks?.find((apk) => apk.apkName === "Project Partner")?.filePath || null;
-  const territoryApkUrl =
-    apks?.find((apk) => apk.apkName === "Territory Partner")?.filePath || null;
-  const onboardingApkUrl =
-    apks?.find((apk) => apk.apkName === "Onboarding Partner")?.filePath || null;
-
-  // **Fetch Data from API**
-  const fetchData = async () => {
-    try {
-      const response = await fetch(URI + "/admin/apk", {
-        method: "GET",
-        credentials: "include", // Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch apps.");
-      const data = await response.json();
-      console.log(data);
-      setApks(data);
-    } catch (err) {
-      console.error("Error fetching :", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   return (
     <div className="layout w-full flex flex-col bg-white overflow-hidden ">
@@ -89,7 +54,9 @@ function Layout() {
                 onClick={() => {
                   setShowSidebar(false);
                 }}
-                className={`${getNavLinkClass("/")} ${getNavLinkClass("/home")}}`}
+                className={`${getNavLinkClass("/")} ${getNavLinkClass(
+                  "/home"
+                )}}`}
               >
                 Home
               </NavLink>
@@ -103,17 +70,6 @@ function Layout() {
                 Promoter
               </NavLink>
               <NavLink
-                to="/sales-partner"
-                onClick={() => {
-                  setShowSidebar(false);
-                }}
-                className={`${getNavLinkClass(
-                  "/sales-partner"
-                )}`}
-              >
-                Sales Partner
-              </NavLink>
-              <NavLink
                 onClick={() => {
                   setShowSidebar(false);
                 }}
@@ -123,6 +79,16 @@ function Layout() {
                 Project Partner
               </NavLink>
               <NavLink
+                to="/sales-partner"
+                onClick={() => {
+                  setShowSidebar(false);
+                }}
+                className={`${getNavLinkClass("/sales-partner")}`}
+              >
+                Sales Partner
+              </NavLink>
+
+              <NavLink
                 onClick={() => {
                   setShowSidebar(false);
                 }}
@@ -130,15 +96,6 @@ function Layout() {
                 className={`${getNavLinkClass("/territory-partner")}`}
               >
                 Territory Partner
-              </NavLink>
-              <NavLink
-                onClick={() => {
-                  setShowSidebar(false);
-                }}
-                to="/onboarding-partner"
-                className={`${getNavLinkClass("/onboarding-partner")}`}
-              >
-                Onboarding Partner
               </NavLink>
             </div>
           </div>
@@ -174,28 +131,23 @@ function Layout() {
             Home
           </NavLink>
           <NavLink
-            to="/sales-partner"
-            className={`${getNavLinkClass("/sales-partner")}`}
-          >
-            Sales Partner
-          </NavLink>
-          <NavLink
             to="/project-partner"
             className={`${getNavLinkClass("/project-partner")} flex gap-1`}
           >
             Project Partner
           </NavLink>
           <NavLink
+            to="/sales-partner"
+            className={`${getNavLinkClass("/sales-partner")}`}
+          >
+            Sales Partner
+          </NavLink>
+
+          <NavLink
             to="territory-partner"
             className={`${getNavLinkClass("/territory-partner")} flex gap-1`}
           >
             Territory Partner
-          </NavLink>
-          <NavLink
-            to="/onboarding-partner"
-            className={`${getNavLinkClass("/onboarding-partner")} flex gap-1`}
-          >
-            Onboarding Partner
           </NavLink>
         </div>
       </div>
@@ -268,16 +220,14 @@ function Layout() {
                 <Link to="/promoter">Promoter</Link>
               </p>
               <p className="cursor-pointer">
-                <Link to="/sales-partner">Sales Partner</Link>
-              </p>
-              <p className="cursor-pointer">
                 <Link to="/project-partner">Project Partner</Link>
               </p>
               <p className="cursor-pointer">
-                <Link to="/territory-partner">Territory Partner</Link>
+                <Link to="/sales-partner">Sales Partner</Link>
               </p>
+
               <p className="cursor-pointer">
-                <Link to="/onboarding-partner">Onboarding Partner</Link>
+                <Link to="/territory-partner">Territory Partner</Link>
               </p>
             </div>
 

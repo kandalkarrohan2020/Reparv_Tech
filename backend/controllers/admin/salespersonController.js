@@ -17,26 +17,7 @@ export const getAll = (req, res) => {
 
   let sql;
 
-  if (partnerLister === "Promoter") {
-    sql = `
-      SELECT salespersons.*, pf.followUp, pf.created_at AS followUpDate
-      FROM salespersons
-      LEFT JOIN (
-        SELECT p1.*
-        FROM partnerFollowup p1
-        INNER JOIN (
-          SELECT partnerId, MAX(created_at) AS latest
-          FROM partnerFollowup
-          WHERE role = 'Sales Person'
-          GROUP BY partnerId
-        ) p2 ON p1.partnerId = p2.partnerId AND p1.created_at = p2.latest
-        WHERE p1.role = 'Sales Person'
-      ) pf ON salespersons.salespersonsid = pf.partnerId
-      WHERE salespersons.partneradder IS NOT NULL 
-        AND salespersons.partneradder != ''
-      ORDER BY salespersons.created_at DESC;
-    `;
-  } else if (partnerLister === "Project Partner") {
+  if (partnerLister === "Project Partner") {
     sql = `
       SELECT 
         s.*, 
@@ -921,7 +902,7 @@ export const assignProjectPartner = async (req, res) => {
 
         // Update salespersons details
         db.query(
-          "UPDATE salespersons SET projectpartnerid = ? WHERE salespersonsid = ?",
+          "UPDATE salespersons SET changeProjectPartnerReason = NULL projectpartnerid = ? WHERE salespersonsid = ?",
           [projectPartnerId, Id],
           (updateErr, updateResult) => {
             if (updateErr) {

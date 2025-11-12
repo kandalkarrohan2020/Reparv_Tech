@@ -236,3 +236,43 @@ export const updateProjectPartner = async (req, res) => {
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
+
+
+export const changeProjectPartnerRequestSend = async (req, res) => {
+  try {
+    const userId = req.territoryUser?.id;
+    const projectPartnerId = req.territoryUser?.projectpartnerid;
+    if (!projectPartnerId) {
+      res
+        .status(500)
+        .json({ success: false, message: "Project Partner Linked Required !" });
+    }
+
+    const { changePartnerReason } = req.body;
+    if (!changePartnerReason) {
+      res
+        .status(401)
+        .json({ success: false, message: "Reason is Required!" });
+    }
+    db.query(
+      "UPDATE territorypartner SET changeProjectPartnerReason = ? WHERE id = ?",
+      [changePartnerReason, userId],
+      (updateErr) => {
+        if (updateErr) {
+          console.error("Error updating Project Partner:", updateErr);
+          return res.status(500).json({
+            message: "Database error during update",
+            error: updateErr,
+          });
+        }
+
+        res
+          .status(200)
+          .json({ message: "Project Partner changed Request Send Successfully " });
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+

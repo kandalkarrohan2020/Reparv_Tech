@@ -267,11 +267,7 @@ function Layout() {
     { to: "/trends", icon: marketingIcon, label: "Trends" },
     { to: "/slider", icon: marketingIcon, label: "Slider" },
     { to: "/testimonial", icon: marketingIcon, label: "Testimonial" },
-    {
-      to: "/brand-accessories",
-      icon: materialIcon,
-      label: "Brand Accessories",
-    },
+    
     {
       to: "/marketing-content",
       icon: marketingIcon,

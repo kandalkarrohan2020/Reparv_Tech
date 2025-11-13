@@ -14,7 +14,7 @@ import ErrorPage from "./pages/ErrorPage.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import KYC from "./pages/KYC.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
-import BrandAccessories from "./pages/BrandAccessories.jsx";
+//import BrandAccessories from "./pages/BrandAccessories.jsx";
 import SalesPerson from "./pages/SalesPerson.jsx";
 import TerritoryPartner from "./pages/TerritoryPartner.jsx";
 import Enquirers from "./pages/Enquirers.jsx";
@@ -48,7 +48,7 @@ const App = () => {
           <Route path="/employees" element={<Employee />} />
           <Route path="/role" element={<Role />} />
           <Route path="/department" element={<Department />} />
-          <Route path="/brand-accessories" element={<BrandAccessories />} />
+           {/*<Route path="/brand-accessories" element={<BrandAccessories />} />*/}
           <Route path="/marketing-content" element={<MarketingContent />} />
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>

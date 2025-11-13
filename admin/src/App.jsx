@@ -32,7 +32,7 @@ import ApkUpload from "./pages/ApkUpload.jsx";
 import UsersLoanEligibility from "./pages/UsersLoanEligibility.jsx";
 import UpdateEMI from "./components/usersLoanEligibility/UpdateEMI.jsx";
 import Trends from "./pages/Trends.jsx";
-import BrandAccessories from "./pages/BrandAccessories.jsx";
+//import BrandAccessories from "./pages/BrandAccessories.jsx";
 import PropertyAuthority from "./pages/PropertyAuthority.jsx";
 import SubscriptionDiscount from "./pages/SubscriptionDiscount.jsx";
 import PropertiesFlatAndPlotInfo from "./pages/PropertiesFlatAndPlotInfo.jsx";
@@ -82,7 +82,7 @@ const App = () => {
           <Route path="/apk-upload" element={<ApkUpload />} />
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/trends" element={<Trends />} />
-          <Route path="/brand-accessories" element={<BrandAccessories />} />
+          {/*<Route path="/brand-accessories" element={<BrandAccessories />} />*/}
           <Route path="/marketing-content" element={<MarketingContent />} />
         </Route>
 

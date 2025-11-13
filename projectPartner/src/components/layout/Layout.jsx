@@ -319,11 +319,6 @@ function Layout() {
               { to: "/department", icon: employeeIcon, label: "Departments" },
 
               {
-                to: "/brand-accessories",
-                icon: materialIcon,
-                label: "Brand Accessories",
-              },
-              {
                 to: "/marketing-content",
                 icon: marketingIcon,
                 label: "Marketing Content",

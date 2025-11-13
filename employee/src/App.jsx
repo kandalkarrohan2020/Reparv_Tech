@@ -10,7 +10,7 @@ import Map from "./pages/Map.jsx";
 import Calender from "./pages/Calender.jsx";
 import Customers from "./pages/Customers.jsx";
 import Ticketing from "./pages/Ticketing.jsx";
-import BrandAccessories from "./pages/BrandAccessories.jsx";
+//import BrandAccessories from "./pages/BrandAccessories.jsx";
 import MarketingContent from "./pages/MarketingContent.jsx";
 import Login from "./pages/Login.jsx";
 import Employee from "./pages/Employee.jsx";
@@ -135,10 +135,6 @@ const App = () => {
     },
     { name: "Blogs", menu: <Route path="/blogs" element={<Blogs />} /> },
     { name: "Trends", menu: <Route path="/trends" element={<Trends />} /> },
-    {
-      name: "Brand Accessories",
-      menu: <Route path="/brand-accessories" element={<BrandAccessories />} />,
-    },
     {
       name: "Marketing Content",
       menu: <Route path="/marketing-content" element={<MarketingContent />} />,

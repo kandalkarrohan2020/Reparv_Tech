@@ -219,7 +219,7 @@ export const getLocationsByCityAndCategory = (req, res) => {
 };
 
 // ** Fetch Property Information by ID **
-export const fetchAdditionalInfo = (req, res) => {
+export const fetchAdditionalInfoForFlat = (req, res) => {
   const Id = parseInt(req.params.id);
   if (isNaN(Id)) {
     return res.status(400).json({ message: "Invalid Property ID" });
@@ -248,6 +248,45 @@ export const fetchAdditionalInfo = (req, res) => {
         acc.push(wingGroup);
       }
       wingGroup.rows.push(row);
+      return acc;
+    }, []);
+
+    res.json(grouped);
+  });
+};
+
+// ** Fetch Property Information by ID (for Plots) **
+export const fetchAdditionalInfoForPlot = (req, res) => {
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  const sql = `SELECT * FROM propertiesinfo WHERE propertyid = ? ORDER BY propertyinfoid`;
+
+  db.query(sql, [Id], (err, result) => {
+    if (err) {
+      console.error("Error fetching property details:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Property Additional Information not found" });
+    }
+
+    // Group by khasrano (for plots)
+    const grouped = result.reduce((acc, row) => {
+      const khasraNo = row.khasrano || "Unkonown";
+      let khasraGroup = acc.find((g) => g.khasrano === khasraNo);
+
+      if (!khasraGroup) {
+        khasraGroup = { khasrano: khasraNo, rows: [] };
+        acc.push(khasraGroup);
+      }
+
+      khasraGroup.rows.push(row);
       return acc;
     }, []);
 

@@ -11,7 +11,7 @@ function WingData({ propertyInfo }) {
     setLoading(true);
     try {
       const response = await fetch(
-        `${URI}/frontend/properties/flat/additionalinfo/get/${propertyInfo?.propertyid}`,
+        `${URI}/frontend/properties/additionalinfo/flat/get/all/${propertyInfo?.propertyid}`,
         {
           method: "GET",
           credentials: "include", //  Ensures cookies are sent
@@ -22,7 +22,7 @@ function WingData({ propertyInfo }) {
       );
       if (!response.ok) throw new Error("Failed to fetch Property Wings Data.");
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       setWings(data);
     } catch (err) {
       console.error("Error fetching Property Wings Data :", err);

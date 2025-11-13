@@ -6,7 +6,7 @@ import Loader from "./Loader";
 import { IoMdClose } from "react-icons/io";
 import { FaEdit } from "react-icons/fa";
 import { IoCheckmarkDoneCircleSharp } from "react-icons/io5";
-import{ Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const { showProfile, setShowProfile, setLoading, URI } = useAuth();
@@ -19,7 +19,7 @@ const Profile = () => {
     referral: "",
     userimage: "",
   });
-  
+
   const [showProjectPartner, setShowProjectPartner] = useState(false);
   const [changePartnerReason, setChangePartnerReason] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -109,16 +109,16 @@ const Profile = () => {
 
   const changePassword = async (e) => {
     e.preventDefault();
-  
+
     // Ensure state variables exist
     if (!currentPassword || !newPassword) {
       setErrorMessage("Both current and new passwords are required.");
       return;
     }
-  
+
     try {
       setLoading(true); // Show loading state before the request
-  
+
       const response = await fetch(`${URI}/sales/profile/changepassword`, {
         method: "PUT",
         credentials: "include",
@@ -130,25 +130,26 @@ const Profile = () => {
           newPassword,
         }),
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json(); // Get error message from response
         throw new Error(errorData.message || `Error ${response.status}`);
       }
-  
+
       const data = await response.json();
       alert("Password Changed Successfully!");
-  
+
       // Update user state
       fetchProfile();
       setNewUser(data);
       setUser(data);
       setShowChangePass(false);
-      setErrorMessage(""); 
-      
+      setErrorMessage("");
     } catch (err) {
       console.error("Error changing password:", err);
-      setErrorMessage(err.message || "Password change failed. Please try again.");
+      setErrorMessage(
+        err.message || "Password change failed. Please try again."
+      );
     } finally {
       setLoading(false);
       setCurrentPassword("");
@@ -158,41 +159,46 @@ const Profile = () => {
 
   const changeProjectPartner = async (e) => {
     e.preventDefault();
-  
+
     // Ensure state variables exist
     if (!changePartnerReason) {
       setErrorMessage("reason is required.");
       return;
     }
-  
+
     try {
       setLoading(true); // Show loading state before the request
-  
-      const response = await fetch(`${URI}/sales/profile/project-partner/change/request`, {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          changePartnerReason
-        }),
-      });
-  
+
+      const response = await fetch(
+        `${URI}/sales/profile/project-partner/change/request`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            changePartnerReason,
+          }),
+        }
+      );
+
       if (!response.ok) {
         const errorData = await response.json(); // Get error message from response
         throw new Error(errorData.message || `Error ${response.status}`);
       }
-  
+
       const data = await response.json();
       alert("Request Send Successfully!");
-  
+
       setShowProjectPartner(false);
-      setErrorMessage(""); 
-      
+      setErrorMessage("");
     } catch (err) {
       console.error("Error changing project partner reason:", err);
-      setErrorMessage(err.message || "Project partner change reson send failed. Please try again.");
+      setErrorMessage(
+        err.message ||
+          "Project partner change reson send failed. Please try again."
+      );
     } finally {
       setLoading(false);
       setChangePartnerReason("");
@@ -230,25 +236,43 @@ const Profile = () => {
           </h3>
         </div>
 
-        <Link to={`/kyc/${user?.salespersonsid}`}
-         className="userOtherDetails cursor-pointer text-[#076300] active:scale-95 w-[320px] h-[40px] bg-[#FFFFFF] hover:bg-[#00760c] hover:text-[#FFFFFF] flex flex-col items-center justify-center p-5 gap-3 rounded-[20px] shadow-[#0000001A] ">
+        <Link
+          to={`/kyc/${user?.salespersonsid}`}
+          className="userOtherDetails cursor-pointer text-[#076300] active:scale-95 w-[320px] h-[40px] bg-[#FFFFFF] hover:bg-[#00760c] hover:text-[#FFFFFF] flex flex-col items-center justify-center p-5 gap-3 rounded-[20px] shadow-[#0000001A] "
+        >
           <h2 className="text-[16px] leading-5 font-semibold flex gap-2 items-center justify-center">
-            <span>KYC Details</span> <IoCheckmarkDoneCircleSharp className={`${user?.status === "Active" ? "block":"hidden"} w-5 h-5`} /> 
+            <span>KYC Details</span>{" "}
+            <IoCheckmarkDoneCircleSharp
+              className={`${
+                user?.status === "Active" ? "block" : "hidden"
+              } w-5 h-5`}
+            />
           </h2>
         </Link>
 
-        <div onClick={()=>{setShowProjectPartner(true)}}
-         className="userOtherDetails cursor-pointer text-[#076300] active:scale-95 w-[320px] h-[40px] bg-[#FFFFFF] hover:bg-[#00760c] hover:text-[#FFFFFF] flex flex-col items-center justify-center p-5 gap-3 rounded-[20px] shadow-[#0000001A] ">
+        <div
+          onClick={() => {
+            setShowProjectPartner(true);
+          }}
+          className="userOtherDetails cursor-pointer text-[#076300] active:scale-95 w-[320px] h-[40px] bg-[#FFFFFF] hover:bg-[#00760c] hover:text-[#FFFFFF] flex flex-col items-center justify-center p-5 gap-3 rounded-[20px] shadow-[#0000001A] "
+        >
           <h2 className="text-[16px] leading-5 font-semibold flex gap-2 items-center justify-center">
-            <span>Project Partner</span> <IoCheckmarkDoneCircleSharp className={`${user?.projectpartnerid ? "block":"hidden"} w-5 h-5`} /> 
+            <span>Project Partner</span>{" "}
+            <IoCheckmarkDoneCircleSharp
+              className={`${
+                user?.projectpartnerid ? "block" : "hidden"
+              } w-5 h-5`}
+            />
           </h2>
         </div>
 
         {/* Upload Project Partner */}
-        <div className={` ${showProjectPartner ? "flex" : "hidden"}  w-[320px] `}>
-          <div className="w-[330px] sm:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-[20px]">
+        <div
+          className={` ${showProjectPartner ? "flex" : "hidden"}  w-[320px] `}
+        >
+          <div className="w-[330px] sm:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-10 px-3 sm:px-6 border border-[#cfcfcf33] rounded-[20px]">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[16px] font-semibold">Send Request for Changing Project partner</h2>
+              <h2 className="text-[16px] font-semibold">Project Partner</h2>
               <IoMdClose
                 onClick={() => {
                   setShowProjectPartner(false);
@@ -256,6 +280,22 @@ const Profile = () => {
                 className="w-6 h-6 cursor-pointer"
               />
             </div>
+            <div className="w-full flex flex-col text-sm font-semibold mb-3">
+              <span className="text-[#00000066]">
+                Name :{" "}
+                <span className="text-[#424242]">
+                  {user?.projectpartnerfullname}
+                </span>
+              </span>
+              <span className="text-[#00000066]">
+                Contact :{" "}
+                <span className="text-[#424242]">
+                  {user?.projectpartnercontact}
+                </span>
+              </span>
+              <div className="border border-bottom mt-1"></div>
+            </div>
+
             <form
               onSubmit={changeProjectPartner}
               className="w-full grid gap-4 place-items-center grid-cols-1"
@@ -282,7 +322,7 @@ const Profile = () => {
                   type="submit"
                   className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
                 >
-                 Send Request To Admin
+                  Send Request To Admin
                 </button>
                 <Loader />
               </div>

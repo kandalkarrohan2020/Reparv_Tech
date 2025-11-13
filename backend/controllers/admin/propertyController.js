@@ -45,16 +45,6 @@ export const getAll = (req, res) => {
                INNER JOIN builders ON properties.builderid = builders.builderid 
                INNER JOIN employees ON properties.employeeid = employees.id 
                ORDER BY properties.created_at DESC;`;
-  } else if (propertyLister === "Onboarding Partner") {
-    sql = `SELECT properties.*,
-                      builders.company_name, 
-                      onboardingpartner.fullname, 
-                      onboardingpartner.contact,
-                      onboardingpartner.city AS partnerCity
-               FROM properties 
-               INNER JOIN builders ON properties.builderid = builders.builderid 
-               INNER JOIN onboardingpartner ON properties.partnerid = onboardingpartner.partnerid 
-               ORDER BY properties.created_at DESC;`;
   } else if (propertyLister === "Project Partner") {
     sql = `SELECT properties.*,
            builders.company_name, 

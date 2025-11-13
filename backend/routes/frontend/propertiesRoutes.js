@@ -5,7 +5,8 @@ import {
   getAllCity,
   getAllLocation,
   getLocationsByCityAndCategory,
-  fetchAdditionalInfo,
+  fetchAdditionalInfoForFlat,
+  fetchAdditionalInfoForPlot,
   fetchFlatById,
   fetchPlotById,
   getAdditionalInfo,
@@ -18,7 +19,8 @@ router.get("/get-all-by-slug", getAllBySlug);
 router.get("/cities", getAllCity);
 router.get("/location/all", getAllLocation);
 router.get("/location", getLocationsByCityAndCategory);
-router.get("/additionalinfo/get/:id", fetchAdditionalInfo);
+router.get("/additionalinfo/flat/get/all/:id", fetchAdditionalInfoForFlat);
+router.get("/additionalinfo/plot/get/all/:id", fetchAdditionalInfoForPlot);
 router.get("/additionalinfo/flat/get/:id", fetchFlatById);
 router.get("/additionalinfo/plot/get/:id", fetchPlotById);
 router.get("/additionalinfo/data/get/:propertyId", getAdditionalInfo);

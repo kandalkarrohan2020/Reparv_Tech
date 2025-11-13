@@ -740,6 +740,16 @@ const TerritoryPartner = () => {
       width: "150px",
     },
     {
+      name: "Change Project Partner Reason",
+      cell: (row) => (
+        <div className="w-full">
+          <p>{row.changeProjectPartnerReason}</p>
+        </div>
+      ),
+      minWidth: "300px",
+      omit: false,
+    },
+    {
       name: "Action",
       cell: (row) => <ActionDropdown row={row} />,
       width: "120px",
@@ -748,11 +758,19 @@ const TerritoryPartner = () => {
 
   const hasProjectPartner = datas.some((row) => !!row.projectPartnerName);
 
-  const finalColumns = columns.map((col) => {
-    if (col.name === "Project Partner")
-      return { ...col, omit: !hasProjectPartner };
-    return col;
-  });
+  const finalColumns = columns?.map((col) => {
+  if (col.name === "Change Project Partner Reason")
+    return { 
+      ...col, 
+      omit: partnerPaymentStatus === "Partner Change Request" ? false : true 
+    };
+  if (col.name === "Project Partner")
+    return { 
+      ...col, 
+      omit: !hasProjectPartner 
+    };
+  return col;
+});
 
 
   const ActionDropdown = ({ row }) => {

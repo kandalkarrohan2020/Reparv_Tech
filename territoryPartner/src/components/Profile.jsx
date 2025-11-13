@@ -260,13 +260,28 @@ const Profile = () => {
         <div className={` ${showProjectPartner ? "flex" : "hidden"}  w-[320px] `}>
           <div className="w-[330px] sm:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-3 sm:px-6 border border-[#cfcfcf33] rounded-[20px]">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[16px] font-semibold">Send Request for Changing Project partner</h2>
+              <h2 className="text-[16px] font-semibold">Project partner</h2>
               <IoMdClose
                 onClick={() => {
                   setShowProjectPartner(false);
                 }}
                 className="w-6 h-6 cursor-pointer"
               />
+            </div>
+            <div className="w-full flex flex-col text-sm font-semibold mb-3">
+              <span className="text-[#00000066]">
+                Name :{" "}
+                <span className="text-[#424242]">
+                  {user?.projectpartnerfullname}
+                </span>
+              </span>
+              <span className="text-[#00000066]">
+                Contact :{" "}
+                <span className="text-[#424242]">
+                  {user?.projectpartnercontact}
+                </span>
+              </span>
+              <div className="border border-bottom mt-1"></div>
             </div>
             <form
               onSubmit={changeProjectPartner}

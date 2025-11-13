@@ -1454,7 +1454,6 @@ const Properties = () => {
                 Select Property Lister
               </option>
               <option value="Reparv Employee">Reparv Employee</option>
-              <option value="Onboarding Partner">Onboarding Partner</option>
               <option value="Project Partner">Project Partner</option>
               <option value="Guest User">Guest User</option>
             </select>

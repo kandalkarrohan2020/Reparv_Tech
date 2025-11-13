@@ -244,11 +244,6 @@ function Layout() {
               { to: "/properties", icon: enquirersIcon, label: "Properties" },
               { to: "/tickets", icon: ticketingIcon, label: "Tickets" },
               {
-                to: "/brand-accessories",
-                icon: materialIcon,
-                label: "Brand Accessories",
-              },
-              {
                 to: "/marketing-content",
                 icon: marketingIcon,
                 label: "Marketing Content",

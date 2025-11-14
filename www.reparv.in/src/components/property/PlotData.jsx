@@ -4,7 +4,8 @@ import { useAuth } from "../../store/auth";
 function PlotData({ propertyInfo }) {
   const { URI, setLoading, setPropertyInfoId, setShowPlotInfoPopup } =
     useAuth();
-  const [plots, setPlots] = useState();
+  const [plots, setPlots] = useState([]);
+  const [activeKhasra, setActiveKhasra] = useState(null);
 
   // Fetch Data
   const fetchPlots = async () => {
@@ -14,18 +15,22 @@ function PlotData({ propertyInfo }) {
         `${URI}/frontend/properties/additionalinfo/plot/get/all/${propertyInfo?.propertyid}`,
         {
           method: "GET",
-          credentials: "include", //  Ensures cookies are sent
-          headers: {
-            "Content-Type": "application/json",
-          },
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
         }
       );
-      if (!response.ok) throw new Error("Failed to fetch Property Plot Data.");
+
+      if (!response.ok) throw new Error("Failed to fetch Plot Data");
       const data = await response.json();
-      //console.log(data);
+
       setPlots(data);
+
+      // Auto Select First Khasra
+      if (data.length > 0) {
+        setActiveKhasra(data[0].khasrano);
+      }
     } catch (err) {
-      console.error("Error fetching Property Plot Data :", err);
+      console.error("Error fetching Plot Data :", err);
     } finally {
       setLoading(false);
     }
@@ -38,39 +43,67 @@ function PlotData({ propertyInfo }) {
   return (
     <div
       className={`${
-        plots?.length > 0 ? "block" : "hidden"
-      } overflow-scroll scrollbar-hide bg-white rounded-lg p-4 md:border-2 border-[#0bb500] max-h-[200px]`}
+        plots.length > 0 ? "block" : "hidden"
+      } bg-white rounded-lg p-4 border border-[#0bb500]`}
     >
-      <div className="w-full flex gap-4 flex-col items-center justify-center">
-        {plots?.map((item, index) => (
-          <div key={index} className="w-full flex flex-col gap-2">
-            <h2 className="text-black text-sm font-semibold mx-1">
-              Khasra No {item.khasrano}
-            </h2>
-            <div className="w-full grid md:p-0 gap-2 grid-cols-5 sm:grid-cols-6 md:grid-cols-5 lg:grid-cols-8">
-              {item.rows?.map((row, index) => (
-                <div
-                  key={index}
-                  onClick={() => {
-                    if (row.status === "Available") {
-                      setPropertyInfoId(row.propertyinfoid);
-                      setShowPlotInfoPopup(true);
-                    }
-                  }}
-                  className={`${
-                    row.status === "Available" &&
-                    "text-green-700 bg-[#eeffec] hover:bg-[#ddffd7] border-green-600 cursor-pointer"
-                  }  ${
-                    row.status === "Booked" &&
-                    "bg-red-50 text-red-500 border-red-500"
-                  } flex items-center justify-center px-2 py-1 text-sm font-semibold text-gray-400 border-gray-300 border-[1.5px] rounded-lg `}
-                >
-                  {row.plotno}
-                </div>
-              ))}
-            </div>
-          </div>
+      {/* Khasra Tabs */}
+      <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+        {plots.map((item, index) => (
+          <button
+            key={index}
+            type="button"
+            onClick={() => setActiveKhasra(item.khasrano)}
+            className={`
+              px-3 py-1 text-sm font-semibold rounded-lg border transition-all
+
+              ${
+                activeKhasra === item.khasrano
+                  ? "bg-[#0bb500] text-white border-green-600 shadow-md scale-95"
+                  : "bg-white border-gray-300 text-gray-700"
+              }
+            `}
+          >
+            KHASRA {item.khasrano}
+          </button>
         ))}
+      </div>
+
+      {/* Plots of Selected Khasra */}
+      <div className="mt-2 overflow-scroll scrollbar-hide max-h-[300px]">
+        {plots
+          .filter((p) => p.khasrano === activeKhasra)
+          .map((khasraItem, index) => (
+            <div key={index}>
+              <div className="grid gap-2 grid-cols-5 sm:grid-cols-6 md:grid-cols-5 lg:grid-cols-8">
+                {khasraItem.rows.map((row, i) => (
+                  <div
+                    key={i}
+                    onClick={() => {
+                      if (row.status === "Available") {
+                        setPropertyInfoId(row.propertyinfoid);
+                        setShowPlotInfoPopup(true);
+                      }
+                    }}
+                    className={`
+                      flex items-center justify-center px-2 py-1 text-sm font-semibold rounded-lg border transition-all text-gray-400 border-gray-300
+
+                      ${
+                        row.status === "Available" &&
+                        "text-green-700 bg-[#eeffec] hover:bg-[#ddffd7] border-green-600 cursor-pointer"
+                      }
+
+                      ${
+                        row.status === "Booked" &&
+                        "bg-red-50 text-red-500 border-red-500 cursor-not-allowed"
+                      }
+                    `}
+                  >
+                    {row.plotno}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );

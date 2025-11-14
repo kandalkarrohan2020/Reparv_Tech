@@ -836,6 +836,173 @@ export const token = (req, res) => {
   );
 };
 
+export const newToken = (req, res) => {
+  const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
+  const { paymenttype, tokenamount, remark, dealamount, enquiryStatus } =
+    req.body;
+  const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+
+  if (
+    !paymenttype ||
+    !tokenamount ||
+    !remark ||
+    !dealamount ||
+    !enquiryStatus
+  ) {
+    return res.status(400).json({ message: "Please add all required fields!" });
+  }
+
+  const Id = parseInt(req.params.id);
+  if (isNaN(Id)) {
+    return res.status(400).json({ message: "Invalid Enquiry ID" });
+  }
+
+  // Step 1: Get Enquirer (to access propertyid)
+  db.query(
+    "SELECT * FROM enquirers WHERE enquirersid = ?",
+    [Id],
+    (err, enquirerResult) => {
+      if (err)
+        return res.status(500).json({ message: "Database error", error: err });
+      if (enquirerResult.length === 0)
+        return res.status(404).json({ message: "Enquirer not found" });
+
+      const enquirer = enquirerResult[0];
+      const propertyId = enquirer.propertyid;
+
+      // Step 2: Get Property data
+      db.query(
+        "SELECT commissionType, commissionAmount, commissionPercentage FROM properties WHERE propertyid = ?",
+        [propertyId],
+        (err, propertyResult) => {
+          if (err)
+            return res
+              .status(500)
+              .json({ message: "Property fetch error", error: err });
+          if (propertyResult.length === 0)
+            return res.status(404).json({ message: "Property not found" });
+
+          const property = propertyResult[0];
+          let { commissionType, commissionAmount, commissionPercentage } =
+            property;
+
+          commissionType = commissionType || "";
+          commissionPercentage = Number(commissionPercentage) || 0;
+          let finalCommissionAmount = Number(commissionAmount) || 0;
+
+          // If type is percentage, calculate commissionAmount from dealamount
+          if (commissionType.toLowerCase() === "percentage") {
+            finalCommissionAmount =
+              (Number(dealamount) * commissionPercentage) / 100;
+          }
+
+          // Split commission
+          const reparvCommission = (finalCommissionAmount * 40) / 100;
+          let projectCommission;
+          let salesCommission;
+          let territoryCommission;
+          let TDS;
+          if (enquirer?.salesbroker) {
+            const grossProjectCommission = (finalCommissionAmount * 20) / 100;
+            projectCommission =
+              grossProjectCommission - (grossProjectCommission * 2) / 100;
+
+            const grossSalesCommission = (finalCommissionAmount * 40) / 100;
+            salesCommission =
+              grossSalesCommission - (grossSalesCommission * 2) / 100;
+
+            const grossTerritoryCommission = 0;
+            territoryCommission = 0;
+
+            TDS =
+              (grossProjectCommission * 2) / 100 +
+              (grossSalesCommission * 2) / 100 +
+              (grossTerritoryCommission * 2) / 100;
+          } else if (enquirer?.territorybroker) {
+            const grossProjectCommission = (finalCommissionAmount * 40) / 100;
+            projectCommission =
+              grossProjectCommission - (grossProjectCommission * 2) / 100;
+
+            const grossSalesCommission = 0;
+            salesCommission = 0;
+
+            const grossTerritoryCommission = (finalCommissionAmount * 20) / 100;
+            territoryCommission =
+              grossTerritoryCommission - (grossTerritoryCommission * 2) / 100;
+
+            TDS =
+              (grossProjectCommission * 2) / 100 +
+              (grossSalesCommission * 2) / 100;
+          } else {
+            const grossProjectCommission = 0;
+            projectCommission = 0;
+
+            const grossSalesCommission = (finalCommissionAmount * 40) / 100;
+            salesCommission =
+              grossSalesCommission - (grossSalesCommission * 2) / 100;
+
+            const grossTerritoryCommission = (finalCommissionAmount * 20) / 100;
+            territoryCommission =
+              grossTerritoryCommission - (grossTerritoryCommission * 2) / 100;
+
+            TDS =
+              (grossSalesCommission * 2) / 100 +
+              (grossTerritoryCommission * 2) / 100;
+          }
+
+          // Step 3: Insert into propertyfollowup
+          const insertSQL = `
+          INSERT INTO propertyfollowup (
+            enquirerid, paymenttype, tokenamount, remark, dealamount, status, 
+            totalcommission, reparvcommission, projectcommission, salescommission, territorycommission, tds, paymentimage,
+            updated_at, created_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+          db.query(
+            insertSQL,
+            [
+              Id,
+              paymenttype,
+              tokenamount,
+              remark,
+              dealamount,
+              enquiryStatus,
+              finalCommissionAmount,
+              reparvCommission,
+              projectCommission,
+              salesCommission,
+              territoryCommission,
+              TDS,
+              imagePath,
+              currentdate,
+              currentdate,
+            ],
+            (err, insertResult) => {
+              if (err)
+                return res
+                  .status(500)
+                  .json({ message: "Insert error", error: err });
+
+              res.status(201).json({
+                message: "Token added successfully",
+                followupId: insertResult.insertId,
+                commissionBreakdown: {
+                  totalCommission: finalCommissionAmount,
+                  reparvCommission,
+                  projectCommission,
+                  salesCommission,
+                  territoryCommission,
+                },
+              });
+            }
+          );
+        }
+      );
+    }
+  );
+};
+
 export const followUp = (req, res) => {
   const currentdate = moment().format("YYYY-MM-DD HH:mm:ss");
   const { followUpRemark, visitDate, enquiryStatus } = req.body;

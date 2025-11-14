@@ -347,3 +347,36 @@ export const del = (req, res) => {
     }
   );
 };
+
+// **Delete All Data **
+export const deleteAllData = (req, res) => {
+  const propertyId = parseInt(req.params.id);
+
+  if (isNaN(propertyId)) {
+    return res.status(400).json({ message: "Invalid Property ID" });
+  }
+
+  db.query(
+    "SELECT * FROM propertiesinfo WHERE propertyid = ?",
+    [propertyId],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database error", error: err });
+      }
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Entries not found" });
+      }
+
+      db.query("DELETE FROM propertiesinfo WHERE propertyid = ?", [propertyId], (err) => {
+        if (err) {
+          console.error("Error deleting :", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+        res.status(200).json({ message: "All Data Deleted Successfully" });
+      });
+    }
+  );
+};

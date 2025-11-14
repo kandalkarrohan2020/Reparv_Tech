@@ -250,6 +250,7 @@ const MarketingContent = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <ContentFilter counts={contentCounts} />
+            <AddButton label={"Add"} func={setShowContentUploadForm} />
           </div>
         </div>
         <h2 className="text-[16px] font-semibold">Content List</h2>
@@ -288,10 +289,10 @@ const MarketingContent = () => {
                     </p>
 
                     <div className="flex gap-2 items-center justify-center">
-                      <a href={`${URI}/${content.contentFile}`} download >
+                      {/* <a href={`${URI}/${content.contentFile}`} download >
                         <FaDownload />
-                      </a> 
-                      {/* <ActionDropdown content={content} /> */}
+                      </a> */}
+                      <ActionDropdown content={content} />
                     </div>
                   </div>
                 </div>
@@ -310,7 +311,7 @@ const MarketingContent = () => {
           showContentUploadForm ? "flex" : "hidden"
         } z-[61] overflow-scroll scrollbar-hide w-full fixed  bottom-0 md:bottom-auto`}
       >
-        <div className="w-full md:w-[500px] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+        <div className="w-full md:w-[500px] max-h-[90vh] overflow-scroll scrollbar-hide bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[16px] font-semibold">Upload Content</h2>
             <IoMdClose
@@ -375,7 +376,7 @@ const MarketingContent = () => {
                 />
               </div>
 
-              {/* Apk File Upload */}
+              {/* File Upload */}
               <div className="w-full">
                 <label className="block text-sm leading-4 text-[#0000007b] font-medium">
                   Upload Content File

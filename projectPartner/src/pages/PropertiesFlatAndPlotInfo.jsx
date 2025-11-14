@@ -12,6 +12,7 @@ import { RxCross2 } from "react-icons/rx";
 import { MdDone } from "react-icons/md";
 import DownloadCSV from "../components/DownloadCSV";
 import FormatPrice from "../components/FormatPrice";
+import DeleteButton from "../components/DeleteButton";
 
 const PropertiesFlatAndPlotInfo = () => {
   const { propertyid } = useParams();
@@ -217,10 +218,34 @@ const PropertiesFlatAndPlotInfo = () => {
 
   // Delete record
   const del = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this role?")) return;
+    if (!window.confirm("Are you sure to delete this entry?")) return;
     try {
       const response = await fetch(
         URI + `/project-partner/property/additional-info/delete/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Property Info deleted successfully!");
+        fetchData();
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error deleting :", error);
+    }
+  };
+
+  // Delete record
+  const deleteAllData = async () => {
+    if (!window.confirm("Are you sure to delete All Data?")) return;
+    try {
+      const response = await fetch(
+        URI + `/project-partner/property/additional-info/all/delete/${propertyid}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -626,6 +651,7 @@ const PropertiesFlatAndPlotInfo = () => {
           </div>
           <div className="rightTableHead w-full lg:w-[70%] sm:h-[36px] gap-2 flex flex-wrap justify-end items-center">
             <AddButton label={"Add"} func={setShowInfoForm} />
+            <DeleteButton func={deleteAllData} />
           </div>
         </div>
         <h2 className="text-[16px] font-semibold">

@@ -7,6 +7,7 @@ import {
   status,
   reserved,
   del,
+  deleteAllData,
 } from "../../controllers/projectPartner/propertyAdditionalInfoController.js";
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.put("/edit/:id", edit);
 router.put("/status/:id", status);
 router.put("/reserved/:id", reserved);
 router.delete("/delete/:id", del);
+router.delete("/all/delete/:id", deleteAllData);
 
 export default router;

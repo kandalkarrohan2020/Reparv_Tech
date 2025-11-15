@@ -74,7 +74,7 @@ function PlotData({ propertyInfo }) {
           .filter((p) => p.khasrano === activeKhasra)
           .map((khasraItem, index) => (
             <div key={index}>
-              <div className="grid gap-2 grid-cols-5 sm:grid-cols-6 md:grid-cols-5 lg:grid-cols-8">
+              <div className="grid gap-2 grid-cols-4 sm:grid-cols-5 md:grid-cols-5 lg:grid-cols-6">
                 {khasraItem.rows.map((row, i) => (
                   <div
                     key={i}
@@ -85,7 +85,7 @@ function PlotData({ propertyInfo }) {
                       }
                     }}
                     className={`
-                      flex items-center justify-center px-2 py-1 text-sm font-semibold rounded-lg border transition-all text-gray-400 border-gray-300
+                      flex items-center justify-center px-2 py-1 text-[12px] lg:text-sm font-semibold rounded-lg border transition-all text-gray-400 border-gray-300
 
                       ${
                         row.status === "Available" &&
@@ -98,7 +98,7 @@ function PlotData({ propertyInfo }) {
                       }
                     `}
                   >
-                    {row.plotno}
+                    {"Plot " + row.plotno}
                   </div>
                 ))}
               </div>

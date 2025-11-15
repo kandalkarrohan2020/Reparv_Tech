@@ -5,6 +5,7 @@ import sendEmail from "../../utils/nodeMailer.js";
 import { verifyRazorpayPayment } from "../paymentController.js";
 import fs from "fs";
 import path from "path";
+import sendProjectPartnerChangeEmail from "../../utils/sendProjectPartnerChangeEmail.js";
 
 const saltRounds = 10;
 
@@ -858,11 +859,10 @@ export const getProjectPartnerList = (req, res) => {
     // Step 2: Get matching project partner
     const projectPartnerSql = `
       SELECT * FROM projectpartner
-      WHERE city = ?
       ORDER BY created_at DESC
     `;
 
-    db.query(projectPartnerSql, [city], (err, projectPartnerResults) => {
+    db.query(projectPartnerSql, (err, projectPartnerResults) => {
       if (err) {
         console.error("Error fetching project Partner:", err);
         return res.status(500).json({ message: "Database error", error: err });
@@ -873,6 +873,7 @@ export const getProjectPartnerList = (req, res) => {
   });
 };
 
+// ** Assign Project Partner & Send Email **
 export const assignProjectPartner = async (req, res) => {
   try {
     const Id = parseInt(req.params.id);
@@ -884,37 +885,67 @@ export const assignProjectPartner = async (req, res) => {
     if (isNaN(projectPartnerId)) {
       return res.status(400).json({ message: "Invalid Project Partner ID" });
     }
-    // fetch sales partner details
+
+    // 1. Fetch Sales Partner Details
     db.query(
       "SELECT * FROM salespersons WHERE salespersonsid = ?",
       [Id],
-      (err, result) => {
-        if (err) {
-          console.error("Database error:", err);
-          return res
-            .status(500)
-            .json({ message: "Database error", error: err });
+      (salesErr, salesResult) => {
+        if (salesErr) {
+          console.error("Database error:", salesErr);
+          return res.status(500).json({ message: "Database error", error: salesErr });
         }
 
-        if (result.length === 0) {
+        if (salesResult.length === 0) {
           return res.status(404).json({ message: "Sales Person not found" });
         }
 
-        // Update salespersons details
+        const salesPerson = salesResult[0];
+
+        // 2. Fetch Project Partner Details
         db.query(
-          "UPDATE salespersons SET changeProjectPartnerReason = NULL projectpartnerid = ? WHERE salespersonsid = ?",
-          [projectPartnerId, Id],
-          (updateErr, updateResult) => {
-            if (updateErr) {
-              console.error("Error updating salespersons:", updateErr);
-              return res
-                .status(500)
-                .json({ message: "Database error", error: updateErr });
+          "SELECT * FROM projectpartner WHERE id = ?",
+          [projectPartnerId],
+          async (ppErr, ppResult) => {
+            if (ppErr) {
+              console.error("Database error:", ppErr);
+              return res.status(500).json({ message: "Database error", error: ppErr });
             }
 
-            res
-              .status(200)
-              .json({ message: "Project Partner assigned successfully" });
+            if (ppResult.length === 0) {
+              return res.status(404).json({ message: "Project Partner not found" });
+            }
+
+            const projectPartner = ppResult[0];
+
+            // 3. Update Sales Person
+            db.query(
+              "UPDATE salespersons SET changeProjectPartnerReason = NULL, projectpartnerid = ? WHERE salespersonsid = ?",
+              [projectPartnerId, Id],
+              async (updateErr) => {
+                if (updateErr) {
+                  console.error("Error updating salespersons:", updateErr);
+                  return res.status(500).json({ message: "Database error", error: updateErr });
+                }
+
+                // 4. Send Email to Sales Person
+                try {
+                  await sendProjectPartnerChangeEmail(
+                    salesPerson.email,                            
+                    projectPartner.fullname,                   
+                    projectPartner.contact,                   
+                    "Sales Partner",                    
+                    "https://sales.reparv.in"                
+                  );
+                } catch (err) {
+                  console.error("Email sending failed:", err);
+                }
+
+                return res.status(200).json({
+                  message: "Project Partner assigned & email sent successfully",
+                });
+              }
+            );
           }
         );
       }

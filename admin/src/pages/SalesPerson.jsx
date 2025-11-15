@@ -466,7 +466,7 @@ const SalesPerson = () => {
       alert(`Success: ${data.message}`);
       setSalesPersonId(null);
       setShowAssignProjectPartnerForm(false);
-      fetchData();
+      setSelectedPartnerLister("Project Partner");
     } catch (error) {
       console.error("Error updating project partner:", error);
       alert(`Error: ${error.message}`);

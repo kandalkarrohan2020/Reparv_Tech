@@ -466,7 +466,8 @@ const TerritoryPartner = () => {
       alert(`Success: ${data.message}`);
       setPartnerId(null);
       setShowAssignProjectPartnerForm(false);
-      fetchData();
+      setSelectedPartnerLister("Project Partner");
+      //fetchData();
     } catch (error) {
       console.error("Error updating project partner:", error);
       alert(`Error: ${error.message}`);

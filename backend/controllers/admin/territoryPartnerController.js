@@ -5,6 +5,7 @@ import sendEmail from "../../utils/nodeMailer.js";
 import { verifyRazorpayPayment } from "../paymentController.js";
 import fs from "fs";
 import path from "path";
+import sendProjectPartnerChangeEmail from "../../utils/sendProjectPartnerChangeEmail.js";
 
 const saltRounds = 10;
 export const getAll = (req, res) => {
@@ -17,7 +18,7 @@ export const getAll = (req, res) => {
   let sql;
 
   if (partnerLister === "Project Partner") {
-     sql = `
+    sql = `
        SELECT 
          tp.*, 
          pf.followUp, 
@@ -864,11 +865,10 @@ export const getProjectPartnerList = (req, res) => {
     // Step 2: Get matching project partner
     const projectPartnerSql = `
       SELECT * FROM projectpartner
-      WHERE city = ?
       ORDER BY created_at DESC
     `;
 
-    db.query(projectPartnerSql, [city], (err, projectPartnerResults) => {
+    db.query(projectPartnerSql, (err, projectPartnerResults) => {
       if (err) {
         console.error("Error fetching project Partner:", err);
         return res.status(500).json({ message: "Database error", error: err });
@@ -879,6 +879,7 @@ export const getProjectPartnerList = (req, res) => {
   });
 };
 
+// ** Assign Project Partner to Territory Partner & Send Email **
 export const assignProjectPartner = async (req, res) => {
   try {
     const Id = parseInt(req.params.id);
@@ -890,39 +891,77 @@ export const assignProjectPartner = async (req, res) => {
     if (isNaN(projectPartnerId)) {
       return res.status(400).json({ message: "Invalid Project Partner ID" });
     }
-    // fetch sales partner details
+
+    // 1. Fetch Territory Partner details
     db.query(
       "SELECT * FROM territorypartner WHERE id = ?",
       [Id],
-      (err, result) => {
-        if (err) {
-          console.error("Database error:", err);
+      (tpErr, tpResult) => {
+        if (tpErr) {
+          console.error("Database error:", tpErr);
           return res
             .status(500)
-            .json({ message: "Database error", error: err });
+            .json({ message: "Database error", error: tpErr });
         }
 
-        if (result.length === 0) {
+        if (tpResult.length === 0) {
           return res
             .status(404)
             .json({ message: "Territory Partner not found" });
         }
 
-        // Update Territory Partner details
+        const territoryPartner = tpResult[0];
+
+        // 2. Fetch Project Partner details
         db.query(
-          "UPDATE territorypartner SET changeProjectPartnerReason = NULL projectpartnerid = ? WHERE id = ?",
-          [projectPartnerId, Id],
-          (updateErr, updateResult) => {
-            if (updateErr) {
-              console.error("Error updating territory partner:", updateErr);
+          "SELECT * FROM projectpartner WHERE id = ?",
+          [projectPartnerId],
+          async (ppErr, ppResult) => {
+            if (ppErr) {
+              console.error("Database error:", ppErr);
               return res
                 .status(500)
-                .json({ message: "Database error", error: updateErr });
+                .json({ message: "Database error", error: ppErr });
             }
 
-            res
-              .status(200)
-              .json({ message: "Project Partner assigned successfully" });
+            if (ppResult.length === 0) {
+              return res
+                .status(404)
+                .json({ message: "Project Partner not found" });
+            }
+
+            const projectPartner = ppResult[0];
+
+            // 3. Update territory partner
+            db.query(
+              "UPDATE territorypartner SET changeProjectPartnerReason = NULL, projectpartnerid = ? WHERE id = ?",
+              [projectPartnerId, Id],
+              async (updateErr) => {
+                if (updateErr) {
+                  console.error("Error updating territory partner:", updateErr);
+                  return res
+                    .status(500)
+                    .json({ message: "Database error", error: updateErr });
+                }
+
+                // 4. Send Email to Territory Partner
+                try {
+                  await sendProjectPartnerChangeEmail(
+                    territoryPartner.email,
+                    projectPartner.fullname,
+                    projectPartner.contact,
+                    "Territory Partner",
+                    "https://territory.reparv.in"
+                  );
+                } catch (emailErr) {
+                  console.error("Email sending failed:", emailErr);
+                }
+
+                return res.status(200).json({
+                  message: "Project Partner assigned & email sent successfully",
+                });
+              }
+            );
           }
         );
       }

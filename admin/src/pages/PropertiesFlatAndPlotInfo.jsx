@@ -242,7 +242,8 @@ const PropertiesFlatAndPlotInfo = () => {
     if (!window.confirm("Are you sure to delete All Data?")) return;
     try {
       const response = await fetch(
-        URI + `/project-partner/property/additional-info/all/delete/${propertyid}`,
+        URI +
+          `/project-partner/property/additional-info/all/delete/${propertyid}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -319,6 +320,14 @@ const PropertiesFlatAndPlotInfo = () => {
   const filteredData = datas?.filter(
     (item) =>
       item.mouza?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.khasrano?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.payablearea?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.wing?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.flatfacing?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.flatno?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.plotfacing?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.plotno?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.status?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 

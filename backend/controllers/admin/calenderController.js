@@ -12,7 +12,7 @@ export const getAll = (req, res) => {
                INNER JOIN enquirers ON propertyfollowup.enquirerid = enquirers.enquirersid
                INNER JOIN properties ON enquirers.propertyid = properties.propertyid
                LEFT JOIN salespersons ON enquirers.salespersonid = salespersons.salespersonsid
-               ORDER BY propertyfollowup.followupid DESC`; 
+               ORDER BY propertyfollowup.followupid DESC`;
 
   db.query(sql, (err, result) => {
     if (err) {
@@ -23,139 +23,123 @@ export const getAll = (req, res) => {
   });
 };
 
-// **Add New **
-export const add = (req, res) => {
-  const {
-    name,
-    contact,
-    email,
-    address,
-    dob,
-    department,
-    position,
-    salary,
-    doj,
-  } = req.body;
+export const getNotes = (req, res) => {
+  try {
+    const userId = req.adminUser.id;
 
-  if (
-    !name ||
-    !contact ||
-    !email ||
-    !address ||
-    !dob ||
-    !department ||
-    !position ||
-    !salary ||
-    !doj
-  ) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
+    if (!userId) {
+      return res.status(401).json({
+        message: "Unauthorized Access, Please Login Again!",
+      });
+    }
 
-  const sql = `INSERT INTO calenders (name, contact, email, address, dob, department, position, salary, doj) 
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const { date } = req.query;
 
-  db.query(
-    sql,
-    [name, contact, email, address, dob, department, position, salary, doj],
-    (err, result) => {
+    let sql =
+      "SELECT * FROM calenderNotes WHERE salesPartnerId IS NULL AND projectPartnerId IS NULL AND territoryPartnerId IS NULL";
+    values = [];
+    if (date) {
+      sql += " AND date = ?";
+      values.push(date);
+    }
+
+    sql += " ORDER BY date DESC, created_at DESC";
+
+    db.query(sql, values, (err, result) => {
       if (err) {
-        console.error("Error inserting :", err);
+        console.error("Error fetching notes:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
-      res
-        .status(201)
-        .json({ message: "Calender added successfully", Id: result.insertId });
-    }
-  );
+
+      const formatted = result.map((row) => ({
+        ...row,
+        created_at: moment(row.created_at).format("DD MMM YYYY | hh:mm A"),
+        date: moment(row.date).format("DD MMM YYYY"),
+      }));
+
+      res.json(formatted);
+    });
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// **Edit **
-export const update = (req, res) => {
-  const Id = parseInt(req.params.id);
-  const {
-    name,
-    contact,
-    email,
-    address,
-    dob,
-    department,
-    position,
-    salary,
-    doj,
-  } = req.body;
+// Add a new note
+export const addNote = (req, res) => {
+  try {
+    const userId = req.adminUser.id;
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized Access, Please Login Again!" });
+    }
 
-  if (
-    !name ||
-    !contact ||
-    !email ||
-    !address ||
-    !dob ||
-    !department ||
-    !position ||
-    !salary ||
-    !doj
-  ) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
+    const { date, note } = req.body;
 
-  db.query("SELECT * FROM calenders WHERE id = ?", [Id], (err, result) => {
-    if (err)
-      return res.status(500).json({ message: "Database error", error: err });
-    if (result.length === 0)
-      return res.status(404).json({ message: "Calender not found" });
-
-    const sql = `UPDATE calenders SET name=?, contact=?, email=?, address=?, dob=?, department=?, position=?, salary=?, doj=? WHERE id=?`;
+    if (!date || !note) {
+      return res.status(400).json({ message: "Date and Note are required" });
+    }
 
     db.query(
-      sql,
-      [
-        name,
-        contact,
-        email,
-        address,
-        dob,
-        department,
-        position,
-        salary,
-        doj,
-        Id,
-      ],
-      (err) => {
+      "INSERT INTO calenderNotes (date, note) VALUES (?, ?)",
+      [date, note],
+      (err, result) => {
         if (err) {
-          console.error("Error updating :", err);
+          console.error("Error adding note:", err);
           return res
             .status(500)
             .json({ message: "Database error", error: err });
         }
-        res.status(200).json({ message: "Calender updated successfully" });
+
+        return res.status(200).json({
+          message: "Note added successfully",
+          noteid: result.insertId,
+        });
       }
     );
-  });
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// **Delete **
-export const del = (req, res) => {
-  const Id = parseInt(req.params.id);
-
-  if (isNaN(Id)) {
-    return res.status(400).json({ message: "Invalid Calender ID" });
-  }
-
-  db.query("SELECT * FROM calenders WHERE id = ?", [Id], (err, result) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Database error", error: err });
-    }
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Calender not found" });
+// Delete a note
+export const deleteNote = (req, res) => {
+  try {
+    const userId = req.adminUser.id;
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized Access, Please Login Again!" });
     }
 
-    db.query("DELETE FROM calenders WHERE id = ?", [Id], (err) => {
-      if (err) {
-        console.error("Error deleting :", err);
-        return res.status(500).json({ message: "Database error", error: err });
+    const noteid = req.params.id;
+
+    if (!noteid) {
+      return res.status(400).json({ message: "Note ID is required" });
+    }
+
+    db.query(
+      "DELETE FROM calenderNotes WHERE id = ?",
+      [noteid],
+      (err, result) => {
+        if (err) {
+          console.error("Error deleting note:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err });
+        }
+
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ message: "Note not found" });
+        }
+
+        return res.status(200).json({ message: "Note deleted successfully" });
       }
-      res.status(200).json({ message: "Calender deleted successfully" });
-    });
-  });
+    );
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };

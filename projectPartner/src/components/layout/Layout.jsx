@@ -121,6 +121,8 @@ function Layout() {
     setShowInfo,
     showInfoForm,
     setShowInfoForm,
+    showNotePopup,
+    setShowNotePopup,
     isLoggedIn,
   } = useAuth();
 
@@ -172,6 +174,7 @@ function Layout() {
     { state: showCommissionForm, setter: setShowCommissionForm },
     { state: showInfo, setter: setShowInfo },
     { state: showInfoForm, setter: setShowInfoForm },
+    { state: showNotePopup, setter: setShowNotePopup },
   ];
 
   const getNavLinkClass = (path) => {

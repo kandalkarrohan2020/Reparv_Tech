@@ -93,6 +93,7 @@ function Layout() {
     setShowCustomerPaymentForm,
     showPlayVideo,
     setShowPlayVideo,
+    showNotePopup, setShowNotePopup,
   } = useAuth();
 
   const overlays = [
@@ -114,6 +115,7 @@ function Layout() {
     { state: showOrderForm, setter: setShowOrderForm },
     { state: showProductForm, setter: setShowProductForm },
     { state: showSubscription, setter: setShowSubscription },
+    { state: showNotePopup, setter: setShowNotePopup },
   ];
 
   const getNavLinkClass = (path) => {

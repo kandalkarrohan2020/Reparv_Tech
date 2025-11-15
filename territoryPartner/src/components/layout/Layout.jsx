@@ -80,6 +80,7 @@ function Layout() {
     setShowProductForm,
     showPlayVideo,
     setShowPlayVideo,
+    showNotePopup, setShowNotePopup,
     isLoggedIn,
   } = useAuth();
 
@@ -98,6 +99,7 @@ function Layout() {
     { state: showOrderForm, setter: setShowOrderForm },
     { state: showProductForm, setter: setShowProductForm },
     { state: showSubscription, setter: setShowSubscription },
+    { state: showNotePopup, setter: setShowNotePopup },
   ];
 
   const getNavLinkClass = (path) => {

@@ -53,6 +53,7 @@ export const AuthProvider = ({ children }) => {
   const [showCart, setShowCart] = useState(false);
   const [showOrder, setShowOrder] = useState(false);
   const [showOrderForm, setShowOrderForm] = useState(false);
+  const [showNotePopup, setShowNotePopup] = useState(false);
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [propertyCategory, setPropertyCategory] = useState(null);
@@ -134,6 +135,7 @@ export const AuthProvider = ({ children }) => {
         setShowProductForm,
         showOrderForm,
         setShowOrderForm,
+        showNotePopup, setShowNotePopup,
 
         priceSummery,
         setPriceSummery,

@@ -1,8 +1,11 @@
 import express from "express";
-import { getAll, } from "../../controllers/admin/calenderController.js";
+import { addNote, deleteNote, getAll, getNotes } from "../../controllers/admin/calenderController.js";
 
 const router = express.Router();
 
 router.get("/meetings", getAll);
+router.get("/notes", getNotes);
+router.post("/note/add", addNote);
+router.delete("/note/delete/:id", deleteNote);
 
 export default router;

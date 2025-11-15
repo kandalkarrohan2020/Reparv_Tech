@@ -145,6 +145,7 @@ function Layout() {
     setShowAssignProjectPartnerForm,
     showEMI,
     setShowEMI,
+    showNotePopup, setShowNotePopup,
     isLoggedIn,
   } = useAuth();
 
@@ -214,6 +215,7 @@ function Layout() {
       state: showAssignProjectPartnerForm,
       setter: setShowAssignProjectPartnerForm,
     },
+    { state: showNotePopup, setter: setShowNotePopup },
   ];
 
   const getNavLinkClass = (path) => {

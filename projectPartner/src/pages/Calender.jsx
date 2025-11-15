@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { format } from "date-fns";
-import CustomDateRangePicker from "../components/CustomDateRangePicker";
 import { useAuth } from "../store/auth";
+import { IoMdClose } from "react-icons/io";
+import { MdDelete } from "react-icons/md";
+import Loader from "../components/Loader";
 
 const statusClasses = {
   scheduled: "bg-blue-100 text-blue-600",
@@ -13,71 +15,178 @@ const statusClasses = {
 };
 
 const CalendarScheduler = () => {
-  const { URI } = useAuth();
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [meetings, setMeetings] = useState([]);
+  const { URI, showNotePopup, setShowNotePopup } = useAuth();
 
-  //Fetch Data
-  const fetchData = async () => {
+  const [tab, setTab] = useState("meetings"); // Meetings | Notes
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const [meetings, setMeetings] = useState([]);
+  const [notes, setNotes] = useState([]);
+
+  const [newNote, setNewNote] = useState("");
+
+  // ---------------- Fetch Meetings ----------------
+  const fetchMeetings = async () => {
     try {
       const response = await fetch(URI + "/project-partner/calender/meetings", {
         method: "GET",
-        credentials: "include", // Ensures cookies are sent
-        headers: {
-          "Content-Type": "application/json",
-        },
+        credentials: "include",
       });
-      if (!response.ok) throw new Error("Failed to fetch Meetings.");
       const data = await response.json();
       setMeetings(data);
-      console.log(data);
     } catch (err) {
-      console.error("Error fetching :", err);
+      console.error("Error fetching Meetings:", err);
     }
   };
 
-  // Add meeting status dots
-  const tileContent = ({ date, view }) => {
-    if (view === "month") {
-      const dateString = format(date, "yyyy-MM-dd");
-      const meeting = meetings.find(
-        (meeting) =>
-          format(new Date(meeting.visitdate), "yyyy-MM-dd") === dateString
+  // ---------------- Fetch Notes ----------------
+  const fetchNotes = async (selectedDate = null) => {
+    try {
+      let url = `${URI}/project-partner/calender/notes`;
+
+      // Add date filter if date selected
+      if (selectedDate) {
+        const formatted = selectedDate.toISOString().split("T")[0];
+        url += `?date=${formatted}`;
+      }
+
+      const response = await fetch(url, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch notes");
+
+      const data = await response.json();
+      //console.log(data);
+
+      setNotes(data);
+    } catch (err) {
+      console.error("Error fetching Notes:", err);
+    }
+  };
+
+  // ---------------- Add Notes ----------------
+  const addNote = async (e) => {
+    e.preventDefault();
+    if (!newNote.trim()) return;
+
+    const payload = {
+      date: format(selectedDate, "yyyy-MM-dd"),
+      note: newNote,
+    };
+
+    try {
+      await fetch(URI + "/project-partner/calender/note/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+
+      setNewNote("");
+      setShowNotePopup(false);
+      fetchNotes(); // Refresh notes
+    } catch (error) {
+      console.error("Error saving note:", error);
+    }
+  };
+
+  // ---------------- Delete Note ----------------
+  const deleteNote = async (noteId) => {
+    if (!window.confirm("Are you sure to delete this Note?")) return;
+    try {
+      const response = await fetch(
+        `${URI}/project-partner/calender/note/delete/${noteId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
       );
 
-      if (meeting) {
-        return (
-          <div
-            className={`w-2 h-2 rounded-full mx-auto ${
-              meeting.status === "scheduled"
-                ? "bg-blue-500"
-                : meeting.status === "canceled"
-                ? "bg-red-500"
-                : meeting.status === "reschedule"
-                ? "bg-gray-500"
-                : meeting.status === "completed"
-                ? "bg-green-500"
-                : "bg-yellow-500"
-            }`}
-          ></div>
-        );
+      const data = await response.json();
+
+      if (response.ok) {
+        setNotes(notes.filter((note) => note.id !== noteId));
+        //alert("Note deleted successfully");
+      } else {
+        alert(data.message || "Failed to delete note");
       }
+    } catch (err) {
+      console.error("Error deleting note:", err);
     }
-    return null;
   };
 
   useEffect(() => {
-    fetchData();
+    fetchMeetings();
+    fetchNotes(selectedDate);
   }, []);
 
-  return (
-    <div className="calender overflow-scroll scrollbar-hide w-full h-screen flex flex-col items-start justify-start ">
-      <div className="calender overflow-scroll scrollbar-hide w-full h-[80vh] flex flex-col px-4 md:px-6 py-6 gap-4 my-[10px] bg-white rounded-[24px]">
-        <div className="w-full flex items-end justify-start px-2">
-          <p className="block text-lg font-semibold">Meetings</p>
-          {/*<CustomDateRangePicker></CustomDateRangePicker>*/}
+  // ---------------- Calendar Dot Logic ----------------
+  const tileContent = ({ date, view }) => {
+    const dateStr = format(date, "yyyy-MM-dd");
+
+    if (view === "month") {
+      let hasMeeting = meetings.some(
+        (m) => format(new Date(m.visitdate), "yyyy-MM-dd") === dateStr
+      );
+
+      let hasNotes = notes.some((n) => n.date === dateStr);
+
+      if (!hasMeeting && !hasNotes) return null;
+
+      return (
+        <div className="flex justify-center mt-1 gap-1">
+          {hasMeeting && (
+            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+          )}
+          {hasNotes && (
+            <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+          )}
         </div>
-        <div className="w-full flex gap-6">
+      );
+    }
+  };
+
+  // ---------------- Filter Data ----------------
+  const dailyMeetings = meetings?.filter(
+    (m) =>
+      format(new Date(m.visitdate), "yyyy-MM-dd") ===
+      format(selectedDate, "yyyy-MM-dd")
+  );
+
+  const dailyNotes = notes?.filter(
+    (n) => n.date === format(selectedDate, "dd MMM yyyy")
+  );
+
+  return (
+    <div className="w-full h-screen flex flex-col overflow-hidden">
+      {/* ---------------- Tabs ---------------- */}
+      <div className="flex w-full border-b bg-white">
+        <button
+          onClick={() => setTab("meetings")}
+          className={`w-1/2 p-3 text-center font-semibold ${
+            tab === "meetings"
+              ? "border-b-2 border-green-600 text-green-600"
+              : ""
+          }`}
+        >
+          Meetings
+        </button>
+
+        <button
+          onClick={() => setTab("notes")}
+          className={`w-1/2 p-3 text-center font-semibold ${
+            tab === "notes" ? "border-b-2 border-green-600 text-green-600" : ""
+          }`}
+        >
+          Notes
+        </button>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-hidden bg-gray-50 p-4">
+        <div className="flex flex-col md:flex-row gap-4 h-full overflow-scroll scrollbar-hide">
           {/* Calendar Section */}
           <div>
             <Calendar
@@ -85,9 +194,9 @@ const CalendarScheduler = () => {
               value={selectedDate}
               locale="en-US"
               tileContent={tileContent}
-              showNeighboringMonth={false} // 🔥 Hides previous & next month dates
+              showNeighboringMonth={false}
               formatShortWeekday={(locale, date) => format(date, "E").charAt(0)}
-              className="min-w-[300px] rounded-lg border border-gray-300 p-4 w-full shadow-md"
+              className="min-w-[300px] md:min-w-[350px] rounded-lg border border-gray-300 p-4 w-full shadow-md"
               tileClassName={({ date, view }) => {
                 if (view === "month") {
                   const today = new Date();
@@ -103,69 +212,141 @@ const CalendarScheduler = () => {
             />
           </div>
 
-          {/* Meetings List Section */}
-          <div className="w-full min-w-[761px] max-w-6xl bg-white p-4 ">
-            {meetings
-              .filter(
-                (meeting) =>
-                  format(new Date(meeting.visitdate), "yyyy-MM-dd") ===
-                  format(selectedDate, "yyyy-MM-dd")
-              )
-              .map((meeting, index) => (
+          {/* ---------------- Meetings Tab ---------------- */}
+          {tab === "meetings" && (
+            <div className="w-full min-w-[300px] md:min-w-[450px] bg-white rounded-xl p-4 shadow max-h-[75vh] overflow-y-auto no-scrollbar">
+              {dailyMeetings?.length === 0 && (
+                <p className="text-gray-500 text-center mt-10">
+                  No meetings today
+                </p>
+              )}
+
+              {dailyMeetings?.map((meeting) => (
                 <div
                   key={meeting.followupid}
-                  className="flex justify-between items-start p-4 border-b"
+                  className="flex justify-between p-4 border-b"
                 >
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <span className="text-xs text-gray-500">Project Visit</span>
-                    <p className="text-xl font-semibold">
+                  <div>
+                    <p className="text-sm text-gray-500">Project Visit</p>
+                    <p className="font-semibold">
                       {format(new Date(meeting.visitdate), "MMM dd")}
                     </p>
                   </div>
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <span className="text-xs text-gray-500">Project Name</span>
-                    <p className="font-semibold">{meeting.property_name}</p>
+
+                  <div>
+                    <p className="text-sm text-gray-500">Customer</p>
+                    <p>{meeting.customer}</p>
+                    <p className="text-blue-500">{meeting.contact}</p>
                   </div>
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="text-xs text-gray-500 mb-2">
-                      Customer Name
-                    </span>
-                    <p className="font-semibold">{meeting.customer}</p>
-                    <p className="text-blue-500 cursor-pointer">
-                      {meeting.contact}
-                    </p>
+
+                  <div>
+                    <p className="text-sm text-gray-500">Remark</p>
+                    <p>{meeting.remark}</p>
                   </div>
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <span className="text-xs text-gray-500">
-                      Sales Person Name
-                    </span>
-                    <p className="font-semibold">{meeting.fullname}</p>
-                  </div>
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <span className="text-xs text-gray-500">Remark</span>
-                    <p className="font-semibold">{meeting.remark}</p>
-                  </div>
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <span className="text-xs text-gray-500">Status</span>
+
+                  <div>
                     <button
-                      className={`px-3 py-1 rounded-full text-sm ${
+                      className={`px-3 py-1 text-sm rounded-full ${
                         statusClasses[meeting.status]
-                      } font-semibold`}
+                      }`}
                     >
-                      {meeting.status === "scheduled"
-                        ? "Visit Schedule"
-                        : meeting.status === "canceled"
-                        ? "Visit Cancelled"
-                        : meeting.status === "reschedule"
-                        ? "Visit Reschedule"
-                        : meeting.status === "completed"
-                        ? "Visited"
-                        : ""}
+                      {meeting.status}
                     </button>
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* ---------------- Notes Tab ---------------- */}
+          {tab === "notes" && (
+            <div className="w-full min-w-[300px] md:min-width-[350px] bg-white rounded-xl p-4 shadow max-h-[75vh] flex flex-col scrollbar-hide">
+              <div className="flex justify-between items-center mb-3">
+                <h2 className="font-semibold text-base md:text-lg text-gray-700">
+                  Notes
+                </h2>
+
+                <button
+                  onClick={() => setShowNotePopup(true)}
+                  className="px-4 py-2 bg-green-600 font-semibold text-white rounded-lg"
+                >
+                  Add Note +
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-scroll scrollbar-hide">
+                {dailyNotes?.length === 0 ? (
+                  <p className="text-gray-500 text-center mt-10">
+                    No notes for this date
+                  </p>
+                ) : (
+                  dailyNotes?.map((n, i) => (
+                    <div key={i} className="w-full items-center justify-between  p-3 border-b flex flex-row items ">
+                      <div>
+                        <p className="text-sm text-gray-500">{n.date}</p>
+                        <p className="font-medium mt-1">{n.note}</p>
+                      </div>
+                      <MdDelete
+                        onClick={() => {
+                          deleteNote(n.id);
+                        }}
+                        className="text-red-500 w-5 md:w-7 h-5 md:h-7 cursor-pointer active:scale-95"
+                      />
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div
+        className={`${
+          showNotePopup ? "flex" : "hidden"
+        } z-[61] roleForm overflow-scroll scrollbar-hide w-full fixed bottom-0 md:bottom-auto `}
+      >
+        <div className="w-full md:w-[500px] overflow-scroll scrollbar-hide max-h-[75vh] bg-white py-8 pb-16 px-4 sm:px-6 border border-[#cfcfcf33] rounded-tl-lg rounded-tr-lg md:rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[16px] font-semibold">
+              Add Note – {format(selectedDate, "dd MMM yyyy")}
+            </h2>
+            <IoMdClose
+              onClick={() => {
+                setShowNotePopup(false);
+              }}
+              className="w-6 h-6 cursor-pointer"
+            />
           </div>
+          <form onSubmit={addNote}>
+            <div className="w-full grid gap-4 place-items-center grid-cols-1">
+              <textarea
+                rows={4}
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="Write note..."
+                value={newNote}
+                onChange={(e) => setNewNote(e.target.value)}
+              />
+            </div>
+            <div className="flex mt-8 md:mt-6 justify-end gap-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowNotePopup(false);
+                }}
+                className="px-4 py-2 leading-4 text-[#ffffff] bg-[#000000B2] rounded active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-[#076300] rounded active:scale-[0.98]"
+              >
+                {"ADD"}
+              </button>
+              <Loader></Loader>
+            </div>
+          </form>
         </div>
       </div>
     </div>
